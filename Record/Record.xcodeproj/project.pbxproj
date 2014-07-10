@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B66461F2196F193900943BC2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66461F1196F193900943BC2 /* AVFoundation.framework */; };
 		F6A5681E18ECA98A00B844C6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5681D18ECA98A00B844C6 /* Foundation.framework */; };
 		F6A5682018ECA98A00B844C6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5681F18ECA98A00B844C6 /* CoreGraphics.framework */; };
 		F6A5682218ECA98A00B844C6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5682118ECA98A00B844C6 /* UIKit.framework */; };
@@ -34,6 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B66461F1196F193900943BC2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		F6A5681A18ECA98A00B844C6 /* Record.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Record.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6A5681D18ECA98A00B844C6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F6A5681F18ECA98A00B844C6 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -60,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B66461F2196F193900943BC2 /* AVFoundation.framework in Frameworks */,
 				F6A5682018ECA98A00B844C6 /* CoreGraphics.framework in Frameworks */,
 				F6A5682218ECA98A00B844C6 /* UIKit.framework in Frameworks */,
 				F6A5681E18ECA98A00B844C6 /* Foundation.framework in Frameworks */,
@@ -101,6 +104,7 @@
 		F6A5681C18ECA98A00B844C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B66461F1196F193900943BC2 /* AVFoundation.framework */,
 				F6A5681D18ECA98A00B844C6 /* Foundation.framework */,
 				F6A5681F18ECA98A00B844C6 /* CoreGraphics.framework */,
 				F6A5682118ECA98A00B844C6 /* UIKit.framework */,
