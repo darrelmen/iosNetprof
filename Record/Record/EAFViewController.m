@@ -122,7 +122,6 @@
     {
         
         NSLog(@"playAudio");
-
         _stopButton.enabled = YES;
         _recordButton.enabled = NO;
         
