@@ -21,64 +21,64 @@
     _playButton.enabled = NO;
     _stopButton.enabled = NO;
     
-    if (FALSE) {
-        
-        NSLog(@"viewDidLoad");
-        
-        
-        NSArray *dirPaths;
-        NSString *docsDir;
-        
-        dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentationDirectory, NSUserDomainMask, YES);
-        docsDir = dirPaths[0];
-        
-        NSString *soundFilePath = [docsDir stringByAppendingPathComponent:@"sound.caf"];
-        NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
-        
-        NSDictionary *recordSettings = [NSDictionary
-                                        dictionaryWithObjectsAndKeys:
-                                        [NSNumber numberWithInt:AVAudioQualityMin],
-                                        AVEncoderAudioQualityKey,
-                                        [NSNumber numberWithInt:16],
-                                        AVEncoderBitRateKey,
-                                        [NSNumber numberWithInt: 2],
-                                        AVNumberOfChannelsKey,
-                                        [NSNumber numberWithFloat:44100.0],
-                                        AVSampleRateKey,
-                                        nil];
-        
-        NSError *error = nil;
-        
-        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-        
-        _audioRecorder = [[AVAudioRecorder alloc]
-                          initWithURL:soundFileURL
-                          settings:recordSettings
-                          error:&error];
-        _audioRecorder.delegate = self;
-        _audioRecorder.meteringEnabled = YES;
-        
-        // Disable Stop/Play button when application launches
-        //    NSLog(@"session state%@",audioSession.isActive);
-        
-        if (error)
-        {
-            NSLog(@"error: %@", [error localizedDescription]);
-        } else {
-            [audioSession requestRecordPermission:^(BOOL granted) {
-                NSLog(@"record permission is %hhd", granted);
-            } ];
-            [_audioRecorder prepareToRecord];
-        }
-    }
+//    if (FALSE) {
+//        
+//        NSLog(@"viewDidLoad");
+//        
+//        
+//        NSArray *dirPaths;
+//        NSString *docsDir;
+//        
+//        dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentationDirectory, NSUserDomainMask, YES);
+//        docsDir = dirPaths[0];
+//        
+//        NSString *soundFilePath = [docsDir stringByAppendingPathComponent:@"sound.caf"];
+//        NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
+//        
+//        NSDictionary *recordSettings = [NSDictionary
+//                                        dictionaryWithObjectsAndKeys:
+//                                        [NSNumber numberWithInt:AVAudioQualityMin],
+//                                        AVEncoderAudioQualityKey,
+//                                        [NSNumber numberWithInt:16],
+//                                        AVEncoderBitRateKey,
+//                                        [NSNumber numberWithInt: 2],
+//                                        AVNumberOfChannelsKey,
+//                                        [NSNumber numberWithFloat:44100.0],
+//                                        AVSampleRateKey,
+//                                        nil];
+//        
+//        NSError *error = nil;
+//        
+//        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+//        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+//        
+//        _audioRecorder = [[AVAudioRecorder alloc]
+//                          initWithURL:soundFileURL
+//                          settings:recordSettings
+//                          error:&error];
+//        _audioRecorder.delegate = self;
+//        _audioRecorder.meteringEnabled = YES;
+//        
+//        // Disable Stop/Play button when application launches
+//        //    NSLog(@"session state%@",audioSession.isActive);
+//        
+//        if (error)
+//        {
+//            NSLog(@"error: %@", [error localizedDescription]);
+//        } else {
+//            [audioSession requestRecordPermission:^(BOOL granted) {
+//                NSLog(@"record permission is %hhd", granted);
+//            } ];
+//            [_audioRecorder prepareToRecord];
+//        }
+//    }
     
     NSLog(@"viewDidLoad2 ");
 
     // Set the audio file
     NSArray *pathComponents = [NSArray arrayWithObjects:
                                [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
-                               @"MyAudioMemo.m4a",
+                               @"MyAudioMemo.wav",
                                nil];
     NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
     NSError *error = nil;
@@ -94,15 +94,16 @@
         [session requestRecordPermission:^(BOOL granted) {
             NSLog(@"record permission is %hhd", granted);
         } ];
-        // [_audioRecorder prepareToRecord];
     }
     
     // Define the recorder setting
     NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
     
-    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
-    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
-    [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
+   // [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
+    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatLinearPCM] forKey:AVFormatIDKey];
+   // [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
+    [recordSetting setValue:[NSNumber numberWithFloat:22050.0] forKey:AVSampleRateKey];
+    [recordSetting setValue:[NSNumber numberWithInt: 1] forKey:AVNumberOfChannelsKey];
     
     // Initiate and prepare the recorder
     _audioRecorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:&error];
@@ -191,7 +192,7 @@
         
         NSString *myString = [_audioRecorder.url absoluteString];
         
-        NSLog(@"help %@",_audioRecorder.url.baseURL);
+       // NSLog(@"help %@",_audioRecorder.url.baseURL);
         NSLog(@"url %@",myString);
         
         _audioPlayer = [[AVAudioPlayer alloc]
@@ -202,9 +203,6 @@
         
         if (error)
         {
-            
-//            NSString *myString2 = [self NSStringFromOSStatus];
-
             NSLog(@"Error: %@",
                   [error localizedDescription]);
         } else {
@@ -235,6 +233,8 @@
             NSLog(@"couldn't find file");
         }
         
+        [self postAudio];
+        
     } else {
         NSLog(@"stopAudio not recording");
 
@@ -242,5 +242,36 @@
         [_audioPlayer stop];
     }
     }
+}
+
+- (void)postAudio {
+    // create request
+    NSString *myString = [_audioRecorder.url absoluteString];
+    NSLog(@"postAudio file %@",myString);
+    
+    NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
+    
+    NSLog(@"data %d",[postData length]);
+
+    
+    NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
+    
+    NSLog(@"file length %d",[postData length]);
+    NSString *baseurl = @"https://np.ll.mit.edu/npfClassroomEnglish/scoreServlet";
+    
+    NSURL *url = [NSURL URLWithString:baseurl];
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    [urlRequest setHTTPMethod: @"POST"];
+    [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded"
+      forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
+    [urlRequest setValue:@"book" forHTTPHeaderField:@"word"];
+    [urlRequest setHTTPBody:postData];
+    
+    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+    [connection start];
+    
+    NSLog(@"Started!");
 }
 @end
