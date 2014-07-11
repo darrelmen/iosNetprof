@@ -10,7 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 @interface EAFViewController : UIViewController
-        <AVAudioRecorderDelegate, AVAudioPlayerDelegate>
+        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate>
 
 @property (strong, nonatomic) AVAudioRecorder *audioRecorder;
 @property (strong, nonatomic) AVAudioPlayer *audioPlayer;
@@ -20,5 +20,6 @@
 - (IBAction)recordAudio:(id)sender;
 - (IBAction)playAudio:(id)sender;
 - (IBAction)stopAudio:(id)sender;
+@property (strong, nonatomic) NSMutableData *responseData;
 
 @end
