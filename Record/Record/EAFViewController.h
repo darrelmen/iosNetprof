@@ -21,5 +21,6 @@
 - (IBAction)playAudio:(id)sender;
 - (IBAction)stopAudio:(id)sender;
 @property (strong, nonatomic) NSMutableData *responseData;
+@property (weak, nonatomic) IBOutlet UILabel *scoreDisplay;
 
 @end

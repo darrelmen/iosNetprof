@@ -303,6 +303,9 @@
   NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSASCIIStringEncoding];
 
     NSLog(@"go response %@",stringVersion);
+    
+    [_scoreDisplay setText:stringVersion];
+    
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {

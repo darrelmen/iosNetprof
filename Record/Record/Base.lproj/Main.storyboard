@@ -46,12 +46,20 @@
                                     <action selector="stopAudio:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="CUo-0p-l6C"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Please Record &quot;Book&quot;" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G2z-3l-2sN">
+                                <rect key="frame" x="66" y="312" width="194" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
                         <outlet property="playButton" destination="4PZ-7k-YvL" id="VHB-Z0-sdK"/>
                         <outlet property="recordButton" destination="85Q-3i-7cz" id="HdD-4d-PbA"/>
+                        <outlet property="scoreDisplay" destination="G2z-3l-2sN" id="m6J-vg-rng"/>
                         <outlet property="stopButton" destination="Jqa-hJ-Umj" id="vFB-Ha-B0J"/>
                     </connections>
                 </viewController>
