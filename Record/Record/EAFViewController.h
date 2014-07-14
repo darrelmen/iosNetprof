@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import "MSAnnotatedGauge.h"
 
 @interface EAFViewController : UIViewController
         <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate>
@@ -41,5 +42,7 @@
 
 
 -(void) setForeignText:(NSString *)foreignLang;
+//@property (nonatomic) MSAnnotatedGauge *annotatedGauge;
+@property (strong, nonatomic) IBOutlet MSAnnotatedGauge *annotatedGauge2;
 
 @end

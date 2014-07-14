@@ -21,60 +21,6 @@
     _playButton.enabled = NO;
     _stopButton.enabled = NO;
     
-//    if (FALSE) {
-//        
-//        NSLog(@"viewDidLoad");
-//        
-//        
-//        NSArray *dirPaths;
-//        NSString *docsDir;
-//        
-//        dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentationDirectory, NSUserDomainMask, YES);
-//        docsDir = dirPaths[0];
-//        
-//        NSString *soundFilePath = [docsDir stringByAppendingPathComponent:@"sound.caf"];
-//        NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
-//        
-//        NSDictionary *recordSettings = [NSDictionary
-//                                        dictionaryWithObjectsAndKeys:
-//                                        [NSNumber numberWithInt:AVAudioQualityMin],
-//                                        AVEncoderAudioQualityKey,
-//                                        [NSNumber numberWithInt:16],
-//                                        AVEncoderBitRateKey,
-//                                        [NSNumber numberWithInt: 2],
-//                                        AVNumberOfChannelsKey,
-//                                        [NSNumber numberWithFloat:44100.0],
-//                                        AVSampleRateKey,
-//                                        nil];
-//        
-//        NSError *error = nil;
-//        
-//        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-//        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-//        
-//        _audioRecorder = [[AVAudioRecorder alloc]
-//                          initWithURL:soundFileURL
-//                          settings:recordSettings
-//                          error:&error];
-//        _audioRecorder.delegate = self;
-//        _audioRecorder.meteringEnabled = YES;
-//        
-//        // Disable Stop/Play button when application launches
-//        //    NSLog(@"session state%@",audioSession.isActive);
-//        
-//        if (error)
-//        {
-//            NSLog(@"error: %@", [error localizedDescription]);
-//        } else {
-//            [audioSession requestRecordPermission:^(BOOL granted) {
-//                NSLog(@"record permission is %hhd", granted);
-//            } ];
-//            [_audioRecorder prepareToRecord];
-//        }
-//    }
-    
-    NSLog(@"viewDidLoad2 ");
-
     // Set the audio file
     NSArray *pathComponents = [NSArray arrayWithObjects:
                                [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
@@ -99,9 +45,7 @@
     // Define the recorder setting
     NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
     
-   // [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
     [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatLinearPCM] forKey:AVFormatIDKey];
-   // [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
     [recordSetting setValue:[NSNumber numberWithFloat:22050.0] forKey:AVSampleRateKey];
     [recordSetting setValue:[NSNumber numberWithInt: 1] forKey:AVNumberOfChannelsKey];
     
@@ -117,16 +61,28 @@
     _audioRecorder.meteringEnabled = YES;
     [_audioRecorder prepareToRecord];
     
-    //[[_foreignLang alloc] init];
     [_foreignLang setText:fl];
+    
+    
+    //self.annotatedGauge = [[MSAnnotatedGauge alloc] initWithFrame:CGRectMake(40, 40, 240, 180)];
+    _annotatedGauge2.minValue = 0;
+    _annotatedGauge2.maxValue = 100;
+    //_annotatedGauge2.titleLabel.text = @"How many widgets?";
+    _annotatedGauge2.startRangeLabel.text = @"0";
+    _annotatedGauge2.endRangeLabel.text = @"100";
+    _annotatedGauge2.fillArcFillColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
+    _annotatedGauge2.fillArcStrokeColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
+    _annotatedGauge2.value = 0;
+   // [self.view addSubview:self.annotatedGauge];
+    
+   // self.gauges = @[self.annotatedGauge];
 }
 
 NSString *fl = @"Bueller";
-// = @"Bueller";
 
 -(void) setForeignText:(NSString *)foreignLangText
 {
-    NSLog(@"Set fl = %@",foreignLangText);
+//    NSLog(@"Set fl = %@",foreignLangText);
     fl = foreignLangText;
 }
 
@@ -163,21 +119,13 @@ NSString *fl = @"Bueller";
 
 - (IBAction)playRefAudio:(id)sender {
     
-    
     NSError *error = nil;
     
     NSURL *url = [NSURL URLWithString:_refAudioPath];
 
     
     NSLog(@"playRefAudio URL %@", _refAudioPath);
-
-//    _audioPlayer = [[AVAudioPlayer alloc]
-//                    initWithContentsOfURL:url
-//                    error:&error];
-//    
-//    _audioPlayer.delegate = self;
  
-//    
    NSString *ItemStatusContext;
    NSString *PlayerStatusContext;
 //    
@@ -200,12 +148,12 @@ NSString *fl = @"Bueller";
      //   NSLog(@" got here 3");
 
     }
-   // player = [AVPlayer playerWithPlayerItem:playerItem];
+   _player = [AVPlayer playerWithPlayerItem:_playerItem];
 //
     //if (_player) {
        // [_player removeObserver:self forKeyPath:@"status"];
     //}
-    _player = [AVPlayer playerWithURL:url];
+   // _player = [AVPlayer playerWithURL:url];
     //NSLog(@" got here 4");
     
     [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
@@ -219,23 +167,22 @@ NSString *fl = @"Bueller";
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
-    NSLog(@" playerItemDidReachEnd");
-    NSLog(@"Sound finishd %@",notification.name);
+  //  NSLog(@" playerItemDidReachEnd");
+  //  NSLog(@"Sound finishd %@",notification.name);
     
-
-    
-   // [[NSNotificationCenter defaultCenter] removeObserver:self];
+   _playRefAudioButton.enabled = YES;
 }
 
+// So this is more complicated -- we have to wait until the mp3 has arrived from the server before we can play it
+// we remove the observer, or else we will later get a message when the player discarded
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                         change:(NSDictionary *)change context:(void *)context {
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
             //playButton.enabled = YES;
-            NSLog(@"we're ready!!!!");
+           // NSLog(@"we're ready!!!!");
             [_player play];
             [_player removeObserver:self forKeyPath:@"status"];
-            _playRefAudioButton.enabled = YES;
 
         } else if (_player.status == AVPlayerStatusFailed) {
             // something went wrong. player.error should contain some information
@@ -246,6 +193,9 @@ NSString *fl = @"Bueller";
             _playRefAudioButton.enabled = YES;
 
         }
+    }
+    else if (object == _playerItem) {
+        //NSLog(@"got item status %@ %d",keyPath,_playerItem.status);
     }
     else {
         NSLog(@"ignoring value... %@",keyPath);
@@ -300,11 +250,6 @@ NSString *fl = @"Bueller";
         
         NSError *error;
         
-        //NSString *myString = [_audioRecorder.url absoluteString];
-        
-       // NSLog(@"help %@",_audioRecorder.url.baseURL);
-       // NSLog(@"url %@",myString);
-        
         _audioPlayer = [[AVAudioPlayer alloc]
                         initWithContentsOfURL:_audioRecorder.url
                         error:&error];
@@ -316,8 +261,6 @@ NSString *fl = @"Bueller";
             NSLog(@"Error: %@",
                   [error localizedDescription]);
         } else {
-            NSLog(@"playAudio - playing ");
-
             [_audioPlayer play];
         }
     }
@@ -358,6 +301,7 @@ NSString *fl = @"Bueller";
     }
 }
 
+// Posts audio with current fl field
 - (void)postAudio {
     // create request
     NSString *myString = [_audioRecorder.url absoluteString];
@@ -380,7 +324,7 @@ NSString *fl = @"Bueller";
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
-    [urlRequest setValue:@"book" forHTTPHeaderField:@"word"];
+    [urlRequest setValue:fl forHTTPHeaderField:@"word"];
     [urlRequest setHTTPBody:postData];
     
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
@@ -419,8 +363,25 @@ NSString *fl = @"Bueller";
 
     NSLog(@"go response %@",stringVersion);
     
-    [_scoreDisplay setText:stringVersion];
+   // [_scoreDisplay setText:stringVersion];
+    NSError * error;
+    NSDictionary* json = [NSJSONSerialization
+                          JSONObjectWithData:_responseData //1
+                          
+                          options:NSJSONReadingMutableContainers
+                          error:&error];
     
+    //for(NSDictionary *item in jsonArray) {
+    //    NSLog(@"Item: %@", item);
+    //}
+    
+    NSLog(@"got here 2");
+   NSNumber *value =
+    [json objectForKey:@"score"];
+   //
+   // NSNumber *num = [value objectAtIndex:0];
+    NSLog(@"got here 3 %@",value);
+    _annotatedGauge2.value =value.floatValue*100;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {

@@ -195,17 +195,17 @@
                                     <action selector="playRefAudio:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="6vZ-6s-qpB"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" restorationIdentifier="scoreDisplay" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZEF-ya-VO1">
-                                <rect key="frame" x="30" y="367" width="261" height="23"/>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ADC-h3-z7y" customClass="MSAnnotatedGauge">
+                                <rect key="frame" x="51" y="304" width="240" height="157"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="Say the word, see your score" id="WLw-cB-ejT"/>
                     <connections>
+                        <outlet property="annotatedGauge2" destination="ADC-h3-z7y" id="cYN-3W-PWV"/>
                         <outlet property="english" destination="W2R-XZ-lt3" id="6TB-RT-x9f"/>
                         <outlet property="foreignLang" destination="X3F-SL-lww" id="Yry-ES-VqS"/>
                         <outlet property="playButton" destination="4PZ-7k-YvL" id="VHB-Z0-sdK"/>
@@ -213,7 +213,6 @@
                         <outlet property="recoFeedback" destination="Oi6-il-iDD" id="yLM-F7-fP1"/>
                         <outlet property="recordButton" destination="85Q-3i-7cz" id="HdD-4d-PbA"/>
                         <outlet property="recordingFeedback" destination="D19-P2-ZOH" id="oBy-GK-4mA"/>
-                        <outlet property="scoreDisplay" destination="ZEF-ya-VO1" id="ePW-Ss-7Bt"/>
                         <outlet property="stopButton" destination="Jqa-hJ-Umj" id="vFB-Ha-B0J"/>
                         <outlet property="transliteration" destination="4uJ-aL-DBa" id="otZ-3m-Bst"/>
                     </connections>
