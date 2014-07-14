@@ -14,13 +14,32 @@
 
 @property (strong, nonatomic) AVAudioRecorder *audioRecorder;
 @property (strong, nonatomic) AVAudioPlayer *audioPlayer;
+
 @property (strong, nonatomic) IBOutlet UIButton *recordButton;
 @property (strong, nonatomic) IBOutlet UIButton *playButton;
 @property (strong, nonatomic) IBOutlet UIButton *stopButton;
+
 - (IBAction)recordAudio:(id)sender;
 - (IBAction)playAudio:(id)sender;
 - (IBAction)stopAudio:(id)sender;
 @property (strong, nonatomic) NSMutableData *responseData;
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recordingFeedback;
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedback;
+
+
+@property (strong, nonatomic) IBOutlet UILabel *foreignLang;
+@property (strong, nonatomic) IBOutlet UILabel *transliteration;
+@property (strong, nonatomic) IBOutlet UILabel *english;
+@property (strong, nonatomic) IBOutlet NSString *refAudioPath;
+@property (strong, nonatomic) IBOutlet UIButton *playRefAudioButton;
+
 @property (weak, nonatomic) IBOutlet UILabel *scoreDisplay;
+
+
+@property AVPlayerItem *playerItem;
+@property AVPlayer *player;
+
+
+-(void) setForeignText:(NSString *)foreignLang;
 
 @end

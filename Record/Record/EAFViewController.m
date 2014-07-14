@@ -116,6 +116,18 @@
     _audioRecorder.delegate = self;
     _audioRecorder.meteringEnabled = YES;
     [_audioRecorder prepareToRecord];
+    
+    //[[_foreignLang alloc] init];
+    [_foreignLang setText:fl];
+}
+
+NSString *fl = @"Bueller";
+// = @"Bueller";
+
+-(void) setForeignText:(NSString *)foreignLangText
+{
+    NSLog(@"Set fl = %@",foreignLangText);
+    fl = foreignLangText;
 }
 
 - (void)didReceiveMemoryWarning
@@ -148,6 +160,103 @@
     NSLog(@"Encode Error occurred");
 }
 
+
+- (IBAction)playRefAudio:(id)sender {
+    
+    
+    NSError *error = nil;
+    
+    NSURL *url = [NSURL URLWithString:_refAudioPath];
+
+    
+    NSLog(@"playRefAudio URL %@", _refAudioPath);
+
+//    _audioPlayer = [[AVAudioPlayer alloc]
+//                    initWithContentsOfURL:url
+//                    error:&error];
+//    
+//    _audioPlayer.delegate = self;
+ 
+//    
+   NSString *ItemStatusContext;
+   NSString *PlayerStatusContext;
+//    
+    _playerItem = [AVPlayerItem playerItemWithURL:url];
+  //  NSLog(@" got here");
+
+    [_playerItem addObserver:self forKeyPath:@"status" options:0 context:&ItemStatusContext];
+   // NSLog(@" got here 2");
+    
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(playerItemDidReachEnd:)
+     name:AVPlayerItemDidPlayToEndTimeNotification
+     object:_playerItem];
+
+    if (ItemStatusContext != nil) {
+        NSLog(@" error %@",ItemStatusContext );
+    }
+    else {
+     //   NSLog(@" got here 3");
+
+    }
+   // player = [AVPlayer playerWithPlayerItem:playerItem];
+//
+    //if (_player) {
+       // [_player removeObserver:self forKeyPath:@"status"];
+    //}
+    _player = [AVPlayer playerWithURL:url];
+    //NSLog(@" got here 4");
+    
+    [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
+   
+    _playRefAudioButton.enabled = NO;
+    if (error)
+    {
+        NSLog(@"playRefAudio Error: %@",
+              [error localizedDescription]);
+    }
+}
+
+- (void)playerItemDidReachEnd:(NSNotification *)notification {
+    NSLog(@" playerItemDidReachEnd");
+    NSLog(@"Sound finishd %@",notification.name);
+    
+
+    
+   // [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
+                        change:(NSDictionary *)change context:(void *)context {
+    if (object == _player && [keyPath isEqualToString:@"status"]) {
+        if (_player.status == AVPlayerStatusReadyToPlay) {
+            //playButton.enabled = YES;
+            NSLog(@"we're ready!!!!");
+            [_player play];
+            [_player removeObserver:self forKeyPath:@"status"];
+            _playRefAudioButton.enabled = YES;
+
+        } else if (_player.status == AVPlayerStatusFailed) {
+            // something went wrong. player.error should contain some information
+            
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't play audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [alert show];
+            [_player removeObserver:self forKeyPath:@"status"];
+            _playRefAudioButton.enabled = YES;
+
+        }
+    }
+    else {
+        NSLog(@"ignoring value... %@",keyPath);
+        //[super observeValueForKeyPath:object change:change context:context];
+    }
+}
+
+
+
+
+
 - (IBAction)recordAudio:(id)sender {
     if (!_audioRecorder.recording)
     {
@@ -168,6 +277,7 @@
         if (_audioRecorder.recording)
         {
             NSLog(@"recordAudio -recording");
+            [_recordingFeedback startAnimating];
         }
         else {
             NSLog(@"recordAudio -DUDE NOT recording");
@@ -190,10 +300,10 @@
         
         NSError *error;
         
-        NSString *myString = [_audioRecorder.url absoluteString];
+        //NSString *myString = [_audioRecorder.url absoluteString];
         
        // NSLog(@"help %@",_audioRecorder.url.baseURL);
-        NSLog(@"url %@",myString);
+       // NSLog(@"url %@",myString);
         
         _audioPlayer = [[AVAudioPlayer alloc]
                         initWithContentsOfURL:_audioRecorder.url
@@ -206,6 +316,8 @@
             NSLog(@"Error: %@",
                   [error localizedDescription]);
         } else {
+            NSLog(@"playAudio - playing ");
+
             [_audioPlayer play];
         }
     }
@@ -219,9 +331,10 @@
     
     NSLog(@"stopAudio");
     
-    if (_audioRecorder.recording || TRUE)
+    if (_audioRecorder.recording)
     {
         NSLog(@"stopAudio -stop");
+        [_recordingFeedback stopAnimating];
 
         [_audioRecorder stop];
         NSString *myString = [_audioRecorder.url absoluteString];
@@ -232,7 +345,8 @@
         else {
             NSLog(@"couldn't find file");
         }
-        
+        [_recoFeedback startAnimating];
+
         [self postAudio];
         
     } else {
@@ -299,7 +413,8 @@
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
     // You can parse the stuff in your instance variable now
-    
+    [_recoFeedback stopAnimating];
+
   NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSASCIIStringEncoding];
 
     NSLog(@"go response %@",stringVersion);
@@ -311,6 +426,9 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     // The request has failed for some reason!
     // Check the error var
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't connect to server." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alert show];
 }
 
 @end
