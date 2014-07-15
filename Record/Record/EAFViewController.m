@@ -7,12 +7,14 @@
 //
 
 #import "EAFViewController.h"
+#import "math.h"
 
 @interface EAFViewController ()
 
 @end
 
 @implementation EAFViewController
+
 
 - (void)viewDidLoad
 {
@@ -46,7 +48,7 @@
     NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
     
     [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatLinearPCM] forKey:AVFormatIDKey];
-    [recordSetting setValue:[NSNumber numberWithFloat:22050.0] forKey:AVSampleRateKey];
+    [recordSetting setValue:[NSNumber numberWithFloat:16000.0] forKey:AVSampleRateKey];
     [recordSetting setValue:[NSNumber numberWithInt: 1] forKey:AVNumberOfChannelsKey];
     
     // Initiate and prepare the recorder
@@ -73,16 +75,40 @@
     _annotatedGauge2.fillArcFillColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
     _annotatedGauge2.fillArcStrokeColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
     _annotatedGauge2.value = 0;
-   // [self.view addSubview:self.annotatedGauge];
-    
-   // self.gauges = @[self.annotatedGauge];
 }
+
+
+- (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
+    //NSLog(@"got swipe right");
+    
+    _index++;
+    if (_index == _items.count) _index = 0;
+    NSString *flAtIndex = [_items objectAtIndex:_index];
+    [_foreignLang setText:flAtIndex];
+    // TODO set ref audio path too!
+    
+    fl = flAtIndex;
+
+}
+
+- (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender {
+    //NSLog(@"got swipe left");
+    
+    _index--;
+    if (_index == -1) _index = _items.count -1;
+    NSString *flAtIndex = [_items objectAtIndex:_index];
+    [_foreignLang setText:flAtIndex];
+    fl = flAtIndex;
+}
+
 
 NSString *fl = @"Bueller";
 
 -(void) setForeignText:(NSString *)foreignLangText
 {
-//    NSLog(@"Set fl = %@",foreignLangText);
+    
+    NSLog(@"setForeignText now %@",fl);
+
     fl = foreignLangText;
 }
 
@@ -204,14 +230,11 @@ NSString *fl = @"Bueller";
 }
 
 
-
-
-
 - (IBAction)recordAudio:(id)sender {
     if (!_audioRecorder.recording)
     {
         
-        NSLog(@"recordAudio");
+        //NSLog(@"recordAudio");
 
         _playButton.enabled = NO;
         _stopButton.enabled = YES;
@@ -272,7 +295,7 @@ NSString *fl = @"Bueller";
     _playButton.enabled = YES;
     _recordButton.enabled = YES;
     
-    NSLog(@"stopAudio");
+    //NSLog(@"stopAudio");
     
     if (_audioRecorder.recording)
     {
@@ -309,8 +332,7 @@ NSString *fl = @"Bueller";
     
     NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
     
-    NSLog(@"data %d",[postData length]);
-
+   // NSLog(@"data %d",[postData length]);
     
     NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
     
@@ -330,7 +352,7 @@ NSString *fl = @"Bueller";
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [connection start];
     
-    NSLog(@"Started!");
+    //NSLog(@"Started!");
 }
 
 #pragma mark NSURLConnection Delegate Methods
@@ -358,30 +380,45 @@ NSString *fl = @"Bueller";
     // The request is complete and data has been received
     // You can parse the stuff in your instance variable now
     [_recoFeedback stopAnimating];
-
-  NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSASCIIStringEncoding];
-
-    NSLog(@"go response %@",stringVersion);
     
-   // [_scoreDisplay setText:stringVersion];
+    //NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSASCIIStringEncoding];
+    
+    //NSLog(@"go response %@",stringVersion);
+    
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
-                          JSONObjectWithData:_responseData //1
-                          
+                          JSONObjectWithData:_responseData
                           options:NSJSONReadingMutableContainers
                           error:&error];
     
-    //for(NSDictionary *item in jsonArray) {
-    //    NSLog(@"Item: %@", item);
-    //}
-    
-    NSLog(@"got here 2");
-   NSNumber *value =
-    [json objectForKey:@"score"];
-   //
-   // NSNumber *num = [value objectAtIndex:0];
-    NSLog(@"got here 3 %@",value);
+    NSNumber *value = [json objectForKey:@"score"];
+    //    NSLog(@"value is %@",value);
+    _annotatedGauge2.titleLabel.text = [value stringValue];
+    [_annotatedGauge2 setFillArcFillColor:[self getColor2:value.floatValue]];
     _annotatedGauge2.value =value.floatValue*100;
+    
+}
+
+- (UIColor *) getColor2:(float) score {
+    if (score > 1.0) score = 1.0;
+    if (score < 0)  score = 0;
+    
+    //score = 1;
+    NSLog(@"getColor2 score %f",score);
+    
+    float red   = fmaxf(0,(255 - (fmaxf(0, score-0.5)*2*255)));
+    
+   // float raw = score*2*255;
+    float green = fminf(255, score*2*255);
+    float blue  = 0;
+    
+    red /= 255;
+    green /= 255;
+    blue /= 255;
+   // NSLog(@"getColor2 : color %f %f (%f) %f",red,green,raw,blue);
+
+    //return "#" + getHexNumber(red) + getHexNumber(green) + getHexNumber(blue);
+    return [UIColor colorWithRed:red green:green blue:blue alpha:1];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {

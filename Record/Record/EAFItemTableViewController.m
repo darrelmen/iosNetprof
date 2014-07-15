@@ -32,7 +32,6 @@ NSMutableDictionary *chapterToItems;
     [super viewDidLoad];
     
     self.items = [[NSMutableArray alloc] init];
-  //  [self loadInitialData];
     chapterToItems = [[NSMutableDictionary alloc] init];
     
     NSArray * words = [NSArray arrayWithObjects: @"book", @"cat", @"dog",nil];
@@ -41,7 +40,6 @@ NSMutableDictionary *chapterToItems;
     [chapterToItems setObject:words forKey:@"1-1"];
     [chapterToItems setObject:words2 forKey:@"1-2"];
     self.items =[chapterToItems objectForKey:currentChapter];
-   // NSArray *wordstest = [chapterToItems objectForKey:@"1-1"];
 
     NSLog(@"viewDidLoad found '%@' = %d",currentChapter,self.items.count);
 
@@ -64,10 +62,7 @@ NSMutableDictionary *chapterToItems;
 NSString *currentChapter;
 
 - (void)setChapter:(NSString *) chapter {
-    //NSArray *words = [chapterToItems objectForKey:chapter];
-   // self.items = words;
     currentChapter = chapter;
-    //NSLog(@"setChapter found '%@' = %d",chapter,words.count);
 }
 
 #pragma mark - Table view data source
@@ -159,6 +154,8 @@ NSString *currentChapter;
     
     [itemController setForeignText:tappedItem];
     itemController.refAudioPath = @"https://np.ll.mit.edu/npfClassroomEnglish/config/english/bestAudio/9/Fast.mp3";
+    itemController.index = indexPath.row;
+    itemController.items = [self items];
 }
 
 

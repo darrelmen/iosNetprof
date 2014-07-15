@@ -202,22 +202,40 @@
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="HQh-H4-akv" appends="YES" id="EXq-UN-Noa"/>
+                            <outletCollection property="gestureRecognizers" destination="HQh-H4-akv" appends="YES" id="7O1-FT-Exu"/>
+                            <outletCollection property="gestureRecognizers" destination="9a4-pv-hte" appends="YES" id="pIf-ae-30O"/>
+                        </connections>
                     </view>
                     <navigationItem key="navigationItem" title="Say the word, see your score" id="WLw-cB-ejT"/>
                     <connections>
                         <outlet property="annotatedGauge2" destination="ADC-h3-z7y" id="cYN-3W-PWV"/>
                         <outlet property="english" destination="W2R-XZ-lt3" id="6TB-RT-x9f"/>
                         <outlet property="foreignLang" destination="X3F-SL-lww" id="Yry-ES-VqS"/>
+                        <outlet property="leftSwipe" destination="9a4-pv-hte" id="koB-AN-IRY"/>
                         <outlet property="playButton" destination="4PZ-7k-YvL" id="VHB-Z0-sdK"/>
                         <outlet property="playRefAudioButton" destination="NUv-LG-FNB" id="ZKb-3N-lKH"/>
                         <outlet property="recoFeedback" destination="Oi6-il-iDD" id="yLM-F7-fP1"/>
                         <outlet property="recordButton" destination="85Q-3i-7cz" id="HdD-4d-PbA"/>
                         <outlet property="recordingFeedback" destination="D19-P2-ZOH" id="oBy-GK-4mA"/>
+                        <outlet property="rightSwipe" destination="HQh-H4-akv" id="PZB-IQ-lFS"/>
                         <outlet property="stopButton" destination="Jqa-hJ-Umj" id="vFB-Ha-B0J"/>
                         <outlet property="transliteration" destination="4uJ-aL-DBa" id="otZ-3m-Bst"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="right" id="HQh-H4-akv">
+                    <connections>
+                        <action selector="swipeRightDetected:" destination="vXZ-lx-hvc" id="yzK-eF-tKz"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="left" id="9a4-pv-hte">
+                    <connections>
+                        <action selector="swipeLeftDetected:" destination="vXZ-lx-hvc" id="dHL-1q-ZwW"/>
+                    </connections>
+                </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="1726" y="134"/>
         </scene>
