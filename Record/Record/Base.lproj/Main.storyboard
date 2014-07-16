@@ -1,9 +1,68 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="eUd-Fz-8fO">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="gDn-g3-mfX">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <scenes>
+        <!--Language Table View Controller - Pronunciation Feedback-->
+        <scene sceneID="L4k-YJ-Lfb">
+            <objects>
+                <tableViewController title="Pronunciation Feedback" id="re6-Vy-sbI" customClass="EAFLanguageTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="F0V-Qb-2BA">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" restorationIdentifier="English" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="LanguageListPrototypeCell" id="pya-OP-p6k">
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="pya-OP-p6k" id="XGs-zD-PSB">
+                                    <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                                <accessibility key="accessibilityConfiguration" label="English"/>
+                                <connections>
+                                    <segue destination="VFl-2k-NIH" kind="push" id="vnk-u3-Afq"/>
+                                </connections>
+                            </tableViewCell>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="6U0-y6-z3f" style="IBUITableViewCellStyleDefault" id="8ya-cd-Z43">
+                                <rect key="frame" x="0.0" y="130" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="8ya-cd-Z43" id="cvC-gW-vn1">
+                                    <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="MSA" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="6U0-y6-z3f">
+                                            <rect key="frame" x="15" y="0.0" width="270" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="DNz-QX-fHT">
+                                <rect key="frame" x="0.0" y="174" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="DNz-QX-fHT" id="3Vb-T8-1jS">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <sections/>
+                        <connections>
+                            <outlet property="dataSource" destination="re6-Vy-sbI" id="Kxb-3R-t7U"/>
+                            <outlet property="delegate" destination="re6-Vy-sbI" id="5hg-oy-yZ6"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="5cM-vS-2m3"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="s3P-Fq-plc" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="730" y="63"/>
+        </scene>
         <!--Chapter Table View Controller - English Pronunciation-->
         <scene sceneID="4D6-cV-XRV">
             <objects>
@@ -70,7 +129,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="L7O-uq-Q91" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="954" y="140"/>
+            <point key="canvasLocation" x="1223" y="51"/>
         </scene>
         <!--Item Table View Controller - Chapter 1 Words-->
         <scene sceneID="WpU-fD-hqd">
@@ -114,7 +173,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F7G-J3-dF2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1342" y="134"/>
+            <point key="canvasLocation" x="1868" y="134"/>
         </scene>
         <!--View Controller - Say the word, see your score-->
         <scene sceneID="ufC-wZ-h7g">
@@ -280,7 +339,7 @@
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1726" y="134"/>
+            <point key="canvasLocation" x="2252" y="134"/>
         </scene>
         <!--Item Table View Controller - ItemTableViewController-->
         <scene sceneID="HJ4-nN-lqC">
@@ -364,25 +423,25 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xzT-BZ-qYN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1783" y="-519"/>
+            <point key="canvasLocation" x="2309" y="-519"/>
         </scene>
-        <!--Navigation Controller - English Pronunciation Feedback-->
-        <scene sceneID="KC4-nb-vC9">
+        <!--Navigation Controller-->
+        <scene sceneID="foj-1l-cew">
             <objects>
-                <navigationController title="English Pronunciation Feedback" automaticallyAdjustsScrollViewInsets="NO" id="eUd-Fz-8fO" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="gDn-g3-mfX" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Zq3-Dk-IXT">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="lOg-37-fGW">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="VFl-2k-NIH" kind="relationship" relationship="rootViewController" id="smS-Dp-znr"/>
+                        <segue destination="re6-Vy-sbI" kind="relationship" relationship="rootViewController" id="f0l-Lb-ZCr"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="wKE-g5-1sB" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vS3-2E-ly0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="523" y="140"/>
+            <point key="canvasLocation" x="204" y="63"/>
         </scene>
     </scenes>
     <resources>

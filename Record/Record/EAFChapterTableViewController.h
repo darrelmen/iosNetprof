@@ -12,5 +12,6 @@
 
 @property NSArray *chapters;
 @property (strong, nonatomic) NSMutableData *responseData;
+@property NSString *language;
 
 @end

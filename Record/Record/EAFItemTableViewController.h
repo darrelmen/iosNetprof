@@ -11,9 +11,11 @@
 @interface EAFItemTableViewController : UITableViewController
 
 @property NSMutableArray *items;
+@property NSMutableArray *englishPhrases;
 @property NSMutableArray *paths;
 
 -(void) setChapter:(NSString *)chapter;
 @property (strong, nonatomic) NSDictionary *chapterToItems;
+@property NSString *language;
 
 @end

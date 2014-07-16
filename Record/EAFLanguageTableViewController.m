@@ -1,20 +1,19 @@
 //
-//  EAFItemTableViewController.m
+//  EAFLanguageTableViewController.m
 //  Record
 //
-//  Created by Vidaver, Gordon - 0552 - MITLL on 7/11/14.
+//  Created by Vidaver, Gordon - 0552 - MITLL on 7/16/14.
 //  Copyright (c) 2014 Ferme, Elizabeth - 0553 - MITLL. All rights reserved.
 //
 
-#import "EAFItemTableViewController.h"
-#import "EAFExercise.h"
-#import "EAFViewController.h"
+#import "EAFLanguageTableViewController.h"
+#import "EAFChapterTableViewController.h"
 
-@interface EAFItemTableViewController ()
+@interface EAFLanguageTableViewController ()
 
 @end
 
-@implementation EAFItemTableViewController
+@implementation EAFLanguageTableViewController
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -25,50 +24,12 @@
     return self;
 }
 
-NSString *const englishURL = @"https://np.ll.mit.edu/npfClassroomEnglish/";
-NSString *const msaURL = @"https://np.ll.mit.edu/npfClassroomMSA/";
-
-- (NSString *)getURL
-{
-    
-    if ([[_language lowercaseString]  isEqualToString:@"english"]) {
-        return englishURL;
-    }
-    else if ([[_language lowercaseString]  isEqualToString:@"msa"]) {
-        return msaURL;
-        
-    }
-    else return englishURL;
-}
+NSArray *languages;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.items = [[NSMutableArray alloc] init];
-    self.englishPhrases = [[NSMutableArray alloc] init];
-    self.paths = [[NSMutableArray alloc] init];
-    NSArray *items =[_chapterToItems objectForKey:currentChapter];
-    
-    for (NSDictionary *object in items) {
-        [_items addObject:[object objectForKey:@"fl"]];
-        [_englishPhrases addObject:[object objectForKey:@"en"]];
-        
-        NSString *refPath = [object objectForKey:@"ref"];
-        if (refPath) {
-            NSMutableString *mu = [NSMutableString stringWithString:refPath];
-            [mu insertString:[self getURL] atIndex:0];
-            [_paths addObject:mu];
-        }
-        else {
-            [_paths addObject:@"NO"];
-        }
-    }
-    
-    NSLog(@"viewDidLoad found '%@' = %d",currentChapter,self.items.count);
-
-    // Uncomment the following line to preserve selection between presentations.
-    self.clearsSelectionOnViewWillAppear = NO;
+    languages = [NSArray arrayWithObjects:@"English", @"MSA", nil];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -83,12 +44,6 @@ NSString *const msaURL = @"https://np.ll.mit.edu/npfClassroomMSA/";
     // Dispose of any resources that can be recreated.
 }
 
-NSString *currentChapter;
-
-- (void)setChapter:(NSString *) chapter {
-    currentChapter = chapter;
-}
-
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -100,18 +55,21 @@ NSString *currentChapter;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    //NSLog(@"found rows %d",self.items.count);
-    return [self.items count];
+    return languages.count;
 }
+
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"WordListPrototype";
+    //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+    
+    // Configure the cell...
+    
+    static NSString *CellIdentifier = @"LanguageListPrototypeCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
-    // EAFExercise *exercise = [self.items objectAtIndex:indexPath.row];
-    NSString *exercise = [self.items objectAtIndex:indexPath.row];
-    cell.textLabel.text = exercise;
+    cell.textLabel.text =  [languages objectAtIndex:indexPath.row];
+    
     
     return cell;
 }
@@ -155,6 +113,7 @@ NSString *currentChapter;
 }
 */
 
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -163,21 +122,14 @@ NSString *currentChapter;
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
-    EAFViewController *itemController = [segue destinationViewController];
+    EAFChapterTableViewController *chapterController = [segue destinationViewController];
     
+    //NSLog(@"selected %@",selectedRow);
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-  //  NSLog(@"row %d",indexPath.row  );
-    NSString *foreignLanguageItem = [self.items objectAtIndex:indexPath.row];
-    NSString *englishItem = [self.englishPhrases objectAtIndex:indexPath.row];
+    NSLog(@"language row %d",indexPath.row  );
+    NSString *tappedItem = [languages objectAtIndex:indexPath.row];
     
-    [itemController setForeignText:foreignLanguageItem];
-    [itemController setEnglishText:englishItem];
-    itemController.refAudioPath = [_paths objectAtIndex:indexPath.row];
-    itemController.index = indexPath.row;
-    itemController.items = [self items];
-    itemController.englishWords = [self englishPhrases];
-    itemController.paths = _paths;
-    itemController.url = [self getURL];
+    [chapterController setLanguage:tappedItem];
 }
 
 

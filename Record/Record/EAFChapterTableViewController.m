@@ -29,6 +29,9 @@
     [super viewDidLoad];
     
      self.chapters = [[NSMutableArray alloc] init];
+    
+    NSLog(@"lang %@", _language);
+    
     [self loadInitialData];
     
     // Uncomment the following line to preserve selection between presentations.
@@ -39,21 +42,19 @@
 }
 
 - (void)loadInitialData {
-   // [self.chapters addObject: @"1-1"];
-   // [self.chapters addObject: @"1-2"];
-   // [self.chapters addObject: @"1-3"];
-    
     NSString *baseurl = @"https://np.ll.mit.edu/npfClassroomEnglish/scoreServlet";
-    
+    if ([[_language lowercaseString] isEqual: @"english"]) {
+        baseurl = @"https://np.ll.mit.edu/npfClassroomEnglish/scoreServlet";
+    }
+    else if ([[_language lowercaseString] isEqual: @"msa"]) {
+        baseurl = @"https://np.ll.mit.edu/npfClassroomMSA/scoreServlet";
+    }
+        
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     [urlRequest setHTTPMethod: @"GET"];
-   // [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
-    //[urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
-    //[urlRequest setValue:fl forHTTPHeaderField:@"word"];
-    //[urlRequest setHTTPBody:postData];
     
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [connection start];
@@ -116,7 +117,6 @@ NSDictionary* chapterInfo;
     NSLog(@"chapters %d",myArray.count);
     chapterInfo = json;
     [[self tableView] reloadData];
-   // NSNumber *value = [json objectForKey:@"score"];
     
 }
 
@@ -215,14 +215,13 @@ NSDictionary* chapterInfo;
     
     EAFItemTableViewController *itemController = [segue destinationViewController];
  
-    //NSLog(@"selected %@",selectedRow);
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSLog(@"row %d",indexPath.row  );
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
 
     [itemController setChapterToItems:chapterInfo];
     [itemController setChapter:tappedItem];
-
+    [itemController setLanguage:_language];
 }
 
 
@@ -231,8 +230,6 @@ NSDictionary* chapterInfo;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    
-//    NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
 }
 
 @end

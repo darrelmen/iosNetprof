@@ -32,7 +32,9 @@
 @property (strong, nonatomic) IBOutlet UIButton *playRefAudioButton;
 @property int index;
 @property NSArray *items;
+@property NSArray *englishWords;
 @property NSArray *paths;
+@property NSString *url;
 
 
 @property (weak, nonatomic) IBOutlet UILabel *scoreDisplay;
@@ -43,6 +45,7 @@
 
 
 -(void) setForeignText:(NSString *)foreignLang;
+-(void) setEnglishText:(NSString *)english;
 @property (strong, nonatomic) IBOutlet MSAnnotatedGauge *annotatedGauge2;
 
 //- (void)handleSwipeRight:(UIGestureRecognizer*)recognizer;

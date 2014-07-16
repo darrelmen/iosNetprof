@@ -79,6 +79,7 @@
     [_audioRecorder prepareToRecord];
     
     [_foreignLang setText:fl];
+    [_english setText:en];
     
     
     //self.annotatedGauge = [[MSAnnotatedGauge alloc] initWithFrame:CGRectMake(40, 40, 240, 180)];
@@ -95,14 +96,15 @@
 
 - (void)respondToSwipe {
     NSString *flAtIndex = [_items objectAtIndex:_index];
+    NSString *enAtIndex = [_englishWords objectAtIndex:_index];
     [_foreignLang setText:flAtIndex];
-    // TODO set ref audio path too!
+    [_english setText:enAtIndex];
     _refAudioPath =[_paths objectAtIndex:_index];
     fl = flAtIndex;
+    en = enAtIndex;
     [self setPlayRefEnabled];
     
     [_scoreDisplay setText:@" "];
-
 }
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
@@ -129,11 +131,18 @@
 
 
 NSString *fl = @"Bueller";
+NSString *en = @"Bueller";
 
 -(void) setForeignText:(NSString *)foreignLangText
 {
-   // NSLog(@"setForeignText now %@",fl);
+    NSLog(@"setForeignText now %@",foreignLangText);
     fl = foreignLangText;
+}
+
+-(void) setEnglishText:(NSString *)english
+{
+    NSLog(@"setEnglishText now %@",english);
+    en = english;
 }
 
 - (void)didReceiveMemoryWarning
@@ -169,20 +178,16 @@ NSString *fl = @"Bueller";
 
 - (IBAction)playRefAudio:(id)sender {
     
-   // NSError *error = nil;
-    
     NSURL *url = [NSURL URLWithString:_refAudioPath];
     
     NSLog(@"playRefAudio URL %@", _refAudioPath);
  
    NSString *ItemStatusContext;
    NSString *PlayerStatusContext;
-//    
+    
     _playerItem = [AVPlayerItem playerItemWithURL:url];
-  //  NSLog(@" got here");
 
     [_playerItem addObserver:self forKeyPath:@"status" options:0 context:&ItemStatusContext];
-   // NSLog(@" got here 2");
     
     [[NSNotificationCenter defaultCenter]
      addObserver:self
@@ -403,8 +408,9 @@ NSString *fl = @"Bueller";
     NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
     
     NSLog(@"file length %d",[postData length]);
-    NSString *baseurl = @"https://np.ll.mit.edu/npfClassroomEnglish/scoreServlet";
-    
+    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
+    NSLog(@"talking to %@",_url);
+
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     [urlRequest setHTTPMethod: @"POST"];
@@ -412,6 +418,8 @@ NSString *fl = @"Bueller";
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
+    
+    NSLog(@"word is %@",fl);
     [urlRequest setValue:fl forHTTPHeaderField:@"word"];
     [urlRequest setHTTPBody:postData];
     
