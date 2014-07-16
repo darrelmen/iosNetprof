@@ -85,6 +85,9 @@
     _refAudioPath =[_paths objectAtIndex:_index];
     fl = flAtIndex;
     [self setPlayRefEnabled];
+    
+    [_scoreDisplay setText:@" "];
+
 }
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
@@ -380,8 +383,6 @@ NSString *fl = @"Bueller";
     
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [connection start];
-    
-    //NSLog(@"Started!");
 }
 
 #pragma mark NSURLConnection Delegate Methods
@@ -422,10 +423,43 @@ NSString *fl = @"Bueller";
     
     NSNumber *value = [json objectForKey:@"score"];
     //    NSLog(@"value is %@",value);
+    // this doesn't seem to work...
     _annotatedGauge2.titleLabel.text = [value stringValue];
     [_annotatedGauge2 setFillArcFillColor:[self getColor2:value.floatValue]];
     _annotatedGauge2.value =value.floatValue*100;
     
+    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
+    NSString * lower =[[_foreignLang text] lowercaseString];
+    
+    NSArray *wordAndScore = [json objectForKey:@"WORD_TRANSCRIPT"];
+    
+    int offset = 0;
+    for (NSDictionary *event in wordAndScore) {
+        NSString *word = [event objectForKey:@"event"];
+        NSNumber *score = [event objectForKey:@"score"];
+        NSString *lowerWord = [word lowercaseString];
+        //NSRange range = [lower rangeOfString:lowerWord];
+        
+        NSRange range, searchCharRange;
+        
+        searchCharRange = NSMakeRange(offset, [lower length]-offset);
+        
+        //NSLog(@"in %@ looking for %@ and searching at %d %d", lower,lowerWord,searchCharRange.location, searchCharRange.length);
+
+        range = [lower rangeOfString:lowerWord options:0 range:searchCharRange];
+       
+       // NSLog(@"in %@ looking for %@ and found at %d", lower, lowerWord, range.location);
+        if (range.length > 0) {
+            UIColor *color = [self getColor2:score.floatValue];
+            [result addAttribute:NSBackgroundColorAttributeName
+                           value:color
+                           range:range];
+            offset += range.length;
+        }
+        
+    }
+    
+    [_scoreDisplay setAttributedText:result];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
@@ -441,21 +475,16 @@ NSString *fl = @"Bueller";
     if (score > 1.0) score = 1.0;
     if (score < 0)  score = 0;
     
-    //score = 1;
-    NSLog(@"getColor2 score %f",score);
+  //  NSLog(@"getColor2 score %f",score);
     
     float red   = fmaxf(0,(255 - (fmaxf(0, score-0.5)*2*255)));
-    
-    // float raw = score*2*255;
     float green = fminf(255, score*2*255);
     float blue  = 0;
     
     red /= 255;
     green /= 255;
     blue /= 255;
-    // NSLog(@"getColor2 : color %f %f (%f) %f",red,green,raw,blue);
     
-    //return "#" + getHexNumber(red) + getHexNumber(green) + getHexNumber(blue);
     return [UIColor colorWithRed:red green:green blue:blue alpha:1];
 }
 
