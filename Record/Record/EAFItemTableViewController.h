@@ -10,8 +10,10 @@
 
 @interface EAFItemTableViewController : UITableViewController
 
-@property NSArray *items;
+@property NSMutableArray *items;
+@property NSMutableArray *paths;
 
 -(void) setChapter:(NSString *)chapter;
+@property (strong, nonatomic) NSDictionary *chapterToItems;
 
 @end

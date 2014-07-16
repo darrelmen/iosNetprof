@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EAFChapterTableViewController : UITableViewController
+@interface EAFChapterTableViewController : UITableViewController<NSURLConnectionDelegate>
 
-@property NSMutableArray *chapters;
+@property NSArray *chapters;
+@property (strong, nonatomic) NSMutableData *responseData;
 
 @end

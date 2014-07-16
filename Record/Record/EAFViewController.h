@@ -35,6 +35,7 @@
 @property (strong, nonatomic) IBOutlet UIButton *playRefAudioButton;
 @property int index;
 @property NSArray *items;
+@property NSArray *paths;
 
 
 @property (weak, nonatomic) IBOutlet UILabel *scoreDisplay;

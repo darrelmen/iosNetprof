@@ -22,7 +22,13 @@
 	// Do any additional setup after loading the view, typically from a nib.
     _playButton.enabled = NO;
     _stopButton.enabled = NO;
-    
+    if (_refAudioPath && ![_refAudioPath hasSuffix:@"NO"]) {
+    _playRefAudioButton.enabled = YES;
+    } else {
+        _playRefAudioButton.enabled = NO;
+
+    }
+
     // Set the audio file
     NSArray *pathComponents = [NSArray arrayWithObjects:
                                [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
@@ -80,24 +86,27 @@
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
     //NSLog(@"got swipe right");
-    
+    _playRefAudioButton.enabled = YES;
     _index++;
     if (_index == _items.count) _index = 0;
     NSString *flAtIndex = [_items objectAtIndex:_index];
     [_foreignLang setText:flAtIndex];
     // TODO set ref audio path too!
-    
+    _refAudioPath =[_paths objectAtIndex:_index];
     fl = flAtIndex;
 
 }
 
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender {
     //NSLog(@"got swipe left");
-    
+    _playRefAudioButton.enabled = YES;
+
     _index--;
     if (_index == -1) _index = _items.count -1;
     NSString *flAtIndex = [_items objectAtIndex:_index];
     [_foreignLang setText:flAtIndex];
+    _refAudioPath =[_paths objectAtIndex:_index];
+
     fl = flAtIndex;
 }
 
@@ -193,7 +202,7 @@ NSString *fl = @"Bueller";
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
-  //  NSLog(@" playerItemDidReachEnd");
+    NSLog(@" playerItemDidReachEnd");
   //  NSLog(@"Sound finishd %@",notification.name);
     
    _playRefAudioButton.enabled = YES;
@@ -205,10 +214,14 @@ NSString *fl = @"Bueller";
                         change:(NSDictionary *)change context:(void *)context {
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
-            //playButton.enabled = YES;
-           // NSLog(@"we're ready!!!!");
             [_player play];
-            [_player removeObserver:self forKeyPath:@"status"];
+            
+            @try {
+                [_player removeObserver:self forKeyPath:@"status"];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"got exception %@",exception.description);
+            }
 
         } else if (_player.status == AVPlayerStatusFailed) {
             // something went wrong. player.error should contain some information
@@ -233,7 +246,6 @@ NSString *fl = @"Bueller";
 - (IBAction)recordAudio:(id)sender {
     if (!_audioRecorder.recording)
     {
-        
         //NSLog(@"recordAudio");
 
         _playButton.enabled = NO;
@@ -399,6 +411,15 @@ NSString *fl = @"Bueller";
     
 }
 
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    // The request has failed for some reason!
+    // Check the error var
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't connect to server." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alert show];
+}
+
+
 - (UIColor *) getColor2:(float) score {
     if (score > 1.0) score = 1.0;
     if (score < 0)  score = 0;
@@ -408,25 +429,17 @@ NSString *fl = @"Bueller";
     
     float red   = fmaxf(0,(255 - (fmaxf(0, score-0.5)*2*255)));
     
-   // float raw = score*2*255;
+    // float raw = score*2*255;
     float green = fminf(255, score*2*255);
     float blue  = 0;
     
     red /= 255;
     green /= 255;
     blue /= 255;
-   // NSLog(@"getColor2 : color %f %f (%f) %f",red,green,raw,blue);
-
+    // NSLog(@"getColor2 : color %f %f (%f) %f",red,green,raw,blue);
+    
     //return "#" + getHexNumber(red) + getHexNumber(green) + getHexNumber(blue);
     return [UIColor colorWithRed:red green:green blue:blue alpha:1];
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-    // The request has failed for some reason!
-    // Check the error var
-    
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't connect to server." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alert show];
 }
 
 @end

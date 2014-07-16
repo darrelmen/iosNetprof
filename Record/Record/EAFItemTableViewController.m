@@ -16,7 +16,7 @@
 
 @implementation EAFItemTableViewController
 
-NSMutableDictionary *chapterToItems;
+//NSMutableDictionary *chapterToItems;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -32,15 +32,32 @@ NSMutableDictionary *chapterToItems;
     [super viewDidLoad];
     
     self.items = [[NSMutableArray alloc] init];
-    chapterToItems = [[NSMutableDictionary alloc] init];
+    self.paths = [[NSMutableArray alloc] init];
+  //  chapterToItems = [[NSMutableDictionary alloc] init];
     
-    NSArray * words = [NSArray arrayWithObjects: @"book", @"cat", @"dog",nil];
-    NSArray * words2 = [NSArray arrayWithObjects: @"door", @"window", @"wall",nil];
+   // NSArray * words  = [NSArray arrayWithObjects: @"book", @"cat", @"dog",nil];
+ //   NSArray * words2 = [NSArray arrayWithObjects: @"door", @"window", @"wall",nil];
     
-    [chapterToItems setObject:words forKey:@"1-1"];
-    [chapterToItems setObject:words2 forKey:@"1-2"];
-    self.items =[chapterToItems objectForKey:currentChapter];
-
+   // [chapterToItems setObject:words forKey:@"1-1"];
+   // [chapterToItems setObject:words2 forKey:@"1-2"];
+    NSArray *items =[_chapterToItems objectForKey:currentChapter];
+    
+    for (NSDictionary *object in items) {
+        //NSLog(@"key %@", [object objectForKey:@"en"]);
+        [_items addObject:[object objectForKey:@"en"]];
+        
+        NSString *refPath = [object objectForKey:@"ref"];
+        if (refPath) {
+            NSMutableString *mu = [NSMutableString stringWithString:refPath];
+            [mu insertString:@"https://np.ll.mit.edu/npfClassroomEnglish/" atIndex:0];
+            [_paths addObject:mu];
+            
+        }
+        else {
+            [_paths addObject:@"NO"];
+        }
+    }
+    
     NSLog(@"viewDidLoad found '%@' = %d",currentChapter,self.items.count);
 
     // Uncomment the following line to preserve selection between presentations.
@@ -147,15 +164,15 @@ NSString *currentChapter;
     
     EAFViewController *itemController = [segue destinationViewController];
     
-    //NSLog(@"selected %@",selectedRow);
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSLog(@"row %d",indexPath.row  );
     NSString *tappedItem = [self.items objectAtIndex:indexPath.row];
     
     [itemController setForeignText:tappedItem];
-    itemController.refAudioPath = @"https://np.ll.mit.edu/npfClassroomEnglish/config/english/bestAudio/9/Fast.mp3";
+    itemController.refAudioPath = [_paths objectAtIndex:indexPath.row];
     itemController.index = indexPath.row;
     itemController.items = [self items];
+    itemController.paths = _paths;
 }
 
 

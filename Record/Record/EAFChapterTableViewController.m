@@ -38,14 +38,95 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
-
-
 - (void)loadInitialData {
-    [self.chapters addObject: @"1-1"];
-    [self.chapters addObject: @"1-2"];
-    [self.chapters addObject: @"1-3"];
+   // [self.chapters addObject: @"1-1"];
+   // [self.chapters addObject: @"1-2"];
+   // [self.chapters addObject: @"1-3"];
+    
+    NSString *baseurl = @"https://np.ll.mit.edu/npfClassroomEnglish/scoreServlet";
+    
+    NSURL *url = [NSURL URLWithString:baseurl];
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    [urlRequest setHTTPMethod: @"GET"];
+   // [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded"
+      forHTTPHeaderField:@"Content-Type"];
+    //[urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
+    //[urlRequest setValue:fl forHTTPHeaderField:@"word"];
+    //[urlRequest setHTTPBody:postData];
+    
+    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+    [connection start];
 }
 
+#pragma mark NSURLConnection Delegate Methods
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+    // A response has been received, this is where we initialize the instance var you created
+    // so that we can append data to it in the didReceiveData method
+    // Furthermore, this method is called each time there is a redirect so reinitializing it
+    // also serves to clear it
+    _responseData = [[NSMutableData alloc] init];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+    // Append the new data to the instance variable you declared
+    [_responseData appendData:data];
+}
+
+- (NSCachedURLResponse *)connection:(NSURLConnection *)connection
+                  willCacheResponse:(NSCachedURLResponse*)cachedResponse {
+    // Return nil to indicate not necessary to store a cached response for this connection
+    return nil;
+}
+
+NSDictionary* chapterInfo;
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    // The request is complete and data has been received
+    // You can parse the stuff in your instance variable now
+    
+    //NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
+    
+   // NSLog(@"go response %@",stringVersion);
+    
+    NSError * error;
+    NSDictionary* json = [NSJSONSerialization
+                          JSONObjectWithData:_responseData
+                          options:NSJSONReadingAllowFragments
+                          error:&error];
+    
+    // NSJSONReadingAllowFragments
+    
+    if (error) {
+        NSLog(@"error %@",error.description);
+    }
+    
+    NSLog(@"size %d",json.count);
+    _chapters = [json allKeys];
+    
+    NSMutableArray *myArray = [NSMutableArray arrayWithArray:_chapters];
+    
+    //sorting
+    [myArray sortUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+        return [str1 compare:str2 options:(NSNumericSearch)];
+    }];
+
+    _chapters = myArray;
+    NSLog(@"chapters %@",myArray);
+    chapterInfo = json;
+    [[self tableView] reloadData];
+   // NSNumber *value = [json objectForKey:@"score"];
+    
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    // The request has failed for some reason!
+    // Check the error var
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't connect to server." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alert show];
+}
 
 
 - (void)didReceiveMemoryWarning
@@ -74,15 +155,11 @@
     
     // Configure the cell...
     
-    
     static NSString *CellIdentifier = @"ListPrototypeCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-
-    
     
     NSString *chapter = [self.chapters objectAtIndex:indexPath.row];
     cell.textLabel.text = [NSString stringWithFormat:@"Chapter %@",chapter];
-    
 
     return cell;
 }
@@ -143,6 +220,7 @@
     NSLog(@"row %d",indexPath.row  );
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
 
+    [itemController setChapterToItems:chapterInfo];
     [itemController setChapter:tappedItem];
 
 }
@@ -152,17 +230,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
-    
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
-    
-    
-    NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
-    
-    //selectedRow = tappedItem;
-    
-    NSLog(@"clicked on %@",tappedItem);
+//    NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
 }
 
 @end
