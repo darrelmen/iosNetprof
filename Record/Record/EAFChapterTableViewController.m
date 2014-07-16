@@ -113,7 +113,7 @@ NSDictionary* chapterInfo;
     }];
 
     _chapters = myArray;
-    NSLog(@"chapters %@",myArray);
+    NSLog(@"chapters %d",myArray.count);
     chapterInfo = json;
     [[self tableView] reloadData];
    // NSNumber *value = [json objectForKey:@"score"];

@@ -24,9 +24,6 @@
 - (IBAction)playAudio:(id)sender;
 - (IBAction)stopAudio:(id)sender;
 @property (strong, nonatomic) NSMutableData *responseData;
-@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recordingFeedback;
-@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedback;
-
 
 @property (strong, nonatomic) IBOutlet UILabel *foreignLang;
 @property (strong, nonatomic) IBOutlet UILabel *transliteration;
@@ -53,5 +50,13 @@
 @property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *leftSwipe;
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender;
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender;
+
+@property (strong) NSTimer *repeatingTimer;
+- (NSDictionary *)userInfo;
+
+- (void)targetMethod:(NSTimer*)theTimer;
+- (void)invocationMethod:(NSDate *)date;
+@property (strong, nonatomic) IBOutlet UIImageView *recordFeedbackImage;
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;
 
 @end

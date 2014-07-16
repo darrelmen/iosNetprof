@@ -22,6 +22,21 @@
     _playButton.enabled = NO;
     _stopButton.enabled = NO;
     [self setPlayRefEnabled];
+    
+    //UIImageView *slowAnimationImageView = [[UIImageView alloc] initWithFrame:CGRectMake(160, 95, 86, 193)];
+    
+    // Load images
+    NSArray *imageNames = @[@"media-record-3_32x32.png", @"media-record-4_32x32.png"];
+    
+    NSMutableArray *images = [[NSMutableArray alloc] init];
+    for (int i = 0; i < imageNames.count; i++) {
+        [images addObject:[UIImage imageNamed:[imageNames objectAtIndex:i]]];
+    }
+    
+    _recordFeedbackImage.animationImages = images;
+    _recordFeedbackImage.animationDuration = 1;
+    
+    //[self.view addSubview:slowAnimationImageView];
 
     // Set the audio file
     NSArray *pathComponents = [NSArray arrayWithObjects:
@@ -117,7 +132,7 @@ NSString *fl = @"Bueller";
 
 -(void) setForeignText:(NSString *)foreignLangText
 {
-    NSLog(@"setForeignText now %@",fl);
+   // NSLog(@"setForeignText now %@",fl);
     fl = foreignLangText;
 }
 
@@ -282,7 +297,8 @@ NSString *fl = @"Bueller";
         if (_audioRecorder.recording)
         {
             NSLog(@"recordAudio -recording");
-            [_recordingFeedback startAnimating];
+            [_recordFeedbackImage startAnimating];
+            _recordFeedbackImage.hidden = NO;
         }
         else {
             NSLog(@"recordAudio -DUDE NOT recording");
@@ -327,33 +343,50 @@ NSString *fl = @"Bueller";
     _playButton.enabled = YES;
     _recordButton.enabled = YES;
     
-    //NSLog(@"stopAudio");
+    NSLog(@"stopAudio --------- ");
+    [_recordFeedbackImage startAnimating];
+    _recordFeedbackImage.hidden = YES;
     
     if (_audioRecorder.recording)
     {
         NSLog(@"stopAudio -stop");
-        [_recordingFeedback stopAnimating];
-
-        [_audioRecorder stop];
-        NSString *myString = [_audioRecorder.url absoluteString];
-
-        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:myString];
         
-        if (fileExists) NSLog(@"found file %@",myString);
-        else {
-            NSLog(@"couldn't find file");
-        }
-        [_recoFeedback startAnimating];
-
+        [_audioRecorder stop];
         [self postAudio];
         
     } else {
         NSLog(@"stopAudio not recording");
+        
+        if (_audioPlayer.playing) {
+            [_audioPlayer stop];
+        }
+    }
+}
 
-    if (_audioPlayer.playing) {
-        [_audioPlayer stop];
-    }
-    }
+
+- (void)startRepeatingTimer {
+    // Cancel a preexisting timer.
+    
+    [self.repeatingTimer invalidate];
+    
+    NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:1
+                                                      target:self selector:@selector(targetMethod:)
+                                                    userInfo:[self userInfo] repeats:YES];
+    
+    self.repeatingTimer = timer;
+}
+
+- (NSDictionary *)userInfo {
+    return @{ @"StartDate" : [NSDate date] };
+}
+
+- (void)targetMethod:(NSTimer*)theTimer {
+    NSDate *startDate = [[theTimer userInfo] objectForKey:@"StartDate"];
+    NSLog(@"Timer started on %@", startDate);
+}
+
+- (void)invocationMethod:(NSDate *)date {
+    NSLog(@"Invocation for timer started on %@", date);
 }
 
 // Posts audio with current fl field
@@ -361,6 +394,7 @@ NSString *fl = @"Bueller";
     // create request
     NSString *myString = [_audioRecorder.url absoluteString];
     NSLog(@"postAudio file %@",myString);
+    [_recoFeedbackImage startAnimating];
     
     NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
     
@@ -409,8 +443,8 @@ NSString *fl = @"Bueller";
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
     // You can parse the stuff in your instance variable now
-    [_recoFeedback stopAnimating];
     
+    [_recoFeedbackImage stopAnimating];
     //NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSASCIIStringEncoding];
     
     //NSLog(@"go response %@",stringVersion);
@@ -465,7 +499,8 @@ NSString *fl = @"Bueller";
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     // The request has failed for some reason!
     // Check the error var
-    
+    [_recoFeedbackImage stopAnimating];
+
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't connect to server." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alert show];
 }

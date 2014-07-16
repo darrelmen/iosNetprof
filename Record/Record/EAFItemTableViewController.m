@@ -16,8 +16,6 @@
 
 @implementation EAFItemTableViewController
 
-//NSMutableDictionary *chapterToItems;
-
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -33,17 +31,9 @@
     
     self.items = [[NSMutableArray alloc] init];
     self.paths = [[NSMutableArray alloc] init];
-  //  chapterToItems = [[NSMutableDictionary alloc] init];
-    
-   // NSArray * words  = [NSArray arrayWithObjects: @"book", @"cat", @"dog",nil];
- //   NSArray * words2 = [NSArray arrayWithObjects: @"door", @"window", @"wall",nil];
-    
-   // [chapterToItems setObject:words forKey:@"1-1"];
-   // [chapterToItems setObject:words2 forKey:@"1-2"];
     NSArray *items =[_chapterToItems objectForKey:currentChapter];
     
     for (NSDictionary *object in items) {
-        //NSLog(@"key %@", [object objectForKey:@"en"]);
         [_items addObject:[object objectForKey:@"en"]];
         
         NSString *refPath = [object objectForKey:@"ref"];
@@ -51,7 +41,6 @@
             NSMutableString *mu = [NSMutableString stringWithString:refPath];
             [mu insertString:@"https://np.ll.mit.edu/npfClassroomEnglish/" atIndex:0];
             [_paths addObject:mu];
-            
         }
         else {
             [_paths addObject:@"NO"];
@@ -93,26 +82,20 @@ NSString *currentChapter;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    NSLog(@"found rows %d",self.items.count);
+    //NSLog(@"found rows %d",self.items.count);
     return [self.items count];
 }
-
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"WordListPrototype";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
-    
-    
     // EAFExercise *exercise = [self.items objectAtIndex:indexPath.row];
     NSString *exercise = [self.items objectAtIndex:indexPath.row];
     cell.textLabel.text = exercise;
     
-    
     return cell;
-
 }
 
 
@@ -165,7 +148,7 @@ NSString *currentChapter;
     EAFViewController *itemController = [segue destinationViewController];
     
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-    NSLog(@"row %d",indexPath.row  );
+  //  NSLog(@"row %d",indexPath.row  );
     NSString *tappedItem = [self.items objectAtIndex:indexPath.row];
     
     [itemController setForeignText:tappedItem];
