@@ -15,19 +15,13 @@
 
 @implementation EAFViewController
 
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     _playButton.enabled = NO;
     _stopButton.enabled = NO;
-    if (_refAudioPath && ![_refAudioPath hasSuffix:@"NO"]) {
-    _playRefAudioButton.enabled = YES;
-    } else {
-        _playRefAudioButton.enabled = NO;
-
-    }
+    [self setPlayRefEnabled];
 
     // Set the audio file
     NSArray *pathComponents = [NSArray arrayWithObjects:
@@ -84,30 +78,35 @@
 }
 
 
-- (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
-    //NSLog(@"got swipe right");
-    _playRefAudioButton.enabled = YES;
-    _index++;
-    if (_index == _items.count) _index = 0;
+- (void)respondToSwipe {
     NSString *flAtIndex = [_items objectAtIndex:_index];
     [_foreignLang setText:flAtIndex];
     // TODO set ref audio path too!
     _refAudioPath =[_paths objectAtIndex:_index];
     fl = flAtIndex;
+    [self setPlayRefEnabled];
+}
 
+- (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
+    _index++;
+    if (_index == _items.count) _index = 0;
+    [self respondToSwipe];
 }
 
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender {
-    //NSLog(@"got swipe left");
-    _playRefAudioButton.enabled = YES;
-
     _index--;
     if (_index == -1) _index = _items.count -1;
-    NSString *flAtIndex = [_items objectAtIndex:_index];
-    [_foreignLang setText:flAtIndex];
-    _refAudioPath =[_paths objectAtIndex:_index];
+    
+    [self respondToSwipe];
+}
 
-    fl = flAtIndex;
+- (void)setPlayRefEnabled
+{
+    if (_refAudioPath && ![_refAudioPath hasSuffix:@"NO"]) {
+        _playRefAudioButton.enabled = YES;
+    } else {
+        _playRefAudioButton.enabled = NO;
+    }
 }
 
 
@@ -115,9 +114,7 @@ NSString *fl = @"Bueller";
 
 -(void) setForeignText:(NSString *)foreignLangText
 {
-    
     NSLog(@"setForeignText now %@",fl);
-
     fl = foreignLangText;
 }
 
@@ -154,10 +151,9 @@ NSString *fl = @"Bueller";
 
 - (IBAction)playRefAudio:(id)sender {
     
-    NSError *error = nil;
+   // NSError *error = nil;
     
     NSURL *url = [NSURL URLWithString:_refAudioPath];
-
     
     NSLog(@"playRefAudio URL %@", _refAudioPath);
  
@@ -183,6 +179,19 @@ NSString *fl = @"Bueller";
      //   NSLog(@" got here 3");
 
     }
+    
+    if (_player) {
+        NSLog(@" remove observer");
+
+        @try {
+            [_player removeObserver:self forKeyPath:@"status"];
+            //_player = nil;
+        }
+        @catch (NSException *exception) {
+            //NSLog(@"got exception %@",exception.description);
+        }
+    }
+    
    _player = [AVPlayer playerWithPlayerItem:_playerItem];
 //
     //if (_player) {
@@ -190,15 +199,16 @@ NSString *fl = @"Bueller";
     //}
    // _player = [AVPlayer playerWithURL:url];
     //NSLog(@" got here 4");
-    
+    NSLog(@" add observer");
+
     [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
    
     _playRefAudioButton.enabled = NO;
-    if (error)
-    {
-        NSLog(@"playRefAudio Error: %@",
-              [error localizedDescription]);
-    }
+//    if (error)
+//    {
+//        NSLog(@"playRefAudio Error: %@",
+//              [error localizedDescription]);
+//    }
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
@@ -214,10 +224,12 @@ NSString *fl = @"Bueller";
                         change:(NSDictionary *)change context:(void *)context {
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
+            NSLog(@" audio ready so playing...");
             [_player play];
             
             @try {
                 [_player removeObserver:self forKeyPath:@"status"];
+                //_player = nil;
             }
             @catch (NSException *exception) {
                 NSLog(@"got exception %@",exception.description);
@@ -228,7 +240,12 @@ NSString *fl = @"Bueller";
             
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't play audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alert show];
+            
+            NSLog(@"player status failed");
+
             [_player removeObserver:self forKeyPath:@"status"];
+            //_player = nil;
+
             _playRefAudioButton.enabled = YES;
 
         }
