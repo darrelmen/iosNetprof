@@ -108,14 +108,15 @@
 }
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
-    _index++;
-    if (_index == _items.count) _index = 0;
+    _index--;
+    if (_index == -1) _index = _items.count -1;
+
     [self respondToSwipe];
 }
 
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender {
-    _index--;
-    if (_index == -1) _index = _items.count -1;
+    _index++;
+    if (_index == _items.count) _index = 0;
     
     [self respondToSwipe];
 }
@@ -357,7 +358,7 @@ NSString *en = @"Bueller";
         NSLog(@"stopAudio -stop");
         
         [_audioRecorder stop];
-        [self postAudio];
+        [self postAudio2];
         
     } else {
         NSLog(@"stopAudio not recording");
@@ -397,8 +398,8 @@ NSString *en = @"Bueller";
 // Posts audio with current fl field
 - (void)postAudio {
     // create request
-    NSString *myString = [_audioRecorder.url absoluteString];
-    NSLog(@"postAudio file %@",myString);
+   // NSString *myString = [_audioRecorder.url absoluteString];
+ //   NSLog(@"postAudio file %@",myString);
     [_recoFeedbackImage startAnimating];
     
     NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
@@ -424,6 +425,56 @@ NSString *en = @"Bueller";
     [urlRequest setHTTPBody:postData];
     
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+    [connection start];
+}
+
+-(void)postAudio2 {
+    
+    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
+    NSLog(@"talking to %@",_url);
+    
+    [_recoFeedbackImage startAnimating];
+    
+    NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
+
+  //  NSURL *url = [NSURL URLWithString:baseurl];
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:baseurl]];
+   // NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
+    
+    [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
+    [request setHTTPShouldHandleCookies:NO];
+    [request setTimeoutInterval:60];
+    [request setHTTPMethod:@"POST"];
+    NSString *boundary = @"unique-consistent-string---BOUNDARY---BOUNDARY---BOUNDARY---";
+    // set Content-Type in HTTP header
+    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
+    [request setValue:contentType forHTTPHeaderField: @"Content-Type"];
+    // post body
+    NSMutableData *body = [NSMutableData data];
+    // add params (all params are strings)
+    //[request setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
+
+    [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=%@\r\n\r\n", @"word"] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"%@\r\n", fl] dataUsingEncoding:NSUTF8StringEncoding]];
+    // add image data
+//    if (imageData) {
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=%@; filename=MyAudioMemo.wav\r\n", @"audio"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[@"Content-Type: audio/x-wav\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:postData];
+        [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+  //  }
+    [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    // setting the body of the post to the reqeust
+    [request setHTTPBody:body];
+    // set the content-length
+    NSString *postLength = [NSString stringWithFormat:@"%d", [body length]];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    
+    
+    NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
     [connection start];
 }
 

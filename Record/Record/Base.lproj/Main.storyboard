@@ -57,7 +57,7 @@
                             <outlet property="delegate" destination="re6-Vy-sbI" id="5hg-oy-yZ6"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="5cM-vS-2m3"/>
+                    <navigationItem key="navigationItem" title="Pronunciation Feedback" id="5cM-vS-2m3"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="s3P-Fq-plc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -425,10 +425,10 @@
             </objects>
             <point key="canvasLocation" x="2309" y="-519"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Navigation Controller - Pronunciation Feedback-->
         <scene sceneID="foj-1l-cew">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="gDn-g3-mfX" sceneMemberID="viewController">
+                <navigationController title="Pronunciation Feedback" automaticallyAdjustsScrollViewInsets="NO" id="gDn-g3-mfX" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="lOg-37-fGW">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>

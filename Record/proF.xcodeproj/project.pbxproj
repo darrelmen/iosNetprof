@@ -32,7 +32,7 @@
 		B6A8D97C19770C2100E8F1D5 /* Icon-76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D97419770C2100E8F1D5 /* Icon-76@2x.png */; };
 		B6A8D97D19770C2100E8F1D5 /* Icon-Small.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D97519770C2100E8F1D5 /* Icon-Small.png */; };
 		B6A8D97E19770C2100E8F1D5 /* Icon-Small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D97619770C2100E8F1D5 /* Icon-Small@2x.png */; };
-		B6B9F392197827A700CD0140 /* EAFLanguageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9F391197827A700CD0140 /* EAFLanguageTableViewController.m */; };
+		B6A8D9811977181800E8F1D5 /* EAFLanguageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A8D9801977181800E8F1D5 /* EAFLanguageTableViewController.m */; };
 		B6D001761970ACD3009554D5 /* record.png in Resources */ = {isa = PBXBuildFile; fileRef = B6D001751970ACD3009554D5 /* record.png */; };
 		B6D001781970AD28009554D5 /* record24.png in Resources */ = {isa = PBXBuildFile; fileRef = B6D001771970AD28009554D5 /* record24.png */; };
 		B6D0017A1970ADAC009554D5 /* squareStop.png in Resources */ = {isa = PBXBuildFile; fileRef = B6D001791970ADAC009554D5 /* squareStop.png */; };
@@ -102,30 +102,30 @@
 		B6A8D97419770C2100E8F1D5 /* Icon-76@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-76@2x.png"; sourceTree = "<group>"; };
 		B6A8D97519770C2100E8F1D5 /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small.png"; sourceTree = "<group>"; };
 		B6A8D97619770C2100E8F1D5 /* Icon-Small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small@2x.png"; sourceTree = "<group>"; };
-		B6B9F390197827A700CD0140 /* EAFLanguageTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFLanguageTableViewController.h; sourceTree = "<group>"; };
-		B6B9F391197827A700CD0140 /* EAFLanguageTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFLanguageTableViewController.m; sourceTree = "<group>"; };
+		B6A8D97F1977181800E8F1D5 /* EAFLanguageTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EAFLanguageTableViewController.h; path = ../EAFLanguageTableViewController.h; sourceTree = "<group>"; };
+		B6A8D9801977181800E8F1D5 /* EAFLanguageTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EAFLanguageTableViewController.m; path = ../EAFLanguageTableViewController.m; sourceTree = "<group>"; };
 		B6D001751970ACD3009554D5 /* record.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record.png; sourceTree = "<group>"; };
 		B6D001771970AD28009554D5 /* record24.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record24.png; sourceTree = "<group>"; };
 		B6D001791970ADAC009554D5 /* squareStop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = squareStop.png; sourceTree = "<group>"; };
 		B6D0017B1970B091009554D5 /* EAFExercise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFExercise.h; sourceTree = "<group>"; };
 		B6D0017C1970B091009554D5 /* EAFExercise.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFExercise.m; sourceTree = "<group>"; };
-		F6A5681A18ECA98A00B844C6 /* Record.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Record.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6A5681A18ECA98A00B844C6 /* proF.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = proF.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6A5681D18ECA98A00B844C6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F6A5681F18ECA98A00B844C6 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		F6A5682118ECA98A00B844C6 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		F6A5682518ECA98A00B844C6 /* Record-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Record-Info.plist"; sourceTree = "<group>"; };
+		F6A5682518ECA98A00B844C6 /* proF-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "proF-Info.plist"; sourceTree = "<group>"; };
 		F6A5682718ECA98A00B844C6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F6A5682918ECA98A00B844C6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		F6A5682B18ECA98A00B844C6 /* Record-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Record-Prefix.pch"; sourceTree = "<group>"; };
+		F6A5682B18ECA98A00B844C6 /* proF-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "proF-Prefix.pch"; sourceTree = "<group>"; };
 		F6A5682C18ECA98A00B844C6 /* EAFAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EAFAppDelegate.h; sourceTree = "<group>"; };
 		F6A5682D18ECA98A00B844C6 /* EAFAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EAFAppDelegate.m; sourceTree = "<group>"; };
 		F6A5683018ECA98B00B844C6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F6A5683218ECA98B00B844C6 /* EAFViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EAFViewController.h; sourceTree = "<group>"; };
 		F6A5683318ECA98B00B844C6 /* EAFViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EAFViewController.m; sourceTree = "<group>"; };
 		F6A5683518ECA98B00B844C6 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		F6A5683B18ECA98B00B844C6 /* RecordTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RecordTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6A5683B18ECA98B00B844C6 /* proFTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = proFTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6A5683C18ECA98B00B844C6 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		F6A5684418ECA98B00B844C6 /* RecordTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RecordTests-Info.plist"; sourceTree = "<group>"; };
+		F6A5684418ECA98B00B844C6 /* proFTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "proFTests-Info.plist"; sourceTree = "<group>"; };
 		F6A5684618ECA98B00B844C6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F6A5684818ECA98B00B844C6 /* RecordTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RecordTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -232,8 +232,8 @@
 		F6A5681B18ECA98A00B844C6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F6A5681A18ECA98A00B844C6 /* Record.app */,
-				F6A5683B18ECA98B00B844C6 /* RecordTests.xctest */,
+				F6A5681A18ECA98A00B844C6 /* proF.app */,
+				F6A5683B18ECA98B00B844C6 /* proFTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -253,8 +253,8 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
-				B6B9F390197827A700CD0140 /* EAFLanguageTableViewController.h */,
-				B6B9F391197827A700CD0140 /* EAFLanguageTableViewController.m */,
+				B6A8D97F1977181800E8F1D5 /* EAFLanguageTableViewController.h */,
+				B6A8D9801977181800E8F1D5 /* EAFLanguageTableViewController.m */,
 				B66BACAD197055F500E28ECC /* EAFChapterTableViewController.h */,
 				B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */,
 				F6A5682C18ECA98A00B844C6 /* EAFAppDelegate.h */,
@@ -281,10 +281,10 @@
 		F6A5682418ECA98A00B844C6 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				F6A5682518ECA98A00B844C6 /* Record-Info.plist */,
+				F6A5682518ECA98A00B844C6 /* proF-Info.plist */,
 				F6A5682618ECA98A00B844C6 /* InfoPlist.strings */,
 				F6A5682918ECA98A00B844C6 /* main.m */,
-				F6A5682B18ECA98A00B844C6 /* Record-Prefix.pch */,
+				F6A5682B18ECA98A00B844C6 /* proF-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -301,7 +301,7 @@
 		F6A5684318ECA98B00B844C6 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				F6A5684418ECA98B00B844C6 /* RecordTests-Info.plist */,
+				F6A5684418ECA98B00B844C6 /* proFTests-Info.plist */,
 				F6A5684518ECA98B00B844C6 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
@@ -310,9 +310,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F6A5681918ECA98A00B844C6 /* Record */ = {
+		F6A5681918ECA98A00B844C6 /* proF */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F6A5684C18ECA98B00B844C6 /* Build configuration list for PBXNativeTarget "Record" */;
+			buildConfigurationList = F6A5684C18ECA98B00B844C6 /* Build configuration list for PBXNativeTarget "proF" */;
 			buildPhases = (
 				F6A5681618ECA98A00B844C6 /* Sources */,
 				F6A5681718ECA98A00B844C6 /* Frameworks */,
@@ -322,14 +322,14 @@
 			);
 			dependencies = (
 			);
-			name = Record;
+			name = proF;
 			productName = Record;
-			productReference = F6A5681A18ECA98A00B844C6 /* Record.app */;
+			productReference = F6A5681A18ECA98A00B844C6 /* proF.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F6A5683A18ECA98B00B844C6 /* RecordTests */ = {
+		F6A5683A18ECA98B00B844C6 /* proFTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F6A5684F18ECA98B00B844C6 /* Build configuration list for PBXNativeTarget "RecordTests" */;
+			buildConfigurationList = F6A5684F18ECA98B00B844C6 /* Build configuration list for PBXNativeTarget "proFTests" */;
 			buildPhases = (
 				F6A5683718ECA98B00B844C6 /* Sources */,
 				F6A5683818ECA98B00B844C6 /* Frameworks */,
@@ -340,9 +340,9 @@
 			dependencies = (
 				F6A5684118ECA98B00B844C6 /* PBXTargetDependency */,
 			);
-			name = RecordTests;
+			name = proFTests;
 			productName = RecordTests;
-			productReference = F6A5683B18ECA98B00B844C6 /* RecordTests.xctest */;
+			productReference = F6A5683B18ECA98B00B844C6 /* proFTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -363,7 +363,7 @@
 					};
 				};
 			};
-			buildConfigurationList = F6A5681518ECA98A00B844C6 /* Build configuration list for PBXProject "Record" */;
+			buildConfigurationList = F6A5681518ECA98A00B844C6 /* Build configuration list for PBXProject "proF" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -376,8 +376,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F6A5681918ECA98A00B844C6 /* Record */,
-				F6A5683A18ECA98B00B844C6 /* RecordTests */,
+				F6A5681918ECA98A00B844C6 /* proF */,
+				F6A5683A18ECA98B00B844C6 /* proFTests */,
 			);
 		};
 /* End PBXProject section */
@@ -428,7 +428,7 @@
 				B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */,
 				F6A5682A18ECA98A00B844C6 /* main.m in Sources */,
 				B6D0017D1970B091009554D5 /* EAFExercise.m in Sources */,
-				B6B9F392197827A700CD0140 /* EAFLanguageTableViewController.m in Sources */,
+				B6A8D9811977181800E8F1D5 /* EAFLanguageTableViewController.m in Sources */,
 				F6A5683418ECA98B00B844C6 /* EAFViewController.m in Sources */,
 				B67DDE351974882A00B1FBB6 /* MSArcLayer.m in Sources */,
 				B67DDE391974882A00B1FBB6 /* MSSimpleGauge.m in Sources */,
@@ -456,7 +456,7 @@
 /* Begin PBXTargetDependency section */
 		F6A5684118ECA98B00B844C6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F6A5681918ECA98A00B844C6 /* Record */;
+			target = F6A5681918ECA98A00B844C6 /* proF */;
 			targetProxy = F6A5684018ECA98B00B844C6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -567,9 +567,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
-				INFOPLIST_FILE = "Record/Record-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				GCC_PREFIX_HEADER = "Record/proF-Prefix.pch";
+				INFOPLIST_FILE = "Record/proF-Info.plist";
+				PRODUCT_NAME = proF;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
@@ -583,9 +583,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
-				INFOPLIST_FILE = "Record/Record-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				GCC_PREFIX_HEADER = "Record/proF-Prefix.pch";
+				INFOPLIST_FILE = "Record/proF-Info.plist";
+				PRODUCT_NAME = proF;
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
@@ -606,8 +606,8 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "RecordTests/RecordTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				INFOPLIST_FILE = "RecordTests/proFTests-Info.plist";
+				PRODUCT_NAME = proFTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -624,8 +624,8 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
-				INFOPLIST_FILE = "RecordTests/RecordTests-Info.plist";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				INFOPLIST_FILE = "RecordTests/proFTests-Info.plist";
+				PRODUCT_NAME = proFTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -634,7 +634,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F6A5681518ECA98A00B844C6 /* Build configuration list for PBXProject "Record" */ = {
+		F6A5681518ECA98A00B844C6 /* Build configuration list for PBXProject "proF" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F6A5684A18ECA98B00B844C6 /* Debug */,
@@ -643,7 +643,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F6A5684C18ECA98B00B844C6 /* Build configuration list for PBXNativeTarget "Record" */ = {
+		F6A5684C18ECA98B00B844C6 /* Build configuration list for PBXNativeTarget "proF" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F6A5684D18ECA98B00B844C6 /* Debug */,
@@ -652,7 +652,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F6A5684F18ECA98B00B844C6 /* Build configuration list for PBXNativeTarget "RecordTests" */ = {
+		F6A5684F18ECA98B00B844C6 /* Build configuration list for PBXNativeTarget "proFTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F6A5685018ECA98B00B844C6 /* Debug */,
