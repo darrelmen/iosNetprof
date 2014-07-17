@@ -33,6 +33,7 @@
 @property int index;
 @property NSArray *items;
 @property NSArray *englishWords;
+@property NSArray *translitWords;
 @property NSArray *paths;
 @property NSString *url;
 
@@ -46,6 +47,7 @@
 
 -(void) setForeignText:(NSString *)foreignLang;
 -(void) setEnglishText:(NSString *)english;
+-(void) setTranslitText:(NSString *)translit;
 @property (strong, nonatomic) IBOutlet MSAnnotatedGauge *annotatedGauge2;
 
 //- (void)handleSwipeRight:(UIGestureRecognizer*)recognizer;

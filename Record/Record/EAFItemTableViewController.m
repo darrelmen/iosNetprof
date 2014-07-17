@@ -25,22 +25,9 @@
     return self;
 }
 
-//NSString *const englishURL = @"https://np.ll.mit.edu/npfClassroomEnglish/";
-//NSString *const msaURL = @"https://np.ll.mit.edu/npfClassroomMSA/";
-
 - (NSString *)getURL
 {
-    
     return [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/", _language];
-
-//    if ([[_language lowercaseString]  isEqualToString:@"english"]) {
-//        return englishURL;
-//    }
-//    else if ([[_language lowercaseString]  isEqualToString:@"msa"]) {
-//        return msaURL;
-//        
-//    }
-//    else return englishURL;
 }
 
 - (void)viewDidLoad
@@ -49,12 +36,14 @@
     
     self.items = [[NSMutableArray alloc] init];
     self.englishPhrases = [[NSMutableArray alloc] init];
+    self.translitPhrases = [[NSMutableArray alloc] init];
     self.paths = [[NSMutableArray alloc] init];
     NSArray *items =[_chapterToItems objectForKey:currentChapter];
     
     for (NSDictionary *object in items) {
         [_items addObject:[object objectForKey:@"fl"]];
         [_englishPhrases addObject:[object objectForKey:@"en"]];
+        [_translitPhrases addObject:[object objectForKey:@"tl"]];
         
         NSString *refPath = [object objectForKey:@"ref"];
         if (refPath) {
@@ -174,10 +163,12 @@ NSString *currentChapter;
     
     [itemController setForeignText:foreignLanguageItem];
     [itemController setEnglishText:englishItem];
+    [itemController setTranslitText:[self.translitPhrases objectAtIndex:indexPath.row]];
     itemController.refAudioPath = [_paths objectAtIndex:indexPath.row];
     itemController.index = indexPath.row;
     itemController.items = [self items];
     itemController.englishWords = [self englishPhrases];
+    itemController.translitWords = [self translitPhrases];
     itemController.paths = _paths;
     itemController.url = [self getURL];
 }

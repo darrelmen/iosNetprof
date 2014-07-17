@@ -12,6 +12,7 @@
 
 @property NSMutableArray *items;
 @property NSMutableArray *englishPhrases;
+@property NSMutableArray *translitPhrases;
 @property NSMutableArray *paths;
 
 -(void) setChapter:(NSString *)chapter;

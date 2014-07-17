@@ -80,6 +80,7 @@
     
     [_foreignLang setText:fl];
     [_english setText:en];
+    [_transliteration setText:tr];
     
     
     //self.annotatedGauge = [[MSAnnotatedGauge alloc] initWithFrame:CGRectMake(40, 40, 240, 180)];
@@ -97,11 +98,14 @@
 - (void)respondToSwipe {
     NSString *flAtIndex = [_items objectAtIndex:_index];
     NSString *enAtIndex = [_englishWords objectAtIndex:_index];
+    NSString *trAtIndex = [_translitWords objectAtIndex:_index];
     [_foreignLang setText:flAtIndex];
+    [_transliteration setText:trAtIndex];
     [_english setText:enAtIndex];
     _refAudioPath =[_paths objectAtIndex:_index];
     fl = flAtIndex;
     en = enAtIndex;
+    tr  = trAtIndex;
     [self setPlayRefEnabled];
     
     [_scoreDisplay setText:@" "];
@@ -131,8 +135,9 @@
 }
 
 
-NSString *fl = @"Bueller";
-NSString *en = @"Bueller";
+NSString *fl = @"";
+NSString *en = @"";
+NSString *tr = @"";
 
 -(void) setForeignText:(NSString *)foreignLangText
 {
@@ -144,6 +149,12 @@ NSString *en = @"Bueller";
 {
     NSLog(@"setEnglishText now %@",english);
     en = english;
+}
+
+-(void) setTranslitText:(NSString *)translit
+{
+    NSLog(@"setTranslitText now %@",translit);
+    tr = translit;
 }
 
 - (void)didReceiveMemoryWarning
@@ -183,12 +194,28 @@ NSString *en = @"Bueller";
     
     NSLog(@"playRefAudio URL %@", _refAudioPath);
  
-   NSString *ItemStatusContext;
+ //  NSString *ItemStatusContext;
    NSString *PlayerStatusContext;
+    
+
+    if (_playerItem) {
+        // NSLog(@" remove observer");
+        
+        @try {
+  //          [_playerItem removeObserver:self forKeyPath:@"status"];
+  
+            
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+        }
+        @catch (NSException *exception) {
+            //NSLog(@"got exception %@",exception.description);
+        }
+    }
     
     _playerItem = [AVPlayerItem playerItemWithURL:url];
 
-    [_playerItem addObserver:self forKeyPath:@"status" options:0 context:&ItemStatusContext];
+    
+    //[_playerItem addObserver:self forKeyPath:@"status" options:0 context:&ItemStatusContext];
     
     [[NSNotificationCenter defaultCenter]
      addObserver:self
@@ -196,20 +223,15 @@ NSString *en = @"Bueller";
      name:AVPlayerItemDidPlayToEndTimeNotification
      object:_playerItem];
 
-    if (ItemStatusContext != nil) {
-        NSLog(@" error %@",ItemStatusContext );
-    }
-    else {
-     //   NSLog(@" got here 3");
-
-    }
+   // if (ItemStatusContext != nil) {
+   ////     NSLog(@" error %@",ItemStatusContext );
+ //   }
     
     if (_player) {
         NSLog(@" remove observer");
 
         @try {
             [_player removeObserver:self forKeyPath:@"status"];
-            //_player = nil;
         }
         @catch (NSException *exception) {
             //NSLog(@"got exception %@",exception.description);
@@ -217,10 +239,7 @@ NSString *en = @"Bueller";
     }
     
    _player = [AVPlayer playerWithPlayerItem:_playerItem];
-//
-    //if (_player) {
-       // [_player removeObserver:self forKeyPath:@"status"];
-    //}
+
    // _player = [AVPlayer playerWithURL:url];
     //NSLog(@" got here 4");
     NSLog(@" add observer");

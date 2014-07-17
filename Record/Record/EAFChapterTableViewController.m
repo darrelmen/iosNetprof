@@ -30,7 +30,7 @@
     
      self.chapters = [[NSMutableArray alloc] init];
     
-    NSLog(@"lang %@", _language);
+//    NSLog(@"lang %@", _language);
     
     [self loadInitialData];
     
@@ -42,15 +42,7 @@
 }
 
 - (void)loadInitialData {
-    NSString *baseurl = @"https://np.ll.mit.edu/npfClassroomEnglish/scoreServlet";
-//    if ([[_language lowercaseString] isEqual: @"english"]) {
-//        baseurl = @"https://np.ll.mit.edu/npfClassroomEnglish/scoreServlet";
-//    }
-//    else if ([[_language lowercaseString] isEqual: @"msa"]) {
-//        baseurl = @"https://np.ll.mit.edu/npfClassroomMSA/scoreServlet";
-//    }
-//    
-    baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet", _language];
+    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet", _language];
         
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
