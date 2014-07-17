@@ -310,6 +310,7 @@ NSString *tr = @"";
 
         _playButton.enabled = NO;
         _stopButton.enabled = YES;
+        _recordButton.enabled = NO;
         
         AVAudioSession *session = [AVAudioSession sharedInstance];
         
@@ -343,6 +344,7 @@ NSString *tr = @"";
         NSLog(@"playAudio");
         _stopButton.enabled = YES;
         _recordButton.enabled = NO;
+        
         
         NSError *error;
         
