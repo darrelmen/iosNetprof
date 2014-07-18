@@ -29,7 +29,7 @@ NSArray *languages;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    languages = [NSArray arrayWithObjects:@"Dari", @"English",@"Farsi", @"MSA", @"Pasto1", @"Pashto2", @"Pashto3", @"Urdu",  nil];
+    languages = [NSArray arrayWithObjects:@"Dari", @"English",@"Farsi", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Urdu",  nil];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -126,7 +126,7 @@ NSArray *languages;
     
     //NSLog(@"selected %@",selectedRow);
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-    NSLog(@"language row %d",indexPath.row  );
+    NSLog(@"language row %ld",indexPath.row  );
     NSString *tappedItem = [languages objectAtIndex:indexPath.row];
     
     [chapterController setTitle:tappedItem];

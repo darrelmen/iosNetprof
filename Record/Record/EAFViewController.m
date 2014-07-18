@@ -23,8 +23,6 @@
     _stopButton.enabled = NO;
     [self setPlayRefEnabled];
     
-    //UIImageView *slowAnimationImageView = [[UIImageView alloc] initWithFrame:CGRectMake(160, 95, 86, 193)];
-    
     // Load images
     NSArray *imageNames = @[@"media-record-3_32x32.png", @"media-record-4_32x32.png"];
     
@@ -36,8 +34,6 @@
     _recordFeedbackImage.animationImages = images;
     _recordFeedbackImage.animationDuration = 1;
     
-    //[self.view addSubview:slowAnimationImageView];
-
     // Set the audio file
     NSArray *pathComponents = [NSArray arrayWithObjects:
                                [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
@@ -55,7 +51,7 @@
         NSLog(@"error: %@", [error localizedDescription]);
     } else {
         [session requestRecordPermission:^(BOOL granted) {
-            NSLog(@"record permission is %hhd", granted);
+            NSLog(@"record permission is %d", granted);
         } ];
     }
     
@@ -83,12 +79,10 @@
     [_transliteration setText:tr];
     
     
-    //self.annotatedGauge = [[MSAnnotatedGauge alloc] initWithFrame:CGRectMake(40, 40, 240, 180)];
     _annotatedGauge2.minValue = 0;
     _annotatedGauge2.maxValue = 100;
-    //_annotatedGauge2.titleLabel.text = @"How many widgets?";
-    _annotatedGauge2.startRangeLabel.text = @"0";
-    _annotatedGauge2.endRangeLabel.text = @"100";
+//    _annotatedGauge2.startRangeLabel.text = @"0";
+//    _annotatedGauge2.endRangeLabel.text = @"100";
     _annotatedGauge2.fillArcFillColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
     _annotatedGauge2.fillArcStrokeColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
     _annotatedGauge2.value = 0;
@@ -113,7 +107,7 @@
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
     _index--;
-    if (_index == -1) _index = _items.count -1;
+    if (_index == -1) _index = _items.count  -1UL;
 
     [self respondToSwipe];
 }
@@ -198,30 +192,27 @@ NSString *tr = @"";
    NSString *PlayerStatusContext;
     
 
-    if (_playerItem) {
-        // NSLog(@" remove observer");
-        
-        @try {
-  //          [_playerItem removeObserver:self forKeyPath:@"status"];
-  
-            
-                [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
-        }
-        @catch (NSException *exception) {
-            //NSLog(@"got exception %@",exception.description);
-        }
-    }
-    
-    _playerItem = [AVPlayerItem playerItemWithURL:url];
+//    if (_playerItem) {
+//        // NSLog(@" remove observer");
+//        
+//        @try {
+//                [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+//        }
+//        @catch (NSException *exception) {
+//            //NSLog(@"got exception %@",exception.description);
+//        }
+//    }
+//    
+//    _playerItem = [AVPlayerItem playerItemWithURL:url];
 
     
     //[_playerItem addObserver:self forKeyPath:@"status" options:0 context:&ItemStatusContext];
-    
-    [[NSNotificationCenter defaultCenter]
-     addObserver:self
-     selector:@selector(playerItemDidReachEnd:)
-     name:AVPlayerItemDidPlayToEndTimeNotification
-     object:_playerItem];
+//    
+//    [[NSNotificationCenter defaultCenter]
+//     addObserver:self
+//     selector:@selector(playerItemDidReachEnd:)
+//     name:AVPlayerItemDidPlayToEndTimeNotification
+//     object:_playerItem];
 
    // if (ItemStatusContext != nil) {
    ////     NSLog(@" error %@",ItemStatusContext );
@@ -231,16 +222,17 @@ NSString *tr = @"";
         NSLog(@" remove observer");
 
         @try {
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
             [_player removeObserver:self forKeyPath:@"status"];
         }
         @catch (NSException *exception) {
-            //NSLog(@"got exception %@",exception.description);
+            NSLog(@"got exception %@",exception.description);
         }
     }
     
-   _player = [AVPlayer playerWithPlayerItem:_playerItem];
+   //_player = [AVPlayer playerWithPlayerItem:_playerItem];
 
-   // _player = [AVPlayer playerWithURL:url];
+    _player = [AVPlayer playerWithURL:url];
     //NSLog(@" got here 4");
     NSLog(@" add observer");
 
@@ -268,7 +260,17 @@ NSString *tr = @"";
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
             NSLog(@" audio ready so playing...");
+            
+            
             [_player play];
+
+            AVPlayerItem *currentItem = [_player currentItem];
+            
+            [[NSNotificationCenter defaultCenter]
+             addObserver:self
+             selector:@selector(playerItemDidReachEnd:)
+             name:AVPlayerItemDidPlayToEndTimeNotification
+             object:currentItem];
             
             @try {
                 [_player removeObserver:self forKeyPath:@"status"];
@@ -293,9 +295,9 @@ NSString *tr = @"";
 
         }
     }
-    else if (object == _playerItem) {
+    //else if (object == _playerItem) {
         //NSLog(@"got item status %@ %d",keyPath,_playerItem.status);
-    }
+    //}
     else {
         NSLog(@"ignoring value... %@",keyPath);
         //[super observeValueForKeyPath:object change:change context:context];

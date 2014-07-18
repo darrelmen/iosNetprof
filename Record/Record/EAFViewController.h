@@ -30,7 +30,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *english;
 @property (strong, nonatomic) IBOutlet NSString *refAudioPath;
 @property (strong, nonatomic) IBOutlet UIButton *playRefAudioButton;
-@property int index;
+@property unsigned long index;
 @property NSArray *items;
 @property NSArray *englishWords;
 @property NSArray *translitWords;
@@ -41,7 +41,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *scoreDisplay;
 
 
-@property AVPlayerItem *playerItem;
+//@property AVPlayerItem *playerItem;
 @property AVPlayer *player;
 
 
