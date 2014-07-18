@@ -79,6 +79,8 @@
     [_foreignLang setText:fl];
     [_english setText:en];
     [_transliteration setText:tr];
+    _foreignLang.lineBreakMode = NSLineBreakByWordWrapping;
+    _foreignLang.numberOfLines = 0;
     
     _annotatedGauge2.minValue = 0;
     _annotatedGauge2.maxValue = 100;

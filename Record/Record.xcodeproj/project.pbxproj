@@ -13,18 +13,18 @@
 		B66BACBE1970A2FE00E28ECC /* NewProF1.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACBD1970A2FE00E28ECC /* NewProF1.png */; };
 		B66BACC11970A5CD00E28ECC /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACC01970A5CD00E28ECC /* play.png */; };
 		B66BACC31970A5DC00E28ECC /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACC21970A5DC00E28ECC /* pause.png */; };
-		B67DDE341974882A00B1FBB6 /* MSAnnotatedGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B67DDE271974882A00B1FBB6 /* MSAnnotatedGauge.m */; };
-		B67DDE351974882A00B1FBB6 /* MSArcLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B67DDE291974882A00B1FBB6 /* MSArcLayer.m */; };
-		B67DDE361974882A00B1FBB6 /* MSGradientArcLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B67DDE2C1974882A00B1FBB6 /* MSGradientArcLayer.m */; };
-		B67DDE371974882A00B1FBB6 /* MSNeedleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B67DDE2E1974882A00B1FBB6 /* MSNeedleView.m */; };
-		B67DDE381974882A00B1FBB6 /* MSRangeGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B67DDE301974882A00B1FBB6 /* MSRangeGauge.m */; };
-		B67DDE391974882A00B1FBB6 /* MSSimpleGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B67DDE321974882A00B1FBB6 /* MSSimpleGauge.m */; };
 		B68A5C2E1979A6140036B90C /* MRoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C2D1979A6140036B90C /* MRoundedButton.m */; };
 		B68A5C301979A62D0036B90C /* Vendors in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C2F1979A62D0036B90C /* Vendors */; };
 		B68A5C321979AE7E0036B90C /* playBigger2.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C311979AE7E0036B90C /* playBigger2.png */; };
 		B68A5C341979B3480036B90C /* mic-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C331979B3480036B90C /* mic-icon.png */; };
 		B68A5C361979B4590036B90C /* mic-4.svg in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C351979B4590036B90C /* mic-4.svg */; };
 		B68A5C381979B4AE0036B90C /* micBigger.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C371979B4AE0036B90C /* micBigger.png */; };
+		B68A5C481979C8B70036B90C /* MSAnnotatedGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C3B1979C8B70036B90C /* MSAnnotatedGauge.m */; };
+		B68A5C491979C8B70036B90C /* MSArcLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C3D1979C8B70036B90C /* MSArcLayer.m */; };
+		B68A5C4A1979C8B70036B90C /* MSGradientArcLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C401979C8B70036B90C /* MSGradientArcLayer.m */; };
+		B68A5C4B1979C8B70036B90C /* MSNeedleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C421979C8B70036B90C /* MSNeedleView.m */; };
+		B68A5C4C1979C8B70036B90C /* MSRangeGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C441979C8B70036B90C /* MSRangeGauge.m */; };
+		B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C461979C8B70036B90C /* MSSimpleGauge.m */; };
 		B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96A1976F27100E8F1D5 /* media-record-4_32x32.png */; };
 		B6A8D96D1976F27C00E8F1D5 /* media-record-3_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96C1976F27C00E8F1D5 /* media-record-3_32x32.png */; };
 		B6A8D97719770C2100E8F1D5 /* Icon-40.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96F19770C2100E8F1D5 /* Icon-40.png */; };
@@ -75,20 +75,6 @@
 		B66BACBD1970A2FE00E28ECC /* NewProF1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NewProF1.png; sourceTree = "<group>"; };
 		B66BACC01970A5CD00E28ECC /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
 		B66BACC21970A5DC00E28ECC /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause.png; sourceTree = "<group>"; };
-		B67DDE261974882A00B1FBB6 /* MSAnnotatedGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSAnnotatedGauge.h; sourceTree = "<group>"; };
-		B67DDE271974882A00B1FBB6 /* MSAnnotatedGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSAnnotatedGauge.m; sourceTree = "<group>"; };
-		B67DDE281974882A00B1FBB6 /* MSArcLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSArcLayer.h; sourceTree = "<group>"; };
-		B67DDE291974882A00B1FBB6 /* MSArcLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSArcLayer.m; sourceTree = "<group>"; };
-		B67DDE2A1974882A00B1FBB6 /* MSArcLayerSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSArcLayerSubclass.h; sourceTree = "<group>"; };
-		B67DDE2B1974882A00B1FBB6 /* MSGradientArcLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSGradientArcLayer.h; sourceTree = "<group>"; };
-		B67DDE2C1974882A00B1FBB6 /* MSGradientArcLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSGradientArcLayer.m; sourceTree = "<group>"; };
-		B67DDE2D1974882A00B1FBB6 /* MSNeedleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSNeedleView.h; sourceTree = "<group>"; };
-		B67DDE2E1974882A00B1FBB6 /* MSNeedleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSNeedleView.m; sourceTree = "<group>"; };
-		B67DDE2F1974882A00B1FBB6 /* MSRangeGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSRangeGauge.h; sourceTree = "<group>"; };
-		B67DDE301974882A00B1FBB6 /* MSRangeGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSRangeGauge.m; sourceTree = "<group>"; };
-		B67DDE311974882A00B1FBB6 /* MSSimpleGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSSimpleGauge.h; sourceTree = "<group>"; };
-		B67DDE321974882A00B1FBB6 /* MSSimpleGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSSimpleGauge.m; sourceTree = "<group>"; };
-		B67DDE331974882A00B1FBB6 /* MSSimpleGaugeSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSSimpleGaugeSubclass.h; sourceTree = "<group>"; };
 		B68A5C2C1979A6140036B90C /* MRoundedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRoundedButton.h; sourceTree = "<group>"; };
 		B68A5C2D1979A6140036B90C /* MRoundedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRoundedButton.m; sourceTree = "<group>"; };
 		B68A5C2F1979A62D0036B90C /* Vendors */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Vendors; sourceTree = "<group>"; };
@@ -96,6 +82,20 @@
 		B68A5C331979B3480036B90C /* mic-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mic-icon.png"; sourceTree = "<group>"; };
 		B68A5C351979B4590036B90C /* mic-4.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "mic-4.svg"; sourceTree = "<group>"; };
 		B68A5C371979B4AE0036B90C /* micBigger.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = micBigger.png; sourceTree = "<group>"; };
+		B68A5C3A1979C8B70036B90C /* MSAnnotatedGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSAnnotatedGauge.h; sourceTree = "<group>"; };
+		B68A5C3B1979C8B70036B90C /* MSAnnotatedGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSAnnotatedGauge.m; sourceTree = "<group>"; };
+		B68A5C3C1979C8B70036B90C /* MSArcLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSArcLayer.h; sourceTree = "<group>"; };
+		B68A5C3D1979C8B70036B90C /* MSArcLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSArcLayer.m; sourceTree = "<group>"; };
+		B68A5C3E1979C8B70036B90C /* MSArcLayerSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSArcLayerSubclass.h; sourceTree = "<group>"; };
+		B68A5C3F1979C8B70036B90C /* MSGradientArcLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSGradientArcLayer.h; sourceTree = "<group>"; };
+		B68A5C401979C8B70036B90C /* MSGradientArcLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSGradientArcLayer.m; sourceTree = "<group>"; };
+		B68A5C411979C8B70036B90C /* MSNeedleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSNeedleView.h; sourceTree = "<group>"; };
+		B68A5C421979C8B70036B90C /* MSNeedleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSNeedleView.m; sourceTree = "<group>"; };
+		B68A5C431979C8B70036B90C /* MSRangeGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSRangeGauge.h; sourceTree = "<group>"; };
+		B68A5C441979C8B70036B90C /* MSRangeGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSRangeGauge.m; sourceTree = "<group>"; };
+		B68A5C451979C8B70036B90C /* MSSimpleGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSSimpleGauge.h; sourceTree = "<group>"; };
+		B68A5C461979C8B70036B90C /* MSSimpleGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSSimpleGauge.m; sourceTree = "<group>"; };
+		B68A5C471979C8B70036B90C /* MSSimpleGaugeSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSSimpleGaugeSubclass.h; sourceTree = "<group>"; };
 		B6A8D96A1976F27100E8F1D5 /* media-record-4_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "media-record-4_32x32.png"; sourceTree = "<group>"; };
 		B6A8D96C1976F27C00E8F1D5 /* media-record-3_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "media-record-3_32x32.png"; sourceTree = "<group>"; };
 		B6A8D96F19770C2100E8F1D5 /* Icon-40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-40.png"; sourceTree = "<group>"; };
@@ -186,28 +186,6 @@
 			name = images;
 			sourceTree = "<group>";
 		};
-		B67DDE251974882A00B1FBB6 /* Gauges */ = {
-			isa = PBXGroup;
-			children = (
-				B67DDE261974882A00B1FBB6 /* MSAnnotatedGauge.h */,
-				B67DDE271974882A00B1FBB6 /* MSAnnotatedGauge.m */,
-				B67DDE281974882A00B1FBB6 /* MSArcLayer.h */,
-				B67DDE291974882A00B1FBB6 /* MSArcLayer.m */,
-				B67DDE2A1974882A00B1FBB6 /* MSArcLayerSubclass.h */,
-				B67DDE2B1974882A00B1FBB6 /* MSGradientArcLayer.h */,
-				B67DDE2C1974882A00B1FBB6 /* MSGradientArcLayer.m */,
-				B67DDE2D1974882A00B1FBB6 /* MSNeedleView.h */,
-				B67DDE2E1974882A00B1FBB6 /* MSNeedleView.m */,
-				B67DDE2F1974882A00B1FBB6 /* MSRangeGauge.h */,
-				B67DDE301974882A00B1FBB6 /* MSRangeGauge.m */,
-				B67DDE311974882A00B1FBB6 /* MSSimpleGauge.h */,
-				B67DDE321974882A00B1FBB6 /* MSSimpleGauge.m */,
-				B67DDE331974882A00B1FBB6 /* MSSimpleGaugeSubclass.h */,
-			);
-			name = Gauges;
-			path = ../../MSSimpleGauge/SimpleGauge/Gauges;
-			sourceTree = "<group>";
-		};
 		B68A5C2B1979A6050036B90C /* RoundButton */ = {
 			isa = PBXGroup;
 			children = (
@@ -216,6 +194,28 @@
 				B68A5C2D1979A6140036B90C /* MRoundedButton.m */,
 			);
 			name = RoundButton;
+			sourceTree = "<group>";
+		};
+		B68A5C391979C8B70036B90C /* Gauges */ = {
+			isa = PBXGroup;
+			children = (
+				B68A5C3A1979C8B70036B90C /* MSAnnotatedGauge.h */,
+				B68A5C3B1979C8B70036B90C /* MSAnnotatedGauge.m */,
+				B68A5C3C1979C8B70036B90C /* MSArcLayer.h */,
+				B68A5C3D1979C8B70036B90C /* MSArcLayer.m */,
+				B68A5C3E1979C8B70036B90C /* MSArcLayerSubclass.h */,
+				B68A5C3F1979C8B70036B90C /* MSGradientArcLayer.h */,
+				B68A5C401979C8B70036B90C /* MSGradientArcLayer.m */,
+				B68A5C411979C8B70036B90C /* MSNeedleView.h */,
+				B68A5C421979C8B70036B90C /* MSNeedleView.m */,
+				B68A5C431979C8B70036B90C /* MSRangeGauge.h */,
+				B68A5C441979C8B70036B90C /* MSRangeGauge.m */,
+				B68A5C451979C8B70036B90C /* MSSimpleGauge.h */,
+				B68A5C461979C8B70036B90C /* MSSimpleGauge.m */,
+				B68A5C471979C8B70036B90C /* MSSimpleGaugeSubclass.h */,
+			);
+			name = Gauges;
+			path = Record/Gauges;
 			sourceTree = "<group>";
 		};
 		B6A8D96E19770C1000E8F1D5 /* icons */ = {
@@ -250,7 +250,7 @@
 				B66BACBC1970A29000E28ECC /* Resources */,
 				F6A5681C18ECA98A00B844C6 /* Frameworks */,
 				F6A5681B18ECA98A00B844C6 /* Products */,
-				B67DDE251974882A00B1FBB6 /* Gauges */,
+				B68A5C391979C8B70036B90C /* Gauges */,
 			);
 			sourceTree = "<group>";
 		};
@@ -450,20 +450,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B68A5C4C1979C8B70036B90C /* MSRangeGauge.m in Sources */,
 				B66BACB8197094C000E28ECC /* EAFItemTableViewController.m in Sources */,
+				B68A5C4B1979C8B70036B90C /* MSNeedleView.m in Sources */,
 				B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */,
 				F6A5682A18ECA98A00B844C6 /* main.m in Sources */,
 				B6D0017D1970B091009554D5 /* EAFExercise.m in Sources */,
+				B68A5C491979C8B70036B90C /* MSArcLayer.m in Sources */,
+				B68A5C4A1979C8B70036B90C /* MSGradientArcLayer.m in Sources */,
 				B6B9F392197827A700CD0140 /* EAFLanguageTableViewController.m in Sources */,
+				B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */,
 				F6A5683418ECA98B00B844C6 /* EAFViewController.m in Sources */,
-				B67DDE351974882A00B1FBB6 /* MSArcLayer.m in Sources */,
+				B68A5C481979C8B70036B90C /* MSAnnotatedGauge.m in Sources */,
 				B68A5C2E1979A6140036B90C /* MRoundedButton.m in Sources */,
-				B67DDE391974882A00B1FBB6 /* MSSimpleGauge.m in Sources */,
-				B67DDE361974882A00B1FBB6 /* MSGradientArcLayer.m in Sources */,
-				B67DDE341974882A00B1FBB6 /* MSAnnotatedGauge.m in Sources */,
 				F6A5682E18ECA98A00B844C6 /* EAFAppDelegate.m in Sources */,
-				B67DDE371974882A00B1FBB6 /* MSNeedleView.m in Sources */,
-				B67DDE381974882A00B1FBB6 /* MSRangeGauge.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
