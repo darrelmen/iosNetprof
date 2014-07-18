@@ -57,7 +57,9 @@
                             <outlet property="delegate" destination="re6-Vy-sbI" id="5hg-oy-yZ6"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Pronunciation Feedback" id="5cM-vS-2m3"/>
+                    <navigationItem key="navigationItem" title="Pronunciation Feedback" id="5cM-vS-2m3">
+                        <barButtonItem key="backBarButtonItem" title="Languages" id="hmN-kf-X4d"/>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="s3P-Fq-plc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -125,7 +127,9 @@
                             <outlet property="delegate" destination="VFl-2k-NIH" id="IXI-D0-LjK"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="English Pronunciation" id="cph-Ao-9M5"/>
+                    <navigationItem key="navigationItem" title="English Pronunciation" id="cph-Ao-9M5">
+                        <barButtonItem key="backBarButtonItem" title="Chapters" id="9NG-Tx-6nf"/>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="L7O-uq-Q91" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -168,12 +172,12 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Chapter 1 Words" id="RsT-lK-B71">
-                        <barButtonItem key="backBarButtonItem" title="Chapters" id="4Nz-uh-tJC"/>
+                        <barButtonItem key="backBarButtonItem" title="Words" id="4Nz-uh-tJC"/>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F7G-J3-dF2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1868" y="134"/>
+            <point key="canvasLocation" x="1680" y="51"/>
         </scene>
         <!--View Controller - Say the word, see your score-->
         <scene sceneID="ufC-wZ-h7g">
@@ -219,14 +223,14 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" restorationIdentifier="transliteration" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4uJ-aL-DBa">
-                                <rect key="frame" x="118" y="118" width="202" height="24"/>
+                                <rect key="frame" x="118" y="123" width="202" height="24"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                                 <size key="shadowOffset" width="0.0" height="0.0"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" restorationIdentifier="english" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W2R-XZ-lt3">
-                                <rect key="frame" x="118" y="156" width="192" height="29"/>
+                                <rect key="frame" x="118" y="159" width="192" height="29"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
@@ -269,7 +273,9 @@
                             <outletCollection property="gestureRecognizers" destination="9a4-pv-hte" appends="YES" id="pIf-ae-30O"/>
                         </connections>
                     </view>
-                    <navigationItem key="navigationItem" title="Say the word, see your score" id="WLw-cB-ejT"/>
+                    <navigationItem key="navigationItem" title="Say the word, see your score" id="WLw-cB-ejT">
+                        <barButtonItem key="backBarButtonItem" title="Words" id="zRY-DR-Wv1"/>
+                    </navigationItem>
                     <connections>
                         <outlet property="annotatedGauge2" destination="ADC-h3-z7y" id="cYN-3W-PWV"/>
                         <outlet property="english" destination="W2R-XZ-lt3" id="6TB-RT-x9f"/>
@@ -297,7 +303,7 @@
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2252" y="134"/>
+            <point key="canvasLocation" x="2110" y="51"/>
         </scene>
         <!--Navigation Controller - Pronunciation Feedback-->
         <scene sceneID="foj-1l-cew">

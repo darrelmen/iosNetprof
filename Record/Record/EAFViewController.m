@@ -85,6 +85,8 @@
     [_english setText:en];
     [_transliteration setText:tr];
     
+ //   [self setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
+
     
     _annotatedGauge2.minValue = 0;
     _annotatedGauge2.maxValue = 100;
@@ -93,70 +95,6 @@
     _annotatedGauge2.fillArcFillColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
     _annotatedGauge2.fillArcStrokeColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
     _annotatedGauge2.value = 0;
-}
-
-- (void) configurePlayButton {
-//    CGRect backgroundRect = CGRectMake(0,
-//                                       backgroundViewHeight * i,
-//                                       backgroundViewWidth,
-//                                       backgroundViewHeight);
-//    MRHollowBackgroundView *backgroundView = [[MRHollowBackgroundView alloc] initWithFrame:backgroundRect];
-//    backgroundView.foregroundColor = foregroundColorArray[i];
-//    [self.view addSubview:backgroundView];
-    
-//    UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-//    imageView.contentMode = UIViewContentModeScaleAspectFill;
-//    [imageView setImageToBlur:[UIImage imageNamed:@"pic"] completionBlock:NULL];
-//    [self.view addSubview:imageView];
-//    
-//    CGFloat backgroundViewHeight = ceilf(CGRectGetHeight([UIScreen mainScreen].bounds)/ 3.0);
-//    CGFloat backgroundViewWidth = CGRectGetWidth(self.view.bounds);
-    
-//    NSArray *foregroundColorArray = @[[UIColor whiteColor],
-//                                      [[UIColor whiteColor] colorWithAlphaComponent:0.5],
-//                                      [[UIColor blackColor] colorWithAlphaComponent:0.5]];
-//
-//    CGRect backgroundRect = CGRectMake(0,
-//                                       0,
-//                                       backgroundViewWidth,
-//                                       backgroundViewHeight);
-//    MRHollowBackgroundView *backgroundView = [[MRHollowBackgroundView alloc] initWithFrame:backgroundRect];
-//    backgroundView.foregroundColor = [UIColor whiteColor];
-//    [self.view addSubview:backgroundView];
-    
-    
-    CGFloat buttonSize =  80;
-    CGRect buttonRect = CGRectMake(20,
-                                   80,
-                                   buttonSize,
-                                   buttonSize);
-    MRoundedButton *button = [[MRoundedButton alloc] initWithFrame:buttonRect
-                                                       buttonStyle:[@(MRoundedButtonCentralImage) integerValue]
-                                              appearanceIdentifier:@"playButtonRounded"];
-    button.backgroundColor = [UIColor lightGrayColor];
-    
-
-     //   button.textLabel.text = @"7";
-       // button.textLabel.font = [UIFont boldSystemFontOfSize:50];
-       // button.detailTextLabel.text = @"P Q R S";
-      //  button.detailTextLabel.font = [UIFont systemFontOfSize:10];
-        button.imageView.image = [UIImage imageNamed:@"playBigger2"];
-    
-   // _playButton = button;
-    [self.view addSubview:button];
-    
-    UITapGestureRecognizer *singleFingerTap =
-    [[UITapGestureRecognizer alloc] initWithTarget:self
-                                            action:@selector(handleSingleTap:)];
-    [button addGestureRecognizer:singleFingerTap];
-
-}
-
-//The event handling method
-- (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
-   // CGPoint location = [recognizer locationInView:[recognizer.view superview]];
-    [self playRefAudio:nil];
-    //Do stuff here...
 }
 
 - (void)respondToSwipe {
@@ -203,7 +141,6 @@
 }
 
 NSString *fl = @"";
-
 NSString *en = @"";
 NSString *tr = @"";
 
@@ -262,36 +199,8 @@ NSString *tr = @"";
     
     NSLog(@"playRefAudio URL %@", _refAudioPath);
  
- //  NSString *ItemStatusContext;
    NSString *PlayerStatusContext;
-    
-
-//    if (_playerItem) {
-//        // NSLog(@" remove observer");
-//        
-//        @try {
-//                [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
-//        }
-//        @catch (NSException *exception) {
-//            //NSLog(@"got exception %@",exception.description);
-//        }
-//    }
-//    
-//    _playerItem = [AVPlayerItem playerItemWithURL:url];
-
-    
-    //[_playerItem addObserver:self forKeyPath:@"status" options:0 context:&ItemStatusContext];
-//    
-//    [[NSNotificationCenter defaultCenter]
-//     addObserver:self
-//     selector:@selector(playerItemDidReachEnd:)
-//     name:AVPlayerItemDidPlayToEndTimeNotification
-//     object:_playerItem];
-
-   // if (ItemStatusContext != nil) {
-   ////     NSLog(@" error %@",ItemStatusContext );
- //   }
-    
+   
     if (_player) {
         NSLog(@" remove observer");
 
@@ -304,20 +213,11 @@ NSString *tr = @"";
         }
     }
     
-   //_player = [AVPlayer playerWithPlayerItem:_playerItem];
-
     _player = [AVPlayer playerWithURL:url];
-    //NSLog(@" got here 4");
-    NSLog(@" add observer");
+    //NSLog(@" add observer");
 
     [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
-   
     _playRefAudioButton.enabled = NO;
-//    if (error)
-//    {
-//        NSLog(@"playRefAudio Error: %@",
-//              [error localizedDescription]);
-//    }
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
@@ -335,7 +235,6 @@ NSString *tr = @"";
         if (_player.status == AVPlayerStatusReadyToPlay) {
             NSLog(@" audio ready so playing...");
             
-            
             [_player play];
 
             AVPlayerItem *currentItem = [_player currentItem];
@@ -348,7 +247,6 @@ NSString *tr = @"";
             
             @try {
                 [_player removeObserver:self forKeyPath:@"status"];
-                //_player = nil;
             }
             @catch (NSException *exception) {
                 NSLog(@"got exception %@",exception.description);
@@ -405,10 +303,10 @@ NSString *tr = @"";
         else {
             NSLog(@"recordAudio -DUDE NOT recording");
             
-            NSLog(@"Domain: %@", error.domain);
-            NSLog(@"Error Code: %ld", error.code);
+            NSLog(@"Domain:      %@", error.domain);
+            NSLog(@"Error Code:  %d", error.code);
             NSLog(@"Description: %@", [error localizedDescription]);
-            NSLog(@"Reason: %@", [error localizedFailureReason]);
+            NSLog(@"Reason:      %@", [error localizedFailureReason]);
         }
     }
 }
@@ -416,11 +314,9 @@ NSString *tr = @"";
 - (IBAction)playAudio:(id)sender {
     if (!_audioRecorder.recording)
     {
-        
         NSLog(@"playAudio %@",_audioRecorder.url);
         _stopButton.enabled = YES;
         _recordButton.enabled = NO;
-        
         
         NSError *error;
         
@@ -601,8 +497,7 @@ NSString *tr = @"";
     // You can parse the stuff in your instance variable now
     
     [_recoFeedbackImage stopAnimating];
-    //NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSASCIIStringEncoding];
-    
+    //NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSASCIIStringEncoding];  
     //NSLog(@"go response %@",stringVersion);
     
     NSError * error;
@@ -624,12 +519,11 @@ NSString *tr = @"";
     NSArray *wordAndScore = [json objectForKey:@"WORD_TRANSCRIPT"];
     
     int offset = 0;
+    
     for (NSDictionary *event in wordAndScore) {
         NSString *word = [event objectForKey:@"event"];
         NSNumber *score = [event objectForKey:@"score"];
         NSString *lowerWord = [word lowercaseString];
-        //NSRange range = [lower rangeOfString:lowerWord];
-        
         NSRange range, searchCharRange;
         
         searchCharRange = NSMakeRange(offset, [lower length]-offset);
@@ -641,12 +535,14 @@ NSString *tr = @"";
        // NSLog(@"in %@ looking for %@ and found at %d", lower, lowerWord, range.location);
         if (range.length > 0) {
             UIColor *color = [self getColor2:score.floatValue];
+            if (wordAndScore.count == 1) {
+                color = [self getColor2:value.floatValue];
+            }
             [result addAttribute:NSBackgroundColorAttributeName
                            value:color
                            range:range];
             offset += range.length;
         }
-        
     }
     
     [_scoreDisplay setAttributedText:result];

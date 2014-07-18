@@ -37,11 +37,10 @@
 @property NSArray *paths;
 @property NSString *url;
 
+@property NSString *language;
+
 
 @property (weak, nonatomic) IBOutlet UILabel *scoreDisplay;
-
-
-//@property AVPlayerItem *playerItem;
 @property AVPlayer *player;
 
 
@@ -50,7 +49,6 @@
 -(void) setTranslitText:(NSString *)translit;
 @property (strong, nonatomic) IBOutlet MSAnnotatedGauge *annotatedGauge2;
 
-//- (void)handleSwipeRight:(UIGestureRecognizer*)recognizer;
 @property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *rightSwipe;
 @property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *leftSwipe;
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender;
