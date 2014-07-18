@@ -9,6 +9,7 @@
 #import "EAFViewController.h"
 #import "MRoundedButton.h"
 #import "math.h"
+#import <AudioToolbox/AudioServices.h>
 
 @interface EAFViewController ()
 
@@ -44,8 +45,27 @@
     NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
     NSError *error = nil;
     
+    NSError *setOverrideError;
+    NSError *setCategoryError;
+    
     // Setup audio session
     AVAudioSession *session = [AVAudioSession sharedInstance];
+    
+    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:&setCategoryError];
+    
+    if(setCategoryError){
+        NSLog(@"%@", [setCategoryError description]);
+    }
+    
+    // make sure volume is high on iPhones
+    
+    [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&setOverrideError];
+    
+    
+    if(setOverrideError){
+        NSLog(@"%@", [setOverrideError description]);
+    }
+    
     [session setCategory:AVAudioSessionCategoryPlayAndRecord error:&error];
     
     if (error)
@@ -216,6 +236,8 @@ NSString *tr = @"";
     }
     
     _player = [AVPlayer playerWithURL:url];
+    
+    
     //NSLog(@" add observer");
 
     [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
@@ -285,8 +307,9 @@ NSString *tr = @"";
         //NSLog(@"recordAudio");
 
         _playButton.enabled = NO;
-//        _stopButton.enabled = YES;
         _recordButton.enabled = NO;
+        [_recordFeedbackImage startAnimating];
+        _recordFeedbackImage.hidden = NO;
         
         AVAudioSession *session = [AVAudioSession sharedInstance];
         
@@ -299,10 +322,12 @@ NSString *tr = @"";
         if (_audioRecorder.recording)
         {
             NSLog(@"recordAudio -recording");
-            [_recordFeedbackImage startAnimating];
-            _recordFeedbackImage.hidden = NO;
+
         }
         else {
+            [_recordFeedbackImage stopAnimating];
+            _recordFeedbackImage.hidden = YES;
+            
             NSLog(@"recordAudio -DUDE NOT recording");
             
             NSLog(@"Domain:      %@", error.domain);
