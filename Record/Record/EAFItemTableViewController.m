@@ -110,6 +110,7 @@ NSString *currentChapter;
     // EAFExercise *exercise = [self.items objectAtIndex:indexPath.row];
     NSString *exercise = [self.items objectAtIndex:indexPath.row];
     cell.textLabel.text = exercise;
+    cell.detailTextLabel.text = [self.englishPhrases objectAtIndex:indexPath.row];;
     
     return cell;
 }
