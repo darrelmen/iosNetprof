@@ -35,6 +35,7 @@
 @property NSArray *translitWords;
 @property NSArray *paths;
 @property NSString *url;
+@property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressGesture;
 
 @property NSString *language;
 

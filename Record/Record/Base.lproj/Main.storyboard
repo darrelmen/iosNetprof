@@ -201,12 +201,13 @@
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="85Q-3i-7cz">
                                 <rect key="frame" x="10" y="197" width="100" height="69"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <gestureRecognizers/>
                                 <state key="normal" image="micBigger.png">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <action selector="recordTouchDown:" destination="vXZ-lx-hvc" eventType="touchDown" id="K70-mN-NFU"/>
-                                    <action selector="stopAudio:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Bx0-xk-5aR"/>
+                                    <action selector="stopAudio:" destination="vXZ-lx-hvc" eventType="touchUpOutside" id="rYK-b5-wxc"/>
+                                    <outletCollection property="gestureRecognizers" destination="0JG-qf-3We" appends="YES" id="Bmj-m4-mdo"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4PZ-7k-YvL">
@@ -224,7 +225,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </activityIndicatorView>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" restorationIdentifier="foreignLang" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X3F-SL-lww">
-                                <rect key="frame" x="118" y="79" width="205" height="36"/>
+                                <rect key="frame" x="118" y="79" width="205" height="49"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="32"/>
                                 <nil key="highlightedColor"/>
@@ -288,6 +289,7 @@
                         <outlet property="english" destination="W2R-XZ-lt3" id="6TB-RT-x9f"/>
                         <outlet property="foreignLang" destination="X3F-SL-lww" id="Yry-ES-VqS"/>
                         <outlet property="leftSwipe" destination="9a4-pv-hte" id="koB-AN-IRY"/>
+                        <outlet property="longPressGesture" destination="0JG-qf-3We" id="FyB-RQ-hLB"/>
                         <outlet property="playButton" destination="4PZ-7k-YvL" id="VHB-Z0-sdK"/>
                         <outlet property="playRefAudioButton" destination="NUv-LG-FNB" id="ZKb-3N-lKH"/>
                         <outlet property="recoFeedbackImage" destination="D19-P2-ZOH" id="bgs-8h-Rk4"/>
@@ -309,6 +311,11 @@
                         <action selector="swipeLeftDetected:" destination="vXZ-lx-hvc" id="dHL-1q-ZwW"/>
                     </connections>
                 </swipeGestureRecognizer>
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="0JG-qf-3We">
+                    <connections>
+                        <action selector="longPressAction:" destination="vXZ-lx-hvc" id="hir-jz-n6b"/>
+                    </connections>
+                </pongPressGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="2110" y="51"/>
         </scene>

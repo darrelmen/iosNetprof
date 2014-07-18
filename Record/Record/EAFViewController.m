@@ -36,7 +36,9 @@
     
     _recordFeedbackImage.animationImages = images;
     _recordFeedbackImage.animationDuration = 1;
-    
+    _recordFeedbackImage.hidden = YES;
+    [_recordFeedbackImage startAnimating];
+
     // Set the audio file
     NSArray *pathComponents = [NSArray arrayWithObjects:
                                [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
@@ -56,6 +58,8 @@
     if(setCategoryError){
         NSLog(@"%@", [setCategoryError description]);
     }
+    
+    _longPressGesture.minimumPressDuration = 0.05;
     
     // make sure volume is high on iPhones
     
@@ -310,7 +314,7 @@ NSString *tr = @"";
         _recordButton.enabled = NO;
 
         _recordFeedbackImage.hidden = NO;
-        [_recordFeedbackImage startAnimating];
+      //  [_recordFeedbackImage startAnimating];
         
         AVAudioSession *session = [AVAudioSession sharedInstance];
         
@@ -326,7 +330,7 @@ NSString *tr = @"";
 
         }
         else {
-            [_recordFeedbackImage stopAnimating];
+        //    [_recordFeedbackImage stopAnimating];
             _recordFeedbackImage.hidden = YES;
             
             NSLog(@"recordAudio -DUDE NOT recording");
@@ -338,13 +342,26 @@ NSString *tr = @"";
         }
     }
 }
+
+- (IBAction)longPressAction:(id)sender {
     
+   // NSLog(@"got gesture...");
+    if (_longPressGesture.state == UIGestureRecognizerStateBegan) {
+     //   NSLog(@"begin!");
+        [self recordAudio:nil];
+    }
+    else if (_longPressGesture.state == UIGestureRecognizerStateEnded) {
+        [self stopAudio:nil];
+
+    }
+}
+
 - (IBAction)playAudio:(id)sender {
     if (!_audioRecorder.recording)
     {
         NSLog(@"playAudio %@",_audioRecorder.url);
         //_stopButton.enabled = YES;
-        _recordButton.enabled = NO;
+        //_recordButton.enabled = NO;
         
         NSError *error;
         
@@ -370,7 +387,7 @@ NSString *tr = @"";
     _recordButton.enabled = YES;
     
     NSLog(@"stopAudio --------- ");
-    [_recordFeedbackImage stopAnimating];
+   // [_recordFeedbackImage stopAnimating];
     _recordFeedbackImage.hidden = YES;
     
     if (_audioRecorder.recording)
@@ -387,6 +404,22 @@ NSString *tr = @"";
             [_audioPlayer stop];
         }
     }
+}
+
+- (IBAction)startOneOffTimer:sender {
+    
+    
+    
+    [NSTimer scheduledTimerWithTimeInterval:2.0
+     
+                                     target:self
+     
+                                   selector:@selector(targetMethod:)
+     
+                                   userInfo:[self userInfo]
+     
+                                    repeats:NO];
+    
 }
 
 
