@@ -61,13 +61,7 @@
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
     [self setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
-    
-    
-  //  UIBarButtonItem *customBarItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(popView)];
-    
-   // self.navigationItem.leftBarButtonItem = customBarItem;
-  //  [self.navigationItem.leftBarButtonItem setTitle:[NSString stringWithFormat:@"Chapter %@",currentChapter]];
-    
+   
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
@@ -180,9 +174,6 @@ NSString *currentChapter;
     itemController.paths = _paths;
     itemController.url = [self getURL];
     [itemController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
-
-    //[itemController setTitle:<#(NSString *)#>]
 }
-
 
 @end

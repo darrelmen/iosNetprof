@@ -16,9 +16,9 @@
 @property (strong, nonatomic) AVAudioRecorder *audioRecorder;
 @property (strong, nonatomic) AVAudioPlayer *audioPlayer;
 
+@property (strong, nonatomic) IBOutlet UIButton *playRefAudioButton;
 @property (strong, nonatomic) IBOutlet UIButton *recordButton;
 @property (strong, nonatomic) IBOutlet UIButton *playButton;
-@property (strong, nonatomic) IBOutlet UIButton *stopButton;
 
 - (IBAction)recordAudio:(id)sender;
 - (IBAction)playAudio:(id)sender;
@@ -29,7 +29,6 @@
 @property (strong, nonatomic) IBOutlet UILabel *transliteration;
 @property (strong, nonatomic) IBOutlet UILabel *english;
 @property (strong, nonatomic) IBOutlet NSString *refAudioPath;
-@property (strong, nonatomic) IBOutlet UIButton *playRefAudioButton;
 @property unsigned long index;
 @property NSArray *items;
 @property NSArray *englishWords;

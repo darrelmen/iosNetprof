@@ -22,12 +22,7 @@
 	// Do any additional setup after loading the view, typically from a nib.
     _playButton.enabled = NO;
     
-    
-    
-    
-  //  [self configurePlayButton ];
-    
-    _stopButton.enabled = NO;
+   // _stopButton.enabled = NO;
     [self setPlayRefEnabled];
     
     // Load images
@@ -84,9 +79,6 @@
     [_foreignLang setText:fl];
     [_english setText:en];
     [_transliteration setText:tr];
-    
- //   [self setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
-
     
     _annotatedGauge2.minValue = 0;
     _annotatedGauge2.maxValue = 100;
@@ -172,7 +164,7 @@ NSString *tr = @"";
 (AVAudioPlayer *)player successfully:(BOOL)flag
 {
     _recordButton.enabled = YES;
-    _stopButton.enabled = NO;
+    //_stopButton.enabled = NO;
 }
 
 - (void)audioPlayerDecodeErrorDidOccur:
@@ -283,7 +275,7 @@ NSString *tr = @"";
         //NSLog(@"recordAudio");
 
         _playButton.enabled = NO;
-        _stopButton.enabled = YES;
+//        _stopButton.enabled = YES;
         _recordButton.enabled = NO;
         
         AVAudioSession *session = [AVAudioSession sharedInstance];
@@ -315,7 +307,7 @@ NSString *tr = @"";
     if (!_audioRecorder.recording)
     {
         NSLog(@"playAudio %@",_audioRecorder.url);
-        _stopButton.enabled = YES;
+        //_stopButton.enabled = YES;
         _recordButton.enabled = NO;
         
         NSError *error;
@@ -338,7 +330,7 @@ NSString *tr = @"";
 
 
 - (IBAction)stopAudio:(id)sender {
-    _stopButton.enabled = NO;
+  //  _stopButton.enabled = NO;
     _playButton.enabled = YES;
     _recordButton.enabled = YES;
     
