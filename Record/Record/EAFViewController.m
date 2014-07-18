@@ -78,7 +78,15 @@
     
     [_foreignLang setText:fl];
     [_english setText:en];
+    
+    _english.lineBreakMode = NSLineBreakByWordWrapping;
+    _english.numberOfLines = 0;
+    
     [_transliteration setText:tr];
+    
+    _transliteration.lineBreakMode = NSLineBreakByWordWrapping;
+    _transliteration.numberOfLines = 0;
+    
     _foreignLang.lineBreakMode = NSLineBreakByWordWrapping;
     _foreignLang.numberOfLines = 0;
     
