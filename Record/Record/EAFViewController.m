@@ -308,8 +308,9 @@ NSString *tr = @"";
 
         _playButton.enabled = NO;
         _recordButton.enabled = NO;
-        [_recordFeedbackImage startAnimating];
+
         _recordFeedbackImage.hidden = NO;
+        [_recordFeedbackImage startAnimating];
         
         AVAudioSession *session = [AVAudioSession sharedInstance];
         
@@ -365,12 +366,11 @@ NSString *tr = @"";
 
 
 - (IBAction)stopAudio:(id)sender {
-  //  _stopButton.enabled = NO;
     _playButton.enabled = YES;
     _recordButton.enabled = YES;
     
     NSLog(@"stopAudio --------- ");
-    [_recordFeedbackImage startAnimating];
+    [_recordFeedbackImage stopAnimating];
     _recordFeedbackImage.hidden = YES;
     
     if (_audioRecorder.recording)
@@ -428,7 +428,7 @@ NSString *tr = @"";
     
     NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
     
-    NSLog(@"file length %d",[postData length]);
+   // NSLog(@"file length %@",postLength);
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
     NSLog(@"talking to %@",_url);
 
