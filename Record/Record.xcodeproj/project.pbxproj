@@ -9,10 +9,7 @@
 /* Begin PBXBuildFile section */
 		B66461F2196F193900943BC2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66461F1196F193900943BC2 /* AVFoundation.framework */; };
 		B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */; };
-		B66BACB21970568D00E28ECC /* EAFChapterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACB11970568D00E28ECC /* EAFChapterViewController.m */; };
-		B66BACB519707FCB00E28ECC /* EAFChapterContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACB419707FCB00E28ECC /* EAFChapterContainer.m */; };
 		B66BACB8197094C000E28ECC /* EAFItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACB7197094C000E28ECC /* EAFItemTableViewController.m */; };
-		B66BACBB1970975F00E28ECC /* EAFExerciseTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACBA1970975F00E28ECC /* EAFExerciseTableViewCell.m */; };
 		B66BACBE1970A2FE00E28ECC /* NewProF1.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACBD1970A2FE00E28ECC /* NewProF1.png */; };
 		B66BACC11970A5CD00E28ECC /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACC01970A5CD00E28ECC /* play.png */; };
 		B66BACC31970A5DC00E28ECC /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACC21970A5DC00E28ECC /* pause.png */; };
@@ -22,6 +19,12 @@
 		B67DDE371974882A00B1FBB6 /* MSNeedleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B67DDE2E1974882A00B1FBB6 /* MSNeedleView.m */; };
 		B67DDE381974882A00B1FBB6 /* MSRangeGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B67DDE301974882A00B1FBB6 /* MSRangeGauge.m */; };
 		B67DDE391974882A00B1FBB6 /* MSSimpleGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B67DDE321974882A00B1FBB6 /* MSSimpleGauge.m */; };
+		B68A5C2E1979A6140036B90C /* MRoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C2D1979A6140036B90C /* MRoundedButton.m */; };
+		B68A5C301979A62D0036B90C /* Vendors in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C2F1979A62D0036B90C /* Vendors */; };
+		B68A5C321979AE7E0036B90C /* playBigger2.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C311979AE7E0036B90C /* playBigger2.png */; };
+		B68A5C341979B3480036B90C /* mic-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C331979B3480036B90C /* mic-icon.png */; };
+		B68A5C361979B4590036B90C /* mic-4.svg in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C351979B4590036B90C /* mic-4.svg */; };
+		B68A5C381979B4AE0036B90C /* micBigger.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C371979B4AE0036B90C /* micBigger.png */; };
 		B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96A1976F27100E8F1D5 /* media-record-4_32x32.png */; };
 		B6A8D96D1976F27C00E8F1D5 /* media-record-3_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96C1976F27C00E8F1D5 /* media-record-3_32x32.png */; };
 		B6A8D97719770C2100E8F1D5 /* Icon-40.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96F19770C2100E8F1D5 /* Icon-40.png */; };
@@ -67,14 +70,8 @@
 		B66461F1196F193900943BC2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B66BACAD197055F500E28ECC /* EAFChapterTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFChapterTableViewController.h; sourceTree = "<group>"; };
 		B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFChapterTableViewController.m; sourceTree = "<group>"; };
-		B66BACB01970568D00E28ECC /* EAFChapterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFChapterViewController.h; sourceTree = "<group>"; };
-		B66BACB11970568D00E28ECC /* EAFChapterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFChapterViewController.m; sourceTree = "<group>"; };
-		B66BACB319707FCB00E28ECC /* EAFChapterContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFChapterContainer.h; sourceTree = "<group>"; };
-		B66BACB419707FCB00E28ECC /* EAFChapterContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFChapterContainer.m; sourceTree = "<group>"; };
 		B66BACB6197094C000E28ECC /* EAFItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFItemTableViewController.h; sourceTree = "<group>"; };
 		B66BACB7197094C000E28ECC /* EAFItemTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFItemTableViewController.m; sourceTree = "<group>"; };
-		B66BACB91970975F00E28ECC /* EAFExerciseTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFExerciseTableViewCell.h; sourceTree = "<group>"; };
-		B66BACBA1970975F00E28ECC /* EAFExerciseTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFExerciseTableViewCell.m; sourceTree = "<group>"; };
 		B66BACBD1970A2FE00E28ECC /* NewProF1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NewProF1.png; sourceTree = "<group>"; };
 		B66BACC01970A5CD00E28ECC /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
 		B66BACC21970A5DC00E28ECC /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause.png; sourceTree = "<group>"; };
@@ -92,6 +89,13 @@
 		B67DDE311974882A00B1FBB6 /* MSSimpleGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSSimpleGauge.h; sourceTree = "<group>"; };
 		B67DDE321974882A00B1FBB6 /* MSSimpleGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSSimpleGauge.m; sourceTree = "<group>"; };
 		B67DDE331974882A00B1FBB6 /* MSSimpleGaugeSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSSimpleGaugeSubclass.h; sourceTree = "<group>"; };
+		B68A5C2C1979A6140036B90C /* MRoundedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRoundedButton.h; sourceTree = "<group>"; };
+		B68A5C2D1979A6140036B90C /* MRoundedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRoundedButton.m; sourceTree = "<group>"; };
+		B68A5C2F1979A62D0036B90C /* Vendors */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Vendors; sourceTree = "<group>"; };
+		B68A5C311979AE7E0036B90C /* playBigger2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = playBigger2.png; sourceTree = "<group>"; };
+		B68A5C331979B3480036B90C /* mic-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mic-icon.png"; sourceTree = "<group>"; };
+		B68A5C351979B4590036B90C /* mic-4.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "mic-4.svg"; sourceTree = "<group>"; };
+		B68A5C371979B4AE0036B90C /* micBigger.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = micBigger.png; sourceTree = "<group>"; };
 		B6A8D96A1976F27100E8F1D5 /* media-record-4_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "media-record-4_32x32.png"; sourceTree = "<group>"; };
 		B6A8D96C1976F27C00E8F1D5 /* media-record-3_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "media-record-3_32x32.png"; sourceTree = "<group>"; };
 		B6A8D96F19770C2100E8F1D5 /* Icon-40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-40.png"; sourceTree = "<group>"; };
@@ -167,6 +171,10 @@
 		B66BACBF1970A57B00E28ECC /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B68A5C371979B4AE0036B90C /* micBigger.png */,
+				B68A5C351979B4590036B90C /* mic-4.svg */,
+				B68A5C331979B3480036B90C /* mic-icon.png */,
+				B68A5C311979AE7E0036B90C /* playBigger2.png */,
 				B6A8D96C1976F27C00E8F1D5 /* media-record-3_32x32.png */,
 				B6A8D96A1976F27100E8F1D5 /* media-record-4_32x32.png */,
 				B6D001791970ADAC009554D5 /* squareStop.png */,
@@ -200,6 +208,16 @@
 			path = ../../MSSimpleGauge/SimpleGauge/Gauges;
 			sourceTree = "<group>";
 		};
+		B68A5C2B1979A6050036B90C /* RoundButton */ = {
+			isa = PBXGroup;
+			children = (
+				B68A5C2F1979A62D0036B90C /* Vendors */,
+				B68A5C2C1979A6140036B90C /* MRoundedButton.h */,
+				B68A5C2D1979A6140036B90C /* MRoundedButton.m */,
+			);
+			name = RoundButton;
+			sourceTree = "<group>";
+		};
 		B6A8D96E19770C1000E8F1D5 /* icons */ = {
 			isa = PBXGroup;
 			children = (
@@ -214,6 +232,13 @@
 			);
 			name = icons;
 			path = Record.xcodeproj;
+			sourceTree = "<group>";
+		};
+		B6B9F393197886C300CD0140 /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = iPad;
 			sourceTree = "<group>";
 		};
 		F6A5681118ECA98A00B844C6 = {
@@ -253,6 +278,8 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
+				B68A5C2B1979A6050036B90C /* RoundButton */,
+				B6B9F393197886C300CD0140 /* iPad */,
 				B6B9F390197827A700CD0140 /* EAFLanguageTableViewController.h */,
 				B6B9F391197827A700CD0140 /* EAFLanguageTableViewController.m */,
 				B66BACAD197055F500E28ECC /* EAFChapterTableViewController.h */,
@@ -264,14 +291,8 @@
 				F6A5683318ECA98B00B844C6 /* EAFViewController.m */,
 				F6A5683518ECA98B00B844C6 /* Images.xcassets */,
 				F6A5682418ECA98A00B844C6 /* Supporting Files */,
-				B66BACB01970568D00E28ECC /* EAFChapterViewController.h */,
-				B66BACB11970568D00E28ECC /* EAFChapterViewController.m */,
-				B66BACB319707FCB00E28ECC /* EAFChapterContainer.h */,
-				B66BACB419707FCB00E28ECC /* EAFChapterContainer.m */,
 				B66BACB6197094C000E28ECC /* EAFItemTableViewController.h */,
 				B66BACB7197094C000E28ECC /* EAFItemTableViewController.m */,
-				B66BACB91970975F00E28ECC /* EAFExerciseTableViewCell.h */,
-				B66BACBA1970975F00E28ECC /* EAFExerciseTableViewCell.m */,
 				B6D0017B1970B091009554D5 /* EAFExercise.h */,
 				B6D0017C1970B091009554D5 /* EAFExercise.m */,
 			);
@@ -394,15 +415,20 @@
 				B66BACC11970A5CD00E28ECC /* play.png in Resources */,
 				B6D001761970ACD3009554D5 /* record.png in Resources */,
 				B66BACC31970A5DC00E28ECC /* pause.png in Resources */,
+				B68A5C361979B4590036B90C /* mic-4.svg in Resources */,
 				B6A8D97C19770C2100E8F1D5 /* Icon-76@2x.png in Resources */,
 				B6D001781970AD28009554D5 /* record24.png in Resources */,
 				B6A8D97D19770C2100E8F1D5 /* Icon-Small.png in Resources */,
 				B66BACBE1970A2FE00E28ECC /* NewProF1.png in Resources */,
 				B6D0017A1970ADAC009554D5 /* squareStop.png in Resources */,
+				B68A5C301979A62D0036B90C /* Vendors in Resources */,
 				B6A8D97719770C2100E8F1D5 /* Icon-40.png in Resources */,
 				B6A8D97819770C2100E8F1D5 /* Icon-40@2x.png in Resources */,
 				B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */,
+				B68A5C381979B4AE0036B90C /* micBigger.png in Resources */,
 				B6A8D97A19770C2100E8F1D5 /* Icon-60@2x.png in Resources */,
+				B68A5C321979AE7E0036B90C /* playBigger2.png in Resources */,
+				B68A5C341979B3480036B90C /* mic-icon.png in Resources */,
 				F6A5682818ECA98A00B844C6 /* InfoPlist.strings in Resources */,
 				B6A8D97919770C2100E8F1D5 /* Icon-60.png in Resources */,
 				F6A5683118ECA98B00B844C6 /* Main.storyboard in Resources */,
@@ -431,11 +457,9 @@
 				B6B9F392197827A700CD0140 /* EAFLanguageTableViewController.m in Sources */,
 				F6A5683418ECA98B00B844C6 /* EAFViewController.m in Sources */,
 				B67DDE351974882A00B1FBB6 /* MSArcLayer.m in Sources */,
+				B68A5C2E1979A6140036B90C /* MRoundedButton.m in Sources */,
 				B67DDE391974882A00B1FBB6 /* MSSimpleGauge.m in Sources */,
-				B66BACBB1970975F00E28ECC /* EAFExerciseTableViewCell.m in Sources */,
-				B66BACB21970568D00E28ECC /* EAFChapterViewController.m in Sources */,
 				B67DDE361974882A00B1FBB6 /* MSGradientArcLayer.m in Sources */,
-				B66BACB519707FCB00E28ECC /* EAFChapterContainer.m in Sources */,
 				B67DDE341974882A00B1FBB6 /* MSAnnotatedGauge.m in Sources */,
 				F6A5682E18ECA98A00B844C6 /* EAFAppDelegate.m in Sources */,
 				B67DDE371974882A00B1FBB6 /* MSNeedleView.m in Sources */,
@@ -569,8 +593,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -585,8 +611,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

@@ -7,6 +7,7 @@
 //
 
 #import "EAFViewController.h"
+#import "MRoundedButton.h"
 #import "math.h"
 
 @interface EAFViewController ()
@@ -20,6 +21,12 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     _playButton.enabled = NO;
+    
+    
+    
+    
+  //  [self configurePlayButton ];
+    
     _stopButton.enabled = NO;
     [self setPlayRefEnabled];
     
@@ -88,6 +95,69 @@
     _annotatedGauge2.value = 0;
 }
 
+- (void) configurePlayButton {
+//    CGRect backgroundRect = CGRectMake(0,
+//                                       backgroundViewHeight * i,
+//                                       backgroundViewWidth,
+//                                       backgroundViewHeight);
+//    MRHollowBackgroundView *backgroundView = [[MRHollowBackgroundView alloc] initWithFrame:backgroundRect];
+//    backgroundView.foregroundColor = foregroundColorArray[i];
+//    [self.view addSubview:backgroundView];
+    
+//    UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+//    imageView.contentMode = UIViewContentModeScaleAspectFill;
+//    [imageView setImageToBlur:[UIImage imageNamed:@"pic"] completionBlock:NULL];
+//    [self.view addSubview:imageView];
+//    
+//    CGFloat backgroundViewHeight = ceilf(CGRectGetHeight([UIScreen mainScreen].bounds)/ 3.0);
+//    CGFloat backgroundViewWidth = CGRectGetWidth(self.view.bounds);
+    
+//    NSArray *foregroundColorArray = @[[UIColor whiteColor],
+//                                      [[UIColor whiteColor] colorWithAlphaComponent:0.5],
+//                                      [[UIColor blackColor] colorWithAlphaComponent:0.5]];
+//
+//    CGRect backgroundRect = CGRectMake(0,
+//                                       0,
+//                                       backgroundViewWidth,
+//                                       backgroundViewHeight);
+//    MRHollowBackgroundView *backgroundView = [[MRHollowBackgroundView alloc] initWithFrame:backgroundRect];
+//    backgroundView.foregroundColor = [UIColor whiteColor];
+//    [self.view addSubview:backgroundView];
+    
+    
+    CGFloat buttonSize =  80;
+    CGRect buttonRect = CGRectMake(20,
+                                   80,
+                                   buttonSize,
+                                   buttonSize);
+    MRoundedButton *button = [[MRoundedButton alloc] initWithFrame:buttonRect
+                                                       buttonStyle:[@(MRoundedButtonCentralImage) integerValue]
+                                              appearanceIdentifier:@"playButtonRounded"];
+    button.backgroundColor = [UIColor lightGrayColor];
+    
+
+     //   button.textLabel.text = @"7";
+       // button.textLabel.font = [UIFont boldSystemFontOfSize:50];
+       // button.detailTextLabel.text = @"P Q R S";
+      //  button.detailTextLabel.font = [UIFont systemFontOfSize:10];
+        button.imageView.image = [UIImage imageNamed:@"playBigger2"];
+    
+   // _playButton = button;
+    [self.view addSubview:button];
+    
+    UITapGestureRecognizer *singleFingerTap =
+    [[UITapGestureRecognizer alloc] initWithTarget:self
+                                            action:@selector(handleSingleTap:)];
+    [button addGestureRecognizer:singleFingerTap];
+
+}
+
+//The event handling method
+- (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
+   // CGPoint location = [recognizer locationInView:[recognizer.view superview]];
+    [self playRefAudio:nil];
+    //Do stuff here...
+}
 
 - (void)respondToSwipe {
     NSString *flAtIndex = [_items objectAtIndex:_index];
@@ -128,8 +198,12 @@
     }
 }
 
+- (IBAction)recordTouchDown:(id)sender {
+    [self recordAudio:sender];
+}
 
 NSString *fl = @"";
+
 NSString *en = @"";
 NSString *tr = @"";
 
@@ -332,7 +406,7 @@ NSString *tr = @"";
             NSLog(@"recordAudio -DUDE NOT recording");
             
             NSLog(@"Domain: %@", error.domain);
-            NSLog(@"Error Code: %d", error.code);
+            NSLog(@"Error Code: %ld", error.code);
             NSLog(@"Description: %@", [error localizedDescription]);
             NSLog(@"Reason: %@", [error localizedFailureReason]);
         }
@@ -343,7 +417,7 @@ NSString *tr = @"";
     if (!_audioRecorder.recording)
     {
         
-        NSLog(@"playAudio");
+        NSLog(@"playAudio %@",_audioRecorder.url);
         _stopButton.enabled = YES;
         _recordButton.enabled = NO;
         
