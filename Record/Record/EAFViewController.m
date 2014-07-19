@@ -114,6 +114,9 @@
     _foreignLang.lineBreakMode = NSLineBreakByWordWrapping;
     _foreignLang.numberOfLines = 0;
     
+    _scoreDisplay.lineBreakMode = NSLineBreakByWordWrapping;
+    _scoreDisplay.numberOfLines = 0;
+    
     _annotatedGauge2.minValue = 0;
     _annotatedGauge2.maxValue = 100;
 //    _annotatedGauge2.startRangeLabel.text = @"0";
@@ -198,27 +201,41 @@ NSString *tr = @"";
 (AVAudioPlayer *)player successfully:(BOOL)flag
 {
     _recordButton.enabled = YES;
-    //_stopButton.enabled = NO;
 }
 
 - (void)audioPlayerDecodeErrorDidOccur:
 (AVAudioPlayer *)player error:(NSError *)error
 {
     NSLog(@"Decode Error occurred");
+    
 }
 
 - (void)audioRecorderDidFinishRecording:
 (AVAudioRecorder *)recorder successfully:(BOOL)flag
 {
     NSLog(@"Recording stopped!!!! ");
-
-    [self postAudio2];
+    
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
+    CMTime time = asset.duration;
+    double durationInSeconds = CMTimeGetSeconds(time);
+    
+    NSLog(@"duration was %f",durationInSeconds);
+    
+    if (durationInSeconds > 0.3) {
+        [self postAudio2];
+    }
+    else {
+        [_scoreDisplay setText:@"Recording too short."];
+    }
 }
 
 - (void)audioRecorderEncodeErrorDidOccur:
 (AVAudioRecorder *)recorder error:(NSError *)error
 {
     NSLog(@"Encode Error occurred");
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Error recording..." message: @"Didn't record audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alert show];
 }
 
 
@@ -292,15 +309,10 @@ NSString *tr = @"";
             NSLog(@"player status failed");
 
             [_player removeObserver:self forKeyPath:@"status"];
-            //_player = nil;
-
             _playRefAudioButton.enabled = YES;
 
         }
     }
-    //else if (object == _playerItem) {
-        //NSLog(@"got item status %@ %d",keyPath,_playerItem.status);
-    //}
     else {
         NSLog(@"ignoring value... %@",keyPath);
         //[super observeValueForKeyPath:object change:change context:context];
