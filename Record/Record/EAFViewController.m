@@ -210,6 +210,9 @@ NSString *tr = @"";
 - (void)audioRecorderDidFinishRecording:
 (AVAudioRecorder *)recorder successfully:(BOOL)flag
 {
+    NSLog(@"Recording stopped!!!! ");
+
+    [self postAudio2];
 }
 
 - (void)audioRecorderEncodeErrorDidOccur:
@@ -330,7 +333,6 @@ NSString *tr = @"";
 
         }
         else {
-        //    [_recordFeedbackImage stopAnimating];
             _recordFeedbackImage.hidden = YES;
             
             NSLog(@"recordAudio -DUDE NOT recording");
@@ -395,7 +397,6 @@ NSString *tr = @"";
         NSLog(@"stopAudio -stop");
         
         [_audioRecorder stop];
-        [self postAudio2];
         
     } else {
         NSLog(@"stopAudio not recording");
