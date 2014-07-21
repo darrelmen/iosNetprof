@@ -57,7 +57,6 @@
 @property (strong) NSTimer *repeatingTimer;
 - (NSDictionary *)userInfo;
 
-- (void)targetMethod:(NSTimer*)theTimer;
 - (void)invocationMethod:(NSDate *)date;
 @property (strong, nonatomic) IBOutlet UIImageView *recordFeedbackImage;
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;

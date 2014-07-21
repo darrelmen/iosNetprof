@@ -97,7 +97,7 @@
     }
     
     _audioRecorder.delegate = self;
-    _audioRecorder.meteringEnabled = YES;
+    //_audioRecorder.meteringEnabled = YES;
     [_audioRecorder prepareToRecord];
     
     [_foreignLang setText:fl];
@@ -165,29 +165,25 @@
     }
 }
 
-- (IBAction)recordTouchDown:(id)sender {
-    [self recordAudio:sender];
-}
-
 NSString *fl = @"";
 NSString *en = @"";
 NSString *tr = @"";
 
 -(void) setForeignText:(NSString *)foreignLangText
 {
-    NSLog(@"setForeignText now %@",foreignLangText);
+//    NSLog(@"setForeignText now %@",foreignLangText);
     fl = foreignLangText;
 }
 
 -(void) setEnglishText:(NSString *)english
 {
-    NSLog(@"setEnglishText now %@",english);
+//    NSLog(@"setEnglishText now %@",english);
     en = english;
 }
 
 -(void) setTranslitText:(NSString *)translit
 {
-    NSLog(@"setTranslitText now %@",translit);
+ //   NSLog(@"setTranslitText now %@",translit);
     tr = translit;
 }
 
@@ -213,13 +209,15 @@ NSString *tr = @"";
 - (void)audioRecorderDidFinishRecording:
 (AVAudioRecorder *)recorder successfully:(BOOL)flag
 {
-    NSLog(@"Recording stopped!!!! ");
-    
+    //NSLog(@"Recording stopped!!!! ");
+    NSLog(@"audioRecorderDidFinishRecording time = %f",CFAbsoluteTimeGetCurrent());
+
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
     CMTime time = asset.duration;
     double durationInSeconds = CMTimeGetSeconds(time);
     
-    NSLog(@"duration was %f",durationInSeconds);
+    NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs event       %f diff %f",durationInSeconds, (now-then2), (now-then2)-durationInSeconds );
+    NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs gesture end %f diff %f",durationInSeconds, (gestureEnd-then2), (gestureEnd-then2)-durationInSeconds );
     
     if (durationInSeconds > 0.3) {
         [self postAudio2];
@@ -240,9 +238,7 @@ NSString *tr = @"";
 
 
 - (IBAction)playRefAudio:(id)sender {
-    
     NSURL *url = [NSURL URLWithString:_refAudioPath];
-    
     NSLog(@"playRefAudio URL %@", _refAudioPath);
  
    NSString *PlayerStatusContext;
@@ -310,38 +306,47 @@ NSString *tr = @"";
 
             [_player removeObserver:self forKeyPath:@"status"];
             _playRefAudioButton.enabled = YES;
-
         }
     }
     else {
         NSLog(@"ignoring value... %@",keyPath);
-        //[super observeValueForKeyPath:object change:change context:context];
     }
 }
 
+CFAbsoluteTime then2 ;
+CFAbsoluteTime now;
+
+- (void)showRecordingFeedback {
+    //NSLog(@"recordAudio");
+    NSLog(@"showRecordingFeedback time = %f",CFAbsoluteTimeGetCurrent());
+
+    _playButton.enabled = NO;
+    _recordButton.enabled = NO;
+    _recordFeedbackImage.hidden = NO;
+}
 
 - (IBAction)recordAudio:(id)sender {
+    then2 = CFAbsoluteTimeGetCurrent();
+    NSLog(@"recordAudio time = %f",then2);
+
+    NSLog(@"recordAudio -------- ");
+
     if (!_audioRecorder.recording)
     {
-        //NSLog(@"recordAudio");
+        //[self showRecordingFeedback];
+        NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
 
-        _playButton.enabled = NO;
-        _recordButton.enabled = NO;
-
-        _recordFeedbackImage.hidden = NO;
-      //  [_recordFeedbackImage startAnimating];
-        
-        AVAudioSession *session = [AVAudioSession sharedInstance];
+        [self startRecordingFeedbackWithDelay];
         
         NSError *error = nil;
-
-        [session setActive:YES error:&error];
 
         [_audioRecorder record];
         
         if (_audioRecorder.recording)
         {
-            NSLog(@"recordAudio -recording");
+            CFAbsoluteTime recordingBegins = CFAbsoluteTimeGetCurrent();
+
+            NSLog(@"recordAudio -recording %f vs begin %f diff %f ",then2,recordingBegins,(recordingBegins-then2));
 
         }
         else {
@@ -357,16 +362,17 @@ NSString *tr = @"";
     }
 }
 
+double gestureEnd;
 - (IBAction)longPressAction:(id)sender {
-    
-   // NSLog(@"got gesture...");
     if (_longPressGesture.state == UIGestureRecognizerStateBegan) {
-     //   NSLog(@"begin!");
         [self recordAudio:nil];
     }
     else if (_longPressGesture.state == UIGestureRecognizerStateEnded) {
-        [self stopAudio:nil];
+       // [self stopAudio:nil];
+        gestureEnd = CFAbsoluteTimeGetCurrent();
+        NSLog(@"longPressAction now  time = %f",gestureEnd);
 
+         [self stopRecordingWithDelay:nil];
     }
 }
 
@@ -397,17 +403,23 @@ NSString *tr = @"";
 
 
 - (IBAction)stopAudio:(id)sender {
+    now = CFAbsoluteTimeGetCurrent();
+    //NSLog(@"then time was %f",then2);
+    NSLog(@"stopAudio Event duration was %f",(now-then2));
+    NSLog(@"stopAudio now  time =        %f",now);
+    
     _playButton.enabled = YES;
     _recordButton.enabled = YES;
     
-    NSLog(@"stopAudio --------- ");
+   // NSLog(@"stopAudio --------- ");
    // [_recordFeedbackImage stopAnimating];
     _recordFeedbackImage.hidden = YES;
     
     if (_audioRecorder.recording)
     {
-        NSLog(@"stopAudio -stop");
-        
+       // NSLog(@"stopAudio -stop");
+        NSLog(@"stopAudio stop time = %f",CFAbsoluteTimeGetCurrent());
+
         [_audioRecorder stop];
         
     } else {
@@ -419,42 +431,27 @@ NSString *tr = @"";
     }
 }
 
-- (IBAction)startOneOffTimer:sender {
+- (IBAction)stopRecordingWithDelay:sender {
     
-    
-    
-    [NSTimer scheduledTimerWithTimeInterval:2.0
-     
+    [NSTimer scheduledTimerWithTimeInterval:0.33
                                      target:self
-     
-                                   selector:@selector(targetMethod:)
-     
-                                   userInfo:[self userInfo]
-     
+                                   selector:@selector(stopAudio:)
+                                   userInfo:nil
                                     repeats:NO];
     
 }
 
-
-- (void)startRepeatingTimer {
-    // Cancel a preexisting timer.
+- (IBAction)startRecordingFeedbackWithDelay {
+    [NSTimer scheduledTimerWithTimeInterval:0.1
+                                     target:self
+                                   selector:@selector(showRecordingFeedback)
+                                   userInfo:nil
+                                    repeats:NO];
     
-    [self.repeatingTimer invalidate];
-    
-    NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:1
-                                                      target:self selector:@selector(targetMethod:)
-                                                    userInfo:[self userInfo] repeats:YES];
-    
-    self.repeatingTimer = timer;
 }
 
 - (NSDictionary *)userInfo {
     return @{ @"StartDate" : [NSDate date] };
-}
-
-- (void)targetMethod:(NSTimer*)theTimer {
-    NSDate *startDate = [[theTimer userInfo] objectForKey:@"StartDate"];
-    NSLog(@"Timer started on %@", startDate);
 }
 
 - (void)invocationMethod:(NSDate *)date {
@@ -495,7 +492,6 @@ NSString *tr = @"";
 }
 
 -(void)postAudio2 {
-    
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
     NSLog(@"talking to %@",_url);
     
