@@ -41,27 +41,36 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
+- (void)askServerForJson {
+    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet", _language];
+    
+    NSURL *url = [NSURL URLWithString:baseurl];
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+    
+    [urlRequest setHTTPMethod: @"GET"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded"
+      forHTTPHeaderField:@"Content-Type"];
+    
+    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+    [connection start];
+}
+
 - (void)loadInitialData {
     NSData *cachedData = [self getCachedJson];
-    if (cachedData) {
+    if (cachedData && [cachedData length] > 100) {
         NSLog(@"using cached json!");
         _responseData = [NSMutableData dataWithData:cachedData];
-        [self useJsonChapterData];
+        BOOL dataIsValid = [self useJsonChapterData];
+        if (!dataIsValid) {
+            NSLog(@"asking server for json!");
+           [self askServerForJson];
+        }
+
     }
     else {
         
-        NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet", _language];
-        
-        NSURL *url = [NSURL URLWithString:baseurl];
-        NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-        [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-        
-        [urlRequest setHTTPMethod: @"GET"];
-        [urlRequest setValue:@"application/x-www-form-urlencoded"
-          forHTTPHeaderField:@"Content-Type"];
-        
-        NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
-        [connection start];
+        [self askServerForJson];
     }
 }
 
@@ -120,7 +129,7 @@
 
 NSDictionary* chapterInfo;
 
-- (void)useJsonChapterData {
+- (BOOL)useJsonChapterData {
     // NSLog(@"go response %@",stringVersion);
     
     NSError * error;
@@ -131,6 +140,7 @@ NSDictionary* chapterInfo;
     
     if (error) {
         NSLog(@"error %@",error.description);
+        return false;
     }
     
     // NSLog(@"size %d",json.count);
@@ -147,6 +157,8 @@ NSDictionary* chapterInfo;
     // NSLog(@"chapters %d",myArray.count);
     chapterInfo = json;
     [[self tableView] reloadData];
+    
+    return true;
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
@@ -155,8 +167,10 @@ NSDictionary* chapterInfo;
     
     //NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
     
-    [self useJsonChapterData];
-    [self writeToCache:_responseData];
+    BOOL dataIsValid = [self useJsonChapterData];
+    if (dataIsValid) {
+        [self writeToCache:_responseData];
+    }
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
