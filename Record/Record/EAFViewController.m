@@ -157,8 +157,8 @@
     
     // Print out a description of the data sources for the built-in microphone
     NSLog(@"There are %u data sources for port :\"%@\"", (unsigned)[builtInMicPort.dataSources count], builtInMicPort);
-    NSLog(@"Headset port :\"%@\"",  headsetMicPort);
-    NSLog(@"Sources : %@", builtInMicPort.dataSources);
+   // NSLog(@"Headset port :\"%@\"",  headsetMicPort);
+  //  NSLog(@"Sources : %@", builtInMicPort.dataSources);
     
     // prefer headset, then front mic
     if (!headsetMicPort) {

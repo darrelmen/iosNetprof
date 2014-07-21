@@ -28,33 +28,74 @@
 {
     [super viewDidLoad];
     
-     self.chapters = [[NSMutableArray alloc] init];
+    self.chapters = [[NSMutableArray alloc] init];
     
-//    NSLog(@"lang %@", _language);
+    //    NSLog(@"lang %@", _language);
     
     [self loadInitialData];
     
     // Uncomment the following line to preserve selection between presentations.
-     self.clearsSelectionOnViewWillAppear = NO;
+    self.clearsSelectionOnViewWillAppear = NO;
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 - (void)loadInitialData {
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet", _language];
+    NSData *cachedData = [self getCachedJson];
+    if (cachedData) {
+        NSLog(@"using cached json!");
+        _responseData = [NSMutableData dataWithData:cachedData];
+        [self useJsonChapterData];
+    }
+    else {
         
-    NSURL *url = [NSURL URLWithString:baseurl];
-    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-    
-    [urlRequest setHTTPMethod: @"GET"];
-    [urlRequest setValue:@"application/x-www-form-urlencoded"
-      forHTTPHeaderField:@"Content-Type"];
-    
-    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
-    [connection start];
+        NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet", _language];
+        
+        NSURL *url = [NSURL URLWithString:baseurl];
+        NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+        [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+        
+        [urlRequest setHTTPMethod: @"GET"];
+        [urlRequest setValue:@"application/x-www-form-urlencoded"
+          forHTTPHeaderField:@"Content-Type"];
+        
+        NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+        [connection start];
+    }
 }
+
+- (void)writeToCache:(NSData *) toWrite {
+ //   char *saves = "abcd";
+ //   NSData *data = [[NSData alloc] initWithBytes:saves length:4];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *fileName = [NSString stringWithFormat:@"%@_chapters.json",_language];
+    NSString *appFile = [documentsDirectory stringByAppendingPathComponent:fileName];
+  //  NSLog(@"writing to %@",appFile);
+    [toWrite writeToFile:appFile atomically:YES];
+}
+
+- (NSData *) getCachedJson {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+   
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *fileName = [NSString stringWithFormat:@"%@_chapters.json",_language];
+    NSString *appFile = [documentsDirectory stringByAppendingPathComponent:fileName];
+    
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:appFile];
+    
+    if (fileExists) {
+       // NSLog(@"found the cached json!");
+        NSData *data = [[NSFileManager defaultManager] contentsAtPath:appFile];
+        return data;
+    }
+    else {
+        return nil;
+    }
+    
+}
+
 
 #pragma mark NSURLConnection Delegate Methods
 
@@ -79,13 +120,8 @@
 
 NSDictionary* chapterInfo;
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    // The request is complete and data has been received
-    // You can parse the stuff in your instance variable now
-    
-    //NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
-    
-   // NSLog(@"go response %@",stringVersion);
+- (void)useJsonChapterData {
+    // NSLog(@"go response %@",stringVersion);
     
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
@@ -93,13 +129,11 @@ NSDictionary* chapterInfo;
                           options:NSJSONReadingAllowFragments
                           error:&error];
     
-    // NSJSONReadingAllowFragments
-    
     if (error) {
         NSLog(@"error %@",error.description);
     }
     
-    NSLog(@"size %d",json.count);
+    // NSLog(@"size %d",json.count);
     _chapters = [json allKeys];
     
     NSMutableArray *myArray = [NSMutableArray arrayWithArray:_chapters];
@@ -108,12 +142,21 @@ NSDictionary* chapterInfo;
     [myArray sortUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
         return [str1 compare:str2 options:(NSNumericSearch)];
     }];
-
+    
     _chapters = myArray;
-    NSLog(@"chapters %d",myArray.count);
+    // NSLog(@"chapters %d",myArray.count);
     chapterInfo = json;
     [[self tableView] reloadData];
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    // The request is complete and data has been received
+    // You can parse the stuff in your instance variable now
     
+    //NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
+    
+    [self useJsonChapterData];
+    [self writeToCache:_responseData];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
@@ -212,7 +255,7 @@ NSDictionary* chapterInfo;
     EAFItemTableViewController *itemController = [segue destinationViewController];
  
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-    NSLog(@"row %d",indexPath.row  );
+  //  NSLog(@"row %d",indexPath.row  );
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
 
     [itemController setChapterToItems:chapterInfo];
