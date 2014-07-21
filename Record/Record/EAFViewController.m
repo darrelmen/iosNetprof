@@ -194,15 +194,12 @@
                     NSLog(@"Description: %@", [theError localizedDescription]);
                     NSLog(@"Reason:      %@", [theError localizedFailureReason]);
                 }
-              // AVAudioSessionDataSourceDescription *current = [builtInMicPort preferredDataSource];
-                NSLog(@"Currently selected source is \"%@\" for port \"%@\"", builtInMicPort.selectedDataSource.dataSourceName, builtInMicPort.portName);
-                NSLog(@"There are %u data sources for port :\"%@\"", (unsigned)[builtInMicPort.dataSources count], builtInMicPort);
+           //     NSLog(@"Currently selected source is \"%@\" for port \"%@\"", builtInMicPort.selectedDataSource.dataSourceName, builtInMicPort.portName);
+           //     NSLog(@"There are %u data sources for port :\"%@\"", (unsigned)[builtInMicPort.dataSources count], builtInMicPort);
 
             }
             AVAudioSessionDataSourceDescription *pref = [builtInMicPort preferredDataSource];
-            NSLog(@"Currently preferred source is \"%@\" for port \"%@\"", pref, builtInMicPort.portName);
-
-
+           // NSLog(@"Currently preferred source is \"%@\" for port \"%@\"", pref, builtInMicPort.portName);
         }
     }
 }
@@ -356,6 +353,11 @@ NSString *tr = @"";
         }
     }
     
+    UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
+    AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
+    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+    
     _player = [AVPlayer playerWithURL:url];
     
     
@@ -491,6 +493,7 @@ double gestureEnd;
         AVAudioSession *session = [AVAudioSession sharedInstance];
 
         [session setCategory:AVAudioSessionCategoryPlayback error:nil];
+        [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
 
         _audioPlayer = [[AVAudioPlayer alloc]
                         initWithContentsOfURL:_audioRecorder.url
@@ -503,7 +506,7 @@ double gestureEnd;
             NSLog(@"Error: %@",
                   [error localizedDescription]);
         } else {
-            [_audioPlayer setVolume:1];
+            [_audioPlayer setVolume:3];
             NSLog(@"volume %f",[_audioPlayer volume]);
             [_audioPlayer play];
         }
