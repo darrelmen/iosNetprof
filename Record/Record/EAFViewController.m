@@ -70,7 +70,7 @@
         NSLog(@"%@", [setOverrideError description]);
     }
     
-    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:&error];
+    [session setCategory:AVAudioSessionCategoryRecord error:&error];
     
     if (error)
     {
@@ -97,9 +97,118 @@
     }
     
     _audioRecorder.delegate = self;
-    //_audioRecorder.meteringEnabled = YES;
+    _audioRecorder.meteringEnabled = YES;
     [_audioRecorder prepareToRecord];
     
+    [self checkAvailableMics];
+    [self configureTextFields];
+    
+    _annotatedGauge2.minValue = 0;
+    _annotatedGauge2.maxValue = 100;
+//    _annotatedGauge2.startRangeLabel.text = @"0";
+//    _annotatedGauge2.endRangeLabel.text = @"100";
+    _annotatedGauge2.fillArcFillColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
+    _annotatedGauge2.fillArcStrokeColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
+    _annotatedGauge2.value = 0;
+}
+
+- (void)checkAvailableMics {
+    NSError* theError = nil;
+    BOOL result = YES;
+    
+    AVAudioSession* myAudioSession = [AVAudioSession sharedInstance];
+    
+    result = [myAudioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:&theError];
+    if (!result)
+    {
+        NSLog(@"setCategory failed");
+    }
+    
+    result = [myAudioSession setActive:YES error:&theError];
+    if (!result)
+    {
+        NSLog(@"setActive failed");
+    }
+    
+    // Get the set of available inputs. If there are no audio accessories attached, there will be
+    // only one available input -- the built in microphone.
+    NSArray* inputs = [myAudioSession availableInputs];
+    
+    // Locate the Port corresponding to the built-in microphone.
+    AVAudioSessionPortDescription* builtInMicPort = nil;
+    AVAudioSessionPortDescription* headsetMicPort = nil;
+    for (AVAudioSessionPortDescription* port in inputs)
+    {
+        if ([port.portType isEqualToString:AVAudioSessionPortBuiltInMic])
+        {
+            builtInMicPort = port;
+            NSLog(@"found built in mic %@",port);
+
+           // break;
+        }
+        else if ([port.portType isEqualToString:AVAudioSessionPortHeadsetMic])
+        {
+            headsetMicPort = port;
+            NSLog(@"prefer headset mic!");
+            [myAudioSession setPreferredInput:port error:&theError];
+            // break;
+        }
+    }
+    
+    // Print out a description of the data sources for the built-in microphone
+    NSLog(@"There are %u data sources for port :\"%@\"", (unsigned)[builtInMicPort.dataSources count], builtInMicPort);
+    NSLog(@"Headset port :\"%@\"",  headsetMicPort);
+    NSLog(@"Sources : %@", builtInMicPort.dataSources);
+    
+    // prefer headset, then front mic
+    if (!headsetMicPort) {
+        // loop over the built-in mic's data sources and attempt to locate the front microphone
+        AVAudioSessionDataSourceDescription* frontDataSource = nil;
+        for (AVAudioSessionDataSourceDescription* source in builtInMicPort.dataSources)
+        {
+            if ([source.orientation isEqual:AVAudioSessionOrientationFront])
+            {
+                frontDataSource = source;
+                break;
+            }
+        } // end data source iteration
+        
+        if (frontDataSource)
+        {
+            NSLog(@"Currently selected source is \"%@\" for port \"%@\"", builtInMicPort.selectedDataSource.dataSourceName, builtInMicPort.portName);
+            NSLog(@"Attempting to select source \"%@\" on port \"%@\"", frontDataSource, builtInMicPort.portName);
+            
+            // Set a preference for the front data source.
+            theError = nil;
+            result = [builtInMicPort setPreferredDataSource:frontDataSource error:&theError];
+            if (!result)
+            {
+                // an error occurred. Handle it!
+                NSLog(@"setPreferredDataSource failed");
+            }
+            else {
+                
+                if (theError) {
+                    NSLog(@"Domain:      %@", theError.domain);
+                    NSLog(@"Error Code:  %ld", (long)theError.code);
+                    NSLog(@"Description: %@", [theError localizedDescription]);
+                    NSLog(@"Reason:      %@", [theError localizedFailureReason]);
+                }
+              // AVAudioSessionDataSourceDescription *current = [builtInMicPort preferredDataSource];
+                NSLog(@"Currently selected source is \"%@\" for port \"%@\"", builtInMicPort.selectedDataSource.dataSourceName, builtInMicPort.portName);
+                NSLog(@"There are %u data sources for port :\"%@\"", (unsigned)[builtInMicPort.dataSources count], builtInMicPort);
+
+            }
+            AVAudioSessionDataSourceDescription *pref = [builtInMicPort preferredDataSource];
+            NSLog(@"Currently preferred source is \"%@\" for port \"%@\"", pref, builtInMicPort.portName);
+
+
+        }
+    }
+}
+
+- (void)configureTextFields
+{
     [_foreignLang setText:fl];
     [_english setText:en];
     
@@ -116,14 +225,6 @@
     
     _scoreDisplay.lineBreakMode = NSLineBreakByWordWrapping;
     _scoreDisplay.numberOfLines = 0;
-    
-    _annotatedGauge2.minValue = 0;
-    _annotatedGauge2.maxValue = 100;
-//    _annotatedGauge2.startRangeLabel.text = @"0";
-//    _annotatedGauge2.endRangeLabel.text = @"100";
-    _annotatedGauge2.fillArcFillColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
-    _annotatedGauge2.fillArcStrokeColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
-    _annotatedGauge2.value = 0;
 }
 
 - (void)respondToSwipe {
@@ -339,7 +440,9 @@ CFAbsoluteTime now;
         [self startRecordingFeedbackWithDelay];
         
         NSError *error = nil;
-
+        AVAudioSession *session = [AVAudioSession sharedInstance];
+        
+        [session setCategory:AVAudioSessionCategoryRecord error:nil];
         [_audioRecorder record];
         
         if (_audioRecorder.recording)
@@ -379,12 +482,16 @@ double gestureEnd;
 - (IBAction)playAudio:(id)sender {
     if (!_audioRecorder.recording)
     {
+        
         NSLog(@"playAudio %@",_audioRecorder.url);
         //_stopButton.enabled = YES;
         //_recordButton.enabled = NO;
         
         NSError *error;
-        
+        AVAudioSession *session = [AVAudioSession sharedInstance];
+
+        [session setCategory:AVAudioSessionCategoryPlayback error:nil];
+
         _audioPlayer = [[AVAudioPlayer alloc]
                         initWithContentsOfURL:_audioRecorder.url
                         error:&error];
@@ -396,6 +503,8 @@ double gestureEnd;
             NSLog(@"Error: %@",
                   [error localizedDescription]);
         } else {
+            [_audioPlayer setVolume:1];
+            NSLog(@"volume %f",[_audioPlayer volume]);
             [_audioPlayer play];
         }
     }
