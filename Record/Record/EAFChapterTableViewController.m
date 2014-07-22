@@ -75,8 +75,6 @@
 }
 
 - (void)writeToCache:(NSData *) toWrite {
- //   char *saves = "abcd";
- //   NSData *data = [[NSData alloc] initWithBytes:saves length:4];
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *fileName = [NSString stringWithFormat:@"%@_chapters.json",_language];
@@ -177,7 +175,11 @@ NSDictionary* chapterInfo;
     // The request has failed for some reason!
     // Check the error var
     
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't connect to server." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
+                                                    message: @"Couldn't connect to server."
+                                                   delegate: nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
     [alert show];
 }
 
@@ -190,8 +192,7 @@ NSDictionary* chapterInfo;
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     // Return the number of sections.
     return 1;
 }

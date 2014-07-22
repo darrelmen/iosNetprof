@@ -93,18 +93,18 @@
 
 - (void)updateValueLabelAnimated:(BOOL)animated
 {
-    if ( animated )
-    {
-        [NSTimer scheduledTimerWithTimeInterval:.05
-                                         target:self
-                                       selector:@selector(incrementTimerFired:)
-                                       userInfo:nil
-                                        repeats:YES];
-    }
-    else
-    {
+//    if ( animated )
+//    {
+//        [NSTimer scheduledTimerWithTimeInterval:.05
+//                                         target:self
+//                                       selector:@selector(incrementTimerFired:)
+//                                       userInfo:nil
+//                                        repeats:YES];
+//    }
+//    else
+//    {
         [self updateValueLabelWithValue:self.value];
-    }
+//    }
 }
 //
 //- (void)setValue:(float)value animated:(BOOL)animated

@@ -8,6 +8,7 @@
 
 #import "EAFLanguageTableViewController.h"
 #import "EAFChapterTableViewController.h"
+#import "SSZipArchive.h"
 
 @interface EAFLanguageTableViewController ()
 
@@ -18,24 +19,43 @@
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
     return self;
 }
 
 NSArray *languages;
+int languageIndex = 0;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     languages = [NSArray arrayWithObjects:@"Dari", @"English",@"Farsi", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Urdu",  nil];
+ 
+    // begin process of downloading audio...
+    [self getAudioForCurrentLanguage];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+- (void)getAudioForCurrentLanguage
+{
+    NSString * dest = [self getAudioDestDir:languageIndex];
+    
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:dest];
+    if (!fileExists) {
+        NSString *langToGet = [languages objectAtIndex:languageIndex];
+        NSLog(@"getting audio for %@",langToGet);
+        NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/downloadAudio", langToGet];
+        
+        // Create the request.
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
+        
+        // Create url connection and fire request
+        NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -69,7 +89,6 @@ NSArray *languages;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
     cell.textLabel.text =  [languages objectAtIndex:indexPath.row];
-    
     
     return cell;
 }
@@ -113,6 +132,75 @@ NSArray *languages;
 }
 */
 
+#pragma mark NSURLConnection Delegate Methods
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+    // A response has been received, this is where we initialize the instance var you created
+    // so that we can append data to it in the didReceiveData method
+    // Furthermore, this method is called each time there is a redirect so reinitializing it
+    // also serves to clear it
+    
+    NSLog(@"didReceiveResponse ----- ");
+
+    _audioZip = [[NSMutableData alloc] init];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+   // NSLog(@"didReceiveData ----- ");
+
+    // Append the new data to the instance variable you declared
+    [_audioZip appendData:data];
+}
+
+- (NSCachedURLResponse *)connection:(NSURLConnection *)connection
+                  willCacheResponse:(NSCachedURLResponse*)cachedResponse {
+    // Return nil to indicate not necessary to store a cached response for this connection
+    return nil;
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *destDir = [self getAudioDestDir:languageIndex];
+    [[NSFileManager defaultManager] removeItemAtPath:destDir error:nil];
+    
+    NSString *fileName = [NSString stringWithFormat:@"%@_audio.zip",[languages objectAtIndex:languageIndex]];
+    NSString *audioZip = [documentsDirectory stringByAppendingPathComponent:fileName];
+
+    NSLog(@"writing to %@",audioZip);
+    [_audioZip writeToFile:audioZip atomically:YES];
+    
+    // The request is complete and data has been received
+    // You can parse the stuff in your instance variable now
+    [SSZipArchive unzipFileAtPath:audioZip toDestination:destDir];
+    NSLog(@"unzip  to %@",destDir);
+    
+    if (languageIndex < languages.count-1) {
+        languageIndex++;
+        [self getAudioForCurrentLanguage];
+    }
+    else {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"All audio downloaded."
+                                                        message: @"All mp3 files downloaded."
+                                                       delegate: nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+        [alert show];
+    }
+}
+
+-(NSString *) getAudioDestDir:(int) whichLanguage {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    
+    NSString *destFileName = [NSString stringWithFormat:@"%@_audio",[languages objectAtIndex:whichLanguage]];
+    return [documentsDirectory stringByAppendingPathComponent:destFileName];
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    // The request has failed for some reason!
+    // Check the error var
+}
 
 #pragma mark - Navigation
 
@@ -126,7 +214,7 @@ NSArray *languages;
     
     //NSLog(@"selected %@",selectedRow);
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-    NSLog(@"language row %ld",indexPath.row  );
+ //   NSLog(@"language row %ld",indexPath.row  );
     NSString *tappedItem = [languages objectAtIndex:indexPath.row];
     
     [chapterController setTitle:tappedItem];

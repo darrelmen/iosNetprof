@@ -198,7 +198,7 @@
            //     NSLog(@"There are %u data sources for port :\"%@\"", (unsigned)[builtInMicPort.dataSources count], builtInMicPort);
 
             }
-            AVAudioSessionDataSourceDescription *pref = [builtInMicPort preferredDataSource];
+            //AVAudioSessionDataSourceDescription *pref = [builtInMicPort preferredDataSource];
            // NSLog(@"Currently preferred source is \"%@\" for port \"%@\"", pref, builtInMicPort.portName);
         }
     }
@@ -232,6 +232,7 @@
     [_transliteration setText:trAtIndex];
     [_english setText:enAtIndex];
     _refAudioPath =[_paths objectAtIndex:_index];
+    _rawRefAudioPath =[_rawPaths objectAtIndex:_index];
     fl = flAtIndex;
     en = enAtIndex;
     tr  = trAtIndex;
@@ -307,7 +308,6 @@ NSString *tr = @"";
 - (void)audioRecorderDidFinishRecording:
 (AVAudioRecorder *)recorder successfully:(BOOL)flag
 {
-    //NSLog(@"Recording stopped!!!! ");
     NSLog(@"audioRecorderDidFinishRecording time = %f",CFAbsoluteTimeGetCurrent());
 
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
@@ -334,22 +334,39 @@ NSString *tr = @"";
     [alert show];
 }
 
-
+// look for local file with mp3 and use it if it's there.
 - (IBAction)playRefAudio:(id)sender {
     NSURL *url = [NSURL URLWithString:_refAudioPath];
-    NSLog(@"playRefAudio URL %@", _refAudioPath);
- 
-   NSString *PlayerStatusContext;
-   
-    if (_player) {
-        NSLog(@" remove observer");
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
 
+    NSString *audioDir = [NSString stringWithFormat:@"%@_audio",_language];
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
+    
+    NSString *destFileName = [filePath stringByAppendingPathComponent:_rawRefAudioPath];
+
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName];
+    if (fileExists) {
+        NSLog(@"playRefAudio Raw URL %@", _rawRefAudioPath);
+        NSLog(@"using local url %@",destFileName);
+        url = [[NSURL alloc] initFileURLWithPath: destFileName];
+    }
+    else {
+        NSLog(@"can't find local url %@",destFileName);
+        NSLog(@"playRefAudio URL     %@", _refAudioPath);
+    }
+    NSString *PlayerStatusContext;
+    
+    if (_player) {
+        //NSLog(@" remove observer");
+        
         @try {
             [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
             [_player removeObserver:self forKeyPath:@"status"];
         }
         @catch (NSException *exception) {
-            NSLog(@"got exception %@",exception.description);
+            NSLog(@"initial create - got exception %@",exception.description);
         }
     }
     
@@ -359,18 +376,13 @@ NSString *tr = @"";
     AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
     
     _player = [AVPlayer playerWithURL:url];
-    
-    
-    //NSLog(@" add observer");
-
+        
     [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
     _playRefAudioButton.enabled = NO;
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
-    NSLog(@" playerItemDidReachEnd");
-  //  NSLog(@"Sound finishd %@",notification.name);
-    
+//    NSLog(@" playerItemDidReachEnd");
    _playRefAudioButton.enabled = YES;
 }
 
@@ -378,6 +390,8 @@ NSString *tr = @"";
 // we remove the observer, or else we will later get a message when the player discarded
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                         change:(NSDictionary *)change context:(void *)context {
+    //NSLog(@" observeValueForKeyPath %@",keyPath);
+
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
             NSLog(@" audio ready so playing...");
@@ -396,7 +410,7 @@ NSString *tr = @"";
                 [_player removeObserver:self forKeyPath:@"status"];
             }
             @catch (NSException *exception) {
-                NSLog(@"got exception %@",exception.description);
+                NSLog(@"observeValueForKeyPath : got exception %@",exception.description);
             }
 
         } else if (_player.status == AVPlayerStatusFailed) {
@@ -420,7 +434,6 @@ CFAbsoluteTime then2 ;
 CFAbsoluteTime now;
 
 - (void)showRecordingFeedback {
-    //NSLog(@"recordAudio");
     NSLog(@"showRecordingFeedback time = %f",CFAbsoluteTimeGetCurrent());
 
     _playButton.enabled = NO;
@@ -428,15 +441,19 @@ CFAbsoluteTime now;
     _recordFeedbackImage.hidden = NO;
 }
 
+- (void)logError:(NSError *)error {
+    NSLog(@"Domain:      %@", error.domain);
+    NSLog(@"Error Code:  %ld", (long)error.code);
+    NSLog(@"Description: %@", [error localizedDescription]);
+    NSLog(@"Reason:      %@", [error localizedFailureReason]);
+}
+
 - (IBAction)recordAudio:(id)sender {
     then2 = CFAbsoluteTimeGetCurrent();
     NSLog(@"recordAudio time = %f",then2);
 
-    NSLog(@"recordAudio -------- ");
-
     if (!_audioRecorder.recording)
     {
-        //[self showRecordingFeedback];
         NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
 
         [self startRecordingFeedbackWithDelay];
@@ -459,10 +476,7 @@ CFAbsoluteTime now;
             
             NSLog(@"recordAudio -DUDE NOT recording");
             
-            NSLog(@"Domain:      %@", error.domain);
-            NSLog(@"Error Code:  %d", error.code);
-            NSLog(@"Description: %@", [error localizedDescription]);
-            NSLog(@"Reason:      %@", [error localizedFailureReason]);
+            [self logError:error];
         }
     }
 }
@@ -516,27 +530,20 @@ double gestureEnd;
 
 - (IBAction)stopAudio:(id)sender {
     now = CFAbsoluteTimeGetCurrent();
-    //NSLog(@"then time was %f",then2);
     NSLog(@"stopAudio Event duration was %f",(now-then2));
     NSLog(@"stopAudio now  time =        %f",now);
     
     _playButton.enabled = YES;
     _recordButton.enabled = YES;
-    
-   // NSLog(@"stopAudio --------- ");
-   // [_recordFeedbackImage stopAnimating];
     _recordFeedbackImage.hidden = YES;
     
     if (_audioRecorder.recording)
     {
-       // NSLog(@"stopAudio -stop");
         NSLog(@"stopAudio stop time = %f",CFAbsoluteTimeGetCurrent());
-
         [_audioRecorder stop];
         
     } else {
         NSLog(@"stopAudio not recording");
-        
         if (_audioPlayer.playing) {
             [_audioPlayer stop];
         }
@@ -544,7 +551,6 @@ double gestureEnd;
 }
 
 - (IBAction)stopRecordingWithDelay:sender {
-    
     [NSTimer scheduledTimerWithTimeInterval:0.33
                                      target:self
                                    selector:@selector(stopAudio:)
@@ -581,7 +587,7 @@ double gestureEnd;
     
    // NSLog(@"data %d",[postData length]);
     
-    NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
+    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
     
    // NSLog(@"file length %@",postLength);
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
@@ -644,7 +650,7 @@ double gestureEnd;
     // setting the body of the post to the reqeust
     [request setHTTPBody:body];
     // set the content-length
-    NSString *postLength = [NSString stringWithFormat:@"%d", [body length]];
+    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[body length]];
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     
     

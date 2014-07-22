@@ -29,11 +29,13 @@
 @property (strong, nonatomic) IBOutlet UILabel *transliteration;
 @property (strong, nonatomic) IBOutlet UILabel *english;
 @property (strong, nonatomic) IBOutlet NSString *refAudioPath;
+@property (strong, nonatomic) IBOutlet NSString *rawRefAudioPath;
 @property unsigned long index;
 @property NSArray *items;
 @property NSArray *englishWords;
 @property NSArray *translitWords;
 @property NSArray *paths;
+@property NSArray *rawPaths;
 @property NSString *url;
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressGesture;
 

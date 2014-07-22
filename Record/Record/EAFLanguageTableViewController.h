@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EAFLanguageTableViewController : UITableViewController
+@interface EAFLanguageTableViewController : UITableViewController<NSURLConnectionDelegate>
+
+@property NSMutableData *audioZip;
 
 @end

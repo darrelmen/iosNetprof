@@ -14,6 +14,7 @@
 @property NSMutableArray *englishPhrases;
 @property NSMutableArray *translitPhrases;
 @property NSMutableArray *paths;
+@property NSMutableArray *rawPaths;
 
 -(void) setChapter:(NSString *)chapter;
 @property (strong, nonatomic) NSDictionary *chapterToItems;

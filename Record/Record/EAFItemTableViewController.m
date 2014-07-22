@@ -38,6 +38,7 @@
     self.englishPhrases = [[NSMutableArray alloc] init];
     self.translitPhrases = [[NSMutableArray alloc] init];
     self.paths = [[NSMutableArray alloc] init];
+    self.rawPaths = [[NSMutableArray alloc] init];
     NSArray *items =[_chapterToItems objectForKey:currentChapter];
     
     for (NSDictionary *object in items) {
@@ -47,12 +48,19 @@
         
         NSString *refPath = [object objectForKey:@"ref"];
         if (refPath) {
+            
+            
+            refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+                                                 withString:@".mp3"];
+            
             NSMutableString *mu = [NSMutableString stringWithString:refPath];
             [mu insertString:[self getURL] atIndex:0];
             [_paths addObject:mu];
+            [_rawPaths addObject:refPath];
         }
         else {
             [_paths addObject:@"NO"];
+            [_rawPaths addObject:@"NO"];
         }
     }
     
@@ -167,11 +175,14 @@ NSString *currentChapter;
     [itemController setEnglishText:englishItem];
     [itemController setTranslitText:[self.translitPhrases objectAtIndex:indexPath.row]];
     itemController.refAudioPath = [_paths objectAtIndex:indexPath.row];
+    itemController.rawRefAudioPath = [_rawPaths objectAtIndex:indexPath.row];
     itemController.index = indexPath.row;
     itemController.items = [self items];
+    itemController.language = _language;
     itemController.englishWords = [self englishPhrases];
     itemController.translitWords = [self translitPhrases];
     itemController.paths = _paths;
+    itemController.rawPaths = _rawPaths;
     itemController.url = [self getURL];
     [itemController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
 }

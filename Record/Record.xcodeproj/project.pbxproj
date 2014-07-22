@@ -13,6 +13,12 @@
 		B66BACBE1970A2FE00E28ECC /* NewProF1.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACBD1970A2FE00E28ECC /* NewProF1.png */; };
 		B66BACC11970A5CD00E28ECC /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACC01970A5CD00E28ECC /* play.png */; };
 		B66BACC31970A5DC00E28ECC /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACC21970A5DC00E28ECC /* pause.png */; };
+		B67E1BB6197EC25D00F42143 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B67E1BB5197EC25D00F42143 /* libz.dylib */; };
+		B67E1BC4197EFC0500F42143 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BBA197EFC0500F42143 /* ioapi.c */; };
+		B67E1BC5197EFC0500F42143 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BBC197EFC0500F42143 /* mztools.c */; };
+		B67E1BC6197EFC0500F42143 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BBE197EFC0500F42143 /* unzip.c */; };
+		B67E1BC7197EFC0500F42143 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BC0197EFC0500F42143 /* zip.c */; };
+		B67E1BC8197EFC0500F42143 /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BC3197EFC0500F42143 /* SSZipArchive.m */; };
 		B68A5C2E1979A6140036B90C /* MRoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C2D1979A6140036B90C /* MRoundedButton.m */; };
 		B68A5C301979A62D0036B90C /* Vendors in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C2F1979A62D0036B90C /* Vendors */; };
 		B68A5C321979AE7E0036B90C /* playBigger2.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C311979AE7E0036B90C /* playBigger2.png */; };
@@ -75,6 +81,18 @@
 		B66BACBD1970A2FE00E28ECC /* NewProF1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NewProF1.png; sourceTree = "<group>"; };
 		B66BACC01970A5CD00E28ECC /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
 		B66BACC21970A5DC00E28ECC /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause.png; sourceTree = "<group>"; };
+		B67E1BB5197EC25D00F42143 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		B67E1BB9197EFC0500F42143 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		B67E1BBA197EFC0500F42143 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		B67E1BBB197EFC0500F42143 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		B67E1BBC197EFC0500F42143 /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		B67E1BBD197EFC0500F42143 /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		B67E1BBE197EFC0500F42143 /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		B67E1BBF197EFC0500F42143 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		B67E1BC0197EFC0500F42143 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		B67E1BC1197EFC0500F42143 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		B67E1BC2197EFC0500F42143 /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
+		B67E1BC3197EFC0500F42143 /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
 		B68A5C2C1979A6140036B90C /* MRoundedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRoundedButton.h; sourceTree = "<group>"; };
 		B68A5C2D1979A6140036B90C /* MRoundedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRoundedButton.m; sourceTree = "<group>"; };
 		B68A5C2F1979A62D0036B90C /* Vendors */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Vendors; sourceTree = "<group>"; };
@@ -139,6 +157,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B67E1BB6197EC25D00F42143 /* libz.dylib in Frameworks */,
 				B66461F2196F193900943BC2 /* AVFoundation.framework in Frameworks */,
 				F6A5682018ECA98A00B844C6 /* CoreGraphics.framework in Frameworks */,
 				F6A5682218ECA98A00B844C6 /* UIKit.framework in Frameworks */,
@@ -184,6 +203,33 @@
 				B66BACC01970A5CD00E28ECC /* play.png */,
 			);
 			name = images;
+			sourceTree = "<group>";
+		};
+		B67E1BB7197EFC0500F42143 /* SSZipArchive */ = {
+			isa = PBXGroup;
+			children = (
+				B67E1BB8197EFC0500F42143 /* minizip */,
+				B67E1BC2197EFC0500F42143 /* SSZipArchive.h */,
+				B67E1BC3197EFC0500F42143 /* SSZipArchive.m */,
+			);
+			name = SSZipArchive;
+			path = Record/SSZipArchive;
+			sourceTree = "<group>";
+		};
+		B67E1BB8197EFC0500F42143 /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				B67E1BB9197EFC0500F42143 /* crypt.h */,
+				B67E1BBA197EFC0500F42143 /* ioapi.c */,
+				B67E1BBB197EFC0500F42143 /* ioapi.h */,
+				B67E1BBC197EFC0500F42143 /* mztools.c */,
+				B67E1BBD197EFC0500F42143 /* mztools.h */,
+				B67E1BBE197EFC0500F42143 /* unzip.c */,
+				B67E1BBF197EFC0500F42143 /* unzip.h */,
+				B67E1BC0197EFC0500F42143 /* zip.c */,
+				B67E1BC1197EFC0500F42143 /* zip.h */,
+			);
+			path = minizip;
 			sourceTree = "<group>";
 		};
 		B68A5C2B1979A6050036B90C /* RoundButton */ = {
@@ -250,6 +296,7 @@
 				B66BACBC1970A29000E28ECC /* Resources */,
 				F6A5681C18ECA98A00B844C6 /* Frameworks */,
 				F6A5681B18ECA98A00B844C6 /* Products */,
+				B67E1BB7197EFC0500F42143 /* SSZipArchive */,
 				B68A5C391979C8B70036B90C /* Gauges */,
 			);
 			sourceTree = "<group>";
@@ -266,6 +313,7 @@
 		F6A5681C18ECA98A00B844C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B67E1BB5197EC25D00F42143 /* libz.dylib */,
 				B66461F1196F193900943BC2 /* AVFoundation.framework */,
 				F6A5681D18ECA98A00B844C6 /* Foundation.framework */,
 				F6A5681F18ECA98A00B844C6 /* CoreGraphics.framework */,
@@ -452,6 +500,9 @@
 			files = (
 				B68A5C4C1979C8B70036B90C /* MSRangeGauge.m in Sources */,
 				B66BACB8197094C000E28ECC /* EAFItemTableViewController.m in Sources */,
+				B67E1BC5197EFC0500F42143 /* mztools.c in Sources */,
+				B67E1BC7197EFC0500F42143 /* zip.c in Sources */,
+				B67E1BC8197EFC0500F42143 /* SSZipArchive.m in Sources */,
 				B68A5C4B1979C8B70036B90C /* MSNeedleView.m in Sources */,
 				B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */,
 				F6A5682A18ECA98A00B844C6 /* main.m in Sources */,
@@ -459,6 +510,8 @@
 				B68A5C491979C8B70036B90C /* MSArcLayer.m in Sources */,
 				B68A5C4A1979C8B70036B90C /* MSGradientArcLayer.m in Sources */,
 				B6B9F392197827A700CD0140 /* EAFLanguageTableViewController.m in Sources */,
+				B67E1BC4197EFC0500F42143 /* ioapi.c in Sources */,
+				B67E1BC6197EFC0500F42143 /* unzip.c in Sources */,
 				B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */,
 				F6A5683418ECA98B00B844C6 /* EAFViewController.m in Sources */,
 				B68A5C481979C8B70036B90C /* MSAnnotatedGauge.m in Sources */,
