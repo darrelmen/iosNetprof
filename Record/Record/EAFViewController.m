@@ -260,7 +260,7 @@
 
 - (void)setPlayRefEnabled
 {
-    NSLog(@"checking path %@",_refAudioPath);
+   // NSLog(@"checking path %@",_refAudioPath);
     
     if (_refAudioPath && ![_refAudioPath hasSuffix:@"NO"]) {
         _playRefAudioButton.enabled = YES;
@@ -589,6 +589,7 @@ double gestureEnd;
 }
 
 // Posts audio with current fl field
+// NOTE : not used right now since can't post UTF8 characters - see postAudio2
 - (void)postAudio {
     // create request
    // NSString *myString = [_audioRecorder.url absoluteString];
@@ -612,9 +613,12 @@ double gestureEnd;
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
+
+    NSString *escapedString = [fl stringByReplacingOccurrencesOfString:@"/" withString:@" "];
     
-    NSLog(@"word is %@",fl);
-    [urlRequest setValue:fl forHTTPHeaderField:@"word"];
+    NSLog(@"word is %@",escapedString);
+    
+    [urlRequest setValue:escapedString forHTTPHeaderField:@"word"];
     [urlRequest setHTTPBody:postData];
     
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
@@ -623,16 +627,13 @@ double gestureEnd;
 
 -(void)postAudio2 {
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
-    NSLog(@"talking to %@",_url);
+    //NSLog(@"talking to %@",_url);
     
     [_recoFeedbackImage startAnimating];
     
     NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
-
-  //  NSURL *url = [NSURL URLWithString:baseurl];
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:baseurl]];
-   // NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
     
     [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
     [request setHTTPShouldHandleCookies:NO];
@@ -645,19 +646,18 @@ double gestureEnd;
     // post body
     NSMutableData *body = [NSMutableData data];
     // add params (all params are strings)
-    //[request setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
-
+    
     [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=%@\r\n\r\n", @"word"] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[[NSString stringWithFormat:@"%@\r\n", fl] dataUsingEncoding:NSUTF8StringEncoding]];
-    // add image data
-//    if (imageData) {
-        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=%@; filename=MyAudioMemo.wav\r\n", @"audio"] dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[@"Content-Type: audio/x-wav\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:postData];
-        [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-  //  }
+    
+    NSString *escapedString = [fl stringByReplacingOccurrencesOfString:@"/" withString:@" "];
+    
+    [body appendData:[[NSString stringWithFormat:@"%@\r\n", escapedString] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=%@; filename=MyAudioMemo.wav\r\n", @"audio"] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[@"Content-Type: audio/x-wav\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:postData];
+    [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
     // setting the body of the post to the reqeust
     [request setHTTPBody:body];
@@ -667,6 +667,8 @@ double gestureEnd;
     
     
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
+    NSLog(@"posting to %@",_url);
+
     [connection start];
 }
 
@@ -706,7 +708,7 @@ double gestureEnd;
                           error:&error];
     
     NSNumber *value = [json objectForKey:@"score"];
-    //    NSLog(@"value is %@",value);
+    NSLog(@"score was %@",value);
     // this doesn't seem to work...
     _annotatedGauge2.titleLabel.text = [value stringValue];
     [_annotatedGauge2 setFillArcFillColor:[self getColor2:value.floatValue]];
@@ -727,11 +729,8 @@ double gestureEnd;
         
         searchCharRange = NSMakeRange(offset, [lower length]-offset);
         
-        //NSLog(@"in %@ looking for %@ and searching at %d %d", lower,lowerWord,searchCharRange.location, searchCharRange.length);
-
         range = [lower rangeOfString:lowerWord options:0 range:searchCharRange];
        
-       // NSLog(@"in %@ looking for %@ and found at %d", lower, lowerWord, range.location);
         if (range.length > 0) {
             UIColor *color = [self getColor2:score.floatValue];
             if (wordAndScore.count == 1) {
