@@ -16,12 +16,7 @@
 
 @implementation EAFLanguageTableViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    return self;
-}
-
+static BOOL DOWNLOAD_ALL_AUDIO = NO;
 NSArray *languages;
 int languageIndex = 0;
 
@@ -31,7 +26,13 @@ int languageIndex = 0;
     languages = [NSArray arrayWithObjects:@"Dari", @"English",@"Farsi", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Urdu",  nil];
  
     // begin process of downloading audio...
-    [self getAudioForCurrentLanguage];
+    if (DOWNLOAD_ALL_AUDIO) {
+        [self getAudioForCurrentLanguage];
+    }
+    for (int i = 0; i < languages.count; i++) {
+        NSString * dir = [self getAudioDestDir:i];
+        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:true attributes:nil error:nil];
+    }
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;

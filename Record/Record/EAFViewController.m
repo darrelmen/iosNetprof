@@ -105,9 +105,7 @@
     
     _annotatedGauge2.minValue = 0;
     _annotatedGauge2.maxValue = 100;
-//    _annotatedGauge2.startRangeLabel.text = @"0";
-//    _annotatedGauge2.endRangeLabel.text = @"100";
-    _annotatedGauge2.fillArcFillColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
+    _annotatedGauge2.fillArcFillColor =   [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
     _annotatedGauge2.fillArcStrokeColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
     _annotatedGauge2.value = 0;
 }
@@ -224,20 +222,25 @@
     _scoreDisplay.numberOfLines = 0;
 }
 
+// so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
+    [self removePlayObserver];
+    
+    _refAudioPath =[_paths objectAtIndex:_index];
+    [self setPlayRefEnabled];
+
     NSString *flAtIndex = [_items objectAtIndex:_index];
     NSString *enAtIndex = [_englishWords objectAtIndex:_index];
     NSString *trAtIndex = [_translitWords objectAtIndex:_index];
     [_foreignLang setText:flAtIndex];
     [_transliteration setText:trAtIndex];
     [_english setText:enAtIndex];
-    _refAudioPath =[_paths objectAtIndex:_index];
     _rawRefAudioPath =[_rawPaths objectAtIndex:_index];
     fl = flAtIndex;
     en = enAtIndex;
     tr  = trAtIndex;
-    [self setPlayRefEnabled];
-    
+    _annotatedGauge2.value = 0;
+
     [_scoreDisplay setText:@" "];
 }
 
@@ -257,9 +260,13 @@
 
 - (void)setPlayRefEnabled
 {
+    NSLog(@"checking path %@",_refAudioPath);
+    
     if (_refAudioPath && ![_refAudioPath hasSuffix:@"NO"]) {
         _playRefAudioButton.enabled = YES;
     } else {
+        NSLog(@"disabling button since path %@",_refAudioPath);
+
         _playRefAudioButton.enabled = NO;
     }
 }
@@ -296,6 +303,7 @@ NSString *tr = @"";
 (AVAudioPlayer *)player successfully:(BOOL)flag
 {
     _recordButton.enabled = YES;
+    _playButton.enabled = YES;
 }
 
 - (void)audioPlayerDecodeErrorDidOccur:
@@ -334,6 +342,18 @@ NSString *tr = @"";
     [alert show];
 }
 
+- (void)removePlayObserver {
+    //NSLog(@" remove observer");
+    
+    @try {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
+        [_player removeObserver:self forKeyPath:@"status"];
+    }
+    @catch (NSException *exception) {
+       // NSLog(@"initial create - got exception %@",exception.description);
+    }
+}
+
 // look for local file with mp3 and use it if it's there.
 - (IBAction)playRefAudio:(id)sender {
     NSURL *url = [NSURL URLWithString:_refAudioPath];
@@ -359,15 +379,7 @@ NSString *tr = @"";
     NSString *PlayerStatusContext;
     
     if (_player) {
-        //NSLog(@" remove observer");
-        
-        @try {
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
-            [_player removeObserver:self forKeyPath:@"status"];
-        }
-        @catch (NSException *exception) {
-            NSLog(@"initial create - got exception %@",exception.description);
-        }
+        [self removePlayObserver];
     }
     
     UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
@@ -382,7 +394,7 @@ NSString *tr = @"";
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
-//    NSLog(@" playerItemDidReachEnd");
+    NSLog(@" playerItemDidReachEnd");
    _playRefAudioButton.enabled = YES;
 }
 
@@ -451,7 +463,8 @@ CFAbsoluteTime now;
 - (IBAction)recordAudio:(id)sender {
     then2 = CFAbsoluteTimeGetCurrent();
     NSLog(@"recordAudio time = %f",then2);
-
+    _recordInstructions.hidden = YES;
+    
     if (!_audioRecorder.recording)
     {
         NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
@@ -498,10 +511,9 @@ double gestureEnd;
 - (IBAction)playAudio:(id)sender {
     if (!_audioRecorder.recording)
     {
-        
         NSLog(@"playAudio %@",_audioRecorder.url);
-        //_stopButton.enabled = YES;
         //_recordButton.enabled = NO;
+        _playButton.enabled = NO;
         
         NSError *error;
         AVAudioSession *session = [AVAudioSession sharedInstance];

@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EAFItemTableViewController : UITableViewController
+@interface EAFItemTableViewController : UITableViewController<NSURLConnectionDelegate>
 
 @property NSMutableArray *items;
 @property NSMutableArray *englishPhrases;
@@ -19,5 +19,8 @@
 -(void) setChapter:(NSString *)chapter;
 @property (strong, nonatomic) NSDictionary *chapterToItems;
 @property NSString *language;
+
+@property NSMutableData *mp3Audio;
+
 
 @end

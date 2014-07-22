@@ -40,7 +40,7 @@
     self.paths = [[NSMutableArray alloc] init];
     self.rawPaths = [[NSMutableArray alloc] init];
     NSArray *items =[_chapterToItems objectForKey:currentChapter];
-    
+
     for (NSDictionary *object in items) {
         [_items addObject:[object objectForKey:@"fl"]];
         [_englishPhrases addObject:[object objectForKey:@"en"]];
@@ -48,8 +48,6 @@
         
         NSString *refPath = [object objectForKey:@"ref"];
         if (refPath) {
-            
-            
             refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
                                                  withString:@".mp3"];
             
@@ -64,7 +62,10 @@
         }
     }
     
-    NSLog(@"viewDidLoad found '%@' = %ld",currentChapter,(unsigned long)self.items.count);
+    itemIndex = 0;
+    [self getAudioForCurrentItem];
+    
+    //NSLog(@"viewDidLoad found '%@' = %ld",currentChapter,(unsigned long)self.items.count);
 
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
@@ -76,6 +77,15 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
+
+-(NSString *) getAudioDestDir:(NSString *) whichLanguage {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    
+    NSString *destFileName = [NSString stringWithFormat:@"%@_audio",whichLanguage];
+    return [documentsDirectory stringByAppendingPathComponent:destFileName];
+}
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -109,14 +119,12 @@ NSString *currentChapter;
     static NSString *CellIdentifier = @"WordListPrototype";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
-    // EAFExercise *exercise = [self.items objectAtIndex:indexPath.row];
     NSString *exercise = [self.items objectAtIndex:indexPath.row];
     cell.textLabel.text = exercise;
     cell.detailTextLabel.text = [self.englishPhrases objectAtIndex:indexPath.row];;
     
     return cell;
 }
-
 
 /*
 // Override to support conditional editing of the table view.
@@ -185,6 +193,99 @@ NSString *currentChapter;
     itemController.rawPaths = _rawPaths;
     itemController.url = [self getURL];
     [itemController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
+}
+
+int itemIndex = 0;
+
+- (NSString *)getCurrentCachePath
+{
+    //NSString * dest = [self getAudioDestDir:languageIndex];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    
+    NSString *audioDir = [NSString stringWithFormat:@"%@_audio",_language];
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
+    NSString *rawRefAudioPath = [_rawPaths objectAtIndex: itemIndex];
+    NSString *destFileName = [filePath stringByAppendingPathComponent:rawRefAudioPath];
+    return destFileName;
+}
+
+// go and get ref audio per item, make individual requests -- quite fast
+- (void)getAudioForCurrentItem
+{
+    NSString *destFileName = [self getCurrentCachePath];
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName];
+    
+    if (fileExists || [destFileName hasSuffix:@"NO"]) {
+        //if (![destFileName hasSuffix:@"NO"]) {
+            //NSLog(@"found local url %@",destFileName);
+        //}
+        [self checkNextAudioFile];
+    }
+    else {
+        //NSLog(@"can't find file %@",destFileName);
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[_paths objectAtIndex:itemIndex]]];
+        
+        // Create url connection and fire request
+        NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+    }
+}
+
+#pragma mark NSURLConnection Delegate Methods
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+    // A response has been received, this is where we initialize the instance var you created
+    // so that we can append data to it in the didReceiveData method
+    // Furthermore, this method is called each time there is a redirect so reinitializing it
+    // also serves to clear it
+    
+  //  NSLog(@"didReceiveResponse ----- ");
+    
+    _mp3Audio = [[NSMutableData alloc] init];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+    // NSLog(@"didReceiveData ----- ");
+    
+    // Append the new data to the instance variable you declared
+    [_mp3Audio appendData:data];
+}
+
+- (NSCachedURLResponse *)connection:(NSURLConnection *)connection
+                  willCacheResponse:(NSCachedURLResponse*)cachedResponse {
+    // Return nil to indicate not necessary to store a cached response for this connection
+    return nil;
+}
+
+- (void)checkNextAudioFile {
+    if (itemIndex < _paths.count-1) {
+        itemIndex++;
+        [self getAudioForCurrentItem];
+    }
+    else {
+        NSLog(@"%d downloads complete.",itemIndex);
+    }
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    NSString *destFileName = [self getCurrentCachePath];
+
+   // NSLog(@"writing to      %@",destFileName);
+    
+    NSString *parent = [destFileName stringByDeletingLastPathComponent];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:parent]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:parent withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    [_mp3Audio writeToFile:destFileName atomically:YES];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:destFileName]) {
+        NSLog(@"huh? can't find     %@",destFileName);
+    }
+    
+    [self checkNextAudioFile];
 }
 
 @end

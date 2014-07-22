@@ -38,6 +38,7 @@
 @property NSArray *rawPaths;
 @property NSString *url;
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressGesture;
+@property (strong, nonatomic) IBOutlet UILabel *recordInstructions;
 
 @property NSString *language;
 
