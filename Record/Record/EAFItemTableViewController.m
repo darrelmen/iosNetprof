@@ -62,7 +62,7 @@
         }
     }
     
-    itemIndex = 0;
+    _itemIndex = 0;
     [self getAudioForCurrentItem];
     
     //NSLog(@"viewDidLoad found '%@' = %ld",currentChapter,(unsigned long)self.items.count);
@@ -195,18 +195,14 @@ NSString *currentChapter;
     [itemController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
 }
 
-int itemIndex = 0;
-
 - (NSString *)getCurrentCachePath
 {
-    //NSString * dest = [self getAudioDestDir:languageIndex];
-    
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     
     NSString *audioDir = [NSString stringWithFormat:@"%@_audio",_language];
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
-    NSString *rawRefAudioPath = [_rawPaths objectAtIndex: itemIndex];
+    NSString *rawRefAudioPath = [_rawPaths objectAtIndex: _itemIndex];
     NSString *destFileName = [filePath stringByAppendingPathComponent:rawRefAudioPath];
     return destFileName;
 }
@@ -218,17 +214,14 @@ int itemIndex = 0;
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName];
     
     if (fileExists || [destFileName hasSuffix:@"NO"]) {
-        //if (![destFileName hasSuffix:@"NO"]) {
-            //NSLog(@"found local url %@",destFileName);
-        //}
         [self checkNextAudioFile];
     }
     else {
-        //NSLog(@"can't find file %@",destFileName);
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[_paths objectAtIndex:itemIndex]]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[_paths objectAtIndex:_itemIndex]]];
         
         // Create url connection and fire request
         NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:TRUE];
     }
 }
 
@@ -239,8 +232,6 @@ int itemIndex = 0;
     // so that we can append data to it in the didReceiveData method
     // Furthermore, this method is called each time there is a redirect so reinitializing it
     // also serves to clear it
-    
-  //  NSLog(@"didReceiveResponse ----- ");
     
     _mp3Audio = [[NSMutableData alloc] init];
 }
@@ -259,17 +250,18 @@ int itemIndex = 0;
 }
 
 - (void)checkNextAudioFile {
-    if (itemIndex < _paths.count-1) {
-        itemIndex++;
+    if (_itemIndex < _paths.count-1) {
+        _itemIndex++;
         [self getAudioForCurrentItem];
     }
     else {
-        NSLog(@"%d downloads complete.",itemIndex);
+        NSLog(@"%d downloads complete.",_itemIndex);
     }
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     NSString *destFileName = [self getCurrentCachePath];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 
    // NSLog(@"writing to      %@",destFileName);
     
@@ -287,5 +279,10 @@ int itemIndex = 0;
     
     [self checkNextAudioFile];
 }
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+}
+
 
 @end

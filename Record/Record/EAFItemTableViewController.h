@@ -21,6 +21,6 @@
 @property NSString *language;
 
 @property NSMutableData *mp3Audio;
-
+@property int itemIndex;
 
 @end

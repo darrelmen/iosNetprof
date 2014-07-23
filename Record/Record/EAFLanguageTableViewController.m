@@ -213,9 +213,7 @@ int languageIndex = 0;
     
     EAFChapterTableViewController *chapterController = [segue destinationViewController];
     
-    //NSLog(@"selected %@",selectedRow);
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
- //   NSLog(@"language row %ld",indexPath.row  );
     NSString *tappedItem = [languages objectAtIndex:indexPath.row];
     
     [chapterController setTitle:tappedItem];

@@ -41,7 +41,11 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
+int reqCount = 0;;
+int receivedCount = 0;;
+
 - (void)askServerForJson {
+    reqCount++;
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet", _language];
     
     NSURL *url = [NSURL URLWithString:baseurl];
@@ -53,13 +57,15 @@
       forHTTPHeaderField:@"Content-Type"];
     
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+
     [connection start];
 }
 
 - (void)loadInitialData {
     NSData *cachedData = [self getCachedJson];
     if (cachedData && [cachedData length] > 100) {
-        NSLog(@"using cached json!");
+        NSLog(@"loadInitialData : using cached json!");
         _responseData = [NSMutableData dataWithData:cachedData];
         BOOL dataIsValid = [self useJsonChapterData];
         if (!dataIsValid) {
@@ -93,11 +99,13 @@
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:appFile];
     
     if (fileExists) {
-       // NSLog(@"found the cached json!");
+        NSLog(@"found the cached json at %@",appFile);
         NSData *data = [[NSFileManager defaultManager] contentsAtPath:appFile];
         return data;
     }
     else {
+        NSLog(@"no cached json at %@",appFile);
+
         return nil;
     }
     
@@ -128,8 +136,6 @@
 NSDictionary* chapterInfo;
 
 - (BOOL)useJsonChapterData {
-    // NSLog(@"go response %@",stringVersion);
-    
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_responseData
@@ -141,7 +147,6 @@ NSDictionary* chapterInfo;
         return false;
     }
     
-    // NSLog(@"size %d",json.count);
     _chapters = [json allKeys];
     
     NSMutableArray *myArray = [NSMutableArray arrayWithArray:_chapters];
@@ -152,7 +157,6 @@ NSDictionary* chapterInfo;
     }];
     
     _chapters = myArray;
-    // NSLog(@"chapters %d",myArray.count);
     chapterInfo = json;
     [[self tableView] reloadData];
     
@@ -161,12 +165,14 @@ NSDictionary* chapterInfo;
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
-    // You can parse the stuff in your instance variable now
-    
-    //NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
-    
     BOOL dataIsValid = [self useJsonChapterData];
-    if (dataIsValid) {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+
+    receivedCount++;
+    if (receivedCount != reqCount) {
+        NSLog(@"ignoring out of order requests %d vs %d",reqCount,receivedCount);
+    }
+    else if (dataIsValid) {
         [self writeToCache:_responseData];
     }
 }
@@ -174,7 +180,9 @@ NSDictionary* chapterInfo;
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     // The request has failed for some reason!
     // Check the error var
-    
+    receivedCount++;
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
                                                     message: @"Couldn't connect to server."
                                                    delegate: nil
@@ -205,12 +213,10 @@ NSDictionary* chapterInfo;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-   // UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"help" forIndexPath:indexPath];
-    
-    // Configure the cell...
-    
     static NSString *CellIdentifier = @"ListPrototypeCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+ 
+   // NSLog(@"selecting row %d out of %d chapters",indexPath.row, self.chapters.count);
     
     NSString *chapter = [self.chapters objectAtIndex:indexPath.row];
     cell.textLabel.text = [NSString stringWithFormat:@"Chapter %@",chapter];
@@ -259,8 +265,6 @@ NSDictionary* chapterInfo;
 
 #pragma mark - Navigation
 
-//NSString *selectedRow;
-
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
@@ -270,14 +274,16 @@ NSDictionary* chapterInfo;
     EAFItemTableViewController *itemController = [segue destinationViewController];
  
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-  //  NSLog(@"row %d",indexPath.row  );
+  
+    //NSLog(@"prepareForSegue row %ld vs %lu",(long)indexPath.row, (unsigned long)self.chapters.count  );
+    
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
 
+    [itemController setItemIndex:0];
     [itemController setChapterToItems:chapterInfo];
     [itemController setChapter:tappedItem];
     [itemController setLanguage:_language];
 }
-
 
 #pragma mark - Table view delegate
 

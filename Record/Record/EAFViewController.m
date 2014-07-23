@@ -669,6 +669,7 @@ double gestureEnd;
     
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
     NSLog(@"posting to %@",_url);
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
 
     [connection start];
 }
@@ -697,7 +698,8 @@ double gestureEnd;
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
     // You can parse the stuff in your instance variable now
-    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+
     [_recoFeedbackImage stopAnimating];
     //NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSASCIIStringEncoding];  
     //NSLog(@"go response %@",stringVersion);
@@ -751,6 +753,7 @@ double gestureEnd;
     // The request has failed for some reason!
     // Check the error var
     [_recoFeedbackImage stopAnimating];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't connect to server." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alert show];

@@ -50,7 +50,7 @@ BOOL playAudio = TRUE;
 }
 
 - (IBAction)gotUpSwipe:(id)sender {
-    NSLog(@"got up swipe");
+    //NSLog(@"got up swipe");
     if (_foreignLanguage.isHidden) {
         [_foreignLanguage setHidden:NO];
         [_english setHidden:YES];
@@ -64,12 +64,12 @@ BOOL playAudio = TRUE;
     }
 }
 - (IBAction)gotDownSwipe:(id)sender {
-    NSLog(@"got down swipe");
+   // NSLog(@"got down swipe");
 
     [self gotUpSwipe:nil];
 }
 - (IBAction)gotLeftSwipe:(id)sender {
-    NSLog(@"got left swipe");
+   // NSLog(@"got left swipe");
     _index++;
     if (_index == _items.count) _index = 0;
     
@@ -77,7 +77,7 @@ BOOL playAudio = TRUE;
 }
 
 - (IBAction)gotRightSwipe:(id)sender {
-    NSLog(@"got right swipe");
+  //  NSLog(@"got right swipe");
     _index--;
     if (_index == -1) _index = _items.count  -1UL;
     
@@ -122,7 +122,7 @@ NSArray *originalPaths;
     NSMutableArray *newEnglish = [NSMutableArray arrayWithArray:_englishWords];
     NSMutableArray *newPaths   = [NSMutableArray arrayWithArray:_rawPaths];
 
-    NSLog(@"size %d %d %d",newItems.count,newEnglish.count,newPaths.count);
+   // NSLog(@"size %d %d %d",newItems.count,newEnglish.count,newPaths.count);
     
     for (NSUInteger i = 0; i < _items.count; i++) {
         int j = [[newArray objectAtIndex:i] integerValue];
@@ -220,14 +220,6 @@ NSArray *originalPaths;
             
             [_player play];
             
-//            AVPlayerItem *currentItem = [_player currentItem];
-//            
-//            [[NSNotificationCenter defaultCenter]
-//             addObserver:self
-//             selector:@selector(playerItemDidReachEnd:)
-//             name:AVPlayerItemDidPlayToEndTimeNotification
-//             object:currentItem];
-            
             @try {
                 [_player removeObserver:self forKeyPath:@"status"];
             }
@@ -244,7 +236,6 @@ NSArray *originalPaths;
             NSLog(@"player status failed");
             
             [_player removeObserver:self forKeyPath:@"status"];
-           // _playRefAudioButton.enabled = YES;
         }
     }
     else {
@@ -255,17 +246,14 @@ NSArray *originalPaths;
 
 NSString *ffl = @"";
 NSString *fen = @"";
-//NSString *tr = @"";
 
 -(void) setForeignText:(NSString *)foreignLangText
 {
-    //    NSLog(@"setForeignText now %@",foreignLangText);
     ffl = foreignLangText;
 }
 
 -(void) setEnglishText:(NSString *)english
 {
-    //    NSLog(@"setEnglishText now %@",english);
     fen = english;
 }
 
