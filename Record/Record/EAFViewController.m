@@ -495,6 +495,28 @@ CFAbsoluteTime now;
     }
 }
 
+- (IBAction)swipeUp:(id)sender {
+    
+   // NSLog(@"swipeUp ");
+    if (_audioRecorder.recording)
+    {
+        [self stopAudio:nil];
+    }
+    else {
+        [self recordAudio:nil];
+    }
+}
+
+- (IBAction)swipeDown:(id)sender {
+    if (_audioRecorder.recording)
+    {
+        [self stopAudio:nil];
+    }
+    else {
+        [self recordAudio:nil];
+    }
+}
+
 double gestureEnd;
 - (IBAction)longPressAction:(id)sender {
     if (_longPressGesture.state == UIGestureRecognizerStateBegan) {
@@ -538,6 +560,9 @@ double gestureEnd;
             [_audioPlayer play];
         }
     }
+}
+- (IBAction)singleTap:(id)sender {
+    [self playRefAudio:nil];
 }
 
 
