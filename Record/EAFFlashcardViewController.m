@@ -32,6 +32,10 @@
     _foreignLanguage.text = ffl;
     _english.text =fen;
     [_foreignLanguage setHidden:YES];
+    
+    [[self view] sendSubviewToBack:_cardBackground];
+    
+    _cardBackground.layer.cornerRadius = 15.f;
     // Do any additional setup after loading the view.
 }
 
@@ -57,10 +61,13 @@ BOOL playAudio = TRUE;
         if ([_audioOnSelector isOn]) {
             [self playRefAudio:nil];
         }
+        _cardBackground.backgroundColor = [UIColor lightGrayColor];
     }
     else {
         [_foreignLanguage setHidden:YES];
         [_english setHidden:NO];
+        _cardBackground.backgroundColor = [UIColor whiteColor];
+
     }
 }
 - (IBAction)gotDownSwipe:(id)sender {
@@ -155,6 +162,10 @@ NSArray *originalPaths;
     _rawRefAudioPath =[_rawPaths objectAtIndex:_index];
     ffl = flAtIndex;
     fen = enAtIndex;
+
+    [_foreignLanguage setHidden:YES];
+    [_english setHidden:NO];
+    _cardBackground.backgroundColor = [UIColor whiteColor];
 
     if (!_foreignLanguage.isHidden) {
         if ([_audioOnSelector isOn]) {

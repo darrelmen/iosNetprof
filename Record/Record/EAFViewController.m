@@ -618,8 +618,6 @@ double gestureEnd;
 // NOTE : not used right now since can't post UTF8 characters - see postAudio2
 - (void)postAudio {
     // create request
-   // NSString *myString = [_audioRecorder.url absoluteString];
- //   NSLog(@"postAudio file %@",myString);
     [_recoFeedbackImage startAnimating];
     
     NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];

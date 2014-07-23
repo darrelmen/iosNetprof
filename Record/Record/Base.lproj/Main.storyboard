@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="gDn-g3-mfX">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
         <!--Language Table View Controller - Pronunciation Feedback-->
@@ -172,7 +173,7 @@
                                 </connections>
                             </button>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" restorationIdentifier="recoIndicator" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="D19-P2-ZOH">
-                                <rect key="frame" x="170" y="222" width="20" height="20"/>
+                                <rect key="frame" x="200" y="222" width="20" height="20"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </activityIndicatorView>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" restorationIdentifier="foreignLang" text="" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" preferredMaxLayoutWidth="193" translatesAutoresizingMaskIntoConstraints="NO" id="X3F-SL-lww">
@@ -207,13 +208,13 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EYL-m7-9rQ">
-                                <rect key="frame" x="114" y="208" width="48" height="48"/>
+                                <rect key="frame" x="144" y="208" width="48" height="48"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NUv-LG-FNB">
                                 <rect key="frame" x="10" y="79" width="100" height="100"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" image="playBigger2.png">
+                                <state key="normal" title="double tap" image="playBigger2.png">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
@@ -221,10 +222,16 @@
                                 </connections>
                             </button>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Press and hold to record or swipe up/down" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="179" translatesAutoresizingMaskIntoConstraints="NO" id="iUV-6v-6ns">
-                                <rect key="frame" x="93" y="200" width="179" height="63"/>
+                                <rect key="frame" x="86" y="197" width="179" height="63"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Double tap to play example audio." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O9L-fj-VKJ">
+                                <rect key="frame" x="30" y="542" width="290" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -232,6 +239,8 @@
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="X3F-SL-lww" secondAttribute="trailing" constant="9" id="7tj-Vp-SN6"/>
+                            <constraint firstItem="erT-Le-XmI" firstAttribute="top" secondItem="O9L-fj-VKJ" secondAttribute="bottom" constant="8" id="EaI-5I-86I"/>
+                            <constraint firstAttribute="centerX" secondItem="O9L-fj-VKJ" secondAttribute="centerX" constant="-15" id="FRC-yS-8V3"/>
                             <constraint firstAttribute="centerX" secondItem="ADC-h3-z7y" secondAttribute="centerX" id="Iud-B4-1AU"/>
                             <constraint firstAttribute="trailing" secondItem="DhO-I1-4wL" secondAttribute="trailing" constant="-3" id="bnp-wW-C0h"/>
                             <constraint firstItem="X3F-SL-lww" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" constant="118" id="dvp-mY-Jfj"/>
@@ -363,6 +372,11 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <view alpha="0.29999999999999999" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hdU-eQ-m31">
+                                <rect key="frame" x="20" y="114" width="280" height="293"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
@@ -376,7 +390,10 @@
                             <constraint firstAttribute="centerX" secondItem="f4y-AR-IhA" secondAttribute="centerX" constant="-0.5" id="JEb-uW-oDO"/>
                             <constraint firstItem="kaT-Sc-jde" firstAttribute="leading" secondItem="eRY-mf-vG6" secondAttribute="leading" id="Mch-CE-sDQ"/>
                             <constraint firstAttribute="centerY" secondItem="08R-i4-Xqb" secondAttribute="centerY" constant="37.5" id="U2c-Gn-9qO"/>
+                            <constraint firstAttribute="trailing" secondItem="hdU-eQ-m31" secondAttribute="trailing" constant="20" id="UM9-Nn-byL"/>
                             <constraint firstItem="vck-v1-5TC" firstAttribute="top" secondItem="0Wn-lw-fkc" secondAttribute="bottom" constant="5" id="Vcu-uO-9ZR"/>
+                            <constraint firstItem="hdU-eQ-m31" firstAttribute="leading" secondItem="hJd-l6-Hbq" secondAttribute="leading" constant="20" id="XyP-uX-0az"/>
+                            <constraint firstAttribute="width" secondItem="hdU-eQ-m31" secondAttribute="height" multiplier="320:293" id="ddC-xg-eY6"/>
                             <constraint firstItem="kaT-Sc-jde" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="hJd-l6-Hbq" secondAttribute="leading" constant="11" id="hba-tX-gx9"/>
                             <constraint firstItem="jKK-fB-hIY" firstAttribute="centerY" secondItem="eRY-mf-vG6" secondAttribute="centerY" id="icN-AN-Nwv"/>
                             <constraint firstItem="jiT-et-NzN" firstAttribute="centerY" secondItem="kaT-Sc-jde" secondAttribute="centerY" id="igx-ut-vmT"/>
@@ -396,6 +413,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="audioOnSelector" destination="jiT-et-NzN" id="SWw-di-qs4"/>
+                        <outlet property="cardBackground" destination="hdU-eQ-m31" id="WV6-Qu-rAl"/>
                         <outlet property="english" destination="08R-i4-Xqb" id="o3y-Ex-I2t"/>
                         <outlet property="foreignLanguage" destination="f4y-AR-IhA" id="KmA-Be-mKR"/>
                         <outlet property="shuffleSwitch" destination="jKK-fB-hIY" id="iTQ-94-owC"/>

@@ -34,6 +34,7 @@
 @property NSArray *paths;
 @property NSArray *rawPaths;
 
+@property (strong, nonatomic) IBOutlet UIView *cardBackground;
 @property (strong, nonatomic) IBOutlet UISwitch *shuffleSwitch;
 @property (strong, nonatomic) IBOutlet UISwitch *audioOnSelector;
 @end
