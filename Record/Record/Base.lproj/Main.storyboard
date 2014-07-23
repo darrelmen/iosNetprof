@@ -128,6 +128,7 @@
                             <outlet property="delegate" destination="qBH-0p-qwJ" id="0kH-rx-3Ds"/>
                         </connections>
                     </tableView>
+                    <toolbarItems/>
                     <navigationItem key="navigationItem" title="Chapter 1 Words" id="RsT-lK-B71">
                         <barButtonItem key="backBarButtonItem" title="Words" id="4Nz-uh-tJC"/>
                     </navigationItem>
@@ -242,8 +243,14 @@
                             <outletCollection property="gestureRecognizers" destination="9a4-pv-hte" appends="YES" id="pIf-ae-30O"/>
                         </connections>
                     </view>
+                    <toolbarItems/>
                     <navigationItem key="navigationItem" title="Say the word, see your score" id="WLw-cB-ejT">
                         <barButtonItem key="backBarButtonItem" title="Words" id="zRY-DR-Wv1"/>
+                        <barButtonItem key="rightBarButtonItem" title="Flip" id="eHH-jC-TJK">
+                            <connections>
+                                <segue destination="uyi-Og-FF8" kind="push" id="nci-M9-m7i"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="annotatedGauge2" destination="ADC-h3-z7y" id="cYN-3W-PWV"/>
@@ -281,6 +288,125 @@
             </objects>
             <point key="canvasLocation" x="2110" y="51"/>
         </scene>
+        <!--Flashcard View Controller - Flip-->
+        <scene sceneID="YdA-X1-Ayb">
+            <objects>
+                <viewController title="Flip" id="uyi-Og-FF8" customClass="EAFFlashcardViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Dnx-Fe-PWe"/>
+                        <viewControllerLayoutGuide type="bottom" id="vck-v1-5TC"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="hJd-l6-Hbq">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" restorationIdentifier="foreignLang" text="" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" preferredMaxLayoutWidth="299" translatesAutoresizingMaskIntoConstraints="NO" id="f4y-AR-IhA">
+                                <rect key="frame" x="11" y="289" width="299" height="64"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <gestureRecognizers/>
+                                <fontDescription key="fontDescription" type="system" pointSize="38"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" restorationIdentifier="english" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="08R-i4-Xqb">
+                                <rect key="frame" x="11" y="212" width="299" height="69"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="38"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jiT-et-NzN">
+                                <rect key="frame" x="100" y="495" width="51" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="audioValueChange:" destination="uyi-Og-FF8" eventType="valueChanged" id="BAb-29-06b"/>
+                                </connections>
+                            </switch>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Play audio" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kaT-Sc-jde">
+                                <rect key="frame" x="11" y="500" width="81" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Swipe up/down to flip, left/right to change" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0Wn-lw-fkc">
+                                <rect key="frame" x="10" y="538" width="290" height="16"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="jKK-fB-hIY">
+                                <rect key="frame" x="100" y="456" width="51" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="shuffleChange:" destination="uyi-Og-FF8" eventType="valueChanged" id="ILD-Bt-cjp"/>
+                                </connections>
+                            </switch>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Shuffle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eRY-mf-vG6">
+                                <rect key="frame" x="11" y="461" width="53" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstItem="jKK-fB-hIY" firstAttribute="leading" secondItem="eRY-mf-vG6" secondAttribute="trailing" constant="8" id="ALY-Jx-kjV"/>
+                            <constraint firstItem="jiT-et-NzN" firstAttribute="leading" secondItem="kaT-Sc-jde" secondAttribute="trailing" constant="8" id="D15-UC-Pdz"/>
+                            <constraint firstItem="eRY-mf-vG6" firstAttribute="leading" secondItem="hJd-l6-Hbq" secondAttribute="leading" constant="11" id="H0R-QC-9TD"/>
+                            <constraint firstItem="jKK-fB-hIY" firstAttribute="leading" secondItem="jiT-et-NzN" secondAttribute="leading" id="HcK-1l-Y0b"/>
+                            <constraint firstItem="vck-v1-5TC" firstAttribute="top" secondItem="jiT-et-NzN" secondAttribute="bottom" constant="29" id="HdE-DC-1JR"/>
+                            <constraint firstItem="jiT-et-NzN" firstAttribute="top" secondItem="jKK-fB-hIY" secondAttribute="bottom" constant="8" id="J2V-7q-MQh"/>
+                            <constraint firstAttribute="centerX" secondItem="f4y-AR-IhA" secondAttribute="centerX" constant="-0.5" id="JEb-uW-oDO"/>
+                            <constraint firstItem="kaT-Sc-jde" firstAttribute="leading" secondItem="eRY-mf-vG6" secondAttribute="leading" id="Mch-CE-sDQ"/>
+                            <constraint firstAttribute="centerY" secondItem="08R-i4-Xqb" secondAttribute="centerY" constant="37.5" id="U2c-Gn-9qO"/>
+                            <constraint firstItem="vck-v1-5TC" firstAttribute="top" secondItem="0Wn-lw-fkc" secondAttribute="bottom" constant="5" id="Vcu-uO-9ZR"/>
+                            <constraint firstItem="kaT-Sc-jde" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="hJd-l6-Hbq" secondAttribute="leading" constant="11" id="hba-tX-gx9"/>
+                            <constraint firstItem="jKK-fB-hIY" firstAttribute="centerY" secondItem="eRY-mf-vG6" secondAttribute="centerY" id="icN-AN-Nwv"/>
+                            <constraint firstItem="jiT-et-NzN" firstAttribute="centerY" secondItem="kaT-Sc-jde" secondAttribute="centerY" id="igx-ut-vmT"/>
+                            <constraint firstAttribute="centerX" secondItem="08R-i4-Xqb" secondAttribute="centerX" constant="-0.5" id="xt3-34-SO1"/>
+                            <constraint firstItem="f4y-AR-IhA" firstAttribute="top" secondItem="08R-i4-Xqb" secondAttribute="bottom" constant="8" id="zgF-EJ-lJA"/>
+                        </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="6xk-Fg-fan" appends="YES" id="4E7-ji-i5H"/>
+                            <outletCollection property="gestureRecognizers" destination="X7k-zc-1un" appends="YES" id="uzg-Nu-sH0"/>
+                            <outletCollection property="gestureRecognizers" destination="c8Q-QS-0Yo" appends="YES" id="4Xw-rC-R12"/>
+                            <outletCollection property="gestureRecognizers" destination="hFJ-B7-ojG" appends="YES" id="fZM-3O-Ixq"/>
+                        </connections>
+                    </view>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" title="Flashcard" id="WIh-GU-pek">
+                        <barButtonItem key="backBarButtonItem" title="Learn" id="wtd-DP-ffw"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="audioOnSelector" destination="jiT-et-NzN" id="SWw-di-qs4"/>
+                        <outlet property="english" destination="08R-i4-Xqb" id="o3y-Ex-I2t"/>
+                        <outlet property="foreignLanguage" destination="f4y-AR-IhA" id="KmA-Be-mKR"/>
+                        <outlet property="shuffleSwitch" destination="jKK-fB-hIY" id="iTQ-94-owC"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2Mg-IE-UBi" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="up" id="6xk-Fg-fan">
+                    <connections>
+                        <action selector="gotUpSwipe:" destination="uyi-Og-FF8" id="dVR-td-neY"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="down" id="X7k-zc-1un">
+                    <connections>
+                        <action selector="gotDownSwipe:" destination="uyi-Og-FF8" id="TPh-kY-6wD"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="left" id="c8Q-QS-0Yo">
+                    <connections>
+                        <action selector="gotLeftSwipe:" destination="uyi-Og-FF8" id="uXD-VN-0kJ"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="right" id="hFJ-B7-ojG">
+                    <connections>
+                        <action selector="gotRightSwipe:" destination="uyi-Og-FF8" id="F8f-gG-qSP"/>
+                    </connections>
+                </swipeGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="2550" y="51"/>
+        </scene>
         <!--Navigation Controller - Pronunciation Feedback-->
         <scene sceneID="foj-1l-cew">
             <objects>
@@ -291,6 +417,10 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
+                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="yNq-mI-mjw">
+                        <rect key="frame" x="0.0" y="524" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </toolbar>
                     <connections>
                         <segue destination="re6-Vy-sbI" kind="relationship" relationship="rootViewController" id="f0l-Lb-ZCr"/>
                     </connections>

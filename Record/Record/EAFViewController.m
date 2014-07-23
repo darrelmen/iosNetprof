@@ -7,6 +7,7 @@
 //
 
 #import "EAFViewController.h"
+#import "EAFFlashcardViewController.h"
 #import "MRoundedButton.h"
 #import "math.h"
 #import <AudioToolbox/AudioServices.h>
@@ -771,6 +772,40 @@ double gestureEnd;
     blue /= 255;
     
     return [UIColor colorWithRed:red green:green blue:blue alpha:1];
+}
+
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+    NSLog(@"Got segue!!! ");
+    EAFFlashcardViewController *itemController = [segue destinationViewController];
+    
+   // NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+    //  NSLog(@"row %d",indexPath.row  );
+    //NSString *foreignLanguageItem = [self.items objectAtIndex:indexPath.row];
+   /// NSString *englishItem = [self.englishWords objectAtIndex:indexPath.row];
+    
+    [itemController setForeignText:fl];
+    [itemController setEnglishText:en];
+
+    //[itemController setEnglish:englishItem];
+//    [itemController setTranslitText:[self.translitPhrases objectAtIndex:indexPath.row]];
+    itemController.refAudioPath = _refAudioPath;
+    itemController.rawRefAudioPath = _rawRefAudioPath;
+    itemController.index = _index;
+    itemController.items = _items;
+    itemController.language = _language;
+    itemController.englishWords = _englishWords;
+  //  itemController.translitWords = [self translitPhrases];
+    itemController.paths = _paths;
+    itemController.rawPaths = _rawPaths;
+  //  itemController.url = [self getURL];
+    
+    [itemController setTitle:[self title]];
 }
 
 @end
