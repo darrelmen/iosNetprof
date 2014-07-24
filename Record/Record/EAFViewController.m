@@ -497,24 +497,24 @@ CFAbsoluteTime now;
 
 - (IBAction)swipeUp:(id)sender {
     
-   // NSLog(@"swipeUp ");
-    if (_audioRecorder.recording)
-    {
-        [self stopAudio:nil];
-    }
-    else {
-        [self recordAudio:nil];
-    }
+//   // NSLog(@"swipeUp ");
+//    if (_audioRecorder.recording)
+//    {
+//        [self stopAudio:nil];
+//    }
+//    else {
+//        [self recordAudio:nil];
+//    }
 }
 
 - (IBAction)swipeDown:(id)sender {
-    if (_audioRecorder.recording)
-    {
-        [self stopAudio:nil];
-    }
-    else {
-        [self recordAudio:nil];
-    }
+//    if (_audioRecorder.recording)
+//    {
+//        [self stopAudio:nil];
+//    }
+//    else {
+//        [self recordAudio:nil];
+//    }
 }
 
 double gestureEnd;
@@ -562,7 +562,7 @@ double gestureEnd;
     }
 }
 - (IBAction)singleTap:(id)sender {
-    [self playRefAudio:nil];
+//    [self playRefAudio:nil];
 }
 
 

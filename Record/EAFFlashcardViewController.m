@@ -36,6 +36,9 @@
     [[self view] sendSubviewToBack:_cardBackground];
     
     _cardBackground.layer.cornerRadius = 15.f;
+    
+    _cardBackground.layer.borderColor = [UIColor blackColor].CGColor;
+    _cardBackground.layer.borderWidth = 2.0f;
     // Do any additional setup after loading the view.
 }
 
@@ -48,9 +51,9 @@
 BOOL playAudio = TRUE;
 
 - (IBAction)audioValueChange:(id)sender {
-   BOOL value = [_audioOnSelector isOn];
+   //BOOL value = [_audioOnSelector isOn];
     
-    NSLog(@"audioValueChange Got value %hhd",value);
+   // NSLog(@"audioValueChange Got value %hhd",value);
 }
 
 - (IBAction)gotUpSwipe:(id)sender {

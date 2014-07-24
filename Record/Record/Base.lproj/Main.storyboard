@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="gDn-g3-mfX">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
         <!--Language Table View Controller - Pronunciation Feedback-->
@@ -221,14 +220,14 @@
                                     <action selector="playRefAudio:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="6vZ-6s-qpB"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Press and hold to record or swipe up/down" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="179" translatesAutoresizingMaskIntoConstraints="NO" id="iUV-6v-6ns">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Press and hold to record" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="179" translatesAutoresizingMaskIntoConstraints="NO" id="iUV-6v-6ns">
                                 <rect key="frame" x="86" y="197" width="179" height="63"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Double tap to play example audio." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O9L-fj-VKJ">
+                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Double tap to play example audio." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O9L-fj-VKJ">
                                 <rect key="frame" x="30" y="542" width="290" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="11"/>
@@ -372,7 +371,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <view alpha="0.29999999999999999" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hdU-eQ-m31">
+                            <view alpha="0.10000000000000002" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hdU-eQ-m31">
                                 <rect key="frame" x="20" y="114" width="280" height="293"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -393,10 +392,11 @@
                             <constraint firstAttribute="trailing" secondItem="hdU-eQ-m31" secondAttribute="trailing" constant="20" id="UM9-Nn-byL"/>
                             <constraint firstItem="vck-v1-5TC" firstAttribute="top" secondItem="0Wn-lw-fkc" secondAttribute="bottom" constant="5" id="Vcu-uO-9ZR"/>
                             <constraint firstItem="hdU-eQ-m31" firstAttribute="leading" secondItem="hJd-l6-Hbq" secondAttribute="leading" constant="20" id="XyP-uX-0az"/>
-                            <constraint firstAttribute="width" secondItem="hdU-eQ-m31" secondAttribute="height" multiplier="320:293" id="ddC-xg-eY6"/>
+                            <constraint firstItem="jKK-fB-hIY" firstAttribute="top" secondItem="hdU-eQ-m31" secondAttribute="bottom" constant="15" id="Y8j-kt-yfx"/>
                             <constraint firstItem="kaT-Sc-jde" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="hJd-l6-Hbq" secondAttribute="leading" constant="11" id="hba-tX-gx9"/>
                             <constraint firstItem="jKK-fB-hIY" firstAttribute="centerY" secondItem="eRY-mf-vG6" secondAttribute="centerY" id="icN-AN-Nwv"/>
                             <constraint firstItem="jiT-et-NzN" firstAttribute="centerY" secondItem="kaT-Sc-jde" secondAttribute="centerY" id="igx-ut-vmT"/>
+                            <constraint firstItem="hdU-eQ-m31" firstAttribute="top" secondItem="Dnx-Fe-PWe" secondAttribute="bottom" constant="10" id="mn7-Rz-7ql"/>
                             <constraint firstAttribute="centerX" secondItem="08R-i4-Xqb" secondAttribute="centerX" constant="-0.5" id="xt3-34-SO1"/>
                             <constraint firstItem="f4y-AR-IhA" firstAttribute="top" secondItem="08R-i4-Xqb" secondAttribute="bottom" constant="8" id="zgF-EJ-lJA"/>
                         </constraints>
