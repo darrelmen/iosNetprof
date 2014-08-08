@@ -34,6 +34,7 @@
 @property NSArray *items;
 @property NSArray *englishWords;
 @property NSArray *translitWords;
+@property NSArray *examples;
 @property NSArray *paths;
 @property NSArray *rawPaths;
 @property NSString *url;
@@ -50,6 +51,7 @@
 -(void) setForeignText:(NSString *)foreignLang;
 -(void) setEnglishText:(NSString *)english;
 -(void) setTranslitText:(NSString *)translit;
+-(void) setExampleText:(NSString *)example;
 @property (strong, nonatomic) IBOutlet MSAnnotatedGauge *annotatedGauge2;
 
 @property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *rightSwipe;

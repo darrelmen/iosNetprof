@@ -23,7 +23,7 @@ int languageIndex = 0;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    languages = [NSArray arrayWithObjects:@"Dari", @"English",@"Farsi", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Urdu",  nil];
+    languages = [NSArray arrayWithObjects:@"Dari", @"English",@"Egyptian",@"Farsi", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Urdu",  nil];
  
     // begin process of downloading audio...
     if (DOWNLOAD_ALL_AUDIO) {

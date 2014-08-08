@@ -275,6 +275,7 @@
 NSString *fl = @"";
 NSString *en = @"";
 NSString *tr = @"";
+NSString *ex = @"";
 
 -(void) setForeignText:(NSString *)foreignLangText
 {
@@ -290,8 +291,14 @@ NSString *tr = @"";
 
 -(void) setTranslitText:(NSString *)translit
 {
- //   NSLog(@"setTranslitText now %@",translit);
+    //   NSLog(@"setTranslitText now %@",translit);
     tr = translit;
+}
+
+-(void) setExampleText:(NSString *)example
+{
+    //   NSLog(@"setTranslitText now %@",translit);
+    ex = example;
 }
 
 - (void)didReceiveMemoryWarning

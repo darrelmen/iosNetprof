@@ -28,11 +28,18 @@
 {
     [super viewDidLoad];
     
-    self.chapters = [[NSMutableArray alloc] init];
+    if (self.chapters == nil) {
+        self.chapters = [[NSMutableArray alloc] init];
+    }
+    NSLog(@"lang %@ %@ back = '%@'", _language, [self title], self.navigationItem.backBarButtonItem.title);
     
-    //    NSLog(@"lang %@", _language);
-    
-    [self loadInitialData];
+    if (_jsonContentArray == nil) {
+        [self loadInitialData];
+    }
+    else {
+      // necessary??
+    //    [[self tableView] reloadData];
+    }
     
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
@@ -46,7 +53,7 @@ int receivedCount = 0;;
 
 - (void)askServerForJson {
     reqCount++;
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet", _language];
+    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?nestedChapters", _language];
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -63,6 +70,9 @@ int receivedCount = 0;;
 }
 
 - (void)loadInitialData {
+    
+    NSLog(@"loadInitialData");
+
     NSData *cachedData = [self getCachedJson];
     if (cachedData && [cachedData length] > 100) {
         NSLog(@"loadInitialData : using cached json!");
@@ -80,6 +90,7 @@ int receivedCount = 0;;
     }
 }
 
+// TODO : check how old the cached file is
 - (void)writeToCache:(NSData *) toWrite {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -90,6 +101,8 @@ int receivedCount = 0;;
 }
 
 - (NSData *) getCachedJson {
+    NSLog(@"getCachedJson ---");
+
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
    
     NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -134,6 +147,7 @@ int receivedCount = 0;;
 }
 
 NSDictionary* chapterInfo;
+BOOL hasModel;
 
 - (BOOL)useJsonChapterData {
     NSError * error;
@@ -147,17 +161,48 @@ NSDictionary* chapterInfo;
         return false;
     }
     
-    _chapters = [json allKeys];
+    NSArray *jsonArray = [json objectForKey:@"content"];
     
-    NSMutableArray *myArray = [NSMutableArray arrayWithArray:_chapters];
-    
-    //sorting
-    [myArray sortUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
-        return [str1 compare:str2 options:(NSNumericSearch)];
-    }];
-    
-    _chapters = myArray;
-    chapterInfo = json;
+    if (jsonArray != nil) {
+        _jsonContentArray = jsonArray;
+        id something =[json objectForKey:@"hasModel"];
+        
+       // NSLog(@"class is %@",[something class]);
+        //if ([something isKindOfClass:[NSBoolean class]]) {
+            hasModel = [something boolValue];
+        //}
+        //NSString *value =[json objectForKey:@"hasModel"];
+        NSLog(@"hasModel = %hhd",hasModel);
+        
+        //hasModel = [value isEqualToString:@"true"];
+     
+        NSMutableArray *myArray = [[NSMutableArray alloc] init];
+        
+        for (NSDictionary *entry in jsonArray) {
+            _chapterName = [entry objectForKey:@"type"]; // a little redundant here.
+            [myArray addObject:[entry objectForKey:@"name"]];
+        }
+        //sorting
+        [myArray sortUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+            return [str1 compare:str2 options:(NSNumericSearch)];
+        }];
+        _chapters = myArray;
+        chapterInfo = json;
+       // localJsonArray = jsonArray;
+    }
+    else {
+        _chapters = [json allKeys];
+        
+        NSMutableArray *myArray = [NSMutableArray arrayWithArray:_chapters];
+        
+        //sorting
+        [myArray sortUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+            return [str1 compare:str2 options:(NSNumericSearch)];
+        }];
+        
+        _chapters = myArray;
+        chapterInfo = json; // this is the full json dictionary (???)
+    }
     [[self tableView] reloadData];
     
     return true;
@@ -219,7 +264,7 @@ NSDictionary* chapterInfo;
    // NSLog(@"selecting row %d out of %d chapters",indexPath.row, self.chapters.count);
     
     NSString *chapter = [self.chapters objectAtIndex:indexPath.row];
-    cell.textLabel.text = [NSString stringWithFormat:@"Chapter %@",chapter];
+    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
 
     return cell;
 }
@@ -264,6 +309,7 @@ NSDictionary* chapterInfo;
 
 
 #pragma mark - Navigation
+NSArray *currentItems;
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -271,16 +317,17 @@ NSDictionary* chapterInfo;
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
+    NSLog(@"identifier %@",segue.identifier);
+    
     EAFItemTableViewController *itemController = [segue destinationViewController];
  
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-  
-    //NSLog(@"prepareForSegue row %ld vs %lu",(long)indexPath.row, (unsigned long)self.chapters.count  );
-    
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
 
     [itemController setItemIndex:0];
     [itemController setChapterToItems:chapterInfo];
+    [itemController setJsonItems:currentItems];
+    [itemController setChapterTitle:_chapterName];
     [itemController setChapter:tappedItem];
     [itemController setLanguage:_language];
 }
@@ -290,6 +337,89 @@ NSDictionary* chapterInfo;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
+
+   // NSLog(@"got selection at %@",tappedItem);
+    NSString *controllerToJumpTo;
+    
+    //BOOL isChapter = true;
+    NSArray *children;
+    
+    for (NSDictionary *entry in _jsonContentArray) {
+        NSString *name =[entry objectForKey:@"name"];
+        //NSLog(@"looking for '%@' '%@'",name, tappedItem);
+
+        if ([name isEqualToString:tappedItem]) {
+            
+            NSLog(@"=---- > got match '%@' '%@'",name, tappedItem);
+
+            NSArray *items = [entry objectForKey:@"items"];
+            if (items == nil) { // no items - not a leaf
+                
+
+                children = [entry objectForKey:@"children"];
+                //NSLog(@"children are %@",children);
+                controllerToJumpTo = @"ChapterViewController";
+                EAFChapterTableViewController *myController = [self.storyboard instantiateViewControllerWithIdentifier:controllerToJumpTo];
+                [myController setJsonContentArray:children];
+                
+                
+                NSMutableArray *myArray = [[NSMutableArray alloc] init];
+                
+                NSString *childType = nil;
+                for (NSDictionary *child in children) {
+                    childType = [child objectForKey:@"type"];
+                    [myArray addObject:[child objectForKey:@"name"]];
+                }
+                //sorting
+                [myArray sortUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+                    return [str1 compare:str2 options:(NSNumericSearch)];
+                }];
+                
+                NSString *title = [[self title] stringByAppendingFormat:@" %@ %@",[entry objectForKey:@"type"],name];
+
+                [myController setChapters:myArray];
+                [myController setTitle:title];
+                [myController setLanguage:_language];
+                [myController setChapterName:childType];
+                
+                [self.navigationController pushViewController: myController animated:YES];
+                break;
+
+            }
+            else {
+//                NSLog(@"items is %@",items);
+
+                controllerToJumpTo = @"ItemViewController";
+                currentItems = items;
+                [self performSegueWithIdentifier:controllerToJumpTo sender:self];
+                
+                break;
+            }
+        }
+    }
+    
+    //NSLog(@"jump type is %@",controllerToJumpTo);
 }
+
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
+{
+    NSLog(@"got call to accessory action");
+}
+
+//-(void)loadDestinationVC{
+//    if(condition == YES){
+//        
+//        [self performSegueWithIdentifier:@"conditionSegue" sender:nil];
+//    }  
+//}
+
+//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+//    BATTrailsViewController *trailsController = [[BATTrailsViewController alloc] initWithStyle:UITableViewStylePlain];
+//    trailsController.selectedRegion = [regions objectAtIndex:indexPath.row];
+//    [[self navigationController] pushViewController:trailsController animated:YES];
+//}
 
 @end

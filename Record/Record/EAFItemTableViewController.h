@@ -13,11 +13,14 @@
 @property NSMutableArray *items;
 @property NSMutableArray *englishPhrases;
 @property NSMutableArray *translitPhrases;
+@property NSMutableArray *examples;
 @property NSMutableArray *paths;
 @property NSMutableArray *rawPaths;
 
 -(void) setChapter:(NSString *)chapter;
+-(void) setChapterTitle:(NSString *)chapter;
 @property (strong, nonatomic) NSDictionary *chapterToItems;
+@property (strong, nonatomic) NSArray *jsonItems;
 @property NSString *language;
 
 @property NSMutableData *mp3Audio;

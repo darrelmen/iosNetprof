@@ -37,14 +37,17 @@
     self.items = [[NSMutableArray alloc] init];
     self.englishPhrases = [[NSMutableArray alloc] init];
     self.translitPhrases = [[NSMutableArray alloc] init];
+    self.examples = [[NSMutableArray alloc] init];
     self.paths = [[NSMutableArray alloc] init];
     self.rawPaths = [[NSMutableArray alloc] init];
-    NSArray *items =[_chapterToItems objectForKey:currentChapter];
+  //  NSArray *items =[_chapterToItems objectForKey:currentChapter];
+    NSArray *items =_jsonItems;
 
     for (NSDictionary *object in items) {
         [_items addObject:[object objectForKey:@"fl"]];
         [_englishPhrases addObject:[object objectForKey:@"en"]];
         [_translitPhrases addObject:[object objectForKey:@"tl"]];
+        [_examples addObject:[object objectForKey:@"ct"]];
         
         NSString *refPath = [object objectForKey:@"ref"];
         if (refPath) {
@@ -69,7 +72,7 @@
 
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
-    [self setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
+    [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,chapterTitle,currentChapter]];
    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -94,9 +97,14 @@
 }
 
 NSString *currentChapter;
+NSString *chapterTitle = @"Chapter";
 
 - (void)setChapter:(NSString *) chapter {
     currentChapter = chapter;
+}
+
+- (void)setChapterTitle:(NSString *) title {
+    chapterTitle = title;
 }
 
 #pragma mark - Table view data source
@@ -175,26 +183,30 @@ NSString *currentChapter;
     EAFViewController *itemController = [segue destinationViewController];
     
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+    NSInteger row = indexPath.row;
   //  NSLog(@"row %d",indexPath.row  );
-    NSString *foreignLanguageItem = [self.items objectAtIndex:indexPath.row];
-    NSString *englishItem = [self.englishPhrases objectAtIndex:indexPath.row];
+    NSString *foreignLanguageItem = [self.items objectAtIndex:row];
+    NSString *englishItem = [self.englishPhrases objectAtIndex:row];
     
     [itemController setForeignText:foreignLanguageItem];
     [itemController setEnglishText:englishItem];
-    [itemController setTranslitText:[self.translitPhrases objectAtIndex:indexPath.row]];
-    itemController.refAudioPath = [_paths objectAtIndex:indexPath.row];
-    itemController.rawRefAudioPath = [_rawPaths objectAtIndex:indexPath.row];
-    itemController.index = indexPath.row;
+    [itemController setTranslitText:[self.translitPhrases objectAtIndex:row]];
+    [itemController setExampleText:[self.examples objectAtIndex:row]];
+    itemController.refAudioPath = [_paths objectAtIndex:row];
+    itemController.rawRefAudioPath = [_rawPaths objectAtIndex:row];
+    itemController.index = row;
     itemController.items = [self items];
     itemController.language = _language;
     itemController.englishWords = [self englishPhrases];
     itemController.translitWords = [self translitPhrases];
+    itemController.examples = [self examples];
     itemController.paths = _paths;
     itemController.rawPaths = _rawPaths;
     itemController.url = [self getURL];
     [itemController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
 }
 
+// see getAudioForCurrentItem
 - (NSString *)getCurrentCachePath
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
