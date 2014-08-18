@@ -16,6 +16,7 @@
 @property NSMutableArray *examples;
 @property NSMutableArray *paths;
 @property NSMutableArray *rawPaths;
+@property BOOL hasModel;
 
 -(void) setChapter:(NSString *)chapter;
 -(void) setChapterTitle:(NSString *)chapter;

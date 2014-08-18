@@ -20,8 +20,6 @@
 		B67E1BC6197EFC0500F42143 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BBE197EFC0500F42143 /* unzip.c */; };
 		B67E1BC7197EFC0500F42143 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BC0197EFC0500F42143 /* zip.c */; };
 		B67E1BC8197EFC0500F42143 /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BC3197EFC0500F42143 /* SSZipArchive.m */; };
-		B68A5C2E1979A6140036B90C /* MRoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C2D1979A6140036B90C /* MRoundedButton.m */; };
-		B68A5C301979A62D0036B90C /* Vendors in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C2F1979A62D0036B90C /* Vendors */; };
 		B68A5C321979AE7E0036B90C /* playBigger2.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C311979AE7E0036B90C /* playBigger2.png */; };
 		B68A5C341979B3480036B90C /* mic-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C331979B3480036B90C /* mic-icon.png */; };
 		B68A5C361979B4590036B90C /* mic-4.svg in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C351979B4590036B90C /* mic-4.svg */; };
@@ -32,6 +30,7 @@
 		B68A5C4B1979C8B70036B90C /* MSNeedleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C421979C8B70036B90C /* MSNeedleView.m */; };
 		B68A5C4C1979C8B70036B90C /* MSRangeGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C441979C8B70036B90C /* MSRangeGauge.m */; };
 		B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C461979C8B70036B90C /* MSSimpleGauge.m */; };
+		B696890319993B910094A297 /* micBiggerCircle.png in Resources */ = {isa = PBXBuildFile; fileRef = B696890219993B910094A297 /* micBiggerCircle.png */; };
 		B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96A1976F27100E8F1D5 /* media-record-4_32x32.png */; };
 		B6A8D96D1976F27C00E8F1D5 /* media-record-3_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96C1976F27C00E8F1D5 /* media-record-3_32x32.png */; };
 		B6A8D97719770C2100E8F1D5 /* Icon-40.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96F19770C2100E8F1D5 /* Icon-40.png */; };
@@ -96,9 +95,6 @@
 		B67E1BC1197EFC0500F42143 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		B67E1BC2197EFC0500F42143 /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
 		B67E1BC3197EFC0500F42143 /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
-		B68A5C2C1979A6140036B90C /* MRoundedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRoundedButton.h; sourceTree = "<group>"; };
-		B68A5C2D1979A6140036B90C /* MRoundedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRoundedButton.m; sourceTree = "<group>"; };
-		B68A5C2F1979A62D0036B90C /* Vendors */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Vendors; sourceTree = "<group>"; };
 		B68A5C311979AE7E0036B90C /* playBigger2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = playBigger2.png; sourceTree = "<group>"; };
 		B68A5C331979B3480036B90C /* mic-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mic-icon.png"; sourceTree = "<group>"; };
 		B68A5C351979B4590036B90C /* mic-4.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "mic-4.svg"; sourceTree = "<group>"; };
@@ -117,6 +113,7 @@
 		B68A5C451979C8B70036B90C /* MSSimpleGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSSimpleGauge.h; sourceTree = "<group>"; };
 		B68A5C461979C8B70036B90C /* MSSimpleGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSSimpleGauge.m; sourceTree = "<group>"; };
 		B68A5C471979C8B70036B90C /* MSSimpleGaugeSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSSimpleGaugeSubclass.h; sourceTree = "<group>"; };
+		B696890219993B910094A297 /* micBiggerCircle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = micBiggerCircle.png; sourceTree = "<group>"; };
 		B6A8D96A1976F27100E8F1D5 /* media-record-4_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "media-record-4_32x32.png"; sourceTree = "<group>"; };
 		B6A8D96C1976F27C00E8F1D5 /* media-record-3_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "media-record-3_32x32.png"; sourceTree = "<group>"; };
 		B6A8D96F19770C2100E8F1D5 /* Icon-40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-40.png"; sourceTree = "<group>"; };
@@ -193,6 +190,7 @@
 		B66BACBF1970A57B00E28ECC /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B696890219993B910094A297 /* micBiggerCircle.png */,
 				B68A5C371979B4AE0036B90C /* micBigger.png */,
 				B68A5C351979B4590036B90C /* mic-4.svg */,
 				B68A5C331979B3480036B90C /* mic-icon.png */,
@@ -233,16 +231,6 @@
 				B67E1BC1197EFC0500F42143 /* zip.h */,
 			);
 			path = minizip;
-			sourceTree = "<group>";
-		};
-		B68A5C2B1979A6050036B90C /* RoundButton */ = {
-			isa = PBXGroup;
-			children = (
-				B68A5C2F1979A62D0036B90C /* Vendors */,
-				B68A5C2C1979A6140036B90C /* MRoundedButton.h */,
-				B68A5C2D1979A6140036B90C /* MRoundedButton.m */,
-			);
-			name = RoundButton;
 			sourceTree = "<group>";
 		};
 		B68A5C391979C8B70036B90C /* Gauges */ = {
@@ -329,7 +317,6 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
-				B68A5C2B1979A6050036B90C /* RoundButton */,
 				B6B9F393197886C300CD0140 /* iPad */,
 				B6B9F390197827A700CD0140 /* EAFLanguageTableViewController.h */,
 				B6B9F391197827A700CD0140 /* EAFLanguageTableViewController.m */,
@@ -474,11 +461,11 @@
 				B6A8D97D19770C2100E8F1D5 /* Icon-Small.png in Resources */,
 				B66BACBE1970A2FE00E28ECC /* NewProF1.png in Resources */,
 				B6D0017A1970ADAC009554D5 /* squareStop.png in Resources */,
-				B68A5C301979A62D0036B90C /* Vendors in Resources */,
 				B6A8D97719770C2100E8F1D5 /* Icon-40.png in Resources */,
 				B6A8D97819770C2100E8F1D5 /* Icon-40@2x.png in Resources */,
 				B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */,
 				B68A5C381979B4AE0036B90C /* micBigger.png in Resources */,
+				B696890319993B910094A297 /* micBiggerCircle.png in Resources */,
 				B6A8D97A19770C2100E8F1D5 /* Icon-60@2x.png in Resources */,
 				B68A5C321979AE7E0036B90C /* playBigger2.png in Resources */,
 				B68A5C341979B3480036B90C /* mic-icon.png in Resources */,
@@ -521,7 +508,6 @@
 				B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */,
 				F6A5683418ECA98B00B844C6 /* EAFViewController.m in Sources */,
 				B68A5C481979C8B70036B90C /* MSAnnotatedGauge.m in Sources */,
-				B68A5C2E1979A6140036B90C /* MRoundedButton.m in Sources */,
 				F6A5682E18ECA98A00B844C6 /* EAFAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -655,10 +641,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -673,10 +659,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

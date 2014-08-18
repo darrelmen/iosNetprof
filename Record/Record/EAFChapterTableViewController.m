@@ -79,8 +79,11 @@ int receivedCount = 0;;
         _responseData = [NSMutableData dataWithData:cachedData];
         BOOL dataIsValid = [self useJsonChapterData];
         if (!dataIsValid) {
-            NSLog(@"asking server for json!");
+            NSLog(@"loadInitialData : asking server for json!");
            [self askServerForJson];
+        }
+        else {
+            [self refreshCache];
         }
 
     }
@@ -100,19 +103,57 @@ int receivedCount = 0;;
     [toWrite writeToFile:appFile atomically:YES];
 }
 
-- (NSData *) getCachedJson {
-    NSLog(@"getCachedJson ---");
-
+- (NSString *)getCachedJsonFile {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-   
+    
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *fileName = [NSString stringWithFormat:@"%@_chapters.json",_language];
     NSString *appFile = [documentsDirectory stringByAppendingPathComponent:fileName];
+    return appFile;
+}
+
+// every 24 hours check with the server for updates
+- (void)refreshCache {
+    NSString *appFile = [self getCachedJsonFile];
+    
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:appFile];
+    
+    if (fileExists) {
+        NSLog(@"refreshCache found the cached json at %@",appFile);
+        
+        NSFileManager* fm = [NSFileManager defaultManager];
+        NSDictionary* attrs = [fm attributesOfItemAtPath:appFile error:nil];
+        
+        if (attrs != nil) {
+            NSDate *date = (NSDate*)[attrs objectForKey: NSFileCreationDate];
+            //NSLog(@"getCachedJson Date Created: %@", [date description]);
+            CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
+            CFAbsoluteTime fileDate =[date timeIntervalSinceReferenceDate];
+            CFAbsoluteTime diff = now-fileDate;
+            if (diff > 24*60*60) {
+                NSLog(@"getCachedJson file is stale - time = %f vs %f - diff %f",CFAbsoluteTimeGetCurrent(),  [date timeIntervalSinceReferenceDate], diff);
+                [self askServerForJson];
+            }
+            else {
+                //NSLog(@"getCachedJson time = %f vs %f - diff %f",CFAbsoluteTimeGetCurrent(),  [date timeIntervalSinceReferenceDate], diff);
+            }
+        }
+        else {
+            NSLog(@"Not found");
+        }
+    }
+}
+
+- (NSData *) getCachedJson {
+    NSLog(@"getCachedJson ---");
+
+    NSString *appFile = [self getCachedJsonFile];
     
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:appFile];
     
     if (fileExists) {
         NSLog(@"found the cached json at %@",appFile);
+        
         NSData *data = [[NSFileManager defaultManager] contentsAtPath:appFile];
         return data;
     }
@@ -172,7 +213,10 @@ BOOL hasModel;
             hasModel = [something boolValue];
         //}
         //NSString *value =[json objectForKey:@"hasModel"];
-        NSLog(@"hasModel = %hhd",hasModel);
+        NSLog(@"hasModel = %s",hasModel ? "true" : "false");
+        if ([_language isEqualToString:@"CM"]) {
+         hasModel = true;
+        }
         
         //hasModel = [value isEqualToString:@"true"];
      
@@ -330,6 +374,7 @@ NSArray *currentItems;
     [itemController setChapterTitle:_chapterName];
     [itemController setChapter:tappedItem];
     [itemController setLanguage:_language];
+    [itemController setHasModel:hasModel];
 }
 
 #pragma mark - Table view delegate

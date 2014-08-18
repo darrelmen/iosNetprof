@@ -15,5 +15,6 @@
 @property NSArray *jsonContentArray;
 @property (strong, nonatomic) NSMutableData *responseData;
 @property NSString *language;
+@property BOOL hasModel;
 
 @end

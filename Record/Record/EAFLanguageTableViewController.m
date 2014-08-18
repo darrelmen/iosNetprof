@@ -23,7 +23,7 @@ int languageIndex = 0;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    languages = [NSArray arrayWithObjects:@"Dari", @"English",@"Egyptian",@"Farsi", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Urdu",  nil];
+    languages = [NSArray arrayWithObjects:@"CM", @"Dari", @"English",@"Egyptian",@"Farsi", @"Korean", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
  
     // begin process of downloading audio...
     if (DOWNLOAD_ALL_AUDIO) {
@@ -216,8 +216,11 @@ int languageIndex = 0;
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSString *tappedItem = [languages objectAtIndex:indexPath.row];
     
-    [chapterController setTitle:tappedItem];
     [chapterController setLanguage:tappedItem];
+    if ([tappedItem isEqualToString:@"CM"]) {
+        tappedItem = @"Mandarin";
+    }
+    [chapterController setTitle:tappedItem];
 }
 
 

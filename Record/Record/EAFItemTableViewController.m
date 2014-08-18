@@ -204,6 +204,7 @@ NSString *chapterTitle = @"Chapter";
     itemController.rawPaths = _rawPaths;
     itemController.url = [self getURL];
     [itemController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
+    [itemController setHasModel:_hasModel];
 }
 
 // see getAudioForCurrentItem

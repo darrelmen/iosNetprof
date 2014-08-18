@@ -8,7 +8,6 @@
 
 #import "EAFViewController.h"
 #import "EAFFlashcardViewController.h"
-#import "MRoundedButton.h"
 #import "math.h"
 #import <AudioToolbox/AudioServices.h>
 
@@ -109,6 +108,9 @@
     _annotatedGauge2.fillArcFillColor =   [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
     _annotatedGauge2.fillArcStrokeColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
     _annotatedGauge2.value = 0;
+    //f () {
+        [_annotatedGauge2 setHidden:!_hasModel];
+   // }
 }
 
 - (void)checkAvailableMics {
@@ -229,7 +231,8 @@
     
     _refAudioPath =[_paths objectAtIndex:_index];
     [self setPlayRefEnabled];
-
+    _playButton.enabled = NO;
+    
     NSString *flAtIndex = [_items objectAtIndex:_index];
     NSString *enAtIndex = [_englishWords objectAtIndex:_index];
     NSString *trAtIndex = [_translitWords objectAtIndex:_index];
@@ -334,7 +337,12 @@ NSString *ex = @"";
     NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs gesture end %f diff %f",durationInSeconds, (gestureEnd-then2), (gestureEnd-then2)-durationInSeconds );
     
     if (durationInSeconds > 0.3) {
-        [self postAudio2];
+        if (_hasModel) {
+            [self postAudio2];
+        }
+        else {
+            NSLog(@"audioRecorderDidFinishRecording not posting audio since no model...");
+        }
     }
     else {
         [_scoreDisplay setText:@"Recording too short."];
