@@ -484,6 +484,7 @@ CFAbsoluteTime now;
     if (!_audioRecorder.recording)
     {
         NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
+        [_scoreDisplay setText:@""];
 
         [self startRecordingFeedbackWithDelay];
         
