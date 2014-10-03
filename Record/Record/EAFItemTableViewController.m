@@ -9,6 +9,7 @@
 #import "EAFItemTableViewController.h"
 #import "EAFExercise.h"
 #import "EAFViewController.h"
+//#import "EAFFlashcardViewController.h"
 
 @interface EAFItemTableViewController ()
 
@@ -181,7 +182,8 @@ NSString *chapterTitle = @"Chapter";
     // Pass the selected object to the new view controller.
     
     EAFViewController *itemController = [segue destinationViewController];
-    
+   // EAFFlashcardViewController *itemController = [segue destinationViewController];
+
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSInteger row = indexPath.row;
   //  NSLog(@"row %d",indexPath.row  );
@@ -190,8 +192,8 @@ NSString *chapterTitle = @"Chapter";
     
     [itemController setForeignText:foreignLanguageItem];
     [itemController setEnglishText:englishItem];
-    [itemController setTranslitText:[self.translitPhrases objectAtIndex:row]];
-    [itemController setExampleText:[self.examples objectAtIndex:row]];
+    //[itemController setTranslitText:[self.translitPhrases objectAtIndex:row]];
+  //  [itemController setExampleText:[self.examples objectAtIndex:row]];
     itemController.refAudioPath = [_paths objectAtIndex:row];
     itemController.rawRefAudioPath = [_rawPaths objectAtIndex:row];
     itemController.index = row;
@@ -199,7 +201,7 @@ NSString *chapterTitle = @"Chapter";
     itemController.language = _language;
     itemController.englishWords = [self englishPhrases];
     itemController.translitWords = [self translitPhrases];
-    itemController.examples = [self examples];
+   // itemController.examples = [self examples];
     itemController.paths = _paths;
     itemController.rawPaths = _rawPaths;
     itemController.url = [self getURL];

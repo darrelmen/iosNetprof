@@ -11,16 +11,11 @@
 
 @interface EAFFlashcardViewController : UIViewController
 
-
 @property (strong, nonatomic) IBOutlet UILabel *foreignLanguage;
 @property (strong, nonatomic) IBOutlet UILabel *english;
 
-
-
-
 -(void) setForeignText:(NSString *)foreignLang;
 -(void) setEnglishText:(NSString *)english;
-
 
 @property NSString *language;
 @property (strong, nonatomic) IBOutlet NSString *refAudioPath;
@@ -37,4 +32,7 @@
 @property (strong, nonatomic) IBOutlet UIView *cardBackground;
 @property (strong, nonatomic) IBOutlet UISwitch *shuffleSwitch;
 @property (strong, nonatomic) IBOutlet UISwitch *audioOnSelector;
+@property BOOL hasModel;
+@property NSString *url;
+
 @end
