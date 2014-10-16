@@ -32,6 +32,9 @@
     _cardBackground.layer.borderColor = [UIColor grayColor].CGColor;
     _cardBackground.layer.borderWidth = 2.0f;
     
+    _recordButtonContainer.layer.cornerRadius = 15.f;
+    _recordButtonContainer.layer.borderWidth = 2.0f;
+    
     // Load images
     NSArray *imageNames = @[@"media-record-3_32x32.png", @"media-record-4_32x32.png"];
     
@@ -246,9 +249,9 @@
     [_transliteration setText:trAtIndex];
     [_english setText:enAtIndex];
     _rawRefAudioPath =[_rawPaths objectAtIndex:_index];
- //   fl = flAtIndex;
- //   en = enAtIndex;
- //   tr  = trAtIndex;
+    fl = flAtIndex;
+    en = enAtIndex;
+    tr  = trAtIndex;
     _annotatedGauge2.value = 0;
 
     [_scoreDisplay setText:@" "];
@@ -334,7 +337,7 @@ NSString *ex = @"";
 (AVAudioRecorder *)recorder successfully:(BOOL)flag
 {
     NSLog(@"audioRecorderDidFinishRecording time = %f",CFAbsoluteTimeGetCurrent());
-
+    _recordButtonContainer.backgroundColor = [UIColor whiteColor];
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
     CMTime time = asset.duration;
     double durationInSeconds = CMTimeGetSeconds(time);
@@ -415,6 +418,13 @@ NSString *ex = @"";
     _playRefAudioButton.enabled = NO;
 }
 
+- (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
+    CGPoint location = [recognizer locationInView:[recognizer.view superview]];
+    NSLog(@" handleSingleTap");
+
+    //Do stuff here...
+}
+
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
     NSLog(@" playerItemDidReachEnd");
    _playRefAudioButton.enabled = YES;
@@ -472,7 +482,11 @@ CFAbsoluteTime now;
 
     _playButton.enabled = NO;
     _recordButton.enabled = NO;
-    _recordFeedbackImage.hidden = NO;
+ //   _recordFeedbackImage.hidden = NO;
+    _recordButtonContainer.backgroundColor =[UIColor redColor];
+    
+ //   _cardBackground.layer.borderColor = [UIColor grayColor].CGColor;
+
 }
 
 - (void)logError:(NSError *)error {
@@ -508,8 +522,9 @@ CFAbsoluteTime now;
 
         }
         else {
-            _recordFeedbackImage.hidden = YES;
-            
+           // _recordFeedbackImage.hidden = YES;
+            _recordButtonContainer.backgroundColor =[UIColor whiteColor];
+
             NSLog(@"recordAudio -DUDE NOT recording");
             
             [self logError:error];
@@ -519,7 +534,7 @@ CFAbsoluteTime now;
 
 - (IBAction)swipeUp:(id)sender {
     
-//   // NSLog(@"swipeUp ");
+  NSLog(@"swipeUp ");
 //    if (_audioRecorder.recording)
 //    {
 //        [self stopAudio:nil];
@@ -530,6 +545,8 @@ CFAbsoluteTime now;
 }
 
 - (IBAction)swipeDown:(id)sender {
+    NSLog(@"swipeDown  ");
+
 //    if (_audioRecorder.recording)
 //    {
 //        [self stopAudio:nil];
@@ -595,7 +612,9 @@ double gestureEnd;
     
     _playButton.enabled = YES;
     _recordButton.enabled = YES;
-    _recordFeedbackImage.hidden = YES;
+//    _recordFeedbackImage.hidden = YES;
+//    _recordButtonContainer.backgroundColor =[UIColor whiteColor];
+
     
     if (_audioRecorder.recording)
     {

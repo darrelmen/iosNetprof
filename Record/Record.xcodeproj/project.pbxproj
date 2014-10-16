@@ -15,6 +15,7 @@
 		B66BACBE1970A2FE00E28ECC /* NewProF1.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACBD1970A2FE00E28ECC /* NewProF1.png */; };
 		B66BACC11970A5CD00E28ECC /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACC01970A5CD00E28ECC /* play.png */; };
 		B66BACC31970A5DC00E28ECC /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACC21970A5DC00E28ECC /* pause.png */; };
+		B67666A519F0798800ECA678 /* micBiggerCircleTransparent.png in Resources */ = {isa = PBXBuildFile; fileRef = B67666A419F0798800ECA678 /* micBiggerCircleTransparent.png */; };
 		B67E1BB6197EC25D00F42143 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B67E1BB5197EC25D00F42143 /* libz.dylib */; };
 		B67E1BC4197EFC0500F42143 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BBA197EFC0500F42143 /* ioapi.c */; };
 		B67E1BC5197EFC0500F42143 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BBC197EFC0500F42143 /* mztools.c */; };
@@ -86,6 +87,7 @@
 		B66BACBD1970A2FE00E28ECC /* NewProF1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NewProF1.png; sourceTree = "<group>"; };
 		B66BACC01970A5CD00E28ECC /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
 		B66BACC21970A5DC00E28ECC /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause.png; sourceTree = "<group>"; };
+		B67666A419F0798800ECA678 /* micBiggerCircleTransparent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = micBiggerCircleTransparent.png; sourceTree = "<group>"; };
 		B67E1BB5197EC25D00F42143 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		B67E1BB9197EFC0500F42143 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		B67E1BBA197EFC0500F42143 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
@@ -193,6 +195,7 @@
 		B66BACBF1970A57B00E28ECC /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B67666A419F0798800ECA678 /* micBiggerCircleTransparent.png */,
 				B696890219993B910094A297 /* micBiggerCircle.png */,
 				B68A5C371979B4AE0036B90C /* micBigger.png */,
 				B68A5C351979B4590036B90C /* mic-4.svg */,
@@ -475,6 +478,7 @@
 				B68A5C321979AE7E0036B90C /* playBigger2.png in Resources */,
 				B68A5C341979B3480036B90C /* mic-icon.png in Resources */,
 				F6A5682818ECA98A00B844C6 /* InfoPlist.strings in Resources */,
+				B67666A519F0798800ECA678 /* micBiggerCircleTransparent.png in Resources */,
 				B6A8D97919770C2100E8F1D5 /* Icon-60.png in Resources */,
 				F6A5683118ECA98B00B844C6 /* Main.storyboard in Resources */,
 			);

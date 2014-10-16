@@ -3,6 +3,7 @@
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -152,7 +153,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D0k-He-nFx">
+                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D0k-He-nFx">
                                 <rect key="frame" x="24" y="82" width="280" height="293"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" restorationIdentifier="english" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="wAh-a0-3Cd">
@@ -166,45 +167,40 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EYL-m7-9rQ">
-                                        <rect key="frame" x="224" y="123" width="48" height="48"/>
-                                    </imageView>
                                     <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LDy-Lh-sWf">
                                         <rect key="frame" x="4" y="170" width="272" height="120"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" restorationIdentifier="recordButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="85Q-3i-7cz">
                                                 <rect key="frame" x="94" y="12" width="100" height="100"/>
                                                 <gestureRecognizers/>
-                                                <state key="normal" image="micBiggerCircle.png">
+                                                <state key="normal" image="micBiggerCircleTransparent.png">
                                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                 </state>
                                                 <connections>
                                                     <action selector="stopAudio:" destination="vXZ-lx-hvc" eventType="touchUpOutside" id="rYK-b5-wxc"/>
-                                                    <outletCollection property="gestureRecognizers" destination="0JG-qf-3We" appends="YES" id="Bmj-m4-mdo"/>
                                                 </connections>
                                             </button>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <gestureRecognizers/>
                                         <constraints>
-                                            <constraint firstAttribute="bottom" secondItem="85Q-3i-7cz" secondAttribute="bottom" constant="8" id="90E-ly-zkS"/>
-                                            <constraint firstItem="85Q-3i-7cz" firstAttribute="height" secondItem="LDy-Lh-sWf" secondAttribute="height" id="C9W-lc-w5W"/>
-                                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="85Q-3i-7cz" secondAttribute="bottom" constant="8" id="KZA-gE-hyv"/>
-                                            <constraint firstItem="85Q-3i-7cz" firstAttribute="leading" secondItem="LDy-Lh-sWf" secondAttribute="leading" constant="94" id="nq6-Z9-1Fl"/>
+                                            <constraint firstAttribute="centerX" secondItem="85Q-3i-7cz" secondAttribute="centerX" constant="-8" id="NJ0-US-KbU"/>
+                                            <constraint firstAttribute="centerY" secondItem="85Q-3i-7cz" secondAttribute="centerY" constant="-2" id="iei-UD-G1c"/>
                                         </constraints>
+                                        <connections>
+                                            <outletCollection property="gestureRecognizers" destination="0JG-qf-3We" appends="YES" id="S8Q-Jb-7b0"/>
+                                        </connections>
                                     </view>
-                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" restorationIdentifier="recoIndicator" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="D19-P2-ZOH">
-                                        <rect key="frame" x="138" y="156" width="20" height="20"/>
-                                    </activityIndicatorView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="LDy-Lh-sWf" secondAttribute="trailing" constant="4" id="7o1-X4-LwW"/>
                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="LDy-Lh-sWf" secondAttribute="trailing" constant="4" id="Nr1-5S-AHz"/>
                                     <constraint firstAttribute="centerX" secondItem="wAh-a0-3Cd" secondAttribute="centerX" id="PR2-zu-aWH"/>
-                                    <constraint firstItem="D19-P2-ZOH" firstAttribute="centerX" secondItem="85Q-3i-7cz" secondAttribute="centerX" id="U60-9o-ICR"/>
                                     <constraint firstAttribute="bottom" secondItem="LDy-Lh-sWf" secondAttribute="bottom" constant="3" id="UWn-Mp-TJs"/>
                                     <constraint firstItem="LDy-Lh-sWf" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="4" id="dTm-qP-y6K"/>
                                     <constraint firstItem="wAh-a0-3Cd" firstAttribute="top" secondItem="uZz-zh-5FP" secondAttribute="bottom" constant="8" id="gjZ-fT-1H2"/>
+                                    <constraint firstAttribute="centerX" secondItem="LDy-Lh-sWf" secondAttribute="centerX" id="hT9-7a-MJe"/>
                                     <constraint firstAttribute="bottom" relation="lessThanOrEqual" secondItem="LDy-Lh-sWf" secondAttribute="bottom" constant="3" id="lQ7-DF-ed0"/>
                                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="LDy-Lh-sWf" secondAttribute="bottom" constant="3" id="o5d-xI-6Jh"/>
                                     <constraint firstAttribute="centerX" secondItem="uZz-zh-5FP" secondAttribute="centerX" id="vO9-z1-yo3"/>
@@ -232,25 +228,34 @@
                                     <action selector="audioValueChange:" destination="uyi-Og-FF8" eventType="valueChanged" id="yYM-cl-YfN"/>
                                 </connections>
                             </switch>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Swipe up/down to flip, left/right to change" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e0g-r5-Z9k">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Swipe up/down to flip, left/right to change" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e0g-r5-Z9k">
                                 <rect key="frame" x="14" y="544" width="290" height="16"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" restorationIdentifier="recoIndicator" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="D19-P2-ZOH">
+                                <rect key="frame" x="164" y="391" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="fCb-Mq-8xT" firstAttribute="top" secondItem="YP1-wr-gfA" secondAttribute="bottom" constant="8" id="3io-ME-Me0"/>
+                            <constraint firstItem="D0k-He-nFx" firstAttribute="top" secondItem="mrf-3p-FpD" secondAttribute="bottom" constant="18" id="4Ex-ib-4jZ"/>
                             <constraint firstItem="YP1-wr-gfA" firstAttribute="leading" secondItem="mdF-G9-2CM" secondAttribute="trailing" constant="8" id="B30-xY-rGw"/>
+                            <constraint firstAttribute="width" secondItem="D0k-He-nFx" secondAttribute="height" multiplier="1:1" id="CWj-ig-7kT"/>
+                            <constraint firstAttribute="centerX" secondItem="D19-P2-ZOH" secondAttribute="centerX" constant="-14" id="Ie6-kg-KAo"/>
                             <constraint firstItem="YP1-wr-gfA" firstAttribute="centerY" secondItem="mdF-G9-2CM" secondAttribute="centerY" id="T8i-9z-ycs"/>
                             <constraint firstItem="D0k-He-nFx" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="8" id="TQH-Gw-Pzg"/>
                             <constraint firstItem="fCb-Mq-8xT" firstAttribute="centerY" secondItem="NAp-JA-wTD" secondAttribute="centerY" id="Uap-A6-YgK"/>
+                            <constraint firstItem="erT-Le-XmI" firstAttribute="top" secondItem="e0g-r5-Z9k" secondAttribute="bottom" constant="8" id="VF3-RK-4Uy"/>
+                            <constraint firstItem="D19-P2-ZOH" firstAttribute="top" secondItem="D0k-He-nFx" secondAttribute="bottom" constant="16" id="WS0-Et-2ft"/>
                             <constraint firstItem="D0k-He-nFx" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="YWH-78-0wH"/>
                             <constraint firstItem="NAp-JA-wTD" firstAttribute="leading" secondItem="mdF-G9-2CM" secondAttribute="leading" id="ZEW-aX-cM7"/>
                             <constraint firstItem="erT-Le-XmI" firstAttribute="top" secondItem="NAp-JA-wTD" secondAttribute="bottom" constant="38" id="g74-Xw-DKn"/>
                             <constraint firstItem="YP1-wr-gfA" firstAttribute="leading" secondItem="fCb-Mq-8xT" secondAttribute="leading" id="lAg-VX-3d5"/>
                             <constraint firstItem="NAp-JA-wTD" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="-1" id="oJU-Sq-ylX"/>
+                            <constraint firstAttribute="centerX" secondItem="e0g-r5-Z9k" secondAttribute="centerX" constant="1" id="u7a-YI-SD4"/>
                             <constraint firstItem="fCb-Mq-8xT" firstAttribute="leading" secondItem="NAp-JA-wTD" secondAttribute="trailing" constant="8" id="xVs-xQ-6Es"/>
                         </constraints>
                         <connections>
@@ -259,7 +264,6 @@
                             <outletCollection property="gestureRecognizers" destination="9a4-pv-hte" appends="YES" id="pIf-ae-30O"/>
                             <outletCollection property="gestureRecognizers" destination="yKq-0v-RGo" appends="YES" id="QTl-Uw-vWR"/>
                             <outletCollection property="gestureRecognizers" destination="HVB-hW-ZzX" appends="YES" id="AbS-8O-gQs"/>
-                            <outletCollection property="gestureRecognizers" destination="Rq7-hJ-lMy" appends="YES" id="ivB-We-ie2"/>
                         </connections>
                     </view>
                     <toolbarItems/>
@@ -274,7 +278,7 @@
                         <outlet property="longPressGesture" destination="0JG-qf-3We" id="FyB-RQ-hLB"/>
                         <outlet property="recoFeedbackImage" destination="D19-P2-ZOH" id="bgs-8h-Rk4"/>
                         <outlet property="recordButton" destination="85Q-3i-7cz" id="HdD-4d-PbA"/>
-                        <outlet property="recordFeedbackImage" destination="EYL-m7-9rQ" id="jf5-Fh-TB1"/>
+                        <outlet property="recordButtonContainer" destination="LDy-Lh-sWf" id="XGE-r8-Lpv"/>
                         <outlet property="rightSwipe" destination="HQh-H4-akv" id="PZB-IQ-lFS"/>
                     </connections>
                 </viewController>
@@ -304,13 +308,8 @@
                         <action selector="swipeDown:" destination="vXZ-lx-hvc" id="5mc-qs-Vvp"/>
                     </connections>
                 </swipeGestureRecognizer>
-                <tapGestureRecognizer id="Rq7-hJ-lMy">
-                    <connections>
-                        <action selector="singleTap:" destination="vXZ-lx-hvc" id="j0S-ie-dfz"/>
-                    </connections>
-                </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2100" y="-123"/>
+            <point key="canvasLocation" x="2111" y="51"/>
         </scene>
         <!--Flip-->
         <scene sceneID="YdA-X1-Ayb">
@@ -642,6 +641,7 @@
     </scenes>
     <resources>
         <image name="micBiggerCircle.png" width="100" height="100"/>
+        <image name="micBiggerCircleTransparent.png" width="100" height="100"/>
         <image name="playBigger2.png" width="100" height="100"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

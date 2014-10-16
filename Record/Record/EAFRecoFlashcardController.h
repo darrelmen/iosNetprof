@@ -14,6 +14,7 @@
         <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate>
 
 @property (strong, nonatomic) IBOutlet UIView *cardBackground;
+@property (strong, nonatomic) IBOutlet UIView *recordButtonContainer;
 
 @property (strong, nonatomic) AVAudioRecorder *audioRecorder;
 @property (strong, nonatomic) AVAudioPlayer *audioPlayer;
