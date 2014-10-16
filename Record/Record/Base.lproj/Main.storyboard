@@ -156,10 +156,14 @@
                             <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D0k-He-nFx">
                                 <rect key="frame" x="24" y="82" width="280" height="293"/>
                                 <subviews>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" restorationIdentifier="english" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="wAh-a0-3Cd">
+                                    <label opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" restorationIdentifier="english" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="wAh-a0-3Cd">
                                         <rect key="frame" x="8" y="74" width="264" height="69"/>
+                                        <gestureRecognizers/>
                                         <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                         <nil key="highlightedColor"/>
+                                        <connections>
+                                            <outletCollection property="gestureRecognizers" destination="mhd-5C-bq9" appends="YES" id="zns-0e-LDq"/>
+                                        </connections>
                                     </label>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" restorationIdentifier="foreignLang" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="uZz-zh-5FP">
                                         <rect key="frame" x="8" y="0.0" width="264" height="66"/>
@@ -234,8 +238,13 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" restorationIdentifier="recoIndicator" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="D19-P2-ZOH">
-                                <rect key="frame" x="164" y="391" width="20" height="20"/>
+                                <rect key="frame" x="16" y="389" width="20" height="20"/>
                             </activityIndicatorView>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" restorationIdentifier="scoreDisplay" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="ZJm-Ih-G5h">
+                                <rect key="frame" x="44" y="383" width="268" height="69"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
@@ -244,7 +253,7 @@
                             <constraint firstItem="D0k-He-nFx" firstAttribute="top" secondItem="mrf-3p-FpD" secondAttribute="bottom" constant="18" id="4Ex-ib-4jZ"/>
                             <constraint firstItem="YP1-wr-gfA" firstAttribute="leading" secondItem="mdF-G9-2CM" secondAttribute="trailing" constant="8" id="B30-xY-rGw"/>
                             <constraint firstAttribute="width" secondItem="D0k-He-nFx" secondAttribute="height" multiplier="1:1" id="CWj-ig-7kT"/>
-                            <constraint firstAttribute="centerX" secondItem="D19-P2-ZOH" secondAttribute="centerX" constant="-14" id="Ie6-kg-KAo"/>
+                            <constraint firstItem="ZJm-Ih-G5h" firstAttribute="leading" secondItem="D19-P2-ZOH" secondAttribute="trailing" constant="8" id="EZD-Lx-Nvr"/>
                             <constraint firstItem="YP1-wr-gfA" firstAttribute="centerY" secondItem="mdF-G9-2CM" secondAttribute="centerY" id="T8i-9z-ycs"/>
                             <constraint firstItem="D0k-He-nFx" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="8" id="TQH-Gw-Pzg"/>
                             <constraint firstItem="fCb-Mq-8xT" firstAttribute="centerY" secondItem="NAp-JA-wTD" secondAttribute="centerY" id="Uap-A6-YgK"/>
@@ -253,7 +262,10 @@
                             <constraint firstItem="D0k-He-nFx" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="YWH-78-0wH"/>
                             <constraint firstItem="NAp-JA-wTD" firstAttribute="leading" secondItem="mdF-G9-2CM" secondAttribute="leading" id="ZEW-aX-cM7"/>
                             <constraint firstItem="erT-Le-XmI" firstAttribute="top" secondItem="NAp-JA-wTD" secondAttribute="bottom" constant="38" id="g74-Xw-DKn"/>
+                            <constraint firstItem="ZJm-Ih-G5h" firstAttribute="top" secondItem="D0k-He-nFx" secondAttribute="bottom" constant="5" id="kWg-ad-xpL"/>
                             <constraint firstItem="YP1-wr-gfA" firstAttribute="leading" secondItem="fCb-Mq-8xT" secondAttribute="leading" id="lAg-VX-3d5"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="ZJm-Ih-G5h" secondAttribute="trailing" constant="25" id="mAX-b8-pvp"/>
+                            <constraint firstItem="D19-P2-ZOH" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="mux-d5-ok8"/>
                             <constraint firstItem="NAp-JA-wTD" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="-1" id="oJU-Sq-ylX"/>
                             <constraint firstAttribute="centerX" secondItem="e0g-r5-Z9k" secondAttribute="centerX" constant="1" id="u7a-YI-SD4"/>
                             <constraint firstItem="fCb-Mq-8xT" firstAttribute="leading" secondItem="NAp-JA-wTD" secondAttribute="trailing" constant="8" id="xVs-xQ-6Es"/>
@@ -271,15 +283,19 @@
                         <barButtonItem key="backBarButtonItem" title="Words" id="zRY-DR-Wv1"/>
                     </navigationItem>
                     <connections>
+                        <outlet property="audioOnSelector" destination="fCb-Mq-8xT" id="rhD-zw-7Qp"/>
                         <outlet property="cardBackground" destination="D0k-He-nFx" id="NE1-6A-VBh"/>
-                        <outlet property="english" destination="uZz-zh-5FP" id="GzK-1G-GxU"/>
+                        <outlet property="english" destination="uZz-zh-5FP" id="5Ja-Qc-Qzs"/>
                         <outlet property="foreignLang" destination="wAh-a0-3Cd" id="Lhu-Xo-3Ar"/>
+                        <outlet property="gotTapOnFL" destination="mhd-5C-bq9" id="Lxk-XL-cae"/>
                         <outlet property="leftSwipe" destination="9a4-pv-hte" id="koB-AN-IRY"/>
                         <outlet property="longPressGesture" destination="0JG-qf-3We" id="FyB-RQ-hLB"/>
                         <outlet property="recoFeedbackImage" destination="D19-P2-ZOH" id="bgs-8h-Rk4"/>
                         <outlet property="recordButton" destination="85Q-3i-7cz" id="HdD-4d-PbA"/>
                         <outlet property="recordButtonContainer" destination="LDy-Lh-sWf" id="XGE-r8-Lpv"/>
                         <outlet property="rightSwipe" destination="HQh-H4-akv" id="PZB-IQ-lFS"/>
+                        <outlet property="scoreDisplay" destination="ZJm-Ih-G5h" id="d1r-Hb-mYs"/>
+                        <outlet property="shuffleSwitch" destination="YP1-wr-gfA" id="y91-nk-jzq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
@@ -308,6 +324,11 @@
                         <action selector="swipeDown:" destination="vXZ-lx-hvc" id="5mc-qs-Vvp"/>
                     </connections>
                 </swipeGestureRecognizer>
+                <tapGestureRecognizer id="mhd-5C-bq9">
+                    <connections>
+                        <action selector="tapOnForeignDetected:" destination="vXZ-lx-hvc" id="aIM-Vg-Zex"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="2111" y="51"/>
         </scene>
@@ -445,7 +466,7 @@
                     </connections>
                 </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2547" y="-87"/>
+            <point key="canvasLocation" x="2557" y="51"/>
         </scene>
         <!--Pronunciation Feedback-->
         <scene sceneID="foj-1l-cew">
@@ -636,7 +657,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2910" y="-346"/>
+            <point key="canvasLocation" x="2962" y="46"/>
         </scene>
     </scenes>
     <resources>

@@ -120,6 +120,10 @@
     //f () {
         [_annotatedGauge2 setHidden:!_hasModel];
    // }
+    
+    if ([_audioOnSelector isOn]) {
+        [self playRefAudio:nil];
+    }
 }
 
 - (void)checkAvailableMics {
@@ -255,6 +259,10 @@
     _annotatedGauge2.value = 0;
 
     [_scoreDisplay setText:@" "];
+    
+    if ([_audioOnSelector isOn]) {
+        [self playRefAudio:nil];
+    }
 }
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
@@ -269,6 +277,17 @@
     if (_index == _items.count) _index = 0;
     
     [self respondToSwipe];
+}
+
+
+- (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender{
+
+     NSLog(@"tabOnForeignDetected");
+
+    
+    if ([_audioOnSelector isOn]) {
+        [self playRefAudio:nil];
+    }
 }
 
 - (void)setPlayRefEnabled
@@ -418,16 +437,21 @@ NSString *ex = @"";
     _playRefAudioButton.enabled = NO;
 }
 
-- (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
-    CGPoint location = [recognizer locationInView:[recognizer.view superview]];
-    NSLog(@" handleSingleTap");
-
-    //Do stuff here...
-}
+//- (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
+//    CGPoint location = [recognizer locationInView:[recognizer.view superview]];
+//    NSLog(@" handleSingleTap");
+//
+//    //Do stuff here...
+//}
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
     NSLog(@" playerItemDidReachEnd");
    _playRefAudioButton.enabled = YES;
+    
+    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
+    NSRange range= NSMakeRange(0, [result length]);
+    [result removeAttribute:NSBackgroundColorAttributeName range:range];
+    [_foreignLang setAttributedText:result];
 }
 
 // So this is more complicated -- we have to wait until the mp3 has arrived from the server before we can play it
@@ -439,6 +463,14 @@ NSString *ex = @"";
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
             NSLog(@" audio ready so playing...");
+            
+            NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
+ 
+            NSRange range= NSMakeRange(0, [result length]);
+            [result addAttribute:NSBackgroundColorAttributeName
+                           value:[UIColor yellowColor]
+                           range:range];
+            [_foreignLang setAttributedText:result];
             
             [_player play];
 
@@ -478,7 +510,7 @@ CFAbsoluteTime then2 ;
 CFAbsoluteTime now;
 
 - (void)showRecordingFeedback {
-    NSLog(@"showRecordingFeedback time = %f",CFAbsoluteTimeGetCurrent());
+   if (debugRecord) NSLog(@"showRecordingFeedback time = %f",CFAbsoluteTimeGetCurrent());
 
     _playButton.enabled = NO;
     _recordButton.enabled = NO;
@@ -496,14 +528,16 @@ CFAbsoluteTime now;
     NSLog(@"Reason:      %@", [error localizedFailureReason]);
 }
 
+bool debugRecord = false;
+
 - (IBAction)recordAudio:(id)sender {
     then2 = CFAbsoluteTimeGetCurrent();
-    NSLog(@"recordAudio time = %f",then2);
+    if (debugRecord) NSLog(@"recordAudio time = %f",then2);
     _recordInstructions.hidden = YES;
     
     if (!_audioRecorder.recording)
     {
-        NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
+        if (debugRecord) NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
         [_scoreDisplay setText:@""];
 
         [self startRecordingFeedbackWithDelay];
@@ -518,7 +552,7 @@ CFAbsoluteTime now;
         {
             CFAbsoluteTime recordingBegins = CFAbsoluteTimeGetCurrent();
 
-            NSLog(@"recordAudio -recording %f vs begin %f diff %f ",then2,recordingBegins,(recordingBegins-then2));
+            if (debugRecord) NSLog(@"recordAudio -recording %f vs begin %f diff %f ",then2,recordingBegins,(recordingBegins-then2));
 
         }
         else {
@@ -559,14 +593,14 @@ CFAbsoluteTime now;
 double gestureEnd;
 - (IBAction)longPressAction:(id)sender {
     if (_longPressGesture.state == UIGestureRecognizerStateBegan) {
-        [self recordAudio:nil];
+       [self recordAudio:nil];
     }
     else if (_longPressGesture.state == UIGestureRecognizerStateEnded) {
        // [self stopAudio:nil];
         gestureEnd = CFAbsoluteTimeGetCurrent();
-        NSLog(@"longPressAction now  time = %f",gestureEnd);
+       if (debugRecord)  NSLog(@"longPressAction now  time = %f",gestureEnd);
 
-         [self stopRecordingWithDelay:nil];
+       [self stopRecordingWithDelay:nil];
     }
 }
 
@@ -600,21 +634,20 @@ double gestureEnd;
         }
     }
 }
-- (IBAction)singleTap:(id)sender {
-//    [self playRefAudio:nil];
-}
 
+//- (IBAction)singleTap:(id)sender {
+//    [self playRefAudio:nil];
+//}
 
 - (IBAction)stopAudio:(id)sender {
     now = CFAbsoluteTimeGetCurrent();
-    NSLog(@"stopAudio Event duration was %f",(now-then2));
-    NSLog(@"stopAudio now  time =        %f",now);
+  if (debugRecord)  NSLog(@"stopAudio Event duration was %f",(now-then2));
+  if (debugRecord)  NSLog(@"stopAudio now  time =        %f",now);
     
     _playButton.enabled = YES;
     _recordButton.enabled = YES;
 //    _recordFeedbackImage.hidden = YES;
 //    _recordButtonContainer.backgroundColor =[UIColor whiteColor];
-
     
     if (_audioRecorder.recording)
     {

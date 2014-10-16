@@ -62,6 +62,7 @@
 @property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *leftSwipe;
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender;
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender;
+- (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender;
 
 @property (strong) NSTimer *repeatingTimer;
 - (NSDictionary *)userInfo;
@@ -69,5 +70,9 @@
 - (void)invocationMethod:(NSDate *)date;
 @property (strong, nonatomic) IBOutlet UIImageView *recordFeedbackImage;
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;
+
+@property (strong, nonatomic) IBOutlet UISwitch *shuffleSwitch;
+@property (strong, nonatomic) IBOutlet UISwitch *audioOnSelector;
+@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *gotTapOnFL;
 
 @end
