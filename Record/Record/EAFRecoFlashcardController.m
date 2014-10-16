@@ -26,6 +26,12 @@
    // _stopButton.enabled = NO;
     [self setPlayRefEnabled];
     
+    [[self view] sendSubviewToBack:_cardBackground];
+    
+    _cardBackground.layer.cornerRadius = 15.f;
+    _cardBackground.layer.borderColor = [UIColor grayColor].CGColor;
+    _cardBackground.layer.borderWidth = 2.0f;
+    
     // Load images
     NSArray *imageNames = @[@"media-record-3_32x32.png", @"media-record-4_32x32.png"];
     
@@ -240,9 +246,9 @@
     [_transliteration setText:trAtIndex];
     [_english setText:enAtIndex];
     _rawRefAudioPath =[_rawPaths objectAtIndex:_index];
-    fl = flAtIndex;
-    en = enAtIndex;
-    tr  = trAtIndex;
+ //   fl = flAtIndex;
+ //   en = enAtIndex;
+ //   tr  = trAtIndex;
     _annotatedGauge2.value = 0;
 
     [_scoreDisplay setText:@" "];

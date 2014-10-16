@@ -207,13 +207,13 @@
 
 - (void)configureTextFields
 {
-    [_foreignLang setText:fl];
-    [_english setText:en];
+    [_foreignLang setText:_fl];
+    [_english setText:_en];
     
     _english.lineBreakMode = NSLineBreakByWordWrapping;
     _english.numberOfLines = 0;
     
-    [_transliteration setText:tr];
+    [_transliteration setText:_tr];
     
     _transliteration.lineBreakMode = NSLineBreakByWordWrapping;
     _transliteration.numberOfLines = 0;
@@ -240,9 +240,9 @@
     [_transliteration setText:trAtIndex];
     [_english setText:enAtIndex];
     _rawRefAudioPath =[_rawPaths objectAtIndex:_index];
-    fl = flAtIndex;
-    en = enAtIndex;
-    tr  = trAtIndex;
+    _fl = flAtIndex;
+    _en = enAtIndex;
+    _tr  = trAtIndex;
     _annotatedGauge2.value = 0;
 
     [_scoreDisplay setText:@" "];
@@ -275,34 +275,34 @@
     }
 }
 
-NSString *fl = @"";
-NSString *en = @"";
-NSString *tr = @"";
-NSString *ex = @"";
-
--(void) setForeignText:(NSString *)foreignLangText
-{
-//    NSLog(@"setForeignText now %@",foreignLangText);
-    fl = foreignLangText;
-}
-
--(void) setEnglishText:(NSString *)english
-{
-//    NSLog(@"setEnglishText now %@",english);
-    en = english;
-}
-
--(void) setTranslitText:(NSString *)translit
-{
-    //   NSLog(@"setTranslitText now %@",translit);
-    tr = translit;
-}
-
--(void) setExampleText:(NSString *)example
-{
-    //   NSLog(@"setTranslitText now %@",translit);
-    ex = example;
-}
+//NSString *fl = @"";
+//NSString *en = @"";
+//NSString *tr = @"";
+//NSString *ex = @"";
+//
+//-(void) setForeignText:(NSString *)foreignLangText
+//{
+////    NSLog(@"setForeignText now %@",foreignLangText);
+//    fl = foreignLangText;
+//}
+//
+//-(void) setEnglishText:(NSString *)english
+//{
+////    NSLog(@"setEnglishText now %@",english);
+//    en = english;
+//}
+//
+//-(void) setTranslitText:(NSString *)translit
+//{
+//    //   NSLog(@"setTranslitText now %@",translit);
+//    tr = translit;
+//}
+//
+//-(void) setExampleText:(NSString *)example
+//{
+//    //   NSLog(@"setTranslitText now %@",translit);
+//    ex = example;
+//}
 
 - (void)didReceiveMemoryWarning
 {
@@ -654,7 +654,7 @@ double gestureEnd;
       forHTTPHeaderField:@"Content-Type"];
     [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
 
-    NSString *escapedString = [fl stringByReplacingOccurrencesOfString:@"/" withString:@" "];
+    NSString *escapedString = [_fl stringByReplacingOccurrencesOfString:@"/" withString:@" "];
     
     NSLog(@"word is %@",escapedString);
     
@@ -690,7 +690,7 @@ double gestureEnd;
     [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=%@\r\n\r\n", @"word"] dataUsingEncoding:NSUTF8StringEncoding]];
     
-    NSString *escapedString = [fl stringByReplacingOccurrencesOfString:@"/" withString:@" "];
+    NSString *escapedString = [_fl stringByReplacingOccurrencesOfString:@"/" withString:@" "];
     
     [body appendData:[[NSString stringWithFormat:@"%@\r\n", escapedString] dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
@@ -831,8 +831,8 @@ double gestureEnd;
     //NSString *foreignLanguageItem = [self.items objectAtIndex:indexPath.row];
    /// NSString *englishItem = [self.englishWords objectAtIndex:indexPath.row];
     
-    [itemController setForeignText:fl];
-    [itemController setEnglishText:en];
+    [itemController setForeignText:_fl];
+    [itemController setEnglishText:_en];
 
     //[itemController setEnglish:englishItem];
 //    [itemController setTranslitText:[self.translitPhrases objectAtIndex:indexPath.row]];

@@ -13,6 +13,8 @@
 @interface EAFRecoFlashcardController : UIViewController
         <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate>
 
+@property (strong, nonatomic) IBOutlet UIView *cardBackground;
+
 @property (strong, nonatomic) AVAudioRecorder *audioRecorder;
 @property (strong, nonatomic) AVAudioPlayer *audioPlayer;
 

@@ -67,4 +67,9 @@
 @property (strong, nonatomic) IBOutlet UIImageView *recordFeedbackImage;
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;
 
+@property NSString *fl;
+@property NSString *en;
+@property NSString *tr;
+@property NSString *ex;
+
 @end
