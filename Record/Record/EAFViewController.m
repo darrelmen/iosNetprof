@@ -823,7 +823,6 @@ double gestureEnd;
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    NSLog(@"Got segue!!! ");
     EAFFlashcardViewController *itemController = [segue destinationViewController];
     
    // NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
@@ -839,6 +838,7 @@ double gestureEnd;
     itemController.refAudioPath = _refAudioPath;
     itemController.rawRefAudioPath = _rawRefAudioPath;
     itemController.index = _index;
+    itemController.ids = _ids;
     itemController.items = _items;
     itemController.language = _language;
     itemController.englishWords = _englishWords;

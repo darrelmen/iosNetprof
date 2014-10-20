@@ -13,6 +13,8 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    NSString *UUID = [EAFAppDelegate GetUUID];
+    NSLog(@"got %@",UUID);
     return YES;
 }
 							
@@ -41,6 +43,13 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
++ (NSString *)GetUUID {
+    CFUUIDRef theUUID = CFUUIDCreate(NULL);
+    CFStringRef string = CFUUIDCreateString(NULL, theUUID);
+    CFRelease(theUUID);
+    return (__bridge NSString *)string;
 }
 
 @end

@@ -24,7 +24,7 @@
     _playButton.enabled = NO;
     
    // _stopButton.enabled = NO;
-    [self setPlayRefEnabled];
+    //[self setPlayRefEnabled];
     
     [[self view] sendSubviewToBack:_cardBackground];
     
@@ -35,6 +35,8 @@
     _recordButtonContainer.layer.cornerRadius = 15.f;
     _recordButtonContainer.layer.borderWidth = 2.0f;
     
+  //  _scoreProgres
+    
     // Load images
     NSArray *imageNames = @[@"media-record-3_32x32.png", @"media-record-4_32x32.png"];
     
@@ -43,10 +45,10 @@
         [images addObject:[UIImage imageNamed:[imageNames objectAtIndex:i]]];
     }
     
-    _recordFeedbackImage.animationImages = images;
-    _recordFeedbackImage.animationDuration = 1;
-    _recordFeedbackImage.hidden = YES;
-    [_recordFeedbackImage startAnimating];
+    //_recordFeedbackImage.animationImages = images;
+   // _recordFeedbackImage.animationDuration = 1;
+   // _recordFeedbackImage.hidden = YES;
+   // [_recordFeedbackImage startAnimating];
 
     // Set the audio file
     NSArray *pathComponents = [NSArray arrayWithObjects:
@@ -121,7 +123,7 @@
         [_annotatedGauge2 setHidden:!_hasModel];
    // }
     
-    if ([_audioOnSelector isOn]) {
+    if ([_audioOnSelector isOn] && [self hasRefAudio]) {
         [self playRefAudio:nil];
     }
 }
@@ -242,25 +244,38 @@
 - (void)respondToSwipe {
     [self removePlayObserver];
     
-    _refAudioPath =[_paths objectAtIndex:_index];
-    [self setPlayRefEnabled];
+    unsigned long toUse = _index;
+    if ([_shuffleSwitch isOn]) {
+     //   NSLog(@"current %lu",_index);
+        
+        toUse = [[_randSequence objectAtIndex:_index] integerValue];
+        
+     //   NSLog(@"output %lu",toUse);
+
+    }
+    
+    _refAudioPath =[_paths objectAtIndex:toUse];
+    _rawRefAudioPath =[_rawPaths objectAtIndex:toUse];
+
+    //[self setPlayRefEnabled];
     _playButton.enabled = NO;
     
-    NSString *flAtIndex = [_items objectAtIndex:_index];
-    NSString *enAtIndex = [_englishWords objectAtIndex:_index];
-    NSString *trAtIndex = [_translitWords objectAtIndex:_index];
+    NSString *flAtIndex = [_items objectAtIndex:toUse];
+    NSString *enAtIndex = [_englishWords objectAtIndex:toUse];
+   // NSString *trAtIndex = [_translitWords objectAtIndex:toUse];
     [_foreignLang setText:flAtIndex];
-    [_transliteration setText:trAtIndex];
+    //[_transliteration setText:trAtIndex];
     [_english setText:enAtIndex];
-    _rawRefAudioPath =[_rawPaths objectAtIndex:_index];
+    exercise = [_ids objectAtIndex:toUse];
+
     fl = flAtIndex;
     en = enAtIndex;
-    tr  = trAtIndex;
-    _annotatedGauge2.value = 0;
+//    tr  = trAtIndex;
+ //   _annotatedGauge2.value = 0;
 
     [_scoreDisplay setText:@" "];
     
-    if ([_audioOnSelector isOn]) {
+    if ([_audioOnSelector isOn] && [self hasRefAudio]) {
         [self playRefAudio:nil];
     }
 }
@@ -281,28 +296,32 @@
 
 
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender{
-
      NSLog(@"tabOnForeignDetected");
-
     
-    if ([_audioOnSelector isOn]) {
+    if ([_audioOnSelector isOn] && [self hasRefAudio]) {
         [self playRefAudio:nil];
     }
 }
 
-- (void)setPlayRefEnabled
-{
-   // NSLog(@"checking path %@",_refAudioPath);
-    
-    if (_refAudioPath && ![_refAudioPath hasSuffix:@"NO"]) {
-        _playRefAudioButton.enabled = YES;
-    } else {
-        NSLog(@"disabling button since path %@",_refAudioPath);
+//- (void)setPlayRefEnabled
+//{
+//   // NSLog(@"checking path %@",_refAudioPath);
+//    
+//    if ([self hasRefAudio]) {
+//        _playRefAudioButton.enabled = YES;
+//    } else {
+//        NSLog(@"disabling button since path %@",_refAudioPath);
+//
+//        _playRefAudioButton.enabled = NO;
+//    }
+//}
 
-        _playRefAudioButton.enabled = NO;
-    }
+- (BOOL) hasRefAudio
+{
+    return _refAudioPath && ![_refAudioPath hasSuffix:@"NO"];
 }
 
+NSString *exercise = @"";
 NSString *fl = @"";
 NSString *en = @"";
 NSString *tr = @"";
@@ -366,7 +385,8 @@ NSString *ex = @"";
     
     if (durationInSeconds > 0.3) {
         if (_hasModel) {
-            [self postAudio2];
+           // [self postAudio2];
+            [self postAudio];
         }
         else {
             NSLog(@"audioRecorderDidFinishRecording not posting audio since no model...");
@@ -436,13 +456,6 @@ NSString *ex = @"";
     [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
     _playRefAudioButton.enabled = NO;
 }
-
-//- (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
-//    CGPoint location = [recognizer locationInView:[recognizer.view superview]];
-//    NSLog(@" handleSingleTap");
-//
-//    //Do stuff here...
-//}
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
     NSLog(@" playerItemDidReachEnd");
@@ -516,9 +529,6 @@ CFAbsoluteTime now;
     _recordButton.enabled = NO;
  //   _recordFeedbackImage.hidden = NO;
     _recordButtonContainer.backgroundColor =[UIColor redColor];
-    
- //   _cardBackground.layer.borderColor = [UIColor grayColor].CGColor;
-
 }
 
 - (void)logError:(NSError *)error {
@@ -688,6 +698,56 @@ double gestureEnd;
     NSLog(@"Invocation for timer started on %@", date);
 }
 
+- (IBAction)shuffleChange:(id)sender {
+    NSLog(@"got shuffleChange");
+    
+    BOOL value = [_shuffleSwitch isOn];
+    if (value) {
+        [self shuffle];
+    }
+    [self respondToSwipe];
+}
+
+- (void) shuffle {
+    _randSequence = [[NSMutableArray alloc] initWithCapacity:_items.count];
+    
+    for (unsigned long i = 0; i < _items.count; i++) {
+        [_randSequence addObject:[NSNumber numberWithUnsignedLong:i]];
+    }
+    
+//    NSUInteger count = [newArray count];
+//    for (NSUInteger i = 0; i < count; ++i) {
+//        // Select a random element between i and end of array to swap with.
+//        NSInteger remainingCount = count - i;
+//        NSInteger exchangeIndex = i + arc4random_uniform(remainingCount);
+//        [newArray exchangeObjectAtIndex:i withObjectAtIndex:exchangeIndex];
+//    }
+    
+    unsigned long max = _items.count-1;
+//    for (unsigned int ii = max; ii > 0; --ii) {
+//        unsigned int r = arc4random_uniform(ii)+1;
+//        [_randSequence exchangeObjectAtIndex:ii withObjectAtIndex:r];
+//    }
+    
+    for (unsigned int ii = 0; ii < max; ++ii) {
+        // Select a random element between i and end of array to swap with.
+  //      NSInteger remainingCount = count - i;
+    //    NSInteger exchangeIndex = i + arc4random_uniform(remainingCount);
+        unsigned int remainingCount = max - ii;
+
+        unsigned int r = arc4random_uniform(remainingCount)+ii;
+
+//        [newArray exchangeObjectAtIndex:i withObjectAtIndex:exchangeIndex];
+        
+        [_randSequence exchangeObjectAtIndex:ii withObjectAtIndex:r];
+
+    }
+    
+    _index = 0;
+    
+   // [self respondToSwipe];
+}
+
 // Posts audio with current fl field
 // NOTE : not used right now since can't post UTF8 characters - see postAudio2
 - (void)postAudio {
@@ -695,7 +755,6 @@ double gestureEnd;
     [_recoFeedbackImage startAnimating];
     
     NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
-    
    // NSLog(@"data %d",[postData length]);
     
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
@@ -704,23 +763,42 @@ double gestureEnd;
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
     NSLog(@"talking to %@",_url);
 
-    NSURL *url = [NSURL URLWithString:baseurl];
-    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+   // NSURL *url = [NSURL URLWithString:baseurl];
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
     [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
+    
+    // add request parameters
+    
+    // old style
     [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
+//    NSString *escapedString = [fl stringByReplacingOccurrencesOfString:@"/" withString:@" "];
+ //   NSLog(@"word is %@",escapedString);
+  //  [urlRequest setValue:escapedString forHTTPHeaderField:@"word"];
+  
+//    httpConn.setRequestProperty("fileName", uploadFile.getName());
+//    httpConn.setRequestProperty("user", "1");
+//    httpConn.setRequestProperty("deviceType", "iPad");
+//    httpConn.setRequestProperty("device", "01234567890");
+//    httpConn.setRequestProperty("exercise", ""+2549);
+//    httpConn.setRequestProperty("request", decode ? "decode" :"align");
+    [urlRequest setValue:@"1" forHTTPHeaderField:@"user"]; // just testing!  Need to find out user id
+    [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
+    [urlRequest setValue:@"12345" forHTTPHeaderField:@"device"];
+    [urlRequest setValue:[_ids objectAtIndex:_index] forHTTPHeaderField:@"exercise"];
+    [urlRequest setValue:@"decode" forHTTPHeaderField:@"request"];
 
-    NSString *escapedString = [fl stringByReplacingOccurrencesOfString:@"/" withString:@" "];
+    // post the audio
     
-    NSLog(@"word is %@",escapedString);
-    
-    [urlRequest setValue:escapedString forHTTPHeaderField:@"word"];
     [urlRequest setHTTPBody:postData];
     
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [connection start];
+    
+    NSLog(@"posting to %@",_url);
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
 }
 
 -(void)postAudio2 {

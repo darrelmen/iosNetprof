@@ -31,6 +31,7 @@
 @property (strong, nonatomic) IBOutlet NSString *refAudioPath;
 @property (strong, nonatomic) IBOutlet NSString *rawRefAudioPath;
 @property unsigned long index;
+@property NSArray *ids;
 @property NSArray *items;
 @property NSArray *englishWords;
 @property NSArray *translitWords;

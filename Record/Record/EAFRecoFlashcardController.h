@@ -34,6 +34,9 @@
 @property (strong, nonatomic) IBOutlet NSString *refAudioPath;
 @property (strong, nonatomic) IBOutlet NSString *rawRefAudioPath;
 @property unsigned long index;
+
+@property NSMutableArray *ids;
+@property NSMutableArray *randSequence;
 @property NSArray *items;
 @property NSArray *englishWords;
 @property NSArray *translitWords;
@@ -49,6 +52,7 @@
 
 
 @property (weak, nonatomic) IBOutlet UILabel *scoreDisplay;
+@property (strong, nonatomic) IBOutlet UIProgressView *scoreProgress;
 @property AVPlayer *player;
 
 
@@ -68,11 +72,15 @@
 - (NSDictionary *)userInfo;
 
 - (void)invocationMethod:(NSDate *)date;
-@property (strong, nonatomic) IBOutlet UIImageView *recordFeedbackImage;
+//@property (strong, nonatomic) IBOutlet UIImageView *recordFeedbackImage;
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;
 
 @property (strong, nonatomic) IBOutlet UISwitch *shuffleSwitch;
 @property (strong, nonatomic) IBOutlet UISwitch *audioOnSelector;
+@property (strong, nonatomic) IBOutlet UISwitch *genderMaleSelector;
+@property (strong, nonatomic) IBOutlet UISwitch *speedSelector;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *whatToShow;
+
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *gotTapOnFL;
 
 @end

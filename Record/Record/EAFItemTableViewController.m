@@ -8,7 +8,8 @@
 
 #import "EAFItemTableViewController.h"
 #import "EAFExercise.h"
-#import "EAFViewController.h"
+//#import "EAFViewController.h"
+#import "EAFRecoFlashcardController.h"
 //#import "EAFFlashcardViewController.h"
 
 @interface EAFItemTableViewController ()
@@ -35,6 +36,7 @@
 {
     [super viewDidLoad];
     
+    self.ids = [[NSMutableArray alloc] init];
     self.items = [[NSMutableArray alloc] init];
     self.englishPhrases = [[NSMutableArray alloc] init];
     self.translitPhrases = [[NSMutableArray alloc] init];
@@ -45,6 +47,7 @@
     NSArray *items =_jsonItems;
 
     for (NSDictionary *object in items) {
+        [_ids addObject:[object objectForKey:@"id"]];
         [_items addObject:[object objectForKey:@"fl"]];
         [_englishPhrases addObject:[object objectForKey:@"en"]];
         [_translitPhrases addObject:[object objectForKey:@"tl"]];
@@ -63,6 +66,11 @@
         else {
             [_paths addObject:@"NO"];
             [_rawPaths addObject:@"NO"];
+        }
+        
+        refPath = [object objectForKey:@"mrr"];
+        if (refPath) {
+            //NSLog(@"got mrr %@",refPath);
         }
     }
     
@@ -181,12 +189,14 @@ NSString *chapterTitle = @"Chapter";
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
-    EAFViewController *itemController = [segue destinationViewController];
+ //   EAFViewController *itemController = [segue destinationViewController];
+    EAFRecoFlashcardController *itemController = [segue destinationViewController];
    // EAFFlashcardViewController *itemController = [segue destinationViewController];
+  //   NSLog(@"got seque  %d",indexPath.row  );
 
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSInteger row = indexPath.row;
-  //  NSLog(@"row %d",indexPath.row  );
+   NSLog(@"got seque row %d",indexPath.row  );
     NSString *foreignLanguageItem = [self.items objectAtIndex:row];
     NSString *englishItem = [self.englishPhrases objectAtIndex:row];
     
@@ -197,6 +207,7 @@ NSString *chapterTitle = @"Chapter";
     itemController.refAudioPath = [_paths objectAtIndex:row];
     itemController.rawRefAudioPath = [_rawPaths objectAtIndex:row];
     itemController.index = row;
+    itemController.ids = [self ids];
     itemController.items = [self items];
     itemController.language = _language;
     itemController.englishWords = [self englishPhrases];

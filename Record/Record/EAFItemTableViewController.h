@@ -10,6 +10,7 @@
 
 @interface EAFItemTableViewController : UITableViewController<NSURLConnectionDelegate>
 
+@property NSMutableArray *ids;
 @property NSMutableArray *items;
 @property NSMutableArray *englishPhrases;
 @property NSMutableArray *translitPhrases;

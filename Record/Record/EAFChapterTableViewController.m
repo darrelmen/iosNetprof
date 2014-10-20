@@ -400,8 +400,7 @@ NSArray *currentItems;
 
             NSArray *items = [entry objectForKey:@"items"];
             if (items == nil) { // no items - not a leaf
-                
-
+            
                 children = [entry objectForKey:@"children"];
                 //NSLog(@"children are %@",children);
                 controllerToJumpTo = @"ChapterViewController";
@@ -434,7 +433,6 @@ NSArray *currentItems;
             }
             else {
 //                NSLog(@"items is %@",items);
-
                 controllerToJumpTo = @"ItemViewController";
                 currentItems = items;
                 [self performSegueWithIdentifier:controllerToJumpTo sender:self];
