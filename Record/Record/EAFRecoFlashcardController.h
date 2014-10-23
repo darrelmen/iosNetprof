@@ -35,18 +35,20 @@
 @property (strong, nonatomic) IBOutlet NSString *rawRefAudioPath;
 @property unsigned long index;
 
-@property NSMutableArray *ids;
+//@property NSMutableArray *ids;
 @property NSMutableArray *randSequence;
-@property NSArray *items;
-@property NSArray *englishWords;
-@property NSArray *translitWords;
-@property NSArray *examples;
-@property NSArray *paths;
-@property NSArray *rawPaths;
+//@property NSArray *items;
+//@property NSArray *englishWords;
+//@property NSArray *translitWords;
+//@property NSArray *examples;
+//@property NSArray *paths;
+//@property NSArray *rawPaths;
+@property NSArray *jsonItems;
+
 @property NSString *url;
 @property BOOL hasModel;
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressGesture;
-@property (strong, nonatomic) IBOutlet UILabel *recordInstructions;
+//@property (strong, nonatomic) IBOutlet UILabel *recordInstructions;
 
 @property NSString *language;
 
@@ -56,10 +58,10 @@
 @property AVPlayer *player;
 
 
--(void) setForeignText:(NSString *)foreignLang;
--(void) setEnglishText:(NSString *)english;
--(void) setTranslitText:(NSString *)translit;
--(void) setExampleText:(NSString *)example;
+//-(void) setForeignText:(NSString *)foreignLang;
+//-(void) setEnglishText:(NSString *)english;
+//-(void) setTranslitText:(NSString *)translit;
+//-(void) setExampleText:(NSString *)example;
 @property (strong, nonatomic) IBOutlet MSAnnotatedGauge *annotatedGauge2;
 
 @property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *rightSwipe;
@@ -81,6 +83,9 @@
 @property (strong, nonatomic) IBOutlet UISwitch *speedSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *whatToShow;
 - (IBAction)whatToShowSelection:(id)sender;
+- (IBAction)genderSelection:(id)sender;
+- (IBAction)speedSelection:(id)sender;
+- (IBAction)audioOnSelection:(id)sender;
 
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *gotTapOnFL;
 

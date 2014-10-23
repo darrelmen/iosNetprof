@@ -35,23 +35,22 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.ids = [[NSMutableArray alloc] init];
-    self.items = [[NSMutableArray alloc] init];
-    self.englishPhrases = [[NSMutableArray alloc] init];
-    self.translitPhrases = [[NSMutableArray alloc] init];
-    self.examples = [[NSMutableArray alloc] init];
+//    
+//    self.ids = [[NSMutableArray alloc] init];
+//    self.items = [[NSMutableArray alloc] init];
+//    self.englishPhrases = [[NSMutableArray alloc] init];
+//    self.translitPhrases = [[NSMutableArray alloc] init];
+//    self.examples = [[NSMutableArray alloc] init];
     self.paths = [[NSMutableArray alloc] init];
     self.rawPaths = [[NSMutableArray alloc] init];
-  //  NSArray *items =[_chapterToItems objectForKey:currentChapter];
     NSArray *items =_jsonItems;
 
     for (NSDictionary *object in items) {
-        [_ids addObject:[object objectForKey:@"id"]];
-        [_items addObject:[object objectForKey:@"fl"]];
-        [_englishPhrases addObject:[object objectForKey:@"en"]];
-        [_translitPhrases addObject:[object objectForKey:@"tl"]];
-        [_examples addObject:[object objectForKey:@"ct"]];
+       // [_ids addObject:[object objectForKey:@"id"]];
+      //  [_items addObject:[object objectForKey:@"fl"]];
+      //  [_englishPhrases addObject:[object objectForKey:@"en"]];
+      //  [_translitPhrases addObject:[object objectForKey:@"tl"]];
+      //  [_examples addObject:[object objectForKey:@"ct"]];
         
         NSString *refPath = [object objectForKey:@"ref"];
         if (refPath) {
@@ -68,10 +67,10 @@
             [_rawPaths addObject:@"NO"];
         }
         
-        refPath = [object objectForKey:@"mrr"];
-        if (refPath) {
+      //  refPath = [object objectForKey:@"mrr"];
+      //  if (refPath) {
             //NSLog(@"got mrr %@",refPath);
-        }
+      //  }
     }
     
     _itemIndex = 0;
@@ -90,13 +89,13 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
--(NSString *) getAudioDestDir:(NSString *) whichLanguage {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    
-    NSString *destFileName = [NSString stringWithFormat:@"%@_audio",whichLanguage];
-    return [documentsDirectory stringByAppendingPathComponent:destFileName];
-}
+//-(NSString *) getAudioDestDir:(NSString *) whichLanguage {
+//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+//    NSString *documentsDirectory = [paths objectAtIndex:0];
+//    
+//    NSString *destFileName = [NSString stringWithFormat:@"%@_audio",whichLanguage];
+//    return [documentsDirectory stringByAppendingPathComponent:destFileName];
+//}
 
 
 - (void)didReceiveMemoryWarning
@@ -128,17 +127,18 @@ NSString *chapterTitle = @"Chapter";
 {
     // Return the number of rows in the section.
     //NSLog(@"found rows %d",self.items.count);
-    return [self.items count];
+    return [_jsonItems count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"WordListPrototype";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-    
-    NSString *exercise = [self.items objectAtIndex:indexPath.row];
+    NSDictionary *jsonObject =[_jsonItems objectAtIndex:indexPath.row];
+    NSString *exercise = [jsonObject objectForKey:@"fl"];//[self.items objectAtIndex:indexPath.row];
+    NSString *englishPhrases = [jsonObject objectForKey:@"en"];//[self.items objectAtIndex:indexPath.row];
     cell.textLabel.text = exercise;
-    cell.detailTextLabel.text = [self.englishPhrases objectAtIndex:indexPath.row];;
+    cell.detailTextLabel.text = englishPhrases;//[self.englishPhrases objectAtIndex:indexPath.row];;
     
     return cell;
 }
@@ -196,25 +196,29 @@ NSString *chapterTitle = @"Chapter";
 
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSInteger row = indexPath.row;
-   NSLog(@"got seque row %d",indexPath.row  );
-    NSString *foreignLanguageItem = [self.items objectAtIndex:row];
-    NSString *englishItem = [self.englishPhrases objectAtIndex:row];
+  
+    NSLog(@"got seque row %ld",(long)indexPath.row  );
     
-    [itemController setForeignText:foreignLanguageItem];
-    [itemController setEnglishText:englishItem];
+   // NSString *foreignLanguageItem = [self.items objectAtIndex:row];
+    //NSString *englishItem = [self.englishPhrases objectAtIndex:row];
+    
+    //[itemController setForeignText:foreignLanguageItem];
+    //[itemController setEnglishText:englishItem];
     //[itemController setTranslitText:[self.translitPhrases objectAtIndex:row]];
   //  [itemController setExampleText:[self.examples objectAtIndex:row]];
-    itemController.refAudioPath = [_paths objectAtIndex:row];
-    itemController.rawRefAudioPath = [_rawPaths objectAtIndex:row];
+    //itemController.refAudioPath = [_paths objectAtIndex:row];
+    //itemController.rawRefAudioPath = [_rawPaths objectAtIndex:row];
+    //itemController.ids = [self ids];
+    //itemController.items = [self items];
+    //itemController.englishWords = [self englishPhrases];
+    //itemController.translitWords = [self translitPhrases];
+ 
+    itemController.jsonItems = _jsonItems;
     itemController.index = row;
-    itemController.ids = [self ids];
-    itemController.items = [self items];
+ //   itemController.paths = _paths;
+  //  itemController.rawPaths = _rawPaths;
+    
     itemController.language = _language;
-    itemController.englishWords = [self englishPhrases];
-    itemController.translitWords = [self translitPhrases];
-   // itemController.examples = [self examples];
-    itemController.paths = _paths;
-    itemController.rawPaths = _rawPaths;
     itemController.url = [self getURL];
     [itemController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
     [itemController setHasModel:_hasModel];
@@ -232,6 +236,24 @@ NSString *chapterTitle = @"Chapter";
     NSString *destFileName = [filePath stringByAppendingPathComponent:rawRefAudioPath];
     return destFileName;
 }
+
+//- (NSString *) getRawRefPath
+//{
+//    NSString *refPath = [object objectForKey:@"ref"];
+//    if (refPath) {
+//        refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+//                                                     withString:@".mp3"];
+//        
+//        NSMutableString *mu = [NSMutableString stringWithString:refPath];
+//        [mu insertString:[self getURL] atIndex:0];
+//        [_paths addObject:mu];
+//        //     [_rawPaths addObject:refPath];
+//    }
+//    else {
+//        [_paths addObject:@"NO"];
+//        //     [_rawPaths addObject:@"NO"];
+//    }
+//}
 
 // go and get ref audio per item, make individual requests -- quite fast
 - (void)getAudioForCurrentItem

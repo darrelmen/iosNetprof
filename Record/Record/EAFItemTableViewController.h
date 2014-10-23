@@ -10,11 +10,11 @@
 
 @interface EAFItemTableViewController : UITableViewController<NSURLConnectionDelegate>
 
-@property NSMutableArray *ids;
-@property NSMutableArray *items;
-@property NSMutableArray *englishPhrases;
-@property NSMutableArray *translitPhrases;
-@property NSMutableArray *examples;
+//@property NSMutableArray *ids;
+//@property NSMutableArray *items;
+//@property NSMutableArray *englishPhrases;
+//@property NSMutableArray *translitPhrases;
+//@property NSMutableArray *examples;
 @property NSMutableArray *paths;
 @property NSMutableArray *rawPaths;
 @property BOOL hasModel;

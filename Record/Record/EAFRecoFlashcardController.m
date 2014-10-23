@@ -114,20 +114,22 @@
     [self checkAvailableMics];
     [self configureTextFields];
     
-    _annotatedGauge2.minValue = 0;
-    _annotatedGauge2.maxValue = 100;
-    _annotatedGauge2.fillArcFillColor =   [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
-    _annotatedGauge2.fillArcStrokeColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
-    _annotatedGauge2.value = 0;
+   // _annotatedGauge2.minValue = 0;
+   // _annotatedGauge2.maxValue = 100;
+   // _annotatedGauge2.fillArcFillColor =   [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
+   // _annotatedGauge2.fillArcStrokeColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
+   // _annotatedGauge2.value = 0;
     //f () {
-        [_annotatedGauge2 setHidden:!_hasModel];
+   //     [_annotatedGauge2 setHidden:!_hasModel];
    // }
     
-    if ([_audioOnSelector isOn] && [self hasRefAudio]) {
-        [self playRefAudio:nil];
-    }
+    [self respondToSwipe];
+    
+    //if ([_audioOnSelector isOn] && [self hasRefAudio]) {
+    //    [self playRefAudio:nil];
+   // }
     [_whatToShow setSelectedSegmentIndex:2];
-    [_whatToShow setTitle:_language forSegmentAtIndex:1];
+    [_whatToShow setTitle:_language forSegmentAtIndex:1];   
 }
 
 - (void)checkAvailableMics {
@@ -222,15 +224,27 @@
     }
 }
 
+- (NSDictionary *)getCurrentJson
+{
+    unsigned long toUse = [self getItemIndex];
+    NSDictionary *jsonObject =[_jsonItems objectAtIndex:toUse];
+    return jsonObject;
+}
+
 - (void)configureTextFields
 {
-    [_foreignLang setText:fl];
-    [_english setText:en];
+    NSDictionary *jsonObject;
+    jsonObject = [self getCurrentJson];
+    NSString *exercise = [jsonObject objectForKey:@"fl"];//[self.items objectAtIndex:indexPath.row];
+    NSString *englishPhrases = [jsonObject objectForKey:@"en"];//[self.items objectAtIndex:indexPath.row];
+    
+    [_foreignLang setText:exercise];
+    [_english setText:englishPhrases];
     
     _english.lineBreakMode = NSLineBreakByWordWrapping;
     _english.numberOfLines = 0;
     
-    [_transliteration setText:tr];
+   // [_transliteration setText:tr];
     
     _transliteration.lineBreakMode = NSLineBreakByWordWrapping;
     _transliteration.numberOfLines = 0;
@@ -242,38 +256,112 @@
     _scoreDisplay.numberOfLines = 0;
 }
 
+- (unsigned long)getItemIndex {
+    unsigned long toUse = _index;
+    if ([_shuffleSwitch isOn]) {
+           NSLog(@"current %lu",_index);
+        toUse = [[_randSequence objectAtIndex:_index] integerValue];
+           NSLog(@"output %lu",toUse);
+    }
+    else {
+        NSLog(@"current %lu",_index);
+
+    }
+    return toUse;
+}
+
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
     [self removePlayObserver];
     
-    unsigned long toUse = _index;
-    if ([_shuffleSwitch isOn]) {
-     //   NSLog(@"current %lu",_index);
-        toUse = [[_randSequence objectAtIndex:_index] integerValue];
-     //   NSLog(@"output %lu",toUse);
+    unsigned long toUse = [self getItemIndex];
+    
+    NSDictionary *jsonObject =[_jsonItems objectAtIndex:toUse];
+ ////   NSString *exercise = [jsonObject objectForKey:@"fl"];//[self.items objectAtIndex:indexPath.row];
+ //   NSString *englishPhrases = [jsonObject objectForKey:@"en"];//[self.items objectAtIndex:indexPath.row];
+    
+ //   _refAudioPath =[_paths objectAtIndex:toUse];
+ //   _rawRefAudioPath =[_rawPaths objectAtIndex:toUse];
+
+    NSString *refAudio = [[self getCurrentJson] objectForKey:@"ref"];
+    NSLog(@"refAudio %@",refAudio);
+    NSLog(@"id %@",[[self getCurrentJson] objectForKey:@"id"]);
+  
+    NSLog(@"msr %@",[[self getCurrentJson] objectForKey:@"msr"]);
+    NSLog(@"mrr %@",[[self getCurrentJson] objectForKey:@"mrr"]);
+    NSLog(@"fsr %@",[[self getCurrentJson] objectForKey:@"fsr"]);
+    NSLog(@"frr %@",[[self getCurrentJson] objectForKey:@"frr"]);
+
+    //ex.put("mrr", mr == null ? "NO" : mr);
+    //ex.put("msr", ms == null ? "NO" : ms);
+    //ex.put("frr", fr == null ? "NO" : fr);
+    //ex.put("fsr", fs == null ? "NO" : fs);
+    
+    if ([_genderMaleSelector isOn]) {
+        if ([_speedSelector isOn]) {
+           NSString *test =  [[self getCurrentJson] objectForKey:@"msr"];
+            if (test != NULL && ![test isEqualToString:@"NO"]) {
+                refAudio = test;
+            }
+        }
+        else {
+            NSString *test =  [[self getCurrentJson] objectForKey:@"mrr"];
+            if (test != NULL && ![test isEqualToString:@"NO"]) {
+                refAudio = test;
+            }
+        }
+    }
+    else {
+        if ([_speedSelector isOn]) {
+            NSString *test =  [[self getCurrentJson] objectForKey:@"fsr"];
+            if (test != NULL && ![test isEqualToString:@"NO"]) {
+                refAudio = test;
+            }
+        }
+        else {
+            NSString *test =  [[self getCurrentJson] objectForKey:@"frr"];
+            if (test != NULL && ![test isEqualToString:@"NO"]) {
+                refAudio = test;
+            }
+        }
     }
     
-    _refAudioPath =[_paths objectAtIndex:toUse];
-    _rawRefAudioPath =[_rawPaths objectAtIndex:toUse];
+    NSLog(@"after refAudio %@",refAudio);
 
-    //[self setPlayRefEnabled];
-    _playButton.enabled = NO;
+        NSString *refPath = refAudio;
+        if (refPath) {
+            refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+                                                         withString:@".mp3"];
     
-    NSString *flAtIndex = [_items objectAtIndex:toUse];
-    NSString *enAtIndex = [_englishWords objectAtIndex:toUse];
+            NSMutableString *mu = [NSMutableString stringWithString:refPath];
+            [mu insertString:_url atIndex:0];
+            _refAudioPath = mu;//[_paths addObject:mu];
+            _rawRefAudioPath = refPath;
+            //     [_rawPaths addObject:refPath];
+        }
+        else {
+            _refAudioPath = @"NO";
+            _rawRefAudioPath = @"NO";
+            //     [_rawPaths addObject:@"NO"];
+        }
+    
+    //[self setPlayRefEnabled];
+    //_playButton.enabled = NO;
+    
+    NSString *flAtIndex = [jsonObject objectForKey:@"fl"];//[_items objectAtIndex:toUse];
+    NSString *enAtIndex = [jsonObject objectForKey:@"en"];//[_englishWords objectAtIndex:toUse];
    // NSString *trAtIndex = [_translitWords objectAtIndex:toUse];
     [_foreignLang setText:flAtIndex];
     //[_transliteration setText:trAtIndex];
     [_english setText:enAtIndex];
-    exercise = [_ids objectAtIndex:toUse];
+   // exercise = [jsonObject objectForKey:@"id"];//[_ids objectAtIndex:toUse];
 
-    fl = flAtIndex;
-    en = enAtIndex;
+    //fl = flAtIndex;
+    //en = enAtIndex;
 //    tr  = trAtIndex;
  //   _annotatedGauge2.value = 0;
 
     [_scoreDisplay setText:@" "];
-    
     
     if ([_audioOnSelector isOn] && [self hasRefAudio]) {
         [self playRefAudio:nil];
@@ -286,14 +374,14 @@
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
     _index--;
-    if (_index == -1) _index = _items.count  -1UL;
+    if (_index == -1) _index = _jsonItems.count  -1UL;
 
     [self respondToSwipe];
 }
 
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender {
     _index++;
-    if (_index == _items.count) _index = 0;
+    if (_index == _jsonItems.count) _index = 0;
     
     [self respondToSwipe];
 }
@@ -323,6 +411,18 @@
     }
 }
 
+- (IBAction)genderSelection:(id)sender {
+    [self respondToSwipe];
+}
+
+- (IBAction)speedSelection:(id)sender {
+    [self respondToSwipe];
+}
+
+- (IBAction)audioOnSelection:(id)sender {
+    [self respondToSwipe];
+}
+
 
 //- (void)setPlayRefEnabled
 //{
@@ -342,35 +442,35 @@
     return _refAudioPath && ![_refAudioPath hasSuffix:@"NO"];
 }
 
-NSString *exercise = @"";
-NSString *fl = @"";
-NSString *en = @"";
-NSString *tr = @"";
-NSString *ex = @"";
-
--(void) setForeignText:(NSString *)foreignLangText
-{
-//    NSLog(@"setForeignText now %@",foreignLangText);
-    fl = foreignLangText;
-}
-
--(void) setEnglishText:(NSString *)english
-{
-//    NSLog(@"setEnglishText now %@",english);
-    en = english;
-}
-
--(void) setTranslitText:(NSString *)translit
-{
-    //   NSLog(@"setTranslitText now %@",translit);
-    tr = translit;
-}
-
--(void) setExampleText:(NSString *)example
-{
-    //   NSLog(@"setTranslitText now %@",translit);
-    ex = example;
-}
+//NSString *exercise = @"";
+//NSString *fl = @"";
+//NSString *en = @"";
+//NSString *tr = @"";
+//NSString *ex = @"";
+//
+//-(void) setForeignText:(NSString *)foreignLangText
+//{
+////    NSLog(@"setForeignText now %@",foreignLangText);
+//    fl = foreignLangText;
+//}
+//
+//-(void) setEnglishText:(NSString *)english
+//{
+////    NSLog(@"setEnglishText now %@",english);
+//    en = english;
+//}
+//
+//-(void) setTranslitText:(NSString *)translit
+//{
+//    //   NSLog(@"setTranslitText now %@",translit);
+//    tr = translit;
+//}
+//
+//-(void) setExampleText:(NSString *)example
+//{
+//    //   NSLog(@"setTranslitText now %@",translit);
+//    ex = example;
+//}
 
 - (void)didReceiveMemoryWarning
 {
@@ -564,7 +664,7 @@ bool debugRecord = false;
 - (IBAction)recordAudio:(id)sender {
     then2 = CFAbsoluteTimeGetCurrent();
     if (debugRecord) NSLog(@"recordAudio time = %f",then2);
-    _recordInstructions.hidden = YES;
+  //  _recordInstructions.hidden = YES;
     
     if (!_audioRecorder.recording)
     {
@@ -730,9 +830,9 @@ double gestureEnd;
 }
 
 - (void) shuffle {
-    _randSequence = [[NSMutableArray alloc] initWithCapacity:_items.count];
+    _randSequence = [[NSMutableArray alloc] initWithCapacity:_jsonItems.count];
     
-    for (unsigned long i = 0; i < _items.count; i++) {
+    for (unsigned long i = 0; i < _jsonItems.count; i++) {
         [_randSequence addObject:[NSNumber numberWithUnsignedLong:i]];
     }
     
@@ -744,7 +844,7 @@ double gestureEnd;
 //        [newArray exchangeObjectAtIndex:i withObjectAtIndex:exchangeIndex];
 //    }
     
-    unsigned long max = _items.count-1;
+    unsigned int max = _jsonItems.count-1;
 //    for (unsigned int ii = max; ii > 0; --ii) {
 //        unsigned int r = arc4random_uniform(ii)+1;
 //        [_randSequence exchangeObjectAtIndex:ii withObjectAtIndex:r];
@@ -808,7 +908,8 @@ double gestureEnd;
     [urlRequest setValue:@"1" forHTTPHeaderField:@"user"]; // just testing!  Need to find out user id
     [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
     [urlRequest setValue:@"12345" forHTTPHeaderField:@"device"];
-    [urlRequest setValue:[_ids objectAtIndex:_index] forHTTPHeaderField:@"exercise"];
+    [urlRequest setValue:[[self getCurrentJson] objectForKey:@"id"]//[_ids objectAtIndex:_index]
+      forHTTPHeaderField:@"exercise"];
     [urlRequest setValue:@"decode" forHTTPHeaderField:@"request"];
 
     // post the audio
@@ -847,7 +948,7 @@ double gestureEnd;
     [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=%@\r\n\r\n", @"word"] dataUsingEncoding:NSUTF8StringEncoding]];
     
-    NSString *escapedString = [fl stringByReplacingOccurrencesOfString:@"/" withString:@" "];
+    NSString *escapedString = [[[self getCurrentJson] objectForKey:@"fl"] stringByReplacingOccurrencesOfString:@"/" withString:@" "];
     
     [body appendData:[[NSString stringWithFormat:@"%@\r\n", escapedString] dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
@@ -980,30 +1081,30 @@ double gestureEnd;
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    NSLog(@"Got segue!!! ");
-    EAFFlashcardViewController *itemController = [segue destinationViewController];
-    
-   // NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-    //  NSLog(@"row %d",indexPath.row  );
-    //NSString *foreignLanguageItem = [self.items objectAtIndex:indexPath.row];
-   /// NSString *englishItem = [self.englishWords objectAtIndex:indexPath.row];
-    
-    [itemController setForeignText:fl];
-    [itemController setEnglishText:en];
-
-    //[itemController setEnglish:englishItem];
-//    [itemController setTranslitText:[self.translitPhrases objectAtIndex:indexPath.row]];
-    itemController.refAudioPath = _refAudioPath;
-    itemController.rawRefAudioPath = _rawRefAudioPath;
-    itemController.index = _index;
-    itemController.items = _items;
-    itemController.language = _language;
-    itemController.englishWords = _englishWords;
-  //  itemController.translitWords = [self translitPhrases];
-    itemController.paths = _paths;
-    itemController.rawPaths = _rawPaths;
-  //  itemController.url = [self getURL];
-    
-    [itemController setTitle:[self title]];
+//    NSLog(@"Got segue!!! ");
+//    EAFFlashcardViewController *itemController = [segue destinationViewController];
+//    
+//   // NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+//    //  NSLog(@"row %d",indexPath.row  );
+//    //NSString *foreignLanguageItem = [self.items objectAtIndex:indexPath.row];
+//   /// NSString *englishItem = [self.englishWords objectAtIndex:indexPath.row];
+//    
+//    [itemController setForeignText:fl];
+//    [itemController setEnglishText:en];
+//
+//    //[itemController setEnglish:englishItem];
+////    [itemController setTranslitText:[self.translitPhrases objectAtIndex:indexPath.row]];
+//    itemController.refAudioPath = _refAudioPath;
+//    itemController.rawRefAudioPath = _rawRefAudioPath;
+//    itemController.index = _index;
+//    itemController.items = _items;
+//    itemController.language = _language;
+//    itemController.englishWords = _englishWords;
+//  //  itemController.translitWords = [self translitPhrases];
+//    itemController.paths = _paths;
+//    itemController.rawPaths = _rawPaths;
+//  //  itemController.url = [self getURL];
+//    
+//    [itemController setTitle:[self title]];
 }
 @end

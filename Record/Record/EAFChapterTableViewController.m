@@ -145,8 +145,7 @@ int receivedCount = 0;;
 }
 
 - (NSData *) getCachedJson {
-    NSLog(@"getCachedJson ---");
-
+    //NSLog(@"getCachedJson ---");
     NSString *appFile = [self getCachedJsonFile];
     
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:appFile];
@@ -162,7 +161,6 @@ int receivedCount = 0;;
 
         return nil;
     }
-    
 }
 
 
@@ -208,17 +206,7 @@ BOOL hasModel;
         _jsonContentArray = jsonArray;
         id something =[json objectForKey:@"hasModel"];
         
-       // NSLog(@"class is %@",[something class]);
-        //if ([something isKindOfClass:[NSBoolean class]]) {
-            hasModel = [something boolValue];
-        //}
-        //NSString *value =[json objectForKey:@"hasModel"];
-        NSLog(@"hasModel = %s",hasModel ? "true" : "false");
-        if ([_language isEqualToString:@"CM"]) {
-         hasModel = true;
-        }
-        
-        //hasModel = [value isEqualToString:@"true"];
+        hasModel = [something boolValue];
      
         NSMutableArray *myArray = [[NSMutableArray alloc] init];
         
@@ -232,7 +220,6 @@ BOOL hasModel;
         }];
         _chapters = myArray;
         chapterInfo = json;
-       // localJsonArray = jsonArray;
     }
     else {
         _chapters = [json allKeys];
@@ -396,11 +383,10 @@ NSArray *currentItems;
 
         if ([name isEqualToString:tappedItem]) {
             
-            NSLog(@"=---- > got match '%@' '%@'",name, tappedItem);
+//            NSLog(@"=---- > got match '%@' '%@'",name, tappedItem);
 
             NSArray *items = [entry objectForKey:@"items"];
             if (items == nil) { // no items - not a leaf
-            
                 children = [entry objectForKey:@"children"];
                 //NSLog(@"children are %@",children);
                 controllerToJumpTo = @"ChapterViewController";
