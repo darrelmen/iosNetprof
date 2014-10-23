@@ -38,12 +38,12 @@
   //  _scoreProgres
     
     // Load images
-    NSArray *imageNames = @[@"media-record-3_32x32.png", @"media-record-4_32x32.png"];
+   // NSArray *imageNames = @[@"media-record-3_32x32.png", @"media-record-4_32x32.png"];
     
-    NSMutableArray *images = [[NSMutableArray alloc] init];
-    for (int i = 0; i < imageNames.count; i++) {
-        [images addObject:[UIImage imageNamed:[imageNames objectAtIndex:i]]];
-    }
+   // NSMutableArray *images = [[NSMutableArray alloc] init];
+   // for (int i = 0; i < imageNames.count; i++) {
+   //     [images addObject:[UIImage imageNamed:[imageNames objectAtIndex:i]]];
+   // }
     
     //_recordFeedbackImage.animationImages = images;
    // _recordFeedbackImage.animationDuration = 1;
@@ -126,6 +126,8 @@
     if ([_audioOnSelector isOn] && [self hasRefAudio]) {
         [self playRefAudio:nil];
     }
+    [_whatToShow setSelectedSegmentIndex:2];
+    [_whatToShow setTitle:_language forSegmentAtIndex:1];
 }
 
 - (void)checkAvailableMics {
@@ -247,11 +249,8 @@
     unsigned long toUse = _index;
     if ([_shuffleSwitch isOn]) {
      //   NSLog(@"current %lu",_index);
-        
         toUse = [[_randSequence objectAtIndex:_index] integerValue];
-        
      //   NSLog(@"output %lu",toUse);
-
     }
     
     _refAudioPath =[_paths objectAtIndex:toUse];
@@ -275,8 +274,13 @@
 
     [_scoreDisplay setText:@" "];
     
+    
     if ([_audioOnSelector isOn] && [self hasRefAudio]) {
         [self playRefAudio:nil];
+    }
+    else {
+        NSLog(@"not playing audio at path %@",_refAudioPath);
+        NSLog(@"audio on %@",[_audioOnSelector isOn]? @"YES" : @"NO");
     }
 }
 
@@ -302,6 +306,23 @@
         [self playRefAudio:nil];
     }
 }
+
+- (IBAction)whatToShowSelection:(id)sender {
+    long selected = [_whatToShow selectedSegmentIndex];
+    if (selected == 0) {
+        [_foreignLang setHidden:true];
+        [_english setHidden:false];
+    }
+    else if (selected == 1) {
+        [_foreignLang setHidden:false];
+        [_english setHidden:true];
+    }
+    else {
+        [_foreignLang setHidden:false];
+        [_english setHidden:false];
+    }
+}
+
 
 //- (void)setPlayRefEnabled
 //{
@@ -985,5 +1006,4 @@ double gestureEnd;
     
     [itemController setTitle:[self title]];
 }
-
 @end

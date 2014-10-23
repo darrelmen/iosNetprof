@@ -257,6 +257,9 @@
                                     <segment title="Arabic"/>
                                     <segment title="Both"/>
                                 </segments>
+                                <connections>
+                                    <action selector="whatToShowSelection:" destination="vXZ-lx-hvc" eventType="valueChanged" id="wN1-rC-D4P"/>
+                                </connections>
                             </segmentedControl>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="YP1-wr-gfA">
                                 <rect key="frame" x="60" y="482" width="51" height="31"/>
@@ -304,6 +307,7 @@
                         <barButtonItem key="backBarButtonItem" title="Words" id="zRY-DR-Wv1"/>
                     </navigationItem>
                     <connections>
+                        <outlet property="audioOnSelector" destination="7cj-Bu-gyQ" id="3z2-As-bI9"/>
                         <outlet property="cardBackground" destination="D0k-He-nFx" id="NE1-6A-VBh"/>
                         <outlet property="english" destination="uZz-zh-5FP" id="5Ja-Qc-Qzs"/>
                         <outlet property="foreignLang" destination="wAh-a0-3Cd" id="Lhu-Xo-3Ar"/>

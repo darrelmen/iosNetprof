@@ -80,6 +80,7 @@
 @property (strong, nonatomic) IBOutlet UISwitch *genderMaleSelector;
 @property (strong, nonatomic) IBOutlet UISwitch *speedSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *whatToShow;
+- (IBAction)whatToShowSelection:(id)sender;
 
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *gotTapOnFL;
 
