@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
-#import "MSAnnotatedGauge.h"
+//#import "YLProgressBar.h"
 
 @interface EAFRecoFlashcardController : UIViewController
         <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate>
@@ -35,34 +35,19 @@
 @property (strong, nonatomic) IBOutlet NSString *rawRefAudioPath;
 @property unsigned long index;
 
-//@property NSMutableArray *ids;
 @property NSMutableArray *randSequence;
-//@property NSArray *items;
-//@property NSArray *englishWords;
-//@property NSArray *translitWords;
-//@property NSArray *examples;
-//@property NSArray *paths;
-//@property NSArray *rawPaths;
 @property NSArray *jsonItems;
 
 @property NSString *url;
 @property BOOL hasModel;
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressGesture;
-//@property (strong, nonatomic) IBOutlet UILabel *recordInstructions;
 
 @property NSString *language;
-
 
 @property (weak, nonatomic) IBOutlet UILabel *scoreDisplay;
 @property (strong, nonatomic) IBOutlet UIProgressView *scoreProgress;
 @property AVPlayer *player;
 
-
-//-(void) setForeignText:(NSString *)foreignLang;
-//-(void) setEnglishText:(NSString *)english;
-//-(void) setTranslitText:(NSString *)translit;
-//-(void) setExampleText:(NSString *)example;
-@property (strong, nonatomic) IBOutlet MSAnnotatedGauge *annotatedGauge2;
 
 @property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *rightSwipe;
 @property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *leftSwipe;
@@ -74,8 +59,8 @@
 - (NSDictionary *)userInfo;
 
 - (void)invocationMethod:(NSDate *)date;
-//@property (strong, nonatomic) IBOutlet UIImageView *recordFeedbackImage;
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;
+@property (strong, nonatomic) IBOutlet UIImageView *correctFeedback;
 
 @property (strong, nonatomic) IBOutlet UISwitch *shuffleSwitch;
 @property (strong, nonatomic) IBOutlet UISwitch *audioOnSelector;

@@ -15,6 +15,13 @@
 
 @end
 
+@implementation UIProgressView (customView)
+- (CGSize)sizeThatFits:(CGSize)size {
+    CGSize newSize = CGSizeMake(self.frame.size.width, 9);
+    return newSize;
+}
+@end
+
 @implementation EAFRecoFlashcardController
 
 - (void)viewDidLoad
@@ -22,9 +29,6 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     _playButton.enabled = NO;
-    
-   // _stopButton.enabled = NO;
-    //[self setPlayRefEnabled];
     
     [[self view] sendSubviewToBack:_cardBackground];
     
@@ -35,21 +39,6 @@
     _recordButtonContainer.layer.cornerRadius = 15.f;
     _recordButtonContainer.layer.borderWidth = 2.0f;
     
-  //  _scoreProgres
-    
-    // Load images
-   // NSArray *imageNames = @[@"media-record-3_32x32.png", @"media-record-4_32x32.png"];
-    
-   // NSMutableArray *images = [[NSMutableArray alloc] init];
-   // for (int i = 0; i < imageNames.count; i++) {
-   //     [images addObject:[UIImage imageNamed:[imageNames objectAtIndex:i]]];
-   // }
-    
-    //_recordFeedbackImage.animationImages = images;
-   // _recordFeedbackImage.animationDuration = 1;
-   // _recordFeedbackImage.hidden = YES;
-   // [_recordFeedbackImage startAnimating];
-
     // Set the audio file
     NSArray *pathComponents = [NSArray arrayWithObjects:
                                [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
@@ -88,7 +77,7 @@
         NSLog(@"error: %@", [error localizedDescription]);
     } else {
         [session requestRecordPermission:^(BOOL granted) {
-            NSLog(@"record permission is %d", granted);
+            //NSLog(@"record permission is %d", granted);
         } ];
     }
     
@@ -113,6 +102,25 @@
     
     [self checkAvailableMics];
     [self configureTextFields];
+
+    
+    //
+//    _scoreProgress = [[YLProgressBar alloc] init];
+//    _scoreProgress.type               = YLProgressBarTypeFlat;
+//    _scoreProgress.progressTintColor  = [UIColor blueColor];
+//    _scoreProgress.hideStripes        = YES;
+//    [_scoreProgress setProgress:50 animated:true];//        = NO;
+//  //  [_scoreProgress height:100];
+    
+    [_scoreProgress setTintColor:[UIColor blueColor]];
+    [_scoreProgress setTrackTintColor:[UIColor whiteColor]];
+    [_scoreProgress setProgressTintColor:[UIColor greenColor]];
+  //  [_scoreProgress setProgress:0.5 animated:false];
+    
+    _scoreProgress.layer.cornerRadius = 3.f;
+    _scoreProgress.layer.borderWidth = 1.0f;
+    _scoreProgress.layer.borderColor = [UIColor grayColor].CGColor;
+    [_correctFeedback setHidden:true];
     
    // _annotatedGauge2.minValue = 0;
    // _annotatedGauge2.maxValue = 100;
@@ -246,8 +254,8 @@
     
    // [_transliteration setText:tr];
     
-    _transliteration.lineBreakMode = NSLineBreakByWordWrapping;
-    _transliteration.numberOfLines = 0;
+  //  _transliteration.lineBreakMode = NSLineBreakByWordWrapping;
+  //  _transliteration.numberOfLines = 0;
     
     _foreignLang.lineBreakMode = NSLineBreakByWordWrapping;
     _foreignLang.numberOfLines = 0;
@@ -259,12 +267,12 @@
 - (unsigned long)getItemIndex {
     unsigned long toUse = _index;
     if ([_shuffleSwitch isOn]) {
-           NSLog(@"current %lu",_index);
+        //   NSLog(@"current %lu",_index);
         toUse = [[_randSequence objectAtIndex:_index] integerValue];
-           NSLog(@"output %lu",toUse);
+        //   NSLog(@"output %lu",toUse);
     }
     else {
-        NSLog(@"current %lu",_index);
+      //  NSLog(@"current %lu",_index);
 
     }
     return toUse;
@@ -285,12 +293,12 @@
 
     NSString *refAudio = [[self getCurrentJson] objectForKey:@"ref"];
     NSLog(@"refAudio %@",refAudio);
-    NSLog(@"id %@",[[self getCurrentJson] objectForKey:@"id"]);
-  
-    NSLog(@"msr %@",[[self getCurrentJson] objectForKey:@"msr"]);
-    NSLog(@"mrr %@",[[self getCurrentJson] objectForKey:@"mrr"]);
-    NSLog(@"fsr %@",[[self getCurrentJson] objectForKey:@"fsr"]);
-    NSLog(@"frr %@",[[self getCurrentJson] objectForKey:@"frr"]);
+//    NSLog(@"id %@",[[self getCurrentJson] objectForKey:@"id"]);
+//  
+//    NSLog(@"msr %@",[[self getCurrentJson] objectForKey:@"msr"]);
+//    NSLog(@"mrr %@",[[self getCurrentJson] objectForKey:@"mrr"]);
+//    NSLog(@"fsr %@",[[self getCurrentJson] objectForKey:@"fsr"]);
+//    NSLog(@"frr %@",[[self getCurrentJson] objectForKey:@"frr"]);
 
     //ex.put("mrr", mr == null ? "NO" : mr);
     //ex.put("msr", ms == null ? "NO" : ms);
@@ -1007,13 +1015,15 @@ double gestureEnd;
                           options:NSJSONReadingMutableContainers
                           error:&error];
     
-    NSNumber *value = [json objectForKey:@"score"];
-    NSLog(@"score was %@",value);
-    // this doesn't seem to work...
-    _annotatedGauge2.titleLabel.text = [value stringValue];
-    [_annotatedGauge2 setFillArcFillColor:[self getColor2:value.floatValue]];
-    _annotatedGauge2.value =value.floatValue*100;
+    NSNumber *overallScore = [json objectForKey:@"score"];
+    BOOL correct = [[json objectForKey:@"isCorrect"] boolValue];
+    NSLog(@"score was %@",overallScore);
+    NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
+    NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
+    NSString *valid = [json objectForKey:@"valid"];
+    NSLog(@"validity was %@",valid);
     
+    // show text highlighted with score per word
     NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
     NSString * lower =[[_foreignLang text] lowercaseString];
     
@@ -1033,8 +1043,8 @@ double gestureEnd;
        
         if (range.length > 0) {
             UIColor *color = [self getColor2:score.floatValue];
-            if (wordAndScore.count == 1) {
-                color = [self getColor2:value.floatValue];
+            if (wordAndScore.count == 1) { // TODO : hack to make score consistent
+                color = [self getColor2:overallScore.floatValue];
             }
             [result addAttribute:NSBackgroundColorAttributeName
                            value:color
@@ -1043,7 +1053,29 @@ double gestureEnd;
         }
     }
     
-    [_scoreDisplay setAttributedText:result];
+    if ([valid containsString:@"OK"]) {
+        [_scoreDisplay setAttributedText:result];
+    }
+    else {
+        if ([valid containsString:@"MIC"]) {
+            [_scoreDisplay setText:@"Please speak louder"];
+        }
+        else {
+            [_scoreDisplay setText:[json objectForKey:@"valid"]];
+        }
+    }
+    [_scoreProgress setProgress:[overallScore floatValue]];
+    [_scoreProgress setProgressTintColor:[self getColor2:[overallScore floatValue]]];
+    
+    if (correct) {
+//        NSLog(@"using checkmark!");
+        [_correctFeedback setImage:[UIImage imageNamed:@"checkmark32.png"]];
+    }
+    else {
+  //      NSLog(@"using redx!");
+        [_correctFeedback setImage:[UIImage imageNamed:@"redx32.png"]];
+    }
+    [_correctFeedback setHidden:false];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {

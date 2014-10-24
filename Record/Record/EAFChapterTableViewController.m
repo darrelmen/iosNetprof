@@ -71,7 +71,7 @@ int receivedCount = 0;;
 
 - (void)loadInitialData {
     
-    NSLog(@"loadInitialData");
+    //NSLog(@"loadInitialData");
 
     NSData *cachedData = [self getCachedJson];
     if (cachedData && [cachedData length] > 100) {
@@ -135,11 +135,11 @@ int receivedCount = 0;;
                 [self askServerForJson];
             }
             else {
-                //NSLog(@"getCachedJson time = %f vs %f - diff %f",CFAbsoluteTimeGetCurrent(),  [date timeIntervalSinceReferenceDate], diff);
+                NSLog(@"getCachedJson cache *not* stale time = %f vs %f - diff %f",CFAbsoluteTimeGetCurrent(),  [date timeIntervalSinceReferenceDate], diff);
             }
         }
         else {
-            NSLog(@"Not found");
+            NSLog(@"No file attributes for %@???",appFile);
         }
     }
 }
@@ -151,13 +151,12 @@ int receivedCount = 0;;
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:appFile];
     
     if (fileExists) {
-        NSLog(@"found the cached json at %@",appFile);
-        
+        NSLog(@"getCachedJson : found the cached json at %@",appFile);
         NSData *data = [[NSFileManager defaultManager] contentsAtPath:appFile];
         return data;
     }
     else {
-        NSLog(@"no cached json at %@",appFile);
+        NSLog(@"getCachedJson : no cached json at %@",appFile);
 
         return nil;
     }
