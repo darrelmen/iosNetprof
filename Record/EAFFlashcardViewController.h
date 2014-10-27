@@ -23,6 +23,7 @@
 @property AVPlayer *player;
 
 @property unsigned long index;
+@property NSArray *ids;
 @property NSArray *items;
 @property NSArray *englishWords;
 @property NSArray *translitWords;

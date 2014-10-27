@@ -28,8 +28,8 @@
 - (IBAction)stopAudio:(id)sender;
 @property (strong, nonatomic) NSMutableData *responseData;
 
+//@property (strong, nonatomic) IBOutlet UITextView *foreignLang;
 @property (strong, nonatomic) IBOutlet UILabel *foreignLang;
-@property (strong, nonatomic) IBOutlet UILabel *transliteration;
 @property (strong, nonatomic) IBOutlet UILabel *english;
 @property (strong, nonatomic) IBOutlet NSString *refAudioPath;
 @property (strong, nonatomic) IBOutlet NSString *rawRefAudioPath;

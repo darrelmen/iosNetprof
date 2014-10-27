@@ -102,42 +102,23 @@
     
     [self checkAvailableMics];
     [self configureTextFields];
-
-    
-    //
-//    _scoreProgress = [[YLProgressBar alloc] init];
-//    _scoreProgress.type               = YLProgressBarTypeFlat;
-//    _scoreProgress.progressTintColor  = [UIColor blueColor];
-//    _scoreProgress.hideStripes        = YES;
-//    [_scoreProgress setProgress:50 animated:true];//        = NO;
-//  //  [_scoreProgress height:100];
     
     [_scoreProgress setTintColor:[UIColor blueColor]];
     [_scoreProgress setTrackTintColor:[UIColor whiteColor]];
     [_scoreProgress setProgressTintColor:[UIColor greenColor]];
-  //  [_scoreProgress setProgress:0.5 animated:false];
     
     _scoreProgress.layer.cornerRadius = 3.f;
     _scoreProgress.layer.borderWidth = 1.0f;
     _scoreProgress.layer.borderColor = [UIColor grayColor].CGColor;
     [_correctFeedback setHidden:true];
     
-   // _annotatedGauge2.minValue = 0;
-   // _annotatedGauge2.maxValue = 100;
-   // _annotatedGauge2.fillArcFillColor =   [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
-   // _annotatedGauge2.fillArcStrokeColor = [UIColor colorWithRed:.41 green:.76 blue:.73 alpha:1];
-   // _annotatedGauge2.value = 0;
-    //f () {
-   //     [_annotatedGauge2 setHidden:!_hasModel];
-   // }
-    
     [self respondToSwipe];
     
-    //if ([_audioOnSelector isOn] && [self hasRefAudio]) {
-    //    [self playRefAudio:nil];
-   // }
     [_whatToShow setSelectedSegmentIndex:2];
-    [_whatToShow setTitle:_language forSegmentAtIndex:1];   
+    [_whatToShow setTitle:_language forSegmentAtIndex:1];
+    if ([_language isEqualToString:@"English"]) {
+        [_whatToShow setTitle:@"Def." forSegmentAtIndex:0];
+    }
 }
 
 - (void)checkAvailableMics {
@@ -243,22 +224,17 @@
 {
     NSDictionary *jsonObject;
     jsonObject = [self getCurrentJson];
-    NSString *exercise = [jsonObject objectForKey:@"fl"];//[self.items objectAtIndex:indexPath.row];
-    NSString *englishPhrases = [jsonObject objectForKey:@"en"];//[self.items objectAtIndex:indexPath.row];
+    NSString *exercise = [jsonObject objectForKey:@"fl"];
+    NSString *englishPhrases = [jsonObject objectForKey:@"en"];
     
     [_foreignLang setText:exercise];
     [_english setText:englishPhrases];
     
-    _english.lineBreakMode = NSLineBreakByWordWrapping;
-    _english.numberOfLines = 0;
+ //   _english.lineBreakMode = NSLineBreakByWordWrapping;
+ //   _english.numberOfLines = 0;
     
-   // [_transliteration setText:tr];
-    
-  //  _transliteration.lineBreakMode = NSLineBreakByWordWrapping;
-  //  _transliteration.numberOfLines = 0;
-    
-    _foreignLang.lineBreakMode = NSLineBreakByWordWrapping;
-    _foreignLang.numberOfLines = 0;
+//    _foreignLang.lineBreakMode = NSLineBreakByWordWrapping;
+//    _foreignLang.numberOfLines = 0;
     
     _scoreDisplay.lineBreakMode = NSLineBreakByWordWrapping;
     _scoreDisplay.numberOfLines = 0;
@@ -282,14 +258,12 @@
 - (void)respondToSwipe {
     [self removePlayObserver];
     
+    [_correctFeedback setHidden:true];
+    [_scoreProgress     setProgress:0 ];
+    
     unsigned long toUse = [self getItemIndex];
     
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:toUse];
- ////   NSString *exercise = [jsonObject objectForKey:@"fl"];//[self.items objectAtIndex:indexPath.row];
- //   NSString *englishPhrases = [jsonObject objectForKey:@"en"];//[self.items objectAtIndex:indexPath.row];
-    
- //   _refAudioPath =[_paths objectAtIndex:toUse];
- //   _rawRefAudioPath =[_rawPaths objectAtIndex:toUse];
 
     NSString *refAudio = [[self getCurrentJson] objectForKey:@"ref"];
     NSLog(@"refAudio %@",refAudio);
@@ -300,10 +274,6 @@
 //    NSLog(@"fsr %@",[[self getCurrentJson] objectForKey:@"fsr"]);
 //    NSLog(@"frr %@",[[self getCurrentJson] objectForKey:@"frr"]);
 
-    //ex.put("mrr", mr == null ? "NO" : mr);
-    //ex.put("msr", ms == null ? "NO" : ms);
-    //ex.put("frr", fr == null ? "NO" : fr);
-    //ex.put("fsr", fs == null ? "NO" : fs);
     
     if ([_genderMaleSelector isOn]) {
         if ([_speedSelector isOn]) {
@@ -343,14 +313,12 @@
     
             NSMutableString *mu = [NSMutableString stringWithString:refPath];
             [mu insertString:_url atIndex:0];
-            _refAudioPath = mu;//[_paths addObject:mu];
+            _refAudioPath = mu;
             _rawRefAudioPath = refPath;
-            //     [_rawPaths addObject:refPath];
         }
         else {
             _refAudioPath = @"NO";
             _rawRefAudioPath = @"NO";
-            //     [_rawPaths addObject:@"NO"];
         }
     
     //[self setPlayRefEnabled];
@@ -358,16 +326,8 @@
     
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];//[_items objectAtIndex:toUse];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];//[_englishWords objectAtIndex:toUse];
-   // NSString *trAtIndex = [_translitWords objectAtIndex:toUse];
     [_foreignLang setText:flAtIndex];
-    //[_transliteration setText:trAtIndex];
     [_english setText:enAtIndex];
-   // exercise = [jsonObject objectForKey:@"id"];//[_ids objectAtIndex:toUse];
-
-    //fl = flAtIndex;
-    //en = enAtIndex;
-//    tr  = trAtIndex;
- //   _annotatedGauge2.value = 0;
 
     [_scoreDisplay setText:@" "];
     
@@ -376,7 +336,7 @@
     }
     else {
         NSLog(@"not playing audio at path %@",_refAudioPath);
-        NSLog(@"audio on %@",[_audioOnSelector isOn]? @"YES" : @"NO");
+      //  NSLog(@"audio on %@",[_audioOnSelector isOn]? @"YES" : @"NO");
     }
 }
 
@@ -449,36 +409,6 @@
 {
     return _refAudioPath && ![_refAudioPath hasSuffix:@"NO"];
 }
-
-//NSString *exercise = @"";
-//NSString *fl = @"";
-//NSString *en = @"";
-//NSString *tr = @"";
-//NSString *ex = @"";
-//
-//-(void) setForeignText:(NSString *)foreignLangText
-//{
-////    NSLog(@"setForeignText now %@",foreignLangText);
-//    fl = foreignLangText;
-//}
-//
-//-(void) setEnglishText:(NSString *)english
-//{
-////    NSLog(@"setEnglishText now %@",english);
-//    en = english;
-//}
-//
-//-(void) setTranslitText:(NSString *)translit
-//{
-//    //   NSLog(@"setTranslitText now %@",translit);
-//    tr = translit;
-//}
-//
-//-(void) setExampleText:(NSString *)example
-//{
-//    //   NSLog(@"setTranslitText now %@",translit);
-//    ex = example;
-//}
 
 - (void)didReceiveMemoryWarning
 {
