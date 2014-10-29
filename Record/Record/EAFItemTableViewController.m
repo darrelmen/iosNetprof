@@ -35,42 +35,30 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-//    
-//    self.ids = [[NSMutableArray alloc] init];
-//    self.items = [[NSMutableArray alloc] init];
-//    self.englishPhrases = [[NSMutableArray alloc] init];
-//    self.translitPhrases = [[NSMutableArray alloc] init];
-//    self.examples = [[NSMutableArray alloc] init];
     self.paths = [[NSMutableArray alloc] init];
     self.rawPaths = [[NSMutableArray alloc] init];
     NSArray *items =_jsonItems;
 
+     NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"mrs",@"frr",@"frs",nil];
+
     for (NSDictionary *object in items) {
-       // [_ids addObject:[object objectForKey:@"id"]];
-      //  [_items addObject:[object objectForKey:@"fl"]];
-      //  [_englishPhrases addObject:[object objectForKey:@"en"]];
-      //  [_translitPhrases addObject:[object objectForKey:@"tl"]];
-      //  [_examples addObject:[object objectForKey:@"ct"]];
-        
-        NSString *refPath = [object objectForKey:@"ref"];
-        if (refPath) {
-            refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
-                                                 withString:@".mp3"];
-            
-            NSMutableString *mu = [NSMutableString stringWithString:refPath];
-            [mu insertString:[self getURL] atIndex:0];
-            [_paths addObject:mu];
-            [_rawPaths addObject:refPath];
+        for (NSString *id in fields) {
+            NSString *refPath = [object objectForKey:id];
+            if (refPath && refPath.length > 2) { //i.e. not NO
+                refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+                                                             withString:@".mp3"];
+                
+                NSMutableString *mu = [NSMutableString stringWithString:refPath];
+                [mu insertString:[self getURL] atIndex:0];
+                [_paths addObject:mu];
+                [_rawPaths addObject:refPath];
+            }
         }
-        else {
-            [_paths addObject:@"NO"];
-            [_rawPaths addObject:@"NO"];
-        }
-        
-      //  refPath = [object objectForKey:@"mrr"];
-      //  if (refPath) {
-            //NSLog(@"got mrr %@",refPath);
-      //  }
+      
+       // else {
+       //     [_paths addObject:@"NO"];
+       //     [_rawPaths addObject:@"NO"];
+       // }
     }
     
     _itemIndex = 0;
@@ -134,10 +122,10 @@ NSString *chapterTitle = @"Chapter";
     static NSString *CellIdentifier = @"WordListPrototype";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:indexPath.row];
-    NSString *exercise = [jsonObject objectForKey:@"fl"];//[self.items objectAtIndex:indexPath.row];
-    NSString *englishPhrases = [jsonObject objectForKey:@"en"];//[self.items objectAtIndex:indexPath.row];
+    NSString *exercise = [jsonObject objectForKey:@"fl"];
+    NSString *englishPhrases = [jsonObject objectForKey:@"en"];
     cell.textLabel.text = exercise;
-    cell.detailTextLabel.text = englishPhrases;//[self.englishPhrases objectAtIndex:indexPath.row];;
+    cell.detailTextLabel.text = englishPhrases;
     
     return cell;
 }
@@ -188,35 +176,13 @@ NSString *chapterTitle = @"Chapter";
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
- //   EAFViewController *itemController = [segue destinationViewController];
     EAFRecoFlashcardController *itemController = [segue destinationViewController];
-   // EAFFlashcardViewController *itemController = [segue destinationViewController];
-  //   NSLog(@"got seque  %d",indexPath.row  );
-
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSInteger row = indexPath.row;
-  
-    NSLog(@"got seque row %ld",(long)indexPath.row  );
-    
-   // NSString *foreignLanguageItem = [self.items objectAtIndex:row];
-    //NSString *englishItem = [self.englishPhrases objectAtIndex:row];
-    
-    //[itemController setForeignText:foreignLanguageItem];
-    //[itemController setEnglishText:englishItem];
-    //[itemController setTranslitText:[self.translitPhrases objectAtIndex:row]];
-  //  [itemController setExampleText:[self.examples objectAtIndex:row]];
-    //itemController.refAudioPath = [_paths objectAtIndex:row];
-    //itemController.rawRefAudioPath = [_rawPaths objectAtIndex:row];
-    //itemController.ids = [self ids];
-    //itemController.items = [self items];
-    //itemController.englishWords = [self englishPhrases];
-    //itemController.translitWords = [self translitPhrases];
+//    NSLog(@"got seque row %ld",(long)indexPath.row  );
  
     itemController.jsonItems = _jsonItems;
     itemController.index = row;
- //   itemController.paths = _paths;
-  //  itemController.rawPaths = _rawPaths;
-    
     itemController.language = _language;
     itemController.url = [self getURL];
     [itemController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
@@ -306,10 +272,10 @@ NSString *chapterTitle = @"Chapter";
     }
 }
 
+// cache mp3 file
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     NSString *destFileName = [self getCurrentCachePath];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-
    // NSLog(@"writing to      %@",destFileName);
     
     NSString *parent = [destFileName stringByDeletingLastPathComponent];

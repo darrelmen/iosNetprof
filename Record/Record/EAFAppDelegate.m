@@ -15,10 +15,6 @@
 {
     // Override point for customization after application launch.
     
-    //[SSKeychain setPassword:UUID forService:@"mitll.proFeedback.password" account:@"user"];
-  //  KeychainItemWrapper *wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:@"mitll.proFeedback.password.UDID" accessGroup:nil];
-  //  [wrapper];
-    
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     if (retrieveuuid == NULL) {
         NSString *UUID = [EAFAppDelegate GetUUID];
@@ -26,7 +22,6 @@
         NSLog(@"made UUID %@",UUID);
         retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     }
-   // NSLog(@"got UUID %@",retrieveuuid);
 
     return YES;
 }

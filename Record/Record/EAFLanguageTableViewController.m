@@ -16,7 +16,7 @@
 
 @implementation EAFLanguageTableViewController
 
-static BOOL DOWNLOAD_ALL_AUDIO = NO;
+//static BOOL DOWNLOAD_ALL_AUDIO = NO;
 NSArray *languages;
 int languageIndex = 0;
 
@@ -26,9 +26,9 @@ int languageIndex = 0;
     languages = [NSArray arrayWithObjects:@"CM", @"Dari", @"English",@"Egyptian",@"Farsi", @"Korean", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
  
     // begin process of downloading audio...
-    if (DOWNLOAD_ALL_AUDIO) {
-        [self getAudioForCurrentLanguage];
-    }
+   // if (DOWNLOAD_ALL_AUDIO) {
+   //     [self getAudioForCurrentLanguage];
+   // }
     for (int i = 0; i < languages.count; i++) {
         NSString * dir = [self getAudioDestDir:i];
         [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:true attributes:nil error:nil];
