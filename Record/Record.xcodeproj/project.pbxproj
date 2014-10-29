@@ -33,6 +33,7 @@
 		B68A5C4C1979C8B70036B90C /* MSRangeGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C441979C8B70036B90C /* MSRangeGauge.m */; };
 		B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C461979C8B70036B90C /* MSSimpleGauge.m */; };
 		B696890319993B910094A297 /* micBiggerCircle.png in Resources */ = {isa = PBXBuildFile; fileRef = B696890219993B910094A297 /* micBiggerCircle.png */; };
+		B69821301A019A7200BB9865 /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = B698212F1A019A7200BB9865 /* SSKeychain.m */; };
 		B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96A1976F27100E8F1D5 /* media-record-4_32x32.png */; };
 		B6A8D96D1976F27C00E8F1D5 /* media-record-3_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96C1976F27C00E8F1D5 /* media-record-3_32x32.png */; };
 		B6A8D97719770C2100E8F1D5 /* Icon-40.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96F19770C2100E8F1D5 /* Icon-40.png */; };
@@ -121,6 +122,8 @@
 		B68A5C461979C8B70036B90C /* MSSimpleGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSSimpleGauge.m; sourceTree = "<group>"; };
 		B68A5C471979C8B70036B90C /* MSSimpleGaugeSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSSimpleGaugeSubclass.h; sourceTree = "<group>"; };
 		B696890219993B910094A297 /* micBiggerCircle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = micBiggerCircle.png; sourceTree = "<group>"; };
+		B698212E1A019A7200BB9865 /* SSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
+		B698212F1A019A7200BB9865 /* SSKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKeychain.m; sourceTree = "<group>"; };
 		B6A8D96A1976F27100E8F1D5 /* media-record-4_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "media-record-4_32x32.png"; sourceTree = "<group>"; };
 		B6A8D96C1976F27C00E8F1D5 /* media-record-3_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "media-record-3_32x32.png"; sourceTree = "<group>"; };
 		B6A8D96F19770C2100E8F1D5 /* Icon-40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-40.png"; sourceTree = "<group>"; };
@@ -329,6 +332,8 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
+				B698212E1A019A7200BB9865 /* SSKeychain.h */,
+				B698212F1A019A7200BB9865 /* SSKeychain.m */,
 				B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */,
 				B610C00919D2240800CA9D8A /* EAFRecoFlashcardController.h */,
 				B6B9F393197886C300CD0140 /* iPad */,
@@ -509,6 +514,7 @@
 			files = (
 				B68A5C4C1979C8B70036B90C /* MSRangeGauge.m in Sources */,
 				B66BACB8197094C000E28ECC /* EAFItemTableViewController.m in Sources */,
+				B69821301A019A7200BB9865 /* SSKeychain.m in Sources */,
 				B67E1BC5197EFC0500F42143 /* mztools.c in Sources */,
 				B67E1BC7197EFC0500F42143 /* zip.c in Sources */,
 				B67E1BC8197EFC0500F42143 /* SSZipArchive.m in Sources */,

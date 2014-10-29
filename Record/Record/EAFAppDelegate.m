@@ -7,14 +7,27 @@
 //
 
 #import "EAFAppDelegate.h"
+#import "SSKeychain.h"
 
 @implementation EAFAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
-    NSString *UUID = [EAFAppDelegate GetUUID];
-    NSLog(@"got %@",UUID);
+    
+    //[SSKeychain setPassword:UUID forService:@"mitll.proFeedback.password" account:@"user"];
+  //  KeychainItemWrapper *wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:@"mitll.proFeedback.password.UDID" accessGroup:nil];
+  //  [wrapper];
+    
+    NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
+    if (retrieveuuid == NULL) {
+        NSString *UUID = [EAFAppDelegate GetUUID];
+        [SSKeychain setPassword:UUID forService:@"mitll.proFeedback.device" account:@"UUID"];
+        NSLog(@"made UUID %@",UUID);
+        retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
+    }
+   // NSLog(@"got UUID %@",retrieveuuid);
+
     return YES;
 }
 							

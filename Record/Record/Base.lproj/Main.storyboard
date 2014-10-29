@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="gDn-g3-mfX">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="gDn-g3-mfX">
     <dependencies>
-        <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -156,15 +156,6 @@
                             <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D0k-He-nFx">
                                 <rect key="frame" x="24" y="82" width="280" height="293"/>
                                 <subviews>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" restorationIdentifier="english" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="wAh-a0-3Cd">
-                                        <rect key="frame" x="8" y="74" width="264" height="69"/>
-                                        <gestureRecognizers/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="38"/>
-                                        <nil key="highlightedColor"/>
-                                        <connections>
-                                            <outletCollection property="gestureRecognizers" destination="mhd-5C-bq9" appends="YES" id="zns-0e-LDq"/>
-                                        </connections>
-                                    </label>
                                     <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LDy-Lh-sWf">
                                         <rect key="frame" x="4" y="170" width="272" height="120"/>
                                         <subviews>
@@ -182,36 +173,49 @@
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <gestureRecognizers/>
                                         <constraints>
-                                            <constraint firstAttribute="centerX" secondItem="85Q-3i-7cz" secondAttribute="centerX" constant="-8" id="NJ0-US-KbU"/>
-                                            <constraint firstAttribute="centerY" secondItem="85Q-3i-7cz" secondAttribute="centerY" constant="-2" id="iei-UD-G1c"/>
+                                            <constraint firstAttribute="centerX" secondItem="85Q-3i-7cz" secondAttribute="centerX" id="8zE-dV-XEk"/>
+                                            <constraint firstAttribute="centerY" secondItem="85Q-3i-7cz" secondAttribute="centerY" id="ou8-JJ-Ca4"/>
                                         </constraints>
                                         <connections>
                                             <outletCollection property="gestureRecognizers" destination="0JG-qf-3We" appends="YES" id="S8Q-Jb-7b0"/>
                                         </connections>
                                     </view>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" restorationIdentifier="foreignLang" text="foreign languge" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="j6L-63-Jyx">
-                                        <rect key="frame" x="8" y="16" width="264" height="50"/>
+                                    <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" restorationIdentifier="foreignLang" text="foreign language" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="j6L-63-Jyx">
+                                        <rect key="frame" x="8" y="103" width="264" height="50"/>
+                                        <gestureRecognizers/>
                                         <fontDescription key="fontDescription" type="system" pointSize="38"/>
                                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <nil key="highlightedColor"/>
+                                        <connections>
+                                            <outletCollection property="gestureRecognizers" destination="cKC-E7-J88" appends="YES" id="76e-st-qGa"/>
+                                        </connections>
+                                    </label>
+                                    <label opaque="NO" clipsSubviews="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" restorationIdentifier="english" text="really long text that should wrap and shrink" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.20000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="wAh-a0-3Cd">
+                                        <rect key="frame" x="8" y="16" width="264" height="69"/>
+                                        <gestureRecognizers/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="38"/>
+                                        <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
+                                <gestureRecognizers/>
                                 <constraints>
-                                    <constraint firstAttribute="centerY" secondItem="wAh-a0-3Cd" secondAttribute="centerY" constant="38" id="24a-98-OZB"/>
+                                    <constraint firstAttribute="trailing" secondItem="j6L-63-Jyx" secondAttribute="trailing" constant="8" id="1qQ-AY-slr"/>
                                     <constraint firstAttribute="trailing" secondItem="LDy-Lh-sWf" secondAttribute="trailing" constant="4" id="7o1-X4-LwW"/>
-                                    <constraint firstAttribute="trailing" secondItem="wAh-a0-3Cd" secondAttribute="trailing" constant="8" id="A43-0d-Jrg"/>
-                                    <constraint firstItem="wAh-a0-3Cd" firstAttribute="top" secondItem="j6L-63-Jyx" secondAttribute="bottom" constant="8" id="FQm-Yp-hdf"/>
-                                    <constraint firstItem="wAh-a0-3Cd" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="8" id="Lte-vo-Clx"/>
-                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="LDy-Lh-sWf" secondAttribute="trailing" constant="4" id="Nr1-5S-AHz"/>
-                                    <constraint firstAttribute="centerX" secondItem="wAh-a0-3Cd" secondAttribute="centerX" id="PR2-zu-aWH"/>
-                                    <constraint firstAttribute="bottom" secondItem="LDy-Lh-sWf" secondAttribute="bottom" constant="3" id="UWn-Mp-TJs"/>
-                                    <constraint firstAttribute="trailing" secondItem="j6L-63-Jyx" secondAttribute="trailing" constant="8" id="YyK-1C-KOJ"/>
+                                    <constraint firstAttribute="centerX" secondItem="j6L-63-Jyx" secondAttribute="centerX" id="9dh-Ob-gh0"/>
+                                    <constraint firstAttribute="bottom" secondItem="LDy-Lh-sWf" secondAttribute="bottom" constant="3" id="OB0-8b-0lA"/>
+                                    <constraint firstAttribute="centerY" secondItem="j6L-63-Jyx" secondAttribute="centerY" constant="18.5" id="Qmm-pu-Ocp"/>
+                                    <constraint firstItem="j6L-63-Jyx" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="8" id="XFK-G3-UNW"/>
+                                    <constraint firstAttribute="centerX" secondItem="wAh-a0-3Cd" secondAttribute="centerX" id="YVf-NC-0yu"/>
+                                    <constraint firstItem="j6L-63-Jyx" firstAttribute="top" secondItem="wAh-a0-3Cd" secondAttribute="bottom" constant="10" id="cLZ-At-LKM"/>
+                                    <constraint firstItem="wAh-a0-3Cd" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="8" id="cwy-vs-jeX"/>
                                     <constraint firstItem="LDy-Lh-sWf" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="4" id="dTm-qP-y6K"/>
                                     <constraint firstAttribute="centerX" secondItem="LDy-Lh-sWf" secondAttribute="centerX" id="hT9-7a-MJe"/>
-                                    <constraint firstAttribute="bottom" relation="lessThanOrEqual" secondItem="LDy-Lh-sWf" secondAttribute="bottom" constant="3" id="lQ7-DF-ed0"/>
-                                    <constraint firstItem="j6L-63-Jyx" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="8" id="o5b-PS-gkH"/>
-                                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="LDy-Lh-sWf" secondAttribute="bottom" constant="3" id="o5d-xI-6Jh"/>
+                                    <constraint firstAttribute="trailing" secondItem="wAh-a0-3Cd" secondAttribute="trailing" constant="8" id="zo9-sy-Mns"/>
                                 </constraints>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="4yT-zW-3g3" appends="YES" id="6Mv-Hx-C71"/>
+                                    <outletCollection property="gestureRecognizers" destination="kGC-iZ-IiF" appends="YES" id="fcn-PG-UxC"/>
+                                </connections>
                             </view>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Audio" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NAp-JA-wTD">
                                 <rect key="frame" x="7" y="532" width="45" height="21"/>
@@ -224,7 +228,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" restorationIdentifier="scoreDisplay" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="ZJm-Ih-G5h">
-                                <rect key="frame" x="44" y="383" width="268" height="69"/>
+                                <rect key="frame" x="44" y="396" width="268" height="56"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -251,7 +255,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" restorationIdentifier="audioOnSwitch" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7cj-Bu-gyQ">
-                                <rect key="frame" x="60" y="527" width="51" height="31"/>
+                                <rect key="frame" x="60" y="527" width="51" height="22"/>
                                 <connections>
                                     <action selector="audioOnSelection:" destination="vXZ-lx-hvc" eventType="valueChanged" id="wnV-5j-7M3"/>
                                 </connections>
@@ -325,9 +329,6 @@
                             <constraint firstItem="D19-P2-ZOH" firstAttribute="centerY" secondItem="ZN1-US-MJW" secondAttribute="centerY" id="z4x-ek-7WM"/>
                         </constraints>
                         <connections>
-                            <outletCollection property="gestureRecognizers" destination="HQh-H4-akv" appends="YES" id="EXq-UN-Noa"/>
-                            <outletCollection property="gestureRecognizers" destination="HQh-H4-akv" appends="YES" id="7O1-FT-Exu"/>
-                            <outletCollection property="gestureRecognizers" destination="9a4-pv-hte" appends="YES" id="pIf-ae-30O"/>
                             <outletCollection property="gestureRecognizers" destination="yKq-0v-RGo" appends="YES" id="QTl-Uw-vWR"/>
                             <outletCollection property="gestureRecognizers" destination="HVB-hW-ZzX" appends="YES" id="AbS-8O-gQs"/>
                         </connections>
@@ -343,13 +344,10 @@
                         <outlet property="english" destination="wAh-a0-3Cd" id="qyl-bF-QLS"/>
                         <outlet property="foreignLang" destination="j6L-63-Jyx" id="mSI-fR-moz"/>
                         <outlet property="genderMaleSelector" destination="qGs-TT-9Ym" id="XVW-19-Sbh"/>
-                        <outlet property="gotTapOnFL" destination="mhd-5C-bq9" id="Lxk-XL-cae"/>
-                        <outlet property="leftSwipe" destination="9a4-pv-hte" id="koB-AN-IRY"/>
                         <outlet property="longPressGesture" destination="0JG-qf-3We" id="FyB-RQ-hLB"/>
                         <outlet property="recoFeedbackImage" destination="D19-P2-ZOH" id="bgs-8h-Rk4"/>
                         <outlet property="recordButton" destination="85Q-3i-7cz" id="HdD-4d-PbA"/>
                         <outlet property="recordButtonContainer" destination="LDy-Lh-sWf" id="XGE-r8-Lpv"/>
-                        <outlet property="rightSwipe" destination="HQh-H4-akv" id="PZB-IQ-lFS"/>
                         <outlet property="scoreDisplay" destination="ZJm-Ih-G5h" id="8LH-Cs-JKf"/>
                         <outlet property="scoreProgress" destination="vmx-bc-B8p" id="vxl-Oq-iJM"/>
                         <outlet property="shuffleSwitch" destination="YP1-wr-gfA" id="y91-nk-jzq"/>
@@ -358,16 +356,6 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
-                <swipeGestureRecognizer direction="right" id="HQh-H4-akv">
-                    <connections>
-                        <action selector="swipeRightDetected:" destination="vXZ-lx-hvc" id="yzK-eF-tKz"/>
-                    </connections>
-                </swipeGestureRecognizer>
-                <swipeGestureRecognizer direction="left" id="9a4-pv-hte">
-                    <connections>
-                        <action selector="swipeLeftDetected:" destination="vXZ-lx-hvc" id="dHL-1q-ZwW"/>
-                    </connections>
-                </swipeGestureRecognizer>
                 <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="0JG-qf-3We">
                     <connections>
                         <action selector="longPressAction:" destination="vXZ-lx-hvc" id="hir-jz-n6b"/>
@@ -383,9 +371,19 @@
                         <action selector="swipeDown:" destination="vXZ-lx-hvc" id="5mc-qs-Vvp"/>
                     </connections>
                 </swipeGestureRecognizer>
-                <tapGestureRecognizer id="mhd-5C-bq9">
+                <swipeGestureRecognizer direction="left" id="4yT-zW-3g3">
                     <connections>
-                        <action selector="tapOnForeignDetected:" destination="vXZ-lx-hvc" id="aIM-Vg-Zex"/>
+                        <action selector="swipeLeftDetected:" destination="vXZ-lx-hvc" id="jXF-gF-qz8"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="right" id="kGC-iZ-IiF">
+                    <connections>
+                        <action selector="swipeRightDetected:" destination="vXZ-lx-hvc" id="S7a-4s-y4g"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <tapGestureRecognizer id="cKC-E7-J88">
+                    <connections>
+                        <action selector="tapOnForeignDetected:" destination="vXZ-lx-hvc" id="oV2-w0-AaD"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
@@ -535,7 +533,6 @@
                         <outlet property="annotatedGauge2" destination="a3x-36-ye0" id="uFn-jX-sVE"/>
                         <outlet property="english" destination="cd6-3F-gbq" id="exV-NL-OX7"/>
                         <outlet property="foreignLang" destination="hwi-vu-pDb" id="Trs-AS-uDU"/>
-                        <outlet property="leftSwipe" destination="9a4-pv-hte" id="bsV-kC-k6D"/>
                         <outlet property="longPressGesture" destination="0JG-qf-3We" id="D85-Xs-idJ"/>
                         <outlet property="playButton" destination="im6-CJ-mKE" id="fdw-3F-AEm"/>
                         <outlet property="playRefAudioButton" destination="drh-C5-QaY" id="VaK-jY-GJM"/>
@@ -543,7 +540,6 @@
                         <outlet property="recordButton" destination="UUf-ph-aFk" id="Nds-KO-Zgo"/>
                         <outlet property="recordFeedbackImage" destination="00w-IK-bYO" id="rYA-cV-KaK"/>
                         <outlet property="recordInstructions" destination="tAF-py-syW" id="xrB-Oa-xgA"/>
-                        <outlet property="rightSwipe" destination="HQh-H4-akv" id="9za-Kt-lss"/>
                         <outlet property="scoreDisplay" destination="g9G-ze-9i8" id="lRs-CB-z7p"/>
                         <outlet property="transliteration" destination="iuB-4L-k9X" id="Tq4-UM-VhT"/>
                     </connections>

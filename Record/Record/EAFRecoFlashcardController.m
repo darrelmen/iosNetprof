@@ -10,6 +10,7 @@
 #import "EAFFlashcardViewController.h"
 #import "math.h"
 #import <AudioToolbox/AudioServices.h>
+#import "SSKeychain.h"
 
 @interface EAFRecoFlashcardController ()
 
@@ -236,6 +237,10 @@
 //    _foreignLang.lineBreakMode = NSLineBreakByWordWrapping;
 //    _foreignLang.numberOfLines = 0;
     
+    _foreignLang.adjustsFontSizeToFitWidth=YES;
+    _english.adjustsFontSizeToFitWidth=YES;
+   // _english.minimumScaleFactor=0.5;
+    
     _scoreDisplay.lineBreakMode = NSLineBreakByWordWrapping;
     _scoreDisplay.numberOfLines = 0;
 }
@@ -254,6 +259,34 @@
     return toUse;
 }
 
+- (BOOL)isTooBig:(UILabel *) label {
+    float h;
+    h = [self getHeight:label];
+    if (h > label.bounds.size.height) {
+        NSLog(@"TOO MUCH %f %f",h,label.bounds.size.height);
+        return true;
+    }
+    else {
+        NSLog(@"NOT TOO MUCH %f %f",h,label.bounds.size.height);
+        return false;
+    }
+}
+
+- (float)getHeight:(UILabel *)label {
+    //NSLog(@"one line height %f", [self expectedHeight:_english]);
+    
+    CGSize perfectSize = [label.text sizeWithFont:label.font constrainedToSize:CGSizeMake(label.bounds.size.width, NSIntegerMax) lineBreakMode:label.lineBreakMode];
+    float h = perfectSize.height;
+    return h;
+}
+
+- (void)scaleHeight:(UILabel *)label {
+    float height = [self getHeight:label];
+    float allowed = label.bounds.size.height;
+    float newFont = 38*(allowed/height);
+    label.font = [UIFont systemFontOfSize:newFont];
+}
+
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
     [self removePlayObserver];
@@ -267,13 +300,6 @@
 
     NSString *refAudio = [[self getCurrentJson] objectForKey:@"ref"];
     NSLog(@"refAudio %@",refAudio);
-//    NSLog(@"id %@",[[self getCurrentJson] objectForKey:@"id"]);
-//  
-//    NSLog(@"msr %@",[[self getCurrentJson] objectForKey:@"msr"]);
-//    NSLog(@"mrr %@",[[self getCurrentJson] objectForKey:@"mrr"]);
-//    NSLog(@"fsr %@",[[self getCurrentJson] objectForKey:@"fsr"]);
-//    NSLog(@"frr %@",[[self getCurrentJson] objectForKey:@"frr"]);
-
     
     if ([_genderMaleSelector isOn]) {
         if ([_speedSelector isOn]) {
@@ -305,7 +331,6 @@
     }
     
     NSLog(@"after refAudio %@",refAudio);
-
         NSString *refPath = refAudio;
         if (refPath) {
             refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
@@ -321,14 +346,69 @@
             _rawRefAudioPath = @"NO";
         }
     
-    //[self setPlayRefEnabled];
-    //_playButton.enabled = NO;
+    NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
+    NSString *enAtIndex = [jsonObject objectForKey:@"en"];
     
-    NSString *flAtIndex = [jsonObject objectForKey:@"fl"];//[_items objectAtIndex:toUse];
-    NSString *enAtIndex = [jsonObject objectForKey:@"en"];//[_englishWords objectAtIndex:toUse];
+    
+    _foreignLang.font = [UIFont systemFontOfSize:38];
+    _english.font = [UIFont systemFontOfSize:38];
+
     [_foreignLang setText:flAtIndex];
     [_english setText:enAtIndex];
+    
+  // [_foreignLang sizeToFit];
+  // [_english sizeToFit];
 
+    // final experiment
+    // this seems to work on iphone simultor but not on ipad
+    
+//    NSLog(@"fl height %f", [self expectedHeight:_foreignLang]);
+//    NSLog(@"en height %f", [self expectedHeight:_english]);
+//    
+//    float heightForFL = 2*[self heightOfLabelForText:_foreignLang withText:@"test"];
+//    float currHeightFL = [self expectedHeight:_foreignLang];
+//    if (currHeightFL > heightForFL) {
+//        float newFont = 38*(heightForFL/currHeightFL);
+//        _foreignLang.font = [UIFont systemFontOfSize:newFont];
+//    }
+//    
+//    float heightForEN = 2*[self heightOfLabelForText:_english withText:@"test"];
+//    float currHeightEN = [self expectedHeight:_english];
+//    if (currHeightEN > heightForEN) {
+//        float newFont = 38*(heightForEN/currHeightEN);
+//        _english.font = [UIFont systemFontOfSize:newFont];
+//    }
+//    
+//    NSLog(@"after fl height %f", [self expectedHeight:_foreignLang]);
+//    NSLog(@"after en height %f", [self expectedHeight:_english]);
+//    
+
+    
+    //if ([self isTooBig:_foreignLang]) {
+    //    [self scaleHeight:_foreignLang];
+   // }
+   // if ([self isTooBig:_english]) {
+   //     [self scaleHeight:_english];
+   // }
+    
+//    while ([self isTooBig:_english]) {
+//        CGFloat current = _english.font.pointSize;
+//        NSLog(@"before %f",current);
+//        current -=2;
+//        NSLog(@"after %f",current);
+//        if (current < 10) break;
+//        _english.font = [UIFont systemFontOfSize:current];
+//        [_english sizeToFit];
+//    }
+    
+//    perfectSize = [_english.text sizeWithFont:_english.font constrainedToSize:CGSizeMake(_english.bounds.size.width, NSIntegerMax) lineBreakMode:_english.lineBreakMode];
+//    if (perfectSize.height > _english.bounds.size.height) {
+//        NSLog(@"EN TOO MUCH %f %f",perfectSize.height,_english.bounds.size.height);
+//    }
+//    else {
+//        NSLog(@"EN NOT TOO MUCH %f %f",perfectSize.height,_english.bounds.size.height);
+//    }
+//    
     [_scoreDisplay setText:@" "];
     
     if ([_audioOnSelector isOn] && [self hasRefAudio]) {
@@ -338,6 +418,38 @@
         NSLog(@"not playing audio at path %@",_refAudioPath);
       //  NSLog(@"audio on %@",[_audioOnSelector isOn]? @"YES" : @"NO");
     }
+}
+
+- (float)heightOfLabelForText:(UILabel *)label withText:(NSString *)withText {
+    UIFont *font = [UIFont systemFontOfSize:38]; //Warning! It's an example, set the font, you need
+    
+    NSDictionary *attributesDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                          font, NSFontAttributeName,
+                                          nil];
+    
+    CGSize maximumLabelSize = CGSizeMake(label.frame.size.width,9999);
+    
+    CGRect expectedLabelRect = [withText boundingRectWithSize:maximumLabelSize
+                                                      options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
+                                                   attributes:attributesDictionary
+                                                      context:nil];
+    CGSize *expectedLabelSize = &expectedLabelRect.size;
+    
+    return expectedLabelSize->height;
+}
+
+-(float)expectedHeight:(UILabel *)label{
+//    [label setNumberOfLines:0];
+//    [label setLineBreakMode:NSLineBreakByWordWrapping];
+//    
+//    CGSize maximumLabelSize = CGSizeMake(label.frame.size.width,9999);
+//    CGSize expectedLabelSize = [[label text] sizeWithFont:[label font]
+//                                       constrainedToSize:maximumLabelSize
+//                                           lineBreakMode:[label lineBreakMode]];
+//    return expectedLabelSize.height;
+    
+    NSString *withText = [label text];
+    return [self heightOfLabelForText:label withText:withText];
 }
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
@@ -636,27 +748,19 @@ bool debugRecord = false;
 }
 
 - (IBAction)swipeUp:(id)sender {
-    
-  NSLog(@"swipeUp ");
-//    if (_audioRecorder.recording)
-//    {
-//        [self stopAudio:nil];
-//    }
-//    else {
-//        [self recordAudio:nil];
-//    }
+    long selected = [_whatToShow selectedSegmentIndex];
+    if (selected == 0 || selected == 1) {
+        [_foreignLang setHidden:!_foreignLang.hidden];
+        [_english setHidden:!_english.hidden];
+    }
 }
 
 - (IBAction)swipeDown:(id)sender {
-    NSLog(@"swipeDown  ");
-
-//    if (_audioRecorder.recording)
-//    {
-//        [self stopAudio:nil];
-//    }
-//    else {
-//        [self recordAudio:nil];
-//    }
+    long selected = [_whatToShow selectedSegmentIndex];
+    if (selected == 0 || selected == 1) {
+        [_foreignLang setHidden:!_foreignLang.hidden];
+        [_english setHidden:!_english.hidden];
+    }
 }
 
 double gestureEnd;
@@ -762,12 +866,12 @@ double gestureEnd;
     
     BOOL value = [_shuffleSwitch isOn];
     if (value) {
-        [self shuffle];
+        [self doShuffle];
     }
     [self respondToSwipe];
 }
 
-- (void) shuffle {
+- (void)doShuffle {
     _randSequence = [[NSMutableArray alloc] initWithCapacity:_jsonItems.count];
     
     for (unsigned long i = 0; i < _jsonItems.count; i++) {
@@ -803,8 +907,6 @@ double gestureEnd;
     }
     
     _index = 0;
-    
-   // [self respondToSwipe];
 }
 
 // Posts audio with current fl field
@@ -843,10 +945,12 @@ double gestureEnd;
 //    httpConn.setRequestProperty("device", "01234567890");
 //    httpConn.setRequestProperty("exercise", ""+2549);
 //    httpConn.setRequestProperty("request", decode ? "decode" :"align");
-    [urlRequest setValue:@"1" forHTTPHeaderField:@"user"]; // just testing!  Need to find out user id
+    [urlRequest setValue:@"1" forHTTPHeaderField:@"user"]; // TODO : just testing!  Need to find out user id
     [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
-    [urlRequest setValue:@"12345" forHTTPHeaderField:@"device"];
-    [urlRequest setValue:[[self getCurrentJson] objectForKey:@"id"]//[_ids objectAtIndex:_index]
+    NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
+
+    [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
+    [urlRequest setValue:[[self getCurrentJson] objectForKey:@"id"]
       forHTTPHeaderField:@"exercise"];
     [urlRequest setValue:@"decode" forHTTPHeaderField:@"request"];
 
