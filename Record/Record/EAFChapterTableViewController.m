@@ -36,10 +36,6 @@
     if (_jsonContentArray == nil) {
         [self loadInitialData];
     }
-    else {
-      // necessary??
-    //    [[self tableView] reloadData];
-    }
     
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
@@ -69,8 +65,9 @@ int receivedCount = 0;;
     [connection start];
 }
 
+UIAlertView *loadingContentAlert;
+
 - (void)loadInitialData {
-    
     //NSLog(@"loadInitialData");
 
     NSData *cachedData = [self getCachedJson];
@@ -85,21 +82,22 @@ int receivedCount = 0;;
         else {
             [self refreshCache];
         }
-
     }
     else {
+        // show please wait dialog
+        loadingContentAlert = [[UIAlertView alloc] initWithTitle:@"Fetching course word list\nPlease Wait..." message:nil delegate:self cancelButtonTitle:nil otherButtonTitles: nil];
+        [loadingContentAlert show];
         
         [self askServerForJson];
     }
 }
 
-// TODO : check how old the cached file is
+// refresh cache checks how old the cached file is
 - (void)writeToCache:(NSData *) toWrite {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *fileName = [NSString stringWithFormat:@"%@_chapters.json",_language];
     NSString *appFile = [documentsDirectory stringByAppendingPathComponent:fileName];
-  //  NSLog(@"writing to %@",appFile);
     [toWrite writeToFile:appFile atomically:YES];
 }
 
@@ -131,11 +129,11 @@ int receivedCount = 0;;
             CFAbsoluteTime fileDate =[date timeIntervalSinceReferenceDate];
             CFAbsoluteTime diff = now-fileDate;
             if (diff > 24*60*60) {
-                NSLog(@"getCachedJson file is stale - time = %f vs %f - diff %f",CFAbsoluteTimeGetCurrent(),  [date timeIntervalSinceReferenceDate], diff);
+                NSLog(@"refreshCache file is stale - time = %f vs %f - diff %f",CFAbsoluteTimeGetCurrent(),  [date timeIntervalSinceReferenceDate], diff);
                 [self askServerForJson];
             }
             else {
-                NSLog(@"getCachedJson cache *not* stale time = %f vs %f - diff %f",CFAbsoluteTimeGetCurrent(),  [date timeIntervalSinceReferenceDate], diff);
+                NSLog(@"refreshCache cache *not* stale time = %f vs %f - diff %f",CFAbsoluteTimeGetCurrent(),  [date timeIntervalSinceReferenceDate], diff);
             }
         }
         else {
@@ -157,11 +155,9 @@ int receivedCount = 0;;
     }
     else {
         NSLog(@"getCachedJson : no cached json at %@",appFile);
-
         return nil;
     }
 }
-
 
 #pragma mark NSURLConnection Delegate Methods
 
@@ -240,6 +236,9 @@ BOOL hasModel;
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
+    
+    [loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
+    
     BOOL dataIsValid = [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 
@@ -255,6 +254,8 @@ BOOL hasModel;
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     // The request has failed for some reason!
     // Check the error var
+    [loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
+
     receivedCount++;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 

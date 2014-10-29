@@ -350,14 +350,24 @@
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
     
     
-    _foreignLang.font = [UIFont systemFontOfSize:38];
-    _english.font = [UIFont systemFontOfSize:38];
+   // _foreignLang.font = [UIFont systemFontOfSize:38];
+  //  _english.font = [UIFont systemFontOfSize:38];
 
     [_foreignLang setText:flAtIndex];
     [_english setText:enAtIndex];
     
   // [_foreignLang sizeToFit];
   // [_english sizeToFit];
+    
+    if ([[UIDevice currentDevice].model containsString:@"iPhone"] &&
+        [flAtIndex length] > 15) {
+        _foreignLang.font = [UIFont systemFontOfSize:24];
+    }
+    
+    if ([[UIDevice currentDevice].model containsString:@"iPhone"] &&
+        [enAtIndex length] > 15) {
+        _english.font = [UIFont systemFontOfSize:24];
+    }
 
     // final experiment
     // this seems to work on iphone simultor but not on ipad

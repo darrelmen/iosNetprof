@@ -31,6 +31,7 @@
 //@property (strong, nonatomic) IBOutlet UITextView *foreignLang;
 @property (strong, nonatomic) IBOutlet UILabel *foreignLang;
 @property (strong, nonatomic) IBOutlet UILabel *english;
+@property (strong, nonatomic) IBOutlet UILabel *shuffle;
 @property (strong, nonatomic) IBOutlet NSString *refAudioPath;
 @property (strong, nonatomic) IBOutlet NSString *rawRefAudioPath;
 @property unsigned long index;
@@ -40,7 +41,6 @@
 
 @property NSString *url;
 @property BOOL hasModel;
-@property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressGesture;
 
 @property NSString *language;
 
@@ -49,10 +49,12 @@
 @property AVPlayer *player;
 
 
-@property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *rightSwipe;
+@property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressGesture;
 @property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *leftSwipe;
-- (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender;
+@property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *rightSwipe;
+
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender;
+- (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender;
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender;
 
 @property (strong) NSTimer *repeatingTimer;
@@ -72,6 +74,9 @@
 - (IBAction)speedSelection:(id)sender;
 - (IBAction)audioOnSelection:(id)sender;
 
-@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *gotTapOnFL;
+//@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *gotTapOnFL;
+
+
+- (float)heightOfLabelForText:(UILabel *)label withText:(NSString *)withText;
 
 @end
