@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
-//#import "YLProgressBar.h"
+#import "BButton.h"
 
 @interface EAFRecoFlashcardController : UIViewController
         <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate>
@@ -47,6 +47,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *scoreDisplay;
 @property (strong, nonatomic) IBOutlet UIProgressView *scoreProgress;
 @property AVPlayer *player;
+@property (strong, nonatomic) IBOutlet UIView *scoreButtonView;
+@property (strong, nonatomic) IBOutlet BButton *showScores;
+- (IBAction)showScoresClick:(id)sender;
 
 
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressGesture;
@@ -73,9 +76,6 @@
 - (IBAction)genderSelection:(id)sender;
 - (IBAction)speedSelection:(id)sender;
 - (IBAction)audioOnSelection:(id)sender;
-
-//@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *gotTapOnFL;
-
 
 - (float)heightOfLabelForText:(UILabel *)label withText:(NSString *)withText;
 

@@ -77,7 +77,7 @@ UIAlertView *loadingContentAlert;
         BOOL dataIsValid = [self useJsonChapterData];
         if (!dataIsValid) {
             NSLog(@"loadInitialData : asking server for json!");
-           [self askServerForJson];
+            [self askServerForJson];
         }
         else {
             [self refreshCache];
@@ -142,13 +142,11 @@ UIAlertView *loadingContentAlert;
     }
 }
 
+//
 - (NSData *) getCachedJson {
-    //NSLog(@"getCachedJson ---");
     NSString *appFile = [self getCachedJsonFile];
-    
-    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:appFile];
-    
-    if (fileExists) {
+   
+    if ([[NSFileManager defaultManager] fileExistsAtPath:appFile]) {
         NSLog(@"getCachedJson : found the cached json at %@",appFile);
         NSData *data = [[NSFileManager defaultManager] contentsAtPath:appFile];
         return data;
@@ -254,6 +252,7 @@ BOOL hasModel;
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     // The request has failed for some reason!
     // Check the error var
+    NSLog(@"Download content failed with %@",error);
     [loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
 
     receivedCount++;

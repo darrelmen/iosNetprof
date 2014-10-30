@@ -34,6 +34,10 @@
 		B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C461979C8B70036B90C /* MSSimpleGauge.m */; };
 		B696890319993B910094A297 /* micBiggerCircle.png in Resources */ = {isa = PBXBuildFile; fileRef = B696890219993B910094A297 /* micBiggerCircle.png */; };
 		B69821301A019A7200BB9865 /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = B698212F1A019A7200BB9865 /* SSKeychain.m */; };
+		B69821321A02978500BB9865 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B69821311A02978500BB9865 /* FontAwesome.ttf */; };
+		B698213E1A029C9A00BB9865 /* BButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B698213D1A029C9A00BB9865 /* BButton.m */; };
+		B69821411A029CA500BB9865 /* UIColor+BButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69821401A029CA500BB9865 /* UIColor+BButton.m */; };
+		B69821441A029F6400BB9865 /* NSString+FontAwesome.m in Sources */ = {isa = PBXBuildFile; fileRef = B69821431A029F6400BB9865 /* NSString+FontAwesome.m */; };
 		B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96A1976F27100E8F1D5 /* media-record-4_32x32.png */; };
 		B6A8D96D1976F27C00E8F1D5 /* media-record-3_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96C1976F27C00E8F1D5 /* media-record-3_32x32.png */; };
 		B6A8D97719770C2100E8F1D5 /* Icon-40.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96F19770C2100E8F1D5 /* Icon-40.png */; };
@@ -124,6 +128,13 @@
 		B696890219993B910094A297 /* micBiggerCircle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = micBiggerCircle.png; sourceTree = "<group>"; };
 		B698212E1A019A7200BB9865 /* SSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
 		B698212F1A019A7200BB9865 /* SSKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKeychain.m; sourceTree = "<group>"; };
+		B69821311A02978500BB9865 /* FontAwesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FontAwesome.ttf; path = Resources/FontAwesome.ttf; sourceTree = "<group>"; };
+		B698213C1A029C9A00BB9865 /* BButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BButton.h; sourceTree = "<group>"; };
+		B698213D1A029C9A00BB9865 /* BButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BButton.m; sourceTree = "<group>"; };
+		B698213F1A029CA500BB9865 /* UIColor+BButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+BButton.h"; sourceTree = "<group>"; };
+		B69821401A029CA500BB9865 /* UIColor+BButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+BButton.m"; sourceTree = "<group>"; };
+		B69821421A029F6400BB9865 /* NSString+FontAwesome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+FontAwesome.h"; sourceTree = "<group>"; };
+		B69821431A029F6400BB9865 /* NSString+FontAwesome.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+FontAwesome.m"; sourceTree = "<group>"; };
 		B6A8D96A1976F27100E8F1D5 /* media-record-4_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "media-record-4_32x32.png"; sourceTree = "<group>"; };
 		B6A8D96C1976F27C00E8F1D5 /* media-record-3_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "media-record-3_32x32.png"; sourceTree = "<group>"; };
 		B6A8D96F19770C2100E8F1D5 /* Icon-40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-40.png"; sourceTree = "<group>"; };
@@ -193,6 +204,7 @@
 		B66BACBC1970A29000E28ECC /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B69821311A02978500BB9865 /* FontAwesome.ttf */,
 				B66BACBF1970A57B00E28ECC /* images */,
 				B66BACBD1970A2FE00E28ECC /* NewProF1.png */,
 			);
@@ -332,6 +344,12 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
+				B69821421A029F6400BB9865 /* NSString+FontAwesome.h */,
+				B69821431A029F6400BB9865 /* NSString+FontAwesome.m */,
+				B698213F1A029CA500BB9865 /* UIColor+BButton.h */,
+				B69821401A029CA500BB9865 /* UIColor+BButton.m */,
+				B698213C1A029C9A00BB9865 /* BButton.h */,
+				B698213D1A029C9A00BB9865 /* BButton.m */,
 				B698212E1A019A7200BB9865 /* SSKeychain.h */,
 				B698212F1A019A7200BB9865 /* SSKeychain.m */,
 				B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */,
@@ -482,6 +500,7 @@
 				B66BACBE1970A2FE00E28ECC /* NewProF1.png in Resources */,
 				B6D0017A1970ADAC009554D5 /* squareStop.png in Resources */,
 				B6A8D97719770C2100E8F1D5 /* Icon-40.png in Resources */,
+				B69821321A02978500BB9865 /* FontAwesome.ttf in Resources */,
 				B6A8D97819770C2100E8F1D5 /* Icon-40@2x.png in Resources */,
 				B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */,
 				B6AB39BB19FACF4300B250C1 /* checkmark32.png in Resources */,
@@ -517,6 +536,7 @@
 				B69821301A019A7200BB9865 /* SSKeychain.m in Sources */,
 				B67E1BC5197EFC0500F42143 /* mztools.c in Sources */,
 				B67E1BC7197EFC0500F42143 /* zip.c in Sources */,
+				B698213E1A029C9A00BB9865 /* BButton.m in Sources */,
 				B67E1BC8197EFC0500F42143 /* SSZipArchive.m in Sources */,
 				B68A5C4B1979C8B70036B90C /* MSNeedleView.m in Sources */,
 				B665D7F9197F2603000AB122 /* EAFFlashcardViewController.m in Sources */,
@@ -528,8 +548,10 @@
 				B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */,
 				B6B9F392197827A700CD0140 /* EAFLanguageTableViewController.m in Sources */,
 				B67E1BC4197EFC0500F42143 /* ioapi.c in Sources */,
+				B69821411A029CA500BB9865 /* UIColor+BButton.m in Sources */,
 				B67E1BC6197EFC0500F42143 /* unzip.c in Sources */,
 				B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */,
+				B69821441A029F6400BB9865 /* NSString+FontAwesome.m in Sources */,
 				F6A5683418ECA98B00B844C6 /* EAFViewController.m in Sources */,
 				B68A5C481979C8B70036B90C /* MSAnnotatedGauge.m in Sources */,
 				F6A5682E18ECA98A00B844C6 /* EAFAppDelegate.m in Sources */,

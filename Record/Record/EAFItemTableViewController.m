@@ -224,9 +224,7 @@ NSString *chapterTitle = @"Chapter";
 - (void)getAudioForCurrentItem
 {
     NSString *destFileName = [self getCurrentCachePath];
-    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName];
-    
-    if (fileExists || [destFileName hasSuffix:@"NO"]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:destFileName] || [destFileName hasSuffix:@"NO"]) {
         [self checkNextAudioFile];
     }
     else {

@@ -11,6 +11,9 @@
 #import "math.h"
 #import <AudioToolbox/AudioServices.h>
 #import "SSKeychain.h"
+#import "UIFont+FontAwesome.h"
+#import "NSString+FontAwesome.h"
+#import "BButton.h"
 
 @interface EAFRecoFlashcardController ()
 
@@ -113,6 +116,12 @@
     _scoreProgress.layer.borderColor = [UIColor grayColor].CGColor;
     [_correctFeedback setHidden:true];
     
+    if (!_hasModel) {
+        _recordButtonContainer.hidden = true;
+    }
+
+    _scoreProgress.hidden = true;
+    
     [self respondToSwipe];
     
     [_whatToShow setSelectedSegmentIndex:2];
@@ -120,6 +129,31 @@
     if ([_language isEqualToString:@"English"]) {
         [_whatToShow setTitle:@"Def." forSegmentAtIndex:0];
     }
+    
+     _showScores = [BButton awesomeButtonWithOnlyIcon:FATrophy
+                                  type: BButtonTypeDefault
+                                 style:BButtonStyleBootstrapV3];
+   // [_showScores sizeToFit];
+    CGRect frame = CGRectMake(32.0f + (0 * 144.0f),
+                              40.0f + (1 * 60.0f),
+                              112.0f,
+                              44.0f);
+    
+   // _showScores.frame = CGRectMake(_showScores.frame.origin.x, _showScores.frame.origin.y, 112.0f, 44.0f);
+
+    
+    BButton * btn = [BButton awesomeButtonWithOnlyIcon:FATrophy
+                                                type: BButtonTypeDefault
+                                               style:BButtonStyleBootstrapV3];
+    [btn addTarget:self action:@selector(showScoresClick:) forControlEvents:UIControlEventTouchUpInside];
+
+    //btn.frame = CGRectMake(frame.origin.x, frame.origin.y, btn.frame.size.width, btn.frame.size.width);
+    [_scoreButtonView addSubview:btn];
+
+}
+
+- (IBAction)showScoresClick:(id)sender {
+    NSLog(@"got click on show scores");
 }
 
 - (void)checkAvailableMics {
@@ -420,6 +454,7 @@
 //    }
 //    
     [_scoreDisplay setText:@" "];
+    _scoreProgress.hidden = true;
     
     if ([_audioOnSelector isOn] && [self hasRefAudio]) {
         [self playRefAudio:nil];
@@ -1108,6 +1143,7 @@ double gestureEnd;
             [_scoreDisplay setText:[json objectForKey:@"valid"]];
         }
     }
+    _scoreProgress.hidden = false;
     [_scoreProgress setProgress:[overallScore floatValue]];
     [_scoreProgress setProgressTintColor:[self getColor2:[overallScore floatValue]]];
     
