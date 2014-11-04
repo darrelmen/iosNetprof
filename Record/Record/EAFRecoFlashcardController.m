@@ -134,10 +134,10 @@
                                   type: BButtonTypeDefault
                                  style:BButtonStyleBootstrapV3];
    // [_showScores sizeToFit];
-    CGRect frame = CGRectMake(32.0f + (0 * 144.0f),
-                              40.0f + (1 * 60.0f),
-                              112.0f,
-                              44.0f);
+//    CGRect frame = CGRectMake(32.0f + (0 * 144.0f),
+//                              40.0f + (1 * 60.0f),
+//                              112.0f,
+//                              44.0f);
     
    // _showScores.frame = CGRectMake(_showScores.frame.origin.x, _showScores.frame.origin.y, 112.0f, 44.0f);
 
@@ -154,6 +154,8 @@
 
 - (IBAction)showScoresClick:(id)sender {
     NSLog(@"got click on show scores");
+    
+    [self performSegueWithIdentifier:@"goToReport" sender:self];
 }
 
 - (void)checkAvailableMics {
@@ -1193,7 +1195,7 @@ double gestureEnd;
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-//    NSLog(@"Got segue!!! ");
+    NSLog(@"Got segue!!! ");
 //    EAFFlashcardViewController *itemController = [segue destinationViewController];
 //    
 //   // NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];

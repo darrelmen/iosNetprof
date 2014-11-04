@@ -10,7 +10,7 @@
         <!--Pronunciation Feedback-->
         <scene sceneID="L4k-YJ-Lfb">
             <objects>
-                <tableViewController title="Pronunciation Feedback" id="re6-Vy-sbI" customClass="EAFLanguageTableViewController" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="languageChoices" title="Pronunciation Feedback" id="re6-Vy-sbI" customClass="EAFLanguageTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="F0V-Qb-2BA">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -43,10 +43,10 @@
             </objects>
             <point key="canvasLocation" x="730" y="63"/>
         </scene>
-        <!--English Pronunciation-->
+        <!--Chapter List-->
         <scene sceneID="4D6-cV-XRV">
             <objects>
-                <tableViewController storyboardIdentifier="ChapterViewController" title="English Pronunciation" id="VFl-2k-NIH" customClass="EAFChapterTableViewController" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="ChapterViewController" title="Chapter List" id="VFl-2k-NIH" customClass="EAFChapterTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" sectionIndexMinimumDisplayRowCount="1" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="vxN-d5-D5q">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -77,7 +77,7 @@
                             <outlet property="delegate" destination="VFl-2k-NIH" id="IXI-D0-LjK"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="English Pronunciation" id="cph-Ao-9M5">
+                    <navigationItem key="navigationItem" title="Chapter List" id="cph-Ao-9M5">
                         <barButtonItem key="backBarButtonItem" title="Chapters" id="9NG-Tx-6nf"/>
                     </navigationItem>
                     <connections>
@@ -89,10 +89,10 @@
             </objects>
             <point key="canvasLocation" x="1211" y="51"/>
         </scene>
-        <!--Chapter 1 Words-->
+        <!--Item List-->
         <scene sceneID="WpU-fD-hqd">
             <objects>
-                <tableViewController storyboardIdentifier="ItemViewController" id="qBH-0p-qwJ" customClass="EAFItemTableViewController" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="ItemViewController" title="Item List" id="qBH-0p-qwJ" customClass="EAFItemTableViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="I1A-LK-sZT">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -360,6 +360,7 @@
                         <outlet property="shuffleSwitch" destination="YP1-wr-gfA" id="y91-nk-jzq"/>
                         <outlet property="speedSelector" destination="R8D-Mr-8CW" id="Wg4-d5-Bg1"/>
                         <outlet property="whatToShow" destination="XFG-NF-cL4" id="BhB-U9-KQt"/>
+                        <segue destination="v6I-8h-4xT" kind="push" identifier="goToReport" id="bgE-RJ-Bgu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
@@ -394,7 +395,58 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2111" y="36"/>
+            <point key="canvasLocation" x="2068" y="42"/>
+        </scene>
+        <!--Sound Scores-->
+        <scene sceneID="pwF-ue-4Za">
+            <objects>
+                <viewController storyboardIdentifier="soundScores" title="Sound Scores" id="Zf4-6q-7PM" customClass="UITableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Vob-ud-UTK">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </tableView>
+                    <tabBarItem key="tabBarItem" title="Sounds" id="JKB-lb-zml"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9ca-Yq-0fn" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2952" y="339"/>
+        </scene>
+        <!--Word Scores-->
+        <scene sceneID="1oc-r2-CgG">
+            <objects>
+                <viewController storyboardIdentifier="wordScores" title="Word Scores" id="U7m-Ih-ip0" customClass="UITableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="R5B-EF-pkp">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </tableView>
+                    <tabBarItem key="tabBarItem" title="Words" id="YRI-VJ-lXY"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KY7-eJ-CCF" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2952" y="-294"/>
+        </scene>
+        <!--Word and Sound Scores-->
+        <scene sceneID="xoU-C8-mgt">
+            <objects>
+                <tabBarController storyboardIdentifier="wordAndPhoneReport" title="Word and Sound Scores" id="v6I-8h-4xT" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="BRr-Z5-680"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <tabBar key="tabBar" contentMode="scaleToFill" id="paj-aZ-7Cw">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="U7m-Ih-ip0" kind="relationship" relationship="viewControllers" id="Jv5-u2-gza"/>
+                        <segue destination="Zf4-6q-7PM" kind="relationship" relationship="viewControllers" id="rGV-mm-21P"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QuY-6T-D2S" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tabBarItem title="Item" id="ThA-8v-eo5"/>
+            </objects>
+            <point key="canvasLocation" x="2488" y="36"/>
         </scene>
         <!--Pronunciation Feedback-->
         <scene sceneID="foj-1l-cew">
@@ -583,7 +635,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2962" y="46"/>
+            <point key="canvasLocation" x="3630" y="-443"/>
         </scene>
     </scenes>
     <resources>
