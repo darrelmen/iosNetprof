@@ -31,7 +31,7 @@
     if (self.chapters == nil) {
         self.chapters = [[NSMutableArray alloc] init];
     }
-    NSLog(@"lang %@ %@ back = '%@'", _language, [self title], self.navigationItem.backBarButtonItem.title);
+    NSLog(@"viewDidLoad lang %@ %@ back = '%@'", _language, [self title], self.navigationItem.backBarButtonItem.title);
     
     if (_jsonContentArray == nil) {
         [self loadInitialData];
@@ -347,18 +347,17 @@ NSArray *currentItems;
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
-    NSLog(@"identifier %@",segue.identifier);
-    
     EAFItemTableViewController *itemController = [segue destinationViewController];
  
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
+    NSLog(@"Chapter table view controller prepareForSegue identifier %@ %@ %@",segue.identifier,_chapterName,tappedItem);
 
     [itemController setItemIndex:0];
     [itemController setChapterToItems:chapterInfo];
     [itemController setJsonItems:currentItems];
     [itemController setChapterTitle:_chapterName];
-    [itemController setChapter:tappedItem];
+    [itemController setChapter:_currentChapter];
     [itemController setLanguage:_language];
     [itemController setHasModel:hasModel];
 }
@@ -370,10 +369,9 @@ NSArray *currentItems;
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
 
-   // NSLog(@"got selection at %@",tappedItem);
-    NSString *controllerToJumpTo;
+    //NSLog(@"got selection at %@",tappedItem);
+   // NSString *controllerToJumpTo;
     
-    //BOOL isChapter = true;
     NSArray *children;
     
     for (NSDictionary *entry in _jsonContentArray) {
@@ -382,16 +380,14 @@ NSArray *currentItems;
 
         if ([name isEqualToString:tappedItem]) {
             
-//            NSLog(@"=---- > got match '%@' '%@'",name, tappedItem);
+            NSLog(@"=---- > got match '%@' '%@'",name, tappedItem);
 
             NSArray *items = [entry objectForKey:@"items"];
             if (items == nil) { // no items - not a leaf
                 children = [entry objectForKey:@"children"];
                 //NSLog(@"children are %@",children);
-                controllerToJumpTo = @"ChapterViewController";
-                EAFChapterTableViewController *myController = [self.storyboard instantiateViewControllerWithIdentifier:controllerToJumpTo];
+                EAFChapterTableViewController *myController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChapterViewController"];
                 [myController setJsonContentArray:children];
-                
                 
                 NSMutableArray *myArray = [[NSMutableArray alloc] init];
                 
@@ -406,6 +402,7 @@ NSArray *currentItems;
                 }];
                 
                 NSString *title = [[self title] stringByAppendingFormat:@" %@ %@",[entry objectForKey:@"type"],name];
+                NSLog(@"tableView %@ child %@",title, childType);
 
                 [myController setChapters:myArray];
                 [myController setTitle:title];
@@ -414,13 +411,12 @@ NSArray *currentItems;
                 
                 [self.navigationController pushViewController: myController animated:YES];
                 break;
-
             }
             else {
 //                NSLog(@"items is %@",items);
-                controllerToJumpTo = @"ItemViewController";
+                _currentChapter = name;
                 currentItems = items;
-                [self performSegueWithIdentifier:controllerToJumpTo sender:self];
+                [self performSegueWithIdentifier:@"ItemViewController" sender:self];
                 
                 break;
             }

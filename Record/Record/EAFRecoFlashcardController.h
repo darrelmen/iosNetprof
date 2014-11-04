@@ -41,7 +41,8 @@
 
 @property NSString *url;
 @property BOOL hasModel;
-
+@property NSString *currentChapter;
+@property NSString *chapterTitle;
 @property NSString *language;
 
 @property (weak, nonatomic) IBOutlet UILabel *scoreDisplay;

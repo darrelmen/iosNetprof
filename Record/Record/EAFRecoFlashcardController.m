@@ -8,6 +8,8 @@
 
 #import "EAFRecoFlashcardController.h"
 #import "EAFFlashcardViewController.h"
+#import "EAFScoreReportTabBarController.h"
+#import "EAFWordScoreTableViewController.h"
 #import "math.h"
 #import <AudioToolbox/AudioServices.h>
 #import "SSKeychain.h"
@@ -153,8 +155,7 @@
 }
 
 - (IBAction)showScoresClick:(id)sender {
-    NSLog(@"got click on show scores");
-    
+    //NSLog(@"got click on show scores");
     [self performSegueWithIdentifier:@"goToReport" sender:self];
 }
 
@@ -1195,30 +1196,27 @@ double gestureEnd;
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    NSLog(@"Got segue!!! ");
-//    EAFFlashcardViewController *itemController = [segue destinationViewController];
-//    
-//   // NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-//    //  NSLog(@"row %d",indexPath.row  );
-//    //NSString *foreignLanguageItem = [self.items objectAtIndex:indexPath.row];
-//   /// NSString *englishItem = [self.englishWords objectAtIndex:indexPath.row];
-//    
-//    [itemController setForeignText:fl];
-//    [itemController setEnglishText:en];
-//
-//    //[itemController setEnglish:englishItem];
-////    [itemController setTranslitText:[self.translitPhrases objectAtIndex:indexPath.row]];
-//    itemController.refAudioPath = _refAudioPath;
-//    itemController.rawRefAudioPath = _rawRefAudioPath;
-//    itemController.index = _index;
-//    itemController.items = _items;
-//    itemController.language = _language;
-//    itemController.englishWords = _englishWords;
-//  //  itemController.translitWords = [self translitPhrases];
-//    itemController.paths = _paths;
-//    itemController.rawPaths = _rawPaths;
-//  //  itemController.url = [self getURL];
-//    
-//    [itemController setTitle:[self title]];
+    NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
+    EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
+    
+    EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
+    
+    wordReport.language = _language;
+    wordReport.chapterName = _chapterTitle;
+    wordReport.chapterSelection = _currentChapter;
+    
+    NSMutableDictionary *exToFL = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *exToEnglish = [[NSMutableDictionary alloc] init];
+    
+    for (NSDictionary *jsonObject in _jsonItems) {
+        NSString *id = [jsonObject objectForKey:@"id"];
+        NSString *exercise = [jsonObject objectForKey:@"fl"];
+        NSString *englishPhrases = [jsonObject objectForKey:@"en"];
+        [exToFL setValue:exercise forKey:id];
+        [exToEnglish setValue:englishPhrases forKey:id];
+    }
+    
+    wordReport.exToFL = exToFL;
+    wordReport.exToEnglish = exToEnglish;
 }
 @end

@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */ = {isa = PBXBuildFile; fileRef = B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */; };
+		B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC41A09397200C3B62E /* EAFWordScoreTableViewController.m */; };
+		B636FFC71A09549E00C3B62E /* EAFScoreReportTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */; };
 		B66461F2196F193900943BC2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66461F1196F193900943BC2 /* AVFoundation.framework */; };
 		B665D7F9197F2603000AB122 /* EAFFlashcardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B665D7F8197F2603000AB122 /* EAFFlashcardViewController.m */; };
 		B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */; };
@@ -84,6 +86,10 @@
 /* Begin PBXFileReference section */
 		B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFRecoFlashcardController.m; sourceTree = "<group>"; };
 		B610C00919D2240800CA9D8A /* EAFRecoFlashcardController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFRecoFlashcardController.h; sourceTree = "<group>"; };
+		B636FFC31A09397200C3B62E /* EAFWordScoreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFWordScoreTableViewController.h; sourceTree = "<group>"; };
+		B636FFC41A09397200C3B62E /* EAFWordScoreTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFWordScoreTableViewController.m; sourceTree = "<group>"; };
+		B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFScoreReportTabBarController.m; sourceTree = "<group>"; };
+		B636FFC81A0954C200C3B62E /* EAFScoreReportTabBarController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EAFScoreReportTabBarController.h; sourceTree = "<group>"; };
 		B66461F1196F193900943BC2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B665D7F7197F2603000AB122 /* EAFFlashcardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EAFFlashcardViewController.h; path = ../EAFFlashcardViewController.h; sourceTree = "<group>"; };
 		B665D7F8197F2603000AB122 /* EAFFlashcardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EAFFlashcardViewController.m; path = ../EAFFlashcardViewController.m; sourceTree = "<group>"; };
@@ -344,6 +350,8 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
+				B636FFC31A09397200C3B62E /* EAFWordScoreTableViewController.h */,
+				B636FFC41A09397200C3B62E /* EAFWordScoreTableViewController.m */,
 				B69821421A029F6400BB9865 /* NSString+FontAwesome.h */,
 				B69821431A029F6400BB9865 /* NSString+FontAwesome.m */,
 				B698213F1A029CA500BB9865 /* UIColor+BButton.h */,
@@ -372,6 +380,8 @@
 				B66BACB7197094C000E28ECC /* EAFItemTableViewController.m */,
 				B6D0017B1970B091009554D5 /* EAFExercise.h */,
 				B6D0017C1970B091009554D5 /* EAFExercise.m */,
+				B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */,
+				B636FFC81A0954C200C3B62E /* EAFScoreReportTabBarController.h */,
 			);
 			path = Record;
 			sourceTree = "<group>";
@@ -542,12 +552,14 @@
 				B665D7F9197F2603000AB122 /* EAFFlashcardViewController.m in Sources */,
 				B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */,
 				F6A5682A18ECA98A00B844C6 /* main.m in Sources */,
+				B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */,
 				B6D0017D1970B091009554D5 /* EAFExercise.m in Sources */,
 				B68A5C491979C8B70036B90C /* MSArcLayer.m in Sources */,
 				B68A5C4A1979C8B70036B90C /* MSGradientArcLayer.m in Sources */,
 				B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */,
 				B6B9F392197827A700CD0140 /* EAFLanguageTableViewController.m in Sources */,
 				B67E1BC4197EFC0500F42143 /* ioapi.c in Sources */,
+				B636FFC71A09549E00C3B62E /* EAFScoreReportTabBarController.m in Sources */,
 				B69821411A029CA500BB9865 /* UIColor+BButton.m in Sources */,
 				B67E1BC6197EFC0500F42143 /* unzip.c in Sources */,
 				B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */,

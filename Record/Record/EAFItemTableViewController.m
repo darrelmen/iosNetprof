@@ -96,6 +96,8 @@ NSString *chapterTitle = @"Chapter";
 
 - (void)setChapter:(NSString *) chapter {
     currentChapter = chapter;
+    
+    NSLog(@"ItemTableViewController - current chapter %@",currentChapter);
 }
 
 - (void)setChapterTitle:(NSString *) title {
@@ -179,7 +181,7 @@ NSString *chapterTitle = @"Chapter";
     EAFRecoFlashcardController *itemController = [segue destinationViewController];
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSInteger row = indexPath.row;
-//    NSLog(@"got seque row %ld",(long)indexPath.row  );
+    NSLog(@"got seque row %ld %@ %@",(long)indexPath.row, chapterTitle, currentChapter );
  
     itemController.jsonItems = _jsonItems;
     itemController.index = row;
@@ -187,6 +189,8 @@ NSString *chapterTitle = @"Chapter";
     itemController.url = [self getURL];
     [itemController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
     [itemController setHasModel:_hasModel];
+    itemController.chapterTitle = chapterTitle;
+    itemController.currentChapter = currentChapter;
 }
 
 // see getAudioForCurrentItem

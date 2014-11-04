@@ -11,6 +11,7 @@
 @interface EAFChapterTableViewController : UITableViewController<NSURLConnectionDelegate>
 
 @property NSString *chapterName;
+@property NSString *currentChapter;
 @property NSArray *chapters;
 @property NSArray *jsonContentArray;
 @property (strong, nonatomic) NSMutableData *responseData;
