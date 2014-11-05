@@ -78,6 +78,16 @@
     }
 }
 
+- (CGFloat)tableView:(UITableView *)tableView
+estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 44;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView
+heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 44;
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
@@ -99,31 +109,73 @@
     static NSString *CellIdentifier = @"WordScoreCell";
     //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     MyTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+//    
+//    FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
+//    correctView.image = nil;
+//    [correctView setDefaultIconIdentifier:@"fa-check-circle"];
+//    correctView.defaultIconColor = [UIColor greenColor];
+//    correctView.defaultView.backgroundColor = [UIColor greenColor];
+//    
+//    
+//    FAImageView *correctView2 = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
+//    correctView2.image = nil;
+//    [correctView2 setDefaultIconIdentifier:@"fa-plus-square"];
+//    correctView2.defaultIconColor = [UIColor greenColor];
+//    correctView2.defaultView.backgroundColor = [UIColor greenColor];
+//    
+    NSMutableArray *icons = [[NSMutableArray alloc] init];
+    [icons addObject:cell.first];
+    [icons addObject:cell.second];
+    [icons addObject:cell.third];
+    [icons addObject:cell.fourth];
+    [icons addObject:cell.fifth];
     
-    //UIView *historyView = [[UIView alloc] init];
+    for (UIView *container in icons) {
+        //[someNSView setSubviews:[NSArray array]];
+
+       // container.subviews = [NSArray array];
+        
+       // NSArray *viewsToRemove = [container subviews];
+        for (UIView *v in [container subviews]) {
+            [v removeFromSuperview];
+        }
+    }
     
-    FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
-    correctView.image = nil;
-    [correctView setDefaultIconIdentifier:@"fa-plus-square"];
-    correctView.defaultIconColor = [UIColor greenColor];
-    correctView.defaultView.backgroundColor = [UIColor greenColor];
-    
-    
-    FAImageView *correctView2 = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
-    correctView2.image = nil;
-    [correctView2 setDefaultIconIdentifier:@"fa-plus-square"];
-    correctView2.defaultIconColor = [UIColor greenColor];
-    correctView2.defaultView.backgroundColor = [UIColor greenColor];
-    
-    [cell.first addSubview:correctView];
-    [cell.second addSubview:correctView2];
-   // cell.first=correctView;
-    //cell.accessoryView = historyView;
-    
-   //cell.accessoryType =
-    NSInteger row = indexPath.row;   
-    
+    NSInteger row = indexPath.row;
     NSString *exid = [_exList objectAtIndex:row];
+    NSArray *answers = [_exToHistory objectForKey:exid];
+    //NSLog(@"ex answers %@ %@",exid,answers);
+
+    int index = 0;
+  //  int correctCount = 0;
+  //  int incorrectCount = 0;
+    for (NSString *correct in answers) {
+        NSLog(@"ex %@ %@",exid,correct);
+        UIView *container = [icons objectAtIndex:(index++ + (5-[answers count]))];
+        
+        FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
+        correctView.image = nil;
+        if ([correct isEqualToString:@"Y"]) {
+            [correctView setDefaultIconIdentifier:@"fa-check"];
+            correctView.defaultIconColor = [UIColor greenColor];
+            correctView.defaultView.backgroundColor = [UIColor greenColor];
+//            if (index == [answers count]) {
+//                correctCount++;
+//            }
+        }
+        else {
+            [correctView setDefaultIconIdentifier:@"fa-times"];
+            correctView.defaultIconColor = [UIColor redColor];
+            correctView.defaultView.backgroundColor = [UIColor redColor];
+//            if (index == [answers count]) {
+//                incorrectCount++;
+//            }
+        }
+       
+        [container addSubview:correctView];
+    }
+//    NSLog(@"correct %d incorrect %d",correctCount,incorrectCount);
+    
     NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_exToFL objectForKey:exid]];
 
     NSRange range = NSMakeRange(0, [result length]);
@@ -138,7 +190,7 @@
                        range:range];
     }
     
-    cell.textLabel.attributedText = result;
+    cell.fl.attributedText = result;
     //cell.detailTextLabel.text =  [_exToEnglish objectForKey:exid];
     //cell.english.text =  [_exToEnglish objectForKey:exid];
     
@@ -251,7 +303,7 @@ BOOL hasModel;
 
             [_exToScore setValue:score forKey:ex];
             
-            NSArray *jsonArrayHistory = [json objectForKey:@"h"];
+            NSArray *jsonArrayHistory = [entry objectForKey:@"h"];
 
             [_exToHistory setValue:jsonArrayHistory forKey:ex];
             [_exList addObject:ex];
