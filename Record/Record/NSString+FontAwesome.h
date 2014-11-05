@@ -25,6 +25,8 @@
 
 #import <Foundation/Foundation.h>
 
+static NSString *const kFontAwesomeFamilyName = @"FontAwesome";
+
 /**
  *  A string constant for the Font Awesome font family name.
  */

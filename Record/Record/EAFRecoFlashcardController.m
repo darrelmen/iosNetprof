@@ -1099,11 +1099,11 @@ double gestureEnd;
     
     NSNumber *overallScore = [json objectForKey:@"score"];
     BOOL correct = [[json objectForKey:@"isCorrect"] boolValue];
-    NSLog(@"score was %@",overallScore);
-    NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
-    NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
+  //  NSLog(@"score was %@",overallScore);
+  //  NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
+  //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *valid = [json objectForKey:@"valid"];
-    NSLog(@"validity was %@",valid);
+  //  NSLog(@"validity was %@",valid);
     
     // show text highlighted with score per word
     NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
@@ -1139,7 +1139,7 @@ double gestureEnd;
         [_scoreDisplay setAttributedText:result];
     }
     else {
-        if ([valid containsString:@"MIC"]) {
+        if ([valid containsString:@"MIC"] || [valid containsString:@"TOO_QUIET"]) {
             [_scoreDisplay setText:@"Please speak louder"];
         }
         else {

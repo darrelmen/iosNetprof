@@ -10,6 +10,11 @@
 		B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */ = {isa = PBXBuildFile; fileRef = B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */; };
 		B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC41A09397200C3B62E /* EAFWordScoreTableViewController.m */; };
 		B636FFC71A09549E00C3B62E /* EAFScoreReportTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */; };
+		B636FFCB1A098D4100C3B62E /* FAImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFCA1A098D4100C3B62E /* FAImageView.m */; };
+		B636FFCE1A098D8500C3B62E /* UIFont+FontAwesome.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFCD1A098D8500C3B62E /* UIFont+FontAwesome.m */; };
+		B636FFD11A098FC700C3B62E /* NSString+FontAwesome2.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFD01A098FC700C3B62E /* NSString+FontAwesome2.m */; };
+		B636FFD41A098FD200C3B62E /* UIFont+FontAwesome2.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFD31A098FD200C3B62E /* UIFont+FontAwesome2.m */; };
+		B636FFD71A0993A100C3B62E /* MyTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFD61A0993A100C3B62E /* MyTableViewCell.m */; };
 		B66461F2196F193900943BC2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66461F1196F193900943BC2 /* AVFoundation.framework */; };
 		B665D7F9197F2603000AB122 /* EAFFlashcardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B665D7F8197F2603000AB122 /* EAFFlashcardViewController.m */; };
 		B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */; };
@@ -90,6 +95,16 @@
 		B636FFC41A09397200C3B62E /* EAFWordScoreTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFWordScoreTableViewController.m; sourceTree = "<group>"; };
 		B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFScoreReportTabBarController.m; sourceTree = "<group>"; };
 		B636FFC81A0954C200C3B62E /* EAFScoreReportTabBarController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EAFScoreReportTabBarController.h; sourceTree = "<group>"; };
+		B636FFC91A098D4100C3B62E /* FAImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FAImageView.h; sourceTree = "<group>"; };
+		B636FFCA1A098D4100C3B62E /* FAImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FAImageView.m; sourceTree = "<group>"; };
+		B636FFCC1A098D6500C3B62E /* UIFont+FontAwesome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIFont+FontAwesome.h"; sourceTree = "<group>"; };
+		B636FFCD1A098D8500C3B62E /* UIFont+FontAwesome.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIFont+FontAwesome.m"; sourceTree = "<group>"; };
+		B636FFCF1A098FC700C3B62E /* NSString+FontAwesome2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+FontAwesome2.h"; sourceTree = "<group>"; };
+		B636FFD01A098FC700C3B62E /* NSString+FontAwesome2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+FontAwesome2.m"; sourceTree = "<group>"; };
+		B636FFD21A098FD200C3B62E /* UIFont+FontAwesome2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIFont+FontAwesome2.h"; sourceTree = "<group>"; };
+		B636FFD31A098FD200C3B62E /* UIFont+FontAwesome2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIFont+FontAwesome2.m"; sourceTree = "<group>"; };
+		B636FFD51A0993A100C3B62E /* MyTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTableViewCell.h; sourceTree = "<group>"; };
+		B636FFD61A0993A100C3B62E /* MyTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTableViewCell.m; sourceTree = "<group>"; };
 		B66461F1196F193900943BC2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B665D7F7197F2603000AB122 /* EAFFlashcardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EAFFlashcardViewController.h; path = ../EAFFlashcardViewController.h; sourceTree = "<group>"; };
 		B665D7F8197F2603000AB122 /* EAFFlashcardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EAFFlashcardViewController.m; path = ../EAFFlashcardViewController.m; sourceTree = "<group>"; };
@@ -350,6 +365,14 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
+				B636FFD21A098FD200C3B62E /* UIFont+FontAwesome2.h */,
+				B636FFD31A098FD200C3B62E /* UIFont+FontAwesome2.m */,
+				B636FFCF1A098FC700C3B62E /* NSString+FontAwesome2.h */,
+				B636FFD01A098FC700C3B62E /* NSString+FontAwesome2.m */,
+				B636FFCD1A098D8500C3B62E /* UIFont+FontAwesome.m */,
+				B636FFCC1A098D6500C3B62E /* UIFont+FontAwesome.h */,
+				B636FFC91A098D4100C3B62E /* FAImageView.h */,
+				B636FFCA1A098D4100C3B62E /* FAImageView.m */,
 				B636FFC31A09397200C3B62E /* EAFWordScoreTableViewController.h */,
 				B636FFC41A09397200C3B62E /* EAFWordScoreTableViewController.m */,
 				B69821421A029F6400BB9865 /* NSString+FontAwesome.h */,
@@ -382,6 +405,8 @@
 				B6D0017C1970B091009554D5 /* EAFExercise.m */,
 				B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */,
 				B636FFC81A0954C200C3B62E /* EAFScoreReportTabBarController.h */,
+				B636FFD51A0993A100C3B62E /* MyTableViewCell.h */,
+				B636FFD61A0993A100C3B62E /* MyTableViewCell.m */,
 			);
 			path = Record;
 			sourceTree = "<group>";
@@ -550,7 +575,10 @@
 				B67E1BC8197EFC0500F42143 /* SSZipArchive.m in Sources */,
 				B68A5C4B1979C8B70036B90C /* MSNeedleView.m in Sources */,
 				B665D7F9197F2603000AB122 /* EAFFlashcardViewController.m in Sources */,
+				B636FFCB1A098D4100C3B62E /* FAImageView.m in Sources */,
+				B636FFD41A098FD200C3B62E /* UIFont+FontAwesome2.m in Sources */,
 				B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */,
+				B636FFCE1A098D8500C3B62E /* UIFont+FontAwesome.m in Sources */,
 				F6A5682A18ECA98A00B844C6 /* main.m in Sources */,
 				B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */,
 				B6D0017D1970B091009554D5 /* EAFExercise.m in Sources */,
@@ -558,6 +586,7 @@
 				B68A5C4A1979C8B70036B90C /* MSGradientArcLayer.m in Sources */,
 				B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */,
 				B6B9F392197827A700CD0140 /* EAFLanguageTableViewController.m in Sources */,
+				B636FFD11A098FC700C3B62E /* NSString+FontAwesome2.m in Sources */,
 				B67E1BC4197EFC0500F42143 /* ioapi.c in Sources */,
 				B636FFC71A09549E00C3B62E /* EAFScoreReportTabBarController.m in Sources */,
 				B69821411A029CA500BB9865 /* UIColor+BButton.m in Sources */,
@@ -567,6 +596,7 @@
 				F6A5683418ECA98B00B844C6 /* EAFViewController.m in Sources */,
 				B68A5C481979C8B70036B90C /* MSAnnotatedGauge.m in Sources */,
 				F6A5682E18ECA98A00B844C6 /* EAFAppDelegate.m in Sources */,
+				B636FFD71A0993A100C3B62E /* MyTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

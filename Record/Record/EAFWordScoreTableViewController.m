@@ -7,6 +7,8 @@
 //
 
 #import "EAFWordScoreTableViewController.h"
+#import "FAImageView.h"
+#import "MyTableViewCell.h"
 
 @interface EAFWordScoreTableViewController ()
 
@@ -65,6 +67,17 @@
 
 #pragma mark - Table view data source
 
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row%2 == 0) {
+        UIColor *altCellColor = [UIColor colorWithWhite:0.7 alpha:0.1];
+        cell.backgroundColor = altCellColor;
+    }
+    else {
+        UIColor *altCellColor = [UIColor colorWithWhite:1.0 alpha:0.1];
+        cell.backgroundColor = altCellColor;
+    }
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
@@ -84,9 +97,30 @@
     // Configure the cell...
     
     static NSString *CellIdentifier = @"WordScoreCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    MyTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
-    //NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+    //UIView *historyView = [[UIView alloc] init];
+    
+    FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
+    correctView.image = nil;
+    [correctView setDefaultIconIdentifier:@"fa-plus-square"];
+    correctView.defaultIconColor = [UIColor greenColor];
+    correctView.defaultView.backgroundColor = [UIColor greenColor];
+    
+    
+    FAImageView *correctView2 = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
+    correctView2.image = nil;
+    [correctView2 setDefaultIconIdentifier:@"fa-plus-square"];
+    correctView2.defaultIconColor = [UIColor greenColor];
+    correctView2.defaultView.backgroundColor = [UIColor greenColor];
+    
+    [cell.first addSubview:correctView];
+    [cell.second addSubview:correctView2];
+   // cell.first=correctView;
+    //cell.accessoryView = historyView;
+    
+   //cell.accessoryType =
     NSInteger row = indexPath.row;   
     
     NSString *exid = [_exList objectAtIndex:row];
@@ -94,7 +128,7 @@
 
     NSRange range = NSMakeRange(0, [result length]);
     NSString *scoreString = [_exToScore objectForKey:exid];
-    float score = [[_exToScore objectForKey:exid] floatValue]/100.0f;
+    float score = [scoreString floatValue]/100.0f;
    
    // NSLog(@"score was %@ %f",scoreString,score);
     if (score > 0) {
@@ -105,7 +139,8 @@
     }
     
     cell.textLabel.attributedText = result;
-    cell.detailTextLabel.text =  [_exToEnglish objectForKey:exid];
+    //cell.detailTextLabel.text =  [_exToEnglish objectForKey:exid];
+    //cell.english.text =  [_exToEnglish objectForKey:exid];
     
     return cell;
 }
