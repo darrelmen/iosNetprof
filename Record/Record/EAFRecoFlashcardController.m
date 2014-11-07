@@ -509,10 +509,17 @@
 
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender {
     _index++;
-    if (_index == _jsonItems.count) _index = 0;
+    BOOL onLast = _index == _jsonItems.count;
+    if (onLast) {
+        _index = 0;
+        // TODO : get the sorted list and resort the items in incorrect first order
+    }
     [self whatToShowSelection:nil];
 
     [self respondToSwipe];
+    if (onLast) {
+        [self showScoresClick:nil];
+    }
 }
 
 
