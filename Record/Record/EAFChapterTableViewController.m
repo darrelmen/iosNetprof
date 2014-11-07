@@ -380,7 +380,7 @@ NSArray *currentItems;
 
         if ([name isEqualToString:tappedItem]) {
             
-            NSLog(@"=---- > got match '%@' '%@'",name, tappedItem);
+           // NSLog(@"=---- > got match '%@' '%@'",name, tappedItem);
 
             NSArray *items = [entry objectForKey:@"items"];
             if (items == nil) { // no items - not a leaf

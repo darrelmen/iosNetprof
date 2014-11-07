@@ -22,14 +22,7 @@
     
     NSLog(@"got word score table view did load");
     
-    //_language = @"CM";
     _user=1;  // TODO find this out at login/sign up
-    
-   // _unitName = @"Unit";
-  //  _unitSelection = @"1";
-    
-  //  _chapterName = @"Lesson";
-  //  _chapterSelection = @"1";
 
     [self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.
@@ -43,7 +36,7 @@
    // NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@", _language, _user, _chapterName, _chapterSelection];
     
-    NSLog(@"url %@",baseurl);
+   // NSLog(@"url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -59,11 +52,11 @@
     [connection start];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
+//- (void)didReceiveMemoryWarning
+//{
+//    [super didReceiveMemoryWarning];
+//    // Dispose of any resources that can be recreated.
+//}
 
 #pragma mark - Table view data source
 
@@ -102,27 +95,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
-    
     // Configure the cell...
-    
-    static NSString *CellIdentifier = @"WordScoreCell";
-    //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-    MyTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-//    
-//    FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
-//    correctView.image = nil;
-//    [correctView setDefaultIconIdentifier:@"fa-check-circle"];
-//    correctView.defaultIconColor = [UIColor greenColor];
-//    correctView.defaultView.backgroundColor = [UIColor greenColor];
-//    
-//    
-//    FAImageView *correctView2 = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
-//    correctView2.image = nil;
-//    [correctView2 setDefaultIconIdentifier:@"fa-plus-square"];
-//    correctView2.defaultIconColor = [UIColor greenColor];
-//    correctView2.defaultView.backgroundColor = [UIColor greenColor];
-//    
+    MyTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"WordScoreCell" forIndexPath:indexPath];
+ 
     NSMutableArray *icons = [[NSMutableArray alloc] init];
     [icons addObject:cell.first];
     [icons addObject:cell.second];
@@ -131,11 +106,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     [icons addObject:cell.fifth];
     
     for (UIView *container in icons) {
-        //[someNSView setSubviews:[NSArray array]];
-
-       // container.subviews = [NSArray array];
-        
-       // NSArray *viewsToRemove = [container subviews];
         for (UIView *v in [container subviews]) {
             [v removeFromSuperview];
         }
@@ -150,7 +120,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
   //  int correctCount = 0;
   //  int incorrectCount = 0;
     for (NSString *correct in answers) {
-        NSLog(@"ex %@ %@",exid,correct);
+      //  NSLog(@"ex %@ %@",exid,correct);
         UIView *container = [icons objectAtIndex:(index++ + (5-[answers count]))];
         
         FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
@@ -176,6 +146,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
 //    NSLog(@"correct %d incorrect %d",correctCount,incorrectCount);
     
+    // TODO display and calc correct/incorrect skipped
+    
     NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_exToFL objectForKey:exid]];
 
     NSRange range = NSMakeRange(0, [result length]);
@@ -191,8 +163,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     
     cell.fl.attributedText = result;
-    //cell.detailTextLabel.text =  [_exToEnglish objectForKey:exid];
-    //cell.english.text =  [_exToEnglish objectForKey:exid];
     
     return cell;
 }
@@ -296,11 +266,9 @@ BOOL hasModel;
         for (NSDictionary *entry in jsonArray) {
             NSString *ex = [entry objectForKey:@"ex"];
          //   NSLog(@"ex key %@",ex);
-           // int score = [[entry objectForKey:@"s"] intValue];
             NSString *score = [entry objectForKey:@"s"];
             
          //   NSLog(@"score  %@",score);
-
             [_exToScore setValue:score forKey:ex];
             
             NSArray *jsonArrayHistory = [entry objectForKey:@"h"];
@@ -308,8 +276,19 @@ BOOL hasModel;
             [_exToHistory setValue:jsonArrayHistory forKey:ex];
             [_exList addObject:ex];
         }
-        NSLog(@"ex to score %lu",(unsigned long)[_exToScore count]);
+        //NSLog(@"ex to score %lu",(unsigned long)[_exToScore count]);
+        NSString *correct = [json objectForKey:@"lastCorrect"];
+        NSString *incorrect = [json objectForKey:@"lastIncorrect"];
+        float total = [correct floatValue] + [incorrect floatValue];
+        float percent =[correct floatValue]/total;
+        percent *= 100;
+        int percentInt = round(percent);
+        int totalInt = round(total);
+        UIViewController  *parent = [self parentViewController];
+        parent.navigationItem.prompt = [NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt];
+       // [self setTitle:[NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt]];
     }
+
 
     [[self tableView] reloadData];
     
@@ -321,7 +300,8 @@ BOOL hasModel;
     
     //[loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
     
-    BOOL dataIsValid = [self useJsonChapterData];
+    //BOOL dataIsValid =
+    [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
   //  receivedCount++;

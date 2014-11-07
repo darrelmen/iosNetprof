@@ -468,55 +468,56 @@
     }
 }
 
-- (float)heightOfLabelForText:(UILabel *)label withText:(NSString *)withText {
-    UIFont *font = [UIFont systemFontOfSize:38]; //Warning! It's an example, set the font, you need
-    
-    NSDictionary *attributesDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                          font, NSFontAttributeName,
-                                          nil];
-    
-    CGSize maximumLabelSize = CGSizeMake(label.frame.size.width,9999);
-    
-    CGRect expectedLabelRect = [withText boundingRectWithSize:maximumLabelSize
-                                                      options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
-                                                   attributes:attributesDictionary
-                                                      context:nil];
-    CGSize *expectedLabelSize = &expectedLabelRect.size;
-    
-    return expectedLabelSize->height;
-}
-
--(float)expectedHeight:(UILabel *)label{
-//    [label setNumberOfLines:0];
-//    [label setLineBreakMode:NSLineBreakByWordWrapping];
+//- (float)heightOfLabelForText:(UILabel *)label withText:(NSString *)withText {
+//    UIFont *font = [UIFont systemFontOfSize:38]; //Warning! It's an example, set the font, you need
+//    
+//    NSDictionary *attributesDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+//                                          font, NSFontAttributeName,
+//                                          nil];
 //    
 //    CGSize maximumLabelSize = CGSizeMake(label.frame.size.width,9999);
-//    CGSize expectedLabelSize = [[label text] sizeWithFont:[label font]
-//                                       constrainedToSize:maximumLabelSize
-//                                           lineBreakMode:[label lineBreakMode]];
-//    return expectedLabelSize.height;
-    
-    NSString *withText = [label text];
-    return [self heightOfLabelForText:label withText:withText];
-}
+//    
+//    CGRect expectedLabelRect = [withText boundingRectWithSize:maximumLabelSize
+//                                                      options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
+//                                                   attributes:attributesDictionary
+//                                                      context:nil];
+//    CGSize *expectedLabelSize = &expectedLabelRect.size;
+//    
+//    return expectedLabelSize->height;
+//}
+
+//-(float)expectedHeight:(UILabel *)label{
+////    [label setNumberOfLines:0];
+////    [label setLineBreakMode:NSLineBreakByWordWrapping];
+////    
+////    CGSize maximumLabelSize = CGSizeMake(label.frame.size.width,9999);
+////    CGSize expectedLabelSize = [[label text] sizeWithFont:[label font]
+////                                       constrainedToSize:maximumLabelSize
+////                                           lineBreakMode:[label lineBreakMode]];
+////    return expectedLabelSize.height;
+//    
+//    NSString *withText = [label text];
+//    return [self heightOfLabelForText:label withText:withText];
+//}
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
     _index--;
     if (_index == -1) _index = _jsonItems.count  -1UL;
-
+    [self whatToShowSelection:nil];
     [self respondToSwipe];
 }
 
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender {
     _index++;
     if (_index == _jsonItems.count) _index = 0;
-    
+    [self whatToShowSelection:nil];
+
     [self respondToSwipe];
 }
 
 
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender{
-     NSLog(@"tabOnForeignDetected");
+  //   NSLog(@"tabOnForeignDetected");
     
     if ([_audioOnSelector isOn] && [self hasRefAudio]) {
         [self playRefAudio:nil];
@@ -525,6 +526,7 @@
 
 - (IBAction)whatToShowSelection:(id)sender {
     long selected = [_whatToShow selectedSegmentIndex];
+//    NSLog(@"whatToShowSelection %ld", selected);
     if (selected == 0) {
         [_foreignLang setHidden:true];
         [_english setHidden:false];
