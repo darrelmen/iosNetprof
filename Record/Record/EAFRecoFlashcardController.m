@@ -10,6 +10,7 @@
 #import "EAFFlashcardViewController.h"
 #import "EAFScoreReportTabBarController.h"
 #import "EAFWordScoreTableViewController.h"
+#import "EAFPhoneScoreTableViewController.h"
 #import "math.h"
 #import <AudioToolbox/AudioServices.h>
 #import "SSKeychain.h"
@@ -524,8 +525,6 @@
 
 
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender{
-  //   NSLog(@"tabOnForeignDetected");
-    
     if ([_audioOnSelector isOn] && [self hasRefAudio]) {
         [self playRefAudio:nil];
     }
@@ -1226,6 +1225,12 @@ double gestureEnd;
     }
     
     wordReport.exToFL = exToFL;
-    wordReport.exToEnglish = exToEnglish;
+    wordReport.exToEnglish = exToEnglish;   
+   
+    EAFPhoneScoreTableViewController *phoneReport = [[tabBarController viewControllers] objectAtIndex:1];
+    
+    phoneReport.language = _language;
+    phoneReport.chapterName = _chapterTitle;
+    phoneReport.chapterSelection = _currentChapter;
 }
 @end

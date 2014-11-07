@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */ = {isa = PBXBuildFile; fileRef = B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */; };
+		B62624671A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */; };
 		B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC41A09397200C3B62E /* EAFWordScoreTableViewController.m */; };
 		B636FFC71A09549E00C3B62E /* EAFScoreReportTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */; };
 		B636FFCB1A098D4100C3B62E /* FAImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFCA1A098D4100C3B62E /* FAImageView.m */; };
@@ -91,6 +92,8 @@
 /* Begin PBXFileReference section */
 		B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFRecoFlashcardController.m; sourceTree = "<group>"; };
 		B610C00919D2240800CA9D8A /* EAFRecoFlashcardController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFRecoFlashcardController.h; sourceTree = "<group>"; };
+		B62624651A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFPhoneScoreTableViewController.h; sourceTree = "<group>"; };
+		B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFPhoneScoreTableViewController.m; sourceTree = "<group>"; };
 		B636FFC31A09397200C3B62E /* EAFWordScoreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFWordScoreTableViewController.h; sourceTree = "<group>"; };
 		B636FFC41A09397200C3B62E /* EAFWordScoreTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFWordScoreTableViewController.m; sourceTree = "<group>"; };
 		B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFScoreReportTabBarController.m; sourceTree = "<group>"; };
@@ -365,6 +368,8 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
+				B62624651A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.h */,
+				B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */,
 				B636FFD21A098FD200C3B62E /* UIFont+FontAwesome2.h */,
 				B636FFD31A098FD200C3B62E /* UIFont+FontAwesome2.m */,
 				B636FFCF1A098FC700C3B62E /* NSString+FontAwesome2.h */,
@@ -596,6 +601,7 @@
 				F6A5683418ECA98B00B844C6 /* EAFViewController.m in Sources */,
 				B68A5C481979C8B70036B90C /* MSAnnotatedGauge.m in Sources */,
 				F6A5682E18ECA98A00B844C6 /* EAFAppDelegate.m in Sources */,
+				B62624671A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m in Sources */,
 				B636FFD71A0993A100C3B62E /* MyTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
