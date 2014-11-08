@@ -19,6 +19,7 @@
 @property NSDictionary *phoneToWords;
 @property NSDictionary *resultToRef;
 @property NSDictionary *resultToAnswer;
+@property NSDictionary *resultToWords;
 @property NSArray *phonesInOrder;
 
 @property long user;

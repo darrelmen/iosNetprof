@@ -94,16 +94,33 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"PhoneCell";
 
     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-   // NSArray *wordsPhoneAppearsIn = [_phonesInOrder objectAtIndex:indexPath.row];
+
     NSString *phone = [_phonesInOrder objectAtIndex:indexPath.row];
+   
+    NSLog(@"phone is %@",phone);
+
     NSArray *words = [_phoneToWords objectForKey:phone];
+    NSDictionary *wordEntry =[words objectAtIndex:0];
+    // TODO iterate over first N words in example words for phone
+    NSString *result = [wordEntry objectForKey:@"result"];
+    NSArray *resultWords = [_resultToWords objectForKey:result];
     
-    cell.textLabel.text = [words objectAtIndex:0];
-    //cell.detailTextLabel.text = @"More text";
-    //cell.imageView.image = [UIImage imageNamed:@"flower.png"];
-    
-    // set the accessory view:
-   // cell.accessoryType =  UITableViewCellAccessoryDisclosureIndicator;
+    NSString *phoneToShow = @"";
+
+    for (NSDictionary *wordResult in resultWords) {
+        NSString *wordPhoneAppearsIn = [wordEntry objectForKey:@"wid"];
+        NSString *wordInResult = [wordResult objectForKey:@"id"];
+        if ([wordInResult isEqualToString:wordPhoneAppearsIn]) {
+            for (NSDictionary *phoneInfo in [wordResult objectForKey:@"phones"]) {
+                 phoneToShow = [phoneToShow stringByAppendingString:[phoneInfo objectForKey:@"p"]];
+                phoneToShow = [phoneToShow stringByAppendingString:@" "];
+
+            }
+        }
+    }
+    NSString *word = [wordEntry objectForKey:@"w"];
+    NSLog(@"word is %@ phones %@",word, phoneToShow);
+    cell.textLabel.text = [word stringByAppendingString:phoneToShow];
     
     return cell;
 }
@@ -271,7 +288,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         return false;
     }
     
-    NSLog(@"useJsonChapter data ");
+ //   NSLog(@"useJsonChapter data ");
     
     NSDictionary *phoneDict = [json objectForKey:@"phones"];
     NSDictionary *resultsDict = [json objectForKey:@"results"];
@@ -280,6 +297,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     _phoneToWords   = [[NSMutableDictionary alloc] init];
     _resultToRef   = [[NSMutableDictionary alloc] init];
     _resultToAnswer   = [[NSMutableDictionary alloc] init];
+    _resultToWords   = [[NSMutableDictionary alloc] init];
 
     for (NSString *phone in phoneDict) {
          NSArray *wordsPhoneAppearsIn = [phoneDict objectForKey:phone];
@@ -290,7 +308,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSDictionary *fields = [resultsDict objectForKey:resultID];
         [_resultToRef setValue:[fields objectForKey:@"ref"] forKey:resultID];
         [_resultToAnswer setValue:[fields objectForKey:@"answer"] forKey:resultID];
+        [_resultToWords setValue:[[fields objectForKey:@"result"] objectForKey:@"words"] forKey:resultID];
     }
+    
+    NSString *report;
+    NSString *phoneScore = [json objectForKey:@"phoneScore"];
+    UIViewController  *parent = [self parentViewController];
+    report = [NSString stringWithFormat:@"Overall Sound Score is %@",phoneScore];
+    parent.navigationItem.title = report;
 
     [[self tableView] reloadData];
     

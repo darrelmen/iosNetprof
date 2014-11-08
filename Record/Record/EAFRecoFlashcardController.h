@@ -78,6 +78,6 @@
 - (IBAction)speedSelection:(id)sender;
 - (IBAction)audioOnSelection:(id)sender;
 
-- (float)heightOfLabelForText:(UILabel *)label withText:(NSString *)withText;
+//- (float)heightOfLabelForText:(UILabel *)label withText:(NSString *)withText;
 
 @end

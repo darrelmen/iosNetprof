@@ -410,27 +410,19 @@
             <objects>
                 <viewController storyboardIdentifier="soundScores" title="Sound Scores" id="Zf4-6q-7PM" customClass="EAFPhoneScoreTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Vob-ud-UTK">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="455"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="PhoneCell" textLabel="609-El-bwz" style="IBUITableViewCellStyleDefault" id="cWy-pv-zRd">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="PhoneCell" id="gab-q5-6rm">
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cWy-pv-zRd" id="Me4-70-YZv">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gab-q5-6rm" id="hT8-vA-7WT">
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="609-El-bwz">
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
                                 </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
                     </tableView>
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <tabBarItem key="tabBarItem" title="Sounds" id="JKB-lb-zml"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9ca-Yq-0fn" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -442,7 +434,7 @@
             <objects>
                 <viewController storyboardIdentifier="wordScores" title="Word Scores" id="U7m-Ih-ip0" customClass="EAFWordScoreTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="66" id="R5B-EF-pkp">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="455"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
@@ -529,7 +521,7 @@
                             </tableViewCell>
                         </prototypes>
                     </tableView>
-                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <tabBarItem key="tabBarItem" title="Words" id="YRI-VJ-lXY"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KY7-eJ-CCF" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -540,7 +532,7 @@
         <scene sceneID="xoU-C8-mgt">
             <objects>
                 <tabBarController storyboardIdentifier="wordAndPhoneReport" title="Word and Sound Scores" id="v6I-8h-4xT" customClass="EAFScoreReportTabBarController" sceneMemberID="viewController">
-                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <navigationItem key="navigationItem" id="BRr-Z5-680"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="paj-aZ-7Cw">
@@ -580,179 +572,10 @@
             </objects>
             <point key="canvasLocation" x="204" y="63"/>
         </scene>
-        <!--Say the word, see your score-->
-        <scene sceneID="6lF-SC-GNf">
-            <objects>
-                <viewController storyboardIdentifier="LearnExerciseController" id="5pC-mh-jNb" customClass="EAFViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="mOA-JM-fid"/>
-                        <viewControllerLayoutGuide type="bottom" id="c9t-Pc-k9S"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="AKQ-I3-iWn">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="drh-C5-QaY">
-                                <rect key="frame" x="10" y="79" width="100" height="100"/>
-                                <state key="normal" image="playBigger2.png">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="playRefAudio:" destination="5pC-mh-jNb" eventType="touchUpInside" id="N1B-Qq-KYB"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="im6-CJ-mKE">
-                                <rect key="frame" x="10" y="274" width="100" height="100"/>
-                                <state key="normal" image="playBigger2.png">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="playAudio:" destination="5pC-mh-jNb" eventType="touchUpInside" id="tUN-Qg-MuC"/>
-                                </connections>
-                            </button>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g9G-ze-9i8">
-                                <rect key="frame" x="118" y="274" width="205" height="100"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" restorationIdentifier="recoIndicator" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="YHq-MA-veQ">
-                                <rect key="frame" x="260" y="483" width="20" height="20"/>
-                            </activityIndicatorView>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" restorationIdentifier="foreignLang" text="" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" preferredMaxLayoutWidth="193" translatesAutoresizingMaskIntoConstraints="NO" id="hwi-vu-pDb">
-                                <rect key="frame" x="118" y="65" width="193" height="64"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="28"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" restorationIdentifier="transliteration" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iuB-4L-k9X">
-                                <rect key="frame" x="118" y="123" width="202" height="36"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="highlightedColor"/>
-                                <size key="shadowOffset" width="0.0" height="0.0"/>
-                            </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" restorationIdentifier="english" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cd6-3F-gbq">
-                                <rect key="frame" x="118" y="159" width="202" height="49"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <view opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="a3x-36-ye0" customClass="MSAnnotatedGauge">
-                                <rect key="frame" x="54" y="304" width="240" height="157"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                            </view>
-                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="00w-IK-bYO">
-                                <rect key="frame" x="211" y="469" width="48" height="48"/>
-                            </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" restorationIdentifier="recordButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UUf-ph-aFk">
-                                <rect key="frame" x="110" y="430" width="100" height="100"/>
-                                <gestureRecognizers/>
-                                <state key="normal" image="micBiggerCircle.png">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="stopAudio:" destination="5pC-mh-jNb" eventType="touchUpOutside" id="crN-tt-F0g"/>
-                                    <outletCollection property="gestureRecognizers" destination="FD6-kH-Wxr" appends="YES" id="Xyq-kt-hNY"/>
-                                </connections>
-                            </button>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Press and hold to record" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="180" translatesAutoresizingMaskIntoConstraints="NO" id="tAF-py-syW">
-                                <rect key="frame" x="79" y="531" width="180" height="37"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <gestureRecognizers/>
-                        <constraints>
-                            <constraint firstItem="c9t-Pc-k9S" firstAttribute="top" secondItem="a3x-36-ye0" secondAttribute="bottom" constant="150" id="3pf-KG-hDg"/>
-                            <constraint firstItem="cd6-3F-gbq" firstAttribute="leading" secondItem="AKQ-I3-iWn" secondAttribute="leadingMargin" constant="102" id="61t-Xv-K9t"/>
-                            <constraint firstItem="drh-C5-QaY" firstAttribute="top" secondItem="mOA-JM-fid" secondAttribute="bottom" constant="15" id="7aU-eY-PQn"/>
-                            <constraint firstItem="c9t-Pc-k9S" firstAttribute="top" secondItem="tAF-py-syW" secondAttribute="bottom" constant="8" id="7bS-ct-40i"/>
-                            <constraint firstAttribute="centerX" secondItem="a3x-36-ye0" secondAttribute="centerX" id="9Ca-2K-KLc"/>
-                            <constraint firstItem="c9t-Pc-k9S" firstAttribute="top" secondItem="00w-IK-bYO" secondAttribute="bottom" constant="51" id="Ceo-sl-EKE"/>
-                            <constraint firstItem="c9t-Pc-k9S" firstAttribute="top" secondItem="YHq-MA-veQ" secondAttribute="bottom" constant="65" id="JZf-Jc-Mf8"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="cd6-3F-gbq" secondAttribute="trailing" constant="-16" id="Lcl-2H-LaC"/>
-                            <constraint firstItem="YHq-MA-veQ" firstAttribute="leading" secondItem="00w-IK-bYO" secondAttribute="trailing" constant="1" id="O0C-Zj-OSy"/>
-                            <constraint firstItem="c9t-Pc-k9S" firstAttribute="top" secondItem="UUf-ph-aFk" secondAttribute="bottom" constant="33" id="VZ0-5w-wWW"/>
-                            <constraint firstAttribute="centerX" secondItem="UUf-ph-aFk" secondAttribute="centerX" id="Zxs-WX-cZr"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="g9G-ze-9i8" secondAttribute="trailing" constant="-19" id="ehW-Dt-oAe"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="hwi-vu-pDb" secondAttribute="trailing" constant="-7" id="f41-NO-xrR"/>
-                            <constraint firstAttribute="centerX" secondItem="tAF-py-syW" secondAttribute="centerX" id="ni0-jG-Stx"/>
-                            <constraint firstItem="00w-IK-bYO" firstAttribute="leading" secondItem="UUf-ph-aFk" secondAttribute="trailing" constant="1" id="rjc-p6-FBT"/>
-                            <constraint firstItem="g9G-ze-9i8" firstAttribute="leading" secondItem="AKQ-I3-iWn" secondAttribute="leadingMargin" constant="102" id="rxO-05-Mfd"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="iuB-4L-k9X" secondAttribute="trailing" constant="-16" id="tGK-0t-qph"/>
-                            <constraint firstItem="iuB-4L-k9X" firstAttribute="leading" secondItem="AKQ-I3-iWn" secondAttribute="leadingMargin" constant="102" id="tio-0j-WKJ"/>
-                            <constraint firstItem="hwi-vu-pDb" firstAttribute="leading" secondItem="AKQ-I3-iWn" secondAttribute="leadingMargin" constant="102" id="x6o-w9-etI"/>
-                            <constraint firstItem="drh-C5-QaY" firstAttribute="leading" secondItem="AKQ-I3-iWn" secondAttribute="leadingMargin" constant="-6" id="ytn-KE-26s"/>
-                        </constraints>
-                        <connections>
-                            <outletCollection property="gestureRecognizers" destination="c7H-9C-Fqe" appends="YES" id="gf5-Wz-58j"/>
-                            <outletCollection property="gestureRecognizers" destination="c7H-9C-Fqe" appends="YES" id="xkw-qE-m2a"/>
-                            <outletCollection property="gestureRecognizers" destination="CjN-yR-d3e" appends="YES" id="NoJ-RK-Qec"/>
-                            <outletCollection property="gestureRecognizers" destination="JBv-oU-6Ru" appends="YES" id="xFl-cE-Nfe"/>
-                            <outletCollection property="gestureRecognizers" destination="f7n-Lh-Gum" appends="YES" id="xjl-jT-Jmi"/>
-                            <outletCollection property="gestureRecognizers" destination="wbX-82-fRx" appends="YES" id="BX2-cT-UNO"/>
-                        </connections>
-                    </view>
-                    <toolbarItems/>
-                    <navigationItem key="navigationItem" title="Say the word, see your score" id="ooy-ht-C1l">
-                        <barButtonItem key="backBarButtonItem" title="Words" id="yex-5Y-ioe"/>
-                        <barButtonItem key="rightBarButtonItem" title="Flip" id="S73-8Q-Snc"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="annotatedGauge2" destination="a3x-36-ye0" id="uFn-jX-sVE"/>
-                        <outlet property="english" destination="cd6-3F-gbq" id="exV-NL-OX7"/>
-                        <outlet property="foreignLang" destination="hwi-vu-pDb" id="Trs-AS-uDU"/>
-                        <outlet property="longPressGesture" destination="0JG-qf-3We" id="D85-Xs-idJ"/>
-                        <outlet property="playButton" destination="im6-CJ-mKE" id="fdw-3F-AEm"/>
-                        <outlet property="playRefAudioButton" destination="drh-C5-QaY" id="VaK-jY-GJM"/>
-                        <outlet property="recoFeedbackImage" destination="YHq-MA-veQ" id="2Au-o1-TYv"/>
-                        <outlet property="recordButton" destination="UUf-ph-aFk" id="Nds-KO-Zgo"/>
-                        <outlet property="recordFeedbackImage" destination="00w-IK-bYO" id="rYA-cV-KaK"/>
-                        <outlet property="recordInstructions" destination="tAF-py-syW" id="xrB-Oa-xgA"/>
-                        <outlet property="scoreDisplay" destination="g9G-ze-9i8" id="lRs-CB-z7p"/>
-                        <outlet property="transliteration" destination="iuB-4L-k9X" id="Tq4-UM-VhT"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="AAg-aj-by7" sceneMemberID="firstResponder"/>
-                <swipeGestureRecognizer direction="right" id="c7H-9C-Fqe">
-                    <connections>
-                        <action selector="swipeRightDetected:" destination="5pC-mh-jNb" id="QaV-Bx-AAN"/>
-                    </connections>
-                </swipeGestureRecognizer>
-                <swipeGestureRecognizer direction="left" id="CjN-yR-d3e">
-                    <connections>
-                        <action selector="swipeLeftDetected:" destination="5pC-mh-jNb" id="Xqf-iy-eMi"/>
-                    </connections>
-                </swipeGestureRecognizer>
-                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="FD6-kH-Wxr">
-                    <connections>
-                        <action selector="longPressAction:" destination="5pC-mh-jNb" id="HHH-fE-UUT"/>
-                    </connections>
-                </pongPressGestureRecognizer>
-                <swipeGestureRecognizer direction="up" id="JBv-oU-6Ru">
-                    <connections>
-                        <action selector="swipeUp:" destination="5pC-mh-jNb" id="Zf9-Wy-yBX"/>
-                    </connections>
-                </swipeGestureRecognizer>
-                <swipeGestureRecognizer direction="down" id="f7n-Lh-Gum">
-                    <connections>
-                        <action selector="swipeDown:" destination="5pC-mh-jNb" id="MAG-Ue-Rni"/>
-                    </connections>
-                </swipeGestureRecognizer>
-                <tapGestureRecognizer id="wbX-82-fRx">
-                    <connections>
-                        <action selector="singleTap:" destination="5pC-mh-jNb" id="cTV-44-B7L"/>
-                    </connections>
-                </tapGestureRecognizer>
-            </objects>
-            <point key="canvasLocation" x="3630" y="-443"/>
-        </scene>
     </scenes>
     <resources>
         <image name="checkmark32.png" width="32" height="32"/>
-        <image name="micBiggerCircle.png" width="100" height="100"/>
         <image name="micBiggerCircleTransparent.png" width="100" height="100"/>
-        <image name="playBigger2.png" width="100" height="100"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

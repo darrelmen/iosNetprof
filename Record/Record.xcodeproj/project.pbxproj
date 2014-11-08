@@ -17,7 +17,6 @@
 		B636FFD41A098FD200C3B62E /* UIFont+FontAwesome2.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFD31A098FD200C3B62E /* UIFont+FontAwesome2.m */; };
 		B636FFD71A0993A100C3B62E /* MyTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFD61A0993A100C3B62E /* MyTableViewCell.m */; };
 		B66461F2196F193900943BC2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66461F1196F193900943BC2 /* AVFoundation.framework */; };
-		B665D7F9197F2603000AB122 /* EAFFlashcardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B665D7F8197F2603000AB122 /* EAFFlashcardViewController.m */; };
 		B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */; };
 		B66BACB8197094C000E28ECC /* EAFItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACB7197094C000E28ECC /* EAFItemTableViewController.m */; };
 		B66BACBE1970A2FE00E28ECC /* NewProF1.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACBD1970A2FE00E28ECC /* NewProF1.png */; };
@@ -70,7 +69,6 @@
 		F6A5682A18ECA98A00B844C6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A5682918ECA98A00B844C6 /* main.m */; };
 		F6A5682E18ECA98A00B844C6 /* EAFAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A5682D18ECA98A00B844C6 /* EAFAppDelegate.m */; };
 		F6A5683118ECA98B00B844C6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F6A5682F18ECA98A00B844C6 /* Main.storyboard */; };
-		F6A5683418ECA98B00B844C6 /* EAFViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F6A5683318ECA98B00B844C6 /* EAFViewController.m */; };
 		F6A5683618ECA98B00B844C6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6A5683518ECA98B00B844C6 /* Images.xcassets */; };
 		F6A5683D18ECA98B00B844C6 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5683C18ECA98B00B844C6 /* XCTest.framework */; };
 		F6A5683E18ECA98B00B844C6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5681D18ECA98A00B844C6 /* Foundation.framework */; };
@@ -109,8 +107,6 @@
 		B636FFD51A0993A100C3B62E /* MyTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTableViewCell.h; sourceTree = "<group>"; };
 		B636FFD61A0993A100C3B62E /* MyTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTableViewCell.m; sourceTree = "<group>"; };
 		B66461F1196F193900943BC2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		B665D7F7197F2603000AB122 /* EAFFlashcardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EAFFlashcardViewController.h; path = ../EAFFlashcardViewController.h; sourceTree = "<group>"; };
-		B665D7F8197F2603000AB122 /* EAFFlashcardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EAFFlashcardViewController.m; path = ../EAFFlashcardViewController.m; sourceTree = "<group>"; };
 		B66BACAD197055F500E28ECC /* EAFChapterTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFChapterTableViewController.h; sourceTree = "<group>"; };
 		B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFChapterTableViewController.m; sourceTree = "<group>"; };
 		B66BACB6197094C000E28ECC /* EAFItemTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFItemTableViewController.h; sourceTree = "<group>"; };
@@ -189,8 +185,6 @@
 		F6A5682C18ECA98A00B844C6 /* EAFAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EAFAppDelegate.h; sourceTree = "<group>"; };
 		F6A5682D18ECA98A00B844C6 /* EAFAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EAFAppDelegate.m; sourceTree = "<group>"; };
 		F6A5683018ECA98B00B844C6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		F6A5683218ECA98B00B844C6 /* EAFViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EAFViewController.h; sourceTree = "<group>"; };
-		F6A5683318ECA98B00B844C6 /* EAFViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EAFViewController.m; sourceTree = "<group>"; };
 		F6A5683518ECA98B00B844C6 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F6A5683B18ECA98B00B844C6 /* RecordTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RecordTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6A5683C18ECA98B00B844C6 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -322,13 +316,6 @@
 			path = Record.xcodeproj;
 			sourceTree = "<group>";
 		};
-		B6B9F393197886C300CD0140 /* iPad */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = iPad;
-			sourceTree = "<group>";
-		};
 		F6A5681118ECA98A00B844C6 = {
 			isa = PBXGroup;
 			children = (
@@ -390,7 +377,6 @@
 				B698212F1A019A7200BB9865 /* SSKeychain.m */,
 				B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */,
 				B610C00919D2240800CA9D8A /* EAFRecoFlashcardController.h */,
-				B6B9F393197886C300CD0140 /* iPad */,
 				B6B9F390197827A700CD0140 /* EAFLanguageTableViewController.h */,
 				B6B9F391197827A700CD0140 /* EAFLanguageTableViewController.m */,
 				B66BACAD197055F500E28ECC /* EAFChapterTableViewController.h */,
@@ -398,10 +384,6 @@
 				F6A5682C18ECA98A00B844C6 /* EAFAppDelegate.h */,
 				F6A5682D18ECA98A00B844C6 /* EAFAppDelegate.m */,
 				F6A5682F18ECA98A00B844C6 /* Main.storyboard */,
-				F6A5683218ECA98B00B844C6 /* EAFViewController.h */,
-				F6A5683318ECA98B00B844C6 /* EAFViewController.m */,
-				B665D7F7197F2603000AB122 /* EAFFlashcardViewController.h */,
-				B665D7F8197F2603000AB122 /* EAFFlashcardViewController.m */,
 				F6A5683518ECA98B00B844C6 /* Images.xcassets */,
 				F6A5682418ECA98A00B844C6 /* Supporting Files */,
 				B66BACB6197094C000E28ECC /* EAFItemTableViewController.h */,
@@ -579,7 +561,6 @@
 				B698213E1A029C9A00BB9865 /* BButton.m in Sources */,
 				B67E1BC8197EFC0500F42143 /* SSZipArchive.m in Sources */,
 				B68A5C4B1979C8B70036B90C /* MSNeedleView.m in Sources */,
-				B665D7F9197F2603000AB122 /* EAFFlashcardViewController.m in Sources */,
 				B636FFCB1A098D4100C3B62E /* FAImageView.m in Sources */,
 				B636FFD41A098FD200C3B62E /* UIFont+FontAwesome2.m in Sources */,
 				B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */,
@@ -598,7 +579,6 @@
 				B67E1BC6197EFC0500F42143 /* unzip.c in Sources */,
 				B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */,
 				B69821441A029F6400BB9865 /* NSString+FontAwesome.m in Sources */,
-				F6A5683418ECA98B00B844C6 /* EAFViewController.m in Sources */,
 				B68A5C481979C8B70036B90C /* MSAnnotatedGauge.m in Sources */,
 				F6A5682E18ECA98A00B844C6 /* EAFAppDelegate.m in Sources */,
 				B62624671A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m in Sources */,

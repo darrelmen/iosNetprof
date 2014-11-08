@@ -117,10 +117,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     //NSLog(@"ex answers %@ %@",exid,answers);
 
     int index = 0;
-  //  int correctCount = 0;
-  //  int incorrectCount = 0;
     for (NSString *correct in answers) {
-      //  NSLog(@"ex %@ %@",exid,correct);
         UIView *container = [icons objectAtIndex:(index++ + (5-[answers count]))];
         
         FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
@@ -129,24 +126,15 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             [correctView setDefaultIconIdentifier:@"fa-check"];
             correctView.defaultIconColor = [UIColor greenColor];
             correctView.defaultView.backgroundColor = [UIColor greenColor];
-//            if (index == [answers count]) {
-//                correctCount++;
-//            }
         }
         else {
             [correctView setDefaultIconIdentifier:@"fa-times"];
             correctView.defaultIconColor = [UIColor redColor];
             correctView.defaultView.backgroundColor = [UIColor redColor];
-//            if (index == [answers count]) {
-//                incorrectCount++;
-//            }
         }
        
         [container addSubview:correctView];
     }
-//    NSLog(@"correct %d incorrect %d",correctCount,incorrectCount);
-    
-    // TODO display and calc correct/incorrect skipped
     
     NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_exToFL objectForKey:exid]];
 
@@ -241,8 +229,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     // Append the new data to the instance variable you declared
     [_responseData appendData:data];
 }
-NSDictionary* chapterInfo;
-BOOL hasModel;
+//NSDictionary* chapterInfo;
+//BOOL hasModel;
 
 - (BOOL)useJsonChapterData {
     NSError * error;
@@ -285,10 +273,11 @@ BOOL hasModel;
         int percentInt = round(percent);
         int totalInt = round(total);
         UIViewController  *parent = [self parentViewController];
-        parent.navigationItem.prompt = [NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt];
+        NSString *wordReport;
+        wordReport = [NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt];
+        parent.navigationItem.title = wordReport;
        // [self setTitle:[NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt]];
     }
-
 
     [[self tableView] reloadData];
     

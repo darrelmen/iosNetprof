@@ -7,7 +7,7 @@
 //
 
 #import "EAFRecoFlashcardController.h"
-#import "EAFFlashcardViewController.h"
+//#import "EAFFlashcardViewController.h"
 #import "EAFScoreReportTabBarController.h"
 #import "EAFWordScoreTableViewController.h"
 #import "EAFPhoneScoreTableViewController.h"
@@ -1204,10 +1204,10 @@ double gestureEnd;
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
+   // NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
     EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
-    
     EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
+    //wordReport.navigationItem.backBarButtonItem.title = @"Audio Flashcards";
     
     wordReport.language = _language;
     wordReport.chapterName = _chapterTitle;
