@@ -285,14 +285,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     // NSLog(@"score was %@ %f",scoreString,score);
                     //if (score > 0) {
                     NSLog(@"%@ vs %@ ",phoneText,phone);
-
-                    if ([phoneText isEqualToString:phone] || true) {
-                        UIColor *color = [self getColor2:score];
+                    BOOL match = [phoneText isEqualToString:phone];
+                    //if ( || true) {
+                    UIColor *color = match? [self getColor2:score] : [UIColor whiteColor];
                         NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
                         [coloredPhones addAttribute:NSBackgroundColorAttributeName
                                               value:color
                                               range:range];
-                    }
+                   // }
                     //}
                 
                 }
