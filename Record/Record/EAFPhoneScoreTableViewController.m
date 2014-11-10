@@ -97,30 +97,258 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 
     NSString *phone = [_phonesInOrder objectAtIndex:indexPath.row];
    
-    NSLog(@"phone is %@",phone);
+    NSLog(@"tableView phone is %@",phone);
 
-    NSArray *words = [_phoneToWords objectForKey:phone];
-    NSDictionary *wordEntry =[words objectAtIndex:0];
-    // TODO iterate over first N words in example words for phone
-    NSString *result = [wordEntry objectForKey:@"result"];
-    NSArray *resultWords = [_resultToWords objectForKey:result];
+    for (UIView *v in [cell.contentView subviews]) {
+        [v removeFromSuperview];
+    }
+    [cell.contentView removeConstraints:cell.contentView.constraints];
+    cell.contentView.translatesAutoresizingMaskIntoConstraints = NO;
     
-    NSString *phoneToShow = @"";
+    NSArray *words = [_phoneToWords objectForKey:phone];
+    //BOOL first = true;
+    
+    UIView *leftView = nil;
+    
+    int count = 0;
+    for (NSDictionary *wordEntry in words) {
+        // TODO iterate over first N words in example words for phone
+        if (count++ > 5) break; // only first five?
+        NSString *result = [wordEntry objectForKey:@"result"];
+        NSArray *resultWords = [_resultToWords objectForKey:result];
+        
+        
+        UIView *exampleView = [[UIView alloc] init];
+        exampleView.translatesAutoresizingMaskIntoConstraints = NO;
+        [cell.contentView addSubview:exampleView];
+        
+       // NSLog(@"word is %@",wordEntry);
+        // first example view constraints left side to left side of container
+        // all - top to top of container
+        // bottom to bottom of container
+        // after first, left side is right side of previous container, with margin
+        
+        // upper part is word, lower is phones
+        // upper has left, right top bound to container
+        // upper bottom is half container height
+        
+        // lower has left, right bottom bound to container
+        // lower has top that is equal to bottom of top or half container height
+        
+        [cell.contentView addConstraint:[NSLayoutConstraint
+                                         constraintWithItem:exampleView
+                                         attribute:NSLayoutAttributeTop
+                                         relatedBy:NSLayoutRelationEqual
+                                         toItem:cell.contentView
+                                         attribute:NSLayoutAttributeTop
+                                         multiplier:1.0
+                                         constant:0.0]];
+        
+        [cell.contentView addConstraint:[NSLayoutConstraint
+                                         constraintWithItem:exampleView
+                                         attribute:NSLayoutAttributeBottom
+                                         relatedBy:NSLayoutRelationEqual
+                                         toItem:cell.contentView
+                                         attribute:NSLayoutAttributeBottom
+                                         multiplier:1.0
+                                         constant:0.0]];
+        
+        if (leftView == nil) {
+            [cell.contentView addConstraint:[NSLayoutConstraint
+                                             constraintWithItem:exampleView
+                                             attribute:NSLayoutAttributeLeft
+                                             relatedBy:NSLayoutRelationEqual
+                                             toItem:cell.contentView
+                                             attribute:NSLayoutAttributeLeft
+                                             multiplier:1.0
+                                             constant:0.0]];
+        }
+        else {
+            [cell.contentView addConstraint:[NSLayoutConstraint
+                                             constraintWithItem:exampleView
+                                             attribute:NSLayoutAttributeLeft
+                                             relatedBy:NSLayoutRelationEqual
+                                             toItem:leftView
+                                             attribute:NSLayoutAttributeRight
+                                             multiplier:1.0
+                                             constant:5.0]];
+        }
+        leftView = exampleView;
+        
+        NSString *word = [wordEntry objectForKey:@"w"];
+        for (NSDictionary *wordResult in resultWords) {
+            NSString *wordPhoneAppearsIn = [wordEntry objectForKey:@"wid"];
+            NSString *wordInResult = [wordResult objectForKey:@"id"];
+            UILabel *wordLabel = [[UILabel alloc] init];
+            
+            NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
+            
+            NSRange range = NSMakeRange(0, [coloredWord length]);
+            NSString *scoreString = [wordResult objectForKey:@"s"];
+            float score = [scoreString floatValue];
+            
+            // NSLog(@"score was %@ %f",scoreString,score);
+            if (score > 0) {
+                UIColor *color = [self getColor2:score];
+                [coloredWord addAttribute:NSBackgroundColorAttributeName
+                                    value:color
+                                    range:range];
+            }
+            
+            wordLabel.attributedText = coloredWord;
+            NSLog(@"label word is %@",wordLabel.attributedText);
+            
+            //[wordLabel setTextColor:[UIColor blackColor]];
+            //  [wordLabel setBackgroundColor:[UIColor colorWithHue:32 saturation:100 brightness:63 alpha:1]];
+            [wordLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:18.0f]];
+            [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+            
+            
+            [exampleView addSubview:wordLabel];
+            
+//            [cell.contentView addConstraint:[NSLayoutConstraint
+//                                             constraintWithItem:wordLabel
+//                                             attribute:NSLayoutAttributeHeight
+//                                             relatedBy:NSLayoutRelationEqual
+//                                             toItem:nil
+//                                             attribute:NSLayoutAttributeNotAnAttribute
+//                                             multiplier:1.0
+//                                             constant:22.0]];
+           // NSLog(@"about to add - label word is %@ constraint 1",wordLabel.text);
 
-    for (NSDictionary *wordResult in resultWords) {
-        NSString *wordPhoneAppearsIn = [wordEntry objectForKey:@"wid"];
-        NSString *wordInResult = [wordResult objectForKey:@"id"];
-        if ([wordInResult isEqualToString:wordPhoneAppearsIn]) {
-            for (NSDictionary *phoneInfo in [wordResult objectForKey:@"phones"]) {
-                 phoneToShow = [phoneToShow stringByAppendingString:[phoneInfo objectForKey:@"p"]];
-                phoneToShow = [phoneToShow stringByAppendingString:@" "];
+            [exampleView addConstraint:[NSLayoutConstraint
+                                             constraintWithItem:wordLabel
+                                             attribute:NSLayoutAttributeTop
+                                             relatedBy:NSLayoutRelationEqual
+                                             toItem:exampleView
+                                             attribute:NSLayoutAttributeTop
+                                             multiplier:1.0
+                                             constant:0.0]];
+          //  NSLog(@"label word is %@ constraint 2",wordLabel.text);
 
+            
+            [exampleView addConstraint:[NSLayoutConstraint
+                                             constraintWithItem:wordLabel
+                                             attribute:NSLayoutAttributeLeft
+                                             relatedBy:NSLayoutRelationEqual
+                                             toItem:exampleView
+                                             attribute:NSLayoutAttributeLeft
+                                             multiplier:1.0
+                                             constant:0.0]];
+            
+          //  NSLog(@"label word is %@ constraint 3",wordLabel.text);
+
+            [exampleView addConstraint:[NSLayoutConstraint
+                                             constraintWithItem:wordLabel
+                                             attribute:NSLayoutAttributeRight
+                                             relatedBy:NSLayoutRelationEqual
+                                             toItem:exampleView
+                                             attribute:NSLayoutAttributeRight
+                                             multiplier:1.0
+                                             constant:0.0]];
+            //NSLog(@"label word is %@ constraint 4",wordLabel.text);
+
+            [exampleView addConstraint:[NSLayoutConstraint
+                                             constraintWithItem:wordLabel
+                                             attribute:NSLayoutAttributeHeight
+                                             relatedBy:NSLayoutRelationEqual
+                                             toItem:exampleView
+                                             attribute:NSLayoutAttributeHeight
+                                             multiplier:0.5
+                                             constant:0.0]];
+            
+            //NSLog(@"label word is %@ constraint 5",wordLabel.text);
+
+            if ([wordInResult isEqualToString:wordPhoneAppearsIn]) {
+                
+                NSString *phoneToShow = @"";
+
+                for (NSDictionary *phoneInfo in [wordResult objectForKey:@"phones"]) {
+                    NSString *phoneText =[phoneInfo objectForKey:@"p"];
+                    phoneToShow = [phoneToShow stringByAppendingString:phoneText];
+                    phoneToShow = [phoneToShow stringByAppendingString:@" "];
+                }
+                
+                NSMutableAttributedString *coloredPhones = [[NSMutableAttributedString alloc] initWithString:phoneToShow];
+               
+                int start = 0;
+                for (NSDictionary *phoneInfo in [wordResult objectForKey:@"phones"]) {
+                    NSString *phoneText =[phoneInfo objectForKey:@"p"];
+                    //phoneToShow = [phoneToShow stringByAppendingString:phoneText];
+                    //phoneToShow = [phoneToShow stringByAppendingString:@" "];
+                
+                    NSRange range = NSMakeRange(start, [phoneText length]);
+                    start += range.length+1;//1 + [phoneText length];
+                    NSString *scoreString = [phoneInfo objectForKey:@"s"];
+                    float score = [scoreString floatValue];
+                    
+                    // NSLog(@"score was %@ %f",scoreString,score);
+                    //if (score > 0) {
+                    NSLog(@"%@ vs %@ ",phoneText,phone);
+
+                    if ([phoneText isEqualToString:phone] || true) {
+                        UIColor *color = [self getColor2:score];
+                        NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
+                        [coloredPhones addAttribute:NSBackgroundColorAttributeName
+                                              value:color
+                                              range:range];
+                    }
+                    //}
+                
+                }
+                
+             
+                UILabel *phoneLabel = [[UILabel alloc] init];
+                phoneLabel.attributedText = coloredPhones;
+                
+                //      [phoneLabel setTextColor:[UIColor blackColor]];
+                //[phoneLabel setBackgroundColor:[UIColor colorWithHue:66 saturation:100 brightness:63 alpha:1]];
+                [phoneLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:18.0f]];
+                [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+                
+                [exampleView addSubview:phoneLabel];
+                
+                [exampleView addConstraint:[NSLayoutConstraint
+                                                 constraintWithItem:phoneLabel
+                                                 attribute:NSLayoutAttributeHeight
+                                                 relatedBy:NSLayoutRelationEqual
+                                                 toItem:exampleView
+                                                 attribute:NSLayoutAttributeHeight
+                                                 multiplier:0.5
+                                                 constant:0.0]];
+                
+                [exampleView addConstraint:[NSLayoutConstraint
+                                                 constraintWithItem:phoneLabel
+                                                 attribute:NSLayoutAttributeLeft
+                                                 relatedBy:NSLayoutRelationEqual
+                                                 toItem:exampleView
+                                                 attribute:NSLayoutAttributeLeft
+                                                 multiplier:1.0
+                                                 constant:0.0]];
+                
+                [exampleView addConstraint:[NSLayoutConstraint
+                                                 constraintWithItem:phoneLabel
+                                                 attribute:NSLayoutAttributeRight
+                                                 relatedBy:NSLayoutRelationEqual
+                                                 toItem:exampleView
+                                                 attribute:NSLayoutAttributeRight
+                                                 multiplier:1.0
+                                                 constant:0.0]];
+                
+                [exampleView addConstraint:[NSLayoutConstraint
+                                                 constraintWithItem:phoneLabel
+                                                 attribute:NSLayoutAttributeBottom
+                                                 relatedBy:NSLayoutRelationEqual
+                                                 toItem:exampleView
+                                                 attribute:NSLayoutAttributeBottom
+                                                 multiplier:1.0
+                                                 constant:0.0]];
             }
         }
+      //  NSLog(@"word is %@ phones %@",word, phoneToShow);
+        //cell.textLabel.text = [word stringByAppendingString:phoneToShow];
+        //break;
     }
-    NSString *word = [wordEntry objectForKey:@"w"];
-    NSLog(@"word is %@ phones %@",word, phoneToShow);
-    cell.textLabel.text = [word stringByAppendingString:phoneToShow];
     
     return cell;
 }

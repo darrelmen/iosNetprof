@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MyTableViewCell : UITableViewCell
+@interface PhoneTableViewCell : UITableViewCell
 
 @property (nonatomic, weak) IBOutlet UILabel *fl;
 //@property (nonatomic, weak) IBOutlet UILabel *english;

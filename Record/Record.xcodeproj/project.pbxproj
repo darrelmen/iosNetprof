@@ -16,6 +16,7 @@
 		B636FFD11A098FC700C3B62E /* NSString+FontAwesome2.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFD01A098FC700C3B62E /* NSString+FontAwesome2.m */; };
 		B636FFD41A098FD200C3B62E /* UIFont+FontAwesome2.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFD31A098FD200C3B62E /* UIFont+FontAwesome2.m */; };
 		B636FFD71A0993A100C3B62E /* MyTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFD61A0993A100C3B62E /* MyTableViewCell.m */; };
+		B642BAD01A0DD3A500D939F2 /* PhoneTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B642BACF1A0DD3A500D939F2 /* PhoneTableViewCell.m */; };
 		B66461F2196F193900943BC2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66461F1196F193900943BC2 /* AVFoundation.framework */; };
 		B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */; };
 		B66BACB8197094C000E28ECC /* EAFItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACB7197094C000E28ECC /* EAFItemTableViewController.m */; };
@@ -106,6 +107,8 @@
 		B636FFD31A098FD200C3B62E /* UIFont+FontAwesome2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIFont+FontAwesome2.m"; sourceTree = "<group>"; };
 		B636FFD51A0993A100C3B62E /* MyTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyTableViewCell.h; sourceTree = "<group>"; };
 		B636FFD61A0993A100C3B62E /* MyTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTableViewCell.m; sourceTree = "<group>"; };
+		B642BACE1A0DD39C00D939F2 /* PhoneTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneTableViewCell.h; sourceTree = "<group>"; };
+		B642BACF1A0DD3A500D939F2 /* PhoneTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneTableViewCell.m; sourceTree = "<group>"; };
 		B66461F1196F193900943BC2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B66BACAD197055F500E28ECC /* EAFChapterTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFChapterTableViewController.h; sourceTree = "<group>"; };
 		B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFChapterTableViewController.m; sourceTree = "<group>"; };
@@ -393,6 +396,8 @@
 				B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */,
 				B636FFC81A0954C200C3B62E /* EAFScoreReportTabBarController.h */,
 				B636FFD51A0993A100C3B62E /* MyTableViewCell.h */,
+				B642BACE1A0DD39C00D939F2 /* PhoneTableViewCell.h */,
+				B642BACF1A0DD3A500D939F2 /* PhoneTableViewCell.m */,
 				B636FFD61A0993A100C3B62E /* MyTableViewCell.m */,
 			);
 			path = Record;
@@ -568,6 +573,7 @@
 				F6A5682A18ECA98A00B844C6 /* main.m in Sources */,
 				B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */,
 				B6D0017D1970B091009554D5 /* EAFExercise.m in Sources */,
+				B642BAD01A0DD3A500D939F2 /* PhoneTableViewCell.m in Sources */,
 				B68A5C491979C8B70036B90C /* MSArcLayer.m in Sources */,
 				B68A5C4A1979C8B70036B90C /* MSGradientArcLayer.m in Sources */,
 				B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */,
