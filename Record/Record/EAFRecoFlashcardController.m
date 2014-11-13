@@ -1140,7 +1140,12 @@ double gestureEnd;
     
     if ([valid containsString:@"OK"]) {
        // [_scoreDisplay setAttributedText:result];
-        [self updateScoreDisplay:json];
+        if (correct) {
+            [self updateScoreDisplay:json];
+        }
+        else {
+            [self setDisplayMessage:@""];
+        }
     }
     else {
         if ([valid containsString:@"MIC"] || [valid containsString:@"TOO_QUIET"]) {
@@ -1167,8 +1172,8 @@ double gestureEnd;
     NSArray *wordAndScore  = [json objectForKey:@"WORD_TRANSCRIPT"];
     NSArray *phoneAndScore = [json objectForKey:@"PHONE_TRANSCRIPT"];
     
-    NSLog(@"got words %@",wordAndScore);
-    NSLog(@"got phones %@",phoneAndScore);
+ //   NSLog(@"got words %@",wordAndScore);
+ //   NSLog(@"got phones %@",phoneAndScore);
     
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
@@ -1260,7 +1265,7 @@ double gestureEnd;
         }
         
         wordLabel.attributedText = coloredWord;
-        NSLog(@"label word is %@",wordLabel.attributedText);
+      //  NSLog(@"label word is %@",wordLabel.attributedText);
         
         //        [wordLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:18.0f]];
         [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -1407,6 +1412,7 @@ double gestureEnd;
     [_recoFeedbackImage stopAnimating];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 
+    NSLog(@"got %@",error);
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't connect to server." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alert show];
 }
