@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */ = {isa = PBXBuildFile; fileRef = B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */; };
+		B61B82261A154C36009B00D1 /* EAFAudioView.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B82251A154C36009B00D1 /* EAFAudioView.m */; };
 		B62624671A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */; };
 		B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC41A09397200C3B62E /* EAFWordScoreTableViewController.m */; };
 		B636FFC71A09549E00C3B62E /* EAFScoreReportTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */; };
@@ -91,6 +92,8 @@
 /* Begin PBXFileReference section */
 		B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFRecoFlashcardController.m; sourceTree = "<group>"; };
 		B610C00919D2240800CA9D8A /* EAFRecoFlashcardController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFRecoFlashcardController.h; sourceTree = "<group>"; };
+		B61B82251A154C36009B00D1 /* EAFAudioView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFAudioView.m; sourceTree = "<group>"; };
+		B61B82271A154C59009B00D1 /* EAFAudioView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EAFAudioView.h; sourceTree = "<group>"; };
 		B62624651A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFPhoneScoreTableViewController.h; sourceTree = "<group>"; };
 		B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFPhoneScoreTableViewController.m; sourceTree = "<group>"; };
 		B636FFC31A09397200C3B62E /* EAFWordScoreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFWordScoreTableViewController.h; sourceTree = "<group>"; };
@@ -399,6 +402,8 @@
 				B642BACE1A0DD39C00D939F2 /* PhoneTableViewCell.h */,
 				B642BACF1A0DD3A500D939F2 /* PhoneTableViewCell.m */,
 				B636FFD61A0993A100C3B62E /* MyTableViewCell.m */,
+				B61B82251A154C36009B00D1 /* EAFAudioView.m */,
+				B61B82271A154C59009B00D1 /* EAFAudioView.h */,
 			);
 			path = Record;
 			sourceTree = "<group>";
@@ -560,6 +565,7 @@
 			files = (
 				B68A5C4C1979C8B70036B90C /* MSRangeGauge.m in Sources */,
 				B66BACB8197094C000E28ECC /* EAFItemTableViewController.m in Sources */,
+				B61B82261A154C36009B00D1 /* EAFAudioView.m in Sources */,
 				B69821301A019A7200BB9865 /* SSKeychain.m in Sources */,
 				B67E1BC5197EFC0500F42143 /* mztools.c in Sources */,
 				B67E1BC7197EFC0500F42143 /* zip.c in Sources */,

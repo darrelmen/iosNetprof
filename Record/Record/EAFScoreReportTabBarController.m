@@ -20,7 +20,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSLog(@"Got score report viewDidLoad!!! ");
+ //   NSLog(@"Got score report viewDidLoad!!! ");
     
     
 
@@ -38,7 +38,7 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     
-    NSLog(@"Got score report segue!!! ");
+  //  NSLog(@"Got score report segue!!! ");
 
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.

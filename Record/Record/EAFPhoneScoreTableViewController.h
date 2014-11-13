@@ -7,8 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 
-@interface EAFPhoneScoreTableViewController : UITableViewController<NSURLConnectionDelegate>
+
+@interface EAFPhoneScoreTableViewController : UITableViewController<NSURLConnectionDelegate,AVAudioPlayerDelegate>
 
 @property (strong, nonatomic) NSMutableData *responseData;
 
@@ -21,6 +23,9 @@
 @property NSDictionary *resultToAnswer;
 @property NSDictionary *resultToWords;
 @property NSArray *phonesInOrder;
+//@property (strong, nonatomic) AVAudioPlayer *audioPlayer;
+@property AVPlayer *player;
+@property NSString *url;
 
 @property long user;
 

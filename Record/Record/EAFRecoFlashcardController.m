@@ -843,7 +843,6 @@ double gestureEnd;
     if (!_audioRecorder.recording)
     {
         NSLog(@"playAudio %@",_audioRecorder.url);
-        //_recordButton.enabled = NO;
         _playButton.enabled = NO;
         
         NSError *error;
@@ -869,10 +868,6 @@ double gestureEnd;
         }
     }
 }
-
-//- (IBAction)singleTap:(id)sender {
-//    [self playRefAudio:nil];
-//}
 
 - (IBAction)stopAudio:(id)sender {
     now = CFAbsoluteTimeGetCurrent();
@@ -1470,5 +1465,6 @@ double gestureEnd;
     phoneReport.language = _language;
     phoneReport.chapterName = _chapterTitle;
     phoneReport.chapterSelection = _currentChapter;
+    phoneReport.url = _url;
 }
 @end

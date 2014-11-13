@@ -9,6 +9,8 @@
 #import "EAFPhoneScoreTableViewController.h"
 #import "FAImageView.h"
 #import "MyTableViewCell.h"
+#import "EAFAudioView.h"
+#import <AudioToolbox/AudioServices.h>
 
 @interface EAFPhoneScoreTableViewController ()
 
@@ -94,7 +96,12 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"PhoneCell";
 
     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    
+    UIView *bgColorView = [[UIView alloc] init];
 
+    [bgColorView setBackgroundColor:[UIColor whiteColor]];
+    [cell setSelectedBackgroundView:bgColorView];
+    
     NSString *phone = [_phonesInOrder objectAtIndex:indexPath.row];
    
  //   NSLog(@"tableView phone is %@",phone);
@@ -118,10 +125,15 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSArray *resultWords = [_resultToWords objectForKey:result];
         
         
-        UIView *exampleView = [[UIView alloc] init];
+       // UIView *exampleView = [[UIView alloc] init];
+        EAFAudioView *exampleView = [[EAFAudioView alloc] init];
         exampleView.translatesAutoresizingMaskIntoConstraints = NO;
         [cell.contentView addSubview:exampleView];
         
+        exampleView.refAudio = [_resultToRef objectForKey:result];
+        exampleView.answer =[_resultToAnswer objectForKey:result];
+
+        //NSLog(@"ref %@ %@",exampleView.refAudio, exampleView.answer);
        // NSLog(@"word is %@",wordEntry);
         // first example view constraints left side to left side of container
         // all - top to top of container
@@ -177,10 +189,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                              multiplier:1.0
                                              constant:5.0]];
         }
-//        if (count % 2 != 0) {
-//            [exampleView setBackgroundColor:UIColor.lightGrayColor];
-//        }
-
         
         leftView = exampleView;
         
@@ -214,16 +222,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             
             
             [exampleView addSubview:wordLabel];
-            
-//            [cell.contentView addConstraint:[NSLayoutConstraint
-//                                             constraintWithItem:wordLabel
-//                                             attribute:NSLayoutAttributeHeight
-//                                             relatedBy:NSLayoutRelationEqual
-//                                             toItem:nil
-//                                             attribute:NSLayoutAttributeNotAnAttribute
-//                                             multiplier:1.0
-//                                             constant:22.0]];
-           // NSLog(@"about to add - label word is %@ constraint 1",wordLabel.text);
 
             [exampleView addConstraint:[NSLayoutConstraint
                                              constraintWithItem:wordLabel
@@ -233,8 +231,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                              attribute:NSLayoutAttributeTop
                                              multiplier:1.0
                                              constant:0.0]];
-          //  NSLog(@"label word is %@ constraint 2",wordLabel.text);
-
             
             [exampleView addConstraint:[NSLayoutConstraint
                                              constraintWithItem:wordLabel
@@ -245,8 +241,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                              multiplier:1.0
                                              constant:0.0]];
             
-          //  NSLog(@"label word is %@ constraint 3",wordLabel.text);
-
             [exampleView addConstraint:[NSLayoutConstraint
                                              constraintWithItem:wordLabel
                                              attribute:NSLayoutAttributeRight
@@ -255,7 +249,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                              attribute:NSLayoutAttributeRight
                                              multiplier:1.0
                                              constant:0.0]];
-            //NSLog(@"label word is %@ constraint 4",wordLabel.text);
 
             [exampleView addConstraint:[NSLayoutConstraint
                                              constraintWithItem:wordLabel
@@ -265,9 +258,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                              attribute:NSLayoutAttributeHeight
                                              multiplier:0.5
                                              constant:0.0]];
-            
-            //NSLog(@"label word is %@ constraint 5",wordLabel.text);
-
+     
             if ([wordInResult isEqualToString:wordPhoneAppearsIn]) {
                 
                 NSString *phoneToShow = @"";
@@ -365,11 +356,169 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         rightBorder.frame = CGRectMake(-3, -1, 2, 44);
 
         [exampleView.layer addSublayer:rightBorder];
+        
+      //  [exampleView addTarget:self action:@selector(playAudioClick:) forControlEvents:UIControlEventTouchUpInside];
+
+        
+        
+        UITapGestureRecognizer *singleFingerTap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(playAudioClick:)];
+        [exampleView addGestureRecognizer:singleFingerTap];
+       
     }
     
     return cell;
 }
 
+- (IBAction)playAudioClick:(UITapGestureRecognizer *)sender {
+ //   NSLog(@"got click on %@",sender);
+   // NSLog(@"got click on %@",sender.view);
+    //NSLog(@"got click on %@ %@",sender.refAudio,sender.answer);
+    playingRef = TRUE;
+
+    currentAudioSelection = (EAFAudioView *)sender.view;
+    [self playRefAudio:(EAFAudioView *)sender.view];
+}
+
+
+EAFAudioView * currentAudioSelection;
+bool playingRef = TRUE;
+
+// look for local file with mp3 and use it if it's there.
+- (IBAction)playRefAudio:(EAFAudioView *)sender {
+    NSLog(@"playRefAudio %@",sender);
+
+    NSString *refPath = playingRef ? sender.refAudio : sender.answer;
+    
+    NSString *refAudioPath;
+    NSString *rawRefAudioPath;
+    
+    if (refPath) {
+        refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+                                                     withString:@".mp3"];
+        
+        NSMutableString *mu = [NSMutableString stringWithString:refPath];
+        [mu insertString:_url atIndex:0];
+        refAudioPath = mu;
+        rawRefAudioPath = refPath;
+    }
+    else {
+        refAudioPath = @"NO";
+        rawRefAudioPath = @"NO";
+    }
+    
+    NSURL *url = [NSURL URLWithString:refAudioPath];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    
+    NSString *audioDir = [NSString stringWithFormat:@"%@_audio",_language];
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
+    
+    NSString *destFileName = [filePath stringByAppendingPathComponent:rawRefAudioPath];
+    
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName];
+    if (fileExists) {
+        //NSLog(@"playRefAudio Raw URL %@", _rawRefAudioPath);
+        NSLog(@"using local url %@",destFileName);
+        url = [[NSURL alloc] initFileURLWithPath: destFileName];
+    }
+    else {
+        NSLog(@"can't find local url %@",destFileName);
+        //NSLog(@"playRefAudio URL     %@", _refAudioPath);
+    }
+    NSString *PlayerStatusContext;
+    
+    if (_player) {
+        [self removePlayObserver];
+    }
+    
+    UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
+    AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
+    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+    
+    _player = [AVPlayer playerWithURL:url];
+    
+    [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
+}
+
+- (void)playerItemDidReachEnd:(NSNotification *)notification {
+    NSLog(@" playerItemDidReachEnd");
+    if (playingRef) {
+        playingRef = FALSE;
+        [self playRefAudio:currentAudioSelection];
+    }
+}
+
+- (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
+    NSLog(@"Got error %@", error);
+}
+
+
+// So this is more complicated -- we have to wait until the mp3 has arrived from the server before we can play it
+// we remove the observer, or else we will later get a message when the player discarded
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
+                        change:(NSDictionary *)change context:(void *)context {
+    //NSLog(@" observeValueForKeyPath %@",keyPath);
+    
+    if (object == _player && [keyPath isEqualToString:@"status"]) {
+        if (_player.status == AVPlayerStatusReadyToPlay) {
+            NSLog(@" audio ready so playing...");
+            
+//            NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
+//            
+//            NSRange range= NSMakeRange(0, [result length]);
+//            [result addAttribute:NSBackgroundColorAttributeName
+//                           value:[UIColor yellowColor]
+//                           range:range];
+//            [_foreignLang setAttributedText:result];
+//            
+            [_player play];
+            
+            AVPlayerItem *currentItem = [_player currentItem];
+            
+            [[NSNotificationCenter defaultCenter]
+             addObserver:self
+             selector:@selector(playerItemDidReachEnd:)
+             name:AVPlayerItemDidPlayToEndTimeNotification
+             object:currentItem];
+            
+            @try {
+                [_player removeObserver:self forKeyPath:@"status"];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"observeValueForKeyPath : got exception %@",exception.description);
+            }
+            
+        } else if (_player.status == AVPlayerStatusFailed) {
+            // something went wrong. player.error should contain some information
+            
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't play audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [alert show];
+            
+            NSLog(@"player status failed %@",_player.status);
+            
+            [_player removeObserver:self forKeyPath:@"status"];
+        }
+    }
+    else {
+        NSLog(@"ignoring value... %@",keyPath);
+    }
+}
+
+- (void)removePlayObserver {
+    //NSLog(@" remove observer");
+    
+    @try {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
+        [_player removeObserver:self forKeyPath:@"status"];
+    }
+    @catch (NSException *exception) {
+        // NSLog(@"initial create - got exception %@",exception.description);
+    }
+}
 
 - (UIColor *) getColor2:(float) score {
     if (score > 1.0) score = 1.0;
