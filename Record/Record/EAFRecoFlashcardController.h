@@ -45,7 +45,8 @@
 @property NSString *chapterTitle;
 @property NSString *language;
 
-@property (weak, nonatomic) IBOutlet UILabel *scoreDisplay;
+//@property (weak, nonatomic) IBOutlet UILabel *scoreDisplay;
+@property (weak, nonatomic) IBOutlet UIView *scoreDisplayContainer;
 @property (strong, nonatomic) IBOutlet UIProgressView *scoreProgress;
 @property AVPlayer *player;
 @property (strong, nonatomic) IBOutlet UIView *scoreButtonView;

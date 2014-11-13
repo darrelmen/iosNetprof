@@ -231,11 +231,6 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" restorationIdentifier="scoreDisplay" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="ZJm-Ih-G5h">
-                                <rect key="frame" x="44" y="396" width="268" height="56"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" restorationIdentifier="genderSwitch" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qGs-TT-9Ym">
                                 <rect key="frame" x="163" y="527" width="51" height="31"/>
                                 <connections>
@@ -247,14 +242,14 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" restorationIdentifier="speedSwitch" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="R8D-Mr-8CW">
-                                <rect key="frame" x="262" y="527" width="51" height="31"/>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" restorationIdentifier="speedSwitch" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="R8D-Mr-8CW">
+                                <rect key="frame" x="263" y="527" width="51" height="31"/>
                                 <connections>
                                     <action selector="speedSelection:" destination="vXZ-lx-hvc" eventType="valueChanged" id="fZZ-BM-FFT"/>
                                 </connections>
                             </switch>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Slow" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RZc-pP-7lZ">
-                                <rect key="frame" x="220" y="532" width="38" height="21"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Slow" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RZc-pP-7lZ">
+                                <rect key="frame" x="221" y="532" width="38" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -294,11 +289,18 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="checkmark32.png" translatesAutoresizingMaskIntoConstraints="NO" id="ZN1-US-MJW">
                                 <rect key="frame" x="44" y="447" width="32" height="32"/>
                             </imageView>
-                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yab-A5-Zzq">
-                                <rect key="frame" x="268" y="426" width="44" height="44"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yab-A5-Zzq">
+                                <rect key="frame" x="276" y="435" width="36" height="44"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="pnL-39-xaj"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" restorationIdentifier="scoreContainer" translatesAutoresizingMaskIntoConstraints="NO" id="vlT-Ea-UA6">
+                                <rect key="frame" x="17" y="401" width="242" height="44"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="nMQ-q0-cCJ"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -317,23 +319,23 @@
                             <constraint firstItem="vPr-x7-V3R" firstAttribute="centerY" secondItem="qGs-TT-9Ym" secondAttribute="centerY" id="Aph-QN-I3a"/>
                             <constraint firstAttribute="width" secondItem="D0k-He-nFx" secondAttribute="height" multiplier="1:1" id="CWj-ig-7kT"/>
                             <constraint firstItem="mdF-G9-2CM" firstAttribute="centerX" secondItem="NAp-JA-wTD" secondAttribute="centerX" constant="4" id="Dau-5B-fkM"/>
-                            <constraint firstItem="ZJm-Ih-G5h" firstAttribute="leading" secondItem="D19-P2-ZOH" secondAttribute="trailing" constant="8" id="EZD-Lx-Nvr"/>
                             <constraint firstItem="mdF-G9-2CM" firstAttribute="top" secondItem="D19-P2-ZOH" secondAttribute="bottom" constant="23" id="J6W-sH-Rod"/>
                             <constraint firstAttribute="centerX" secondItem="vmx-bc-B8p" secondAttribute="centerX" constant="-4" id="JJN-pE-GDx"/>
-                            <constraint firstItem="vmx-bc-B8p" firstAttribute="top" secondItem="ZJm-Ih-G5h" secondAttribute="bottom" constant="4" id="K7o-x0-5qA"/>
                             <constraint firstItem="erT-Le-XmI" firstAttribute="top" secondItem="NAp-JA-wTD" secondAttribute="bottom" constant="15" id="MBa-zd-BZG"/>
-                            <constraint firstItem="XFG-NF-cL4" firstAttribute="top" secondItem="yab-A5-Zzq" secondAttribute="bottom" constant="14" id="PSL-yV-jj8"/>
+                            <constraint firstItem="XFG-NF-cL4" firstAttribute="top" secondItem="yab-A5-Zzq" secondAttribute="bottom" constant="5" id="PSL-yV-jj8"/>
                             <constraint firstItem="D0k-He-nFx" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="8" id="TQH-Gw-Pzg"/>
+                            <constraint firstItem="vmx-bc-B8p" firstAttribute="top" secondItem="vlT-Ea-UA6" secondAttribute="bottom" constant="2" id="UHa-GZ-wHb"/>
                             <constraint firstItem="D0k-He-nFx" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="YWH-78-0wH"/>
                             <constraint firstAttribute="trailingMargin" secondItem="R8D-Mr-8CW" secondAttribute="trailing" constant="-8" id="YZY-Gu-5ZU"/>
                             <constraint firstItem="YP1-wr-gfA" firstAttribute="centerY" secondItem="mdF-G9-2CM" secondAttribute="centerY" id="cVc-jX-1af"/>
                             <constraint firstItem="R8D-Mr-8CW" firstAttribute="leading" secondItem="RZc-pP-7lZ" secondAttribute="trailing" constant="4" id="dx4-aM-2ge"/>
                             <constraint firstItem="qGs-TT-9Ym" firstAttribute="centerY" secondItem="RZc-pP-7lZ" secondAttribute="centerY" id="fes-PD-d61"/>
+                            <constraint firstItem="vlT-Ea-UA6" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="1" id="gZe-6e-P1L"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="vlT-Ea-UA6" secondAttribute="trailing" constant="45" id="gyb-yy-0ed"/>
                             <constraint firstItem="7cj-Bu-gyQ" firstAttribute="top" secondItem="YP1-wr-gfA" secondAttribute="bottom" constant="14" id="iBY-6U-EUd"/>
                             <constraint firstItem="qGs-TT-9Ym" firstAttribute="leading" secondItem="vPr-x7-V3R" secondAttribute="trailing" constant="8" id="iEN-3e-EIk"/>
                             <constraint firstAttribute="centerX" secondItem="qGs-TT-9Ym" secondAttribute="centerX" constant="-27.5" id="iou-Cg-l9J"/>
                             <constraint firstItem="RZc-pP-7lZ" firstAttribute="centerY" secondItem="R8D-Mr-8CW" secondAttribute="centerY" id="kee-2Q-kkU"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="ZJm-Ih-G5h" secondAttribute="trailing" constant="25" id="mAX-b8-pvp"/>
                             <constraint firstItem="D19-P2-ZOH" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="mux-d5-ok8"/>
                             <constraint firstItem="7cj-Bu-gyQ" firstAttribute="leading" secondItem="NAp-JA-wTD" secondAttribute="trailing" constant="8" id="npR-zh-EA7"/>
                             <constraint firstItem="erT-Le-XmI" firstAttribute="top" secondItem="qGs-TT-9Ym" secondAttribute="bottom" constant="10" id="oFh-Dj-sUz"/>
@@ -363,7 +365,7 @@
                         <outlet property="recordButton" destination="85Q-3i-7cz" id="HdD-4d-PbA"/>
                         <outlet property="recordButtonContainer" destination="LDy-Lh-sWf" id="XGE-r8-Lpv"/>
                         <outlet property="scoreButtonView" destination="yab-A5-Zzq" id="5Cg-oF-fwc"/>
-                        <outlet property="scoreDisplay" destination="ZJm-Ih-G5h" id="8LH-Cs-JKf"/>
+                        <outlet property="scoreDisplayContainer" destination="vlT-Ea-UA6" id="Ajv-Uc-2C0"/>
                         <outlet property="scoreProgress" destination="vmx-bc-B8p" id="vxl-Oq-iJM"/>
                         <outlet property="shuffleSwitch" destination="YP1-wr-gfA" id="y91-nk-jzq"/>
                         <outlet property="speedSelector" destination="R8D-Mr-8CW" id="Wg4-d5-Bg1"/>
@@ -571,6 +573,23 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vS3-2E-ly0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="204" y="63"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="fuV-Uu-7Tg">
+            <objects>
+                <viewController id="Erf-jW-zql" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Dg9-JQ-QMF"/>
+                        <viewControllerLayoutGuide type="bottom" id="jBk-Kx-iZ3"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="5Dg-Rc-e29">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="UGn-ZS-Vdb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
         </scene>
     </scenes>
     <resources>

@@ -7,7 +7,6 @@
 //
 
 #import "EAFRecoFlashcardController.h"
-//#import "EAFFlashcardViewController.h"
 #import "EAFScoreReportTabBarController.h"
 #import "EAFWordScoreTableViewController.h"
 #import "EAFPhoneScoreTableViewController.h"
@@ -279,8 +278,8 @@
     _english.adjustsFontSizeToFitWidth=YES;
    // _english.minimumScaleFactor=0.5;
     
-    _scoreDisplay.lineBreakMode = NSLineBreakByWordWrapping;
-    _scoreDisplay.numberOfLines = 0;
+   // _scoreDisplay.lineBreakMode = NSLineBreakByWordWrapping;
+   // _scoreDisplay.numberOfLines = 0;
 }
 
 - (unsigned long)getItemIndex {
@@ -457,7 +456,10 @@
 //        NSLog(@"EN NOT TOO MUCH %f %f",perfectSize.height,_english.bounds.size.height);
 //    }
 //    
-    [_scoreDisplay setText:@" "];
+//    [_scoreDisplay setText:@" "];
+    for (UIView *v in [_scoreDisplayContainer subviews]) {
+        [v removeFromSuperview];
+    }
     _scoreProgress.hidden = true;
     
     if ([_audioOnSelector isOn] && [self hasRefAudio]) {
@@ -620,7 +622,8 @@
         }
     }
     else {
-        [_scoreDisplay setText:@"Recording too short."];
+ //       [_scoreDisplay setText:@"Recording too short."];
+        [self setDisplayMessage:@"Recording too short."];
     }
 }
 
@@ -775,8 +778,11 @@ bool debugRecord = false;
     if (!_audioRecorder.recording)
     {
         if (debugRecord) NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
-        [_scoreDisplay setText:@""];
-
+       // [_scoreDisplay setText:@""];
+        
+        for (UIView *v in [_scoreDisplayContainer subviews]) {
+            [v removeFromSuperview];
+        }
         [self startRecordingFeedbackWithDelay];
         
         NSError *error = nil;
@@ -934,32 +940,12 @@ double gestureEnd;
         [_randSequence addObject:[NSNumber numberWithUnsignedLong:i]];
     }
     
-//    NSUInteger count = [newArray count];
-//    for (NSUInteger i = 0; i < count; ++i) {
-//        // Select a random element between i and end of array to swap with.
-//        NSInteger remainingCount = count - i;
-//        NSInteger exchangeIndex = i + arc4random_uniform(remainingCount);
-//        [newArray exchangeObjectAtIndex:i withObjectAtIndex:exchangeIndex];
-//    }
-    
     unsigned int max = _jsonItems.count-1;
-//    for (unsigned int ii = max; ii > 0; --ii) {
-//        unsigned int r = arc4random_uniform(ii)+1;
-//        [_randSequence exchangeObjectAtIndex:ii withObjectAtIndex:r];
-//    }
     
     for (unsigned int ii = 0; ii < max; ++ii) {
-        // Select a random element between i and end of array to swap with.
-  //      NSInteger remainingCount = count - i;
-    //    NSInteger exchangeIndex = i + arc4random_uniform(remainingCount);
         unsigned int remainingCount = max - ii;
-
         unsigned int r = arc4random_uniform(remainingCount)+ii;
-
-//        [newArray exchangeObjectAtIndex:i withObjectAtIndex:exchangeIndex];
-        
         [_randSequence exchangeObjectAtIndex:ii withObjectAtIndex:r];
-
     }
     
     _index = 0;
@@ -1090,6 +1076,15 @@ double gestureEnd;
     return nil;
 }
 
+- (void)setDisplayMessage:(NSString *) toUse {
+    UILabel *toShow = [[UILabel alloc] init];
+    toShow.text =toUse;//@"Please speak louder";
+    for (UIView *v in [_scoreDisplayContainer subviews]) {
+        [v removeFromSuperview];
+    }
+    [_scoreDisplayContainer addSubview:toShow];
+}
+
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
     // You can parse the stuff in your instance variable now
@@ -1114,44 +1109,45 @@ double gestureEnd;
   //  NSLog(@"validity was %@",valid);
     
     // show text highlighted with score per word
-    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
-    NSString * lower =[[_foreignLang text] lowercaseString];
-    
-    NSArray *wordAndScore = [json objectForKey:@"WORD_TRANSCRIPT"];
-    
-    int offset = 0;
-    
-    for (NSDictionary *event in wordAndScore) {
-        NSString *word = [event objectForKey:@"event"];
-        NSNumber *score = [event objectForKey:@"score"];
-        NSString *lowerWord = [word lowercaseString];
-        NSRange range, searchCharRange;
-        
-        searchCharRange = NSMakeRange(offset, [lower length]-offset);
-        
-        range = [lower rangeOfString:lowerWord options:0 range:searchCharRange];
-       
-        if (range.length > 0) {
-            UIColor *color = [self getColor2:score.floatValue];
-            if (wordAndScore.count == 1) { // TODO : hack to make score consistent
-                color = [self getColor2:overallScore.floatValue];
-            }
-            [result addAttribute:NSBackgroundColorAttributeName
-                           value:color
-                           range:range];
-            offset += range.length;
-        }
-    }
+//    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
+//    NSString * lower =[[_foreignLang text] lowercaseString];
+//    
+//    NSArray *wordAndScore = [json objectForKey:@"WORD_TRANSCRIPT"];
+//    
+//    int offset = 0;
+//    
+//    for (NSDictionary *event in wordAndScore) {
+//        NSString *word = [event objectForKey:@"event"];
+//        NSNumber *score = [event objectForKey:@"score"];
+//        NSString *lowerWord = [word lowercaseString];
+//        NSRange range, searchCharRange;
+//        
+//        searchCharRange = NSMakeRange(offset, [lower length]-offset);
+//        
+//        range = [lower rangeOfString:lowerWord options:0 range:searchCharRange];
+//       
+//        if (range.length > 0) {
+//            UIColor *color = [self getColor2:score.floatValue];
+//            if (wordAndScore.count == 1) { // TODO : hack to make score consistent
+//                color = [self getColor2:overallScore.floatValue];
+//            }
+//            [result addAttribute:NSBackgroundColorAttributeName
+//                           value:color
+//                           range:range];
+//            offset += range.length;
+//        }
+//    }
     
     if ([valid containsString:@"OK"]) {
-        [_scoreDisplay setAttributedText:result];
+       // [_scoreDisplay setAttributedText:result];
+        [self updateScoreDisplay:json];
     }
     else {
         if ([valid containsString:@"MIC"] || [valid containsString:@"TOO_QUIET"]) {
-            [_scoreDisplay setText:@"Please speak louder"];
+            [self setDisplayMessage:@"Please speak louder"];
         }
         else {
-            [_scoreDisplay setText:[json objectForKey:@"valid"]];
+            [self setDisplayMessage:[json objectForKey:@"valid"]];
         }
     }
     _scoreProgress.hidden = false;
@@ -1159,14 +1155,250 @@ double gestureEnd;
     [_scoreProgress setProgressTintColor:[self getColor2:[overallScore floatValue]]];
     
     if (correct) {
-//        NSLog(@"using checkmark!");
         [_correctFeedback setImage:[UIImage imageNamed:@"checkmark32.png"]];
     }
     else {
-  //      NSLog(@"using redx!");
         [_correctFeedback setImage:[UIImage imageNamed:@"redx32.png"]];
     }
     [_correctFeedback setHidden:false];
+}
+
+- (void)updateScoreDisplay:(NSDictionary*) json {
+    NSArray *wordAndScore  = [json objectForKey:@"WORD_TRANSCRIPT"];
+    NSArray *phoneAndScore = [json objectForKey:@"PHONE_TRANSCRIPT"];
+    
+    NSLog(@"got words %@",wordAndScore);
+    NSLog(@"got phones %@",phoneAndScore);
+    
+    for (UIView *v in [_scoreDisplayContainer subviews]) {
+        [v removeFromSuperview];
+    }
+    
+    [_scoreDisplayContainer removeConstraints:_scoreDisplayContainer.constraints];
+    _scoreDisplayContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    UIView *leftView = nil;
+    
+//    int count = 0;
+    
+    for (NSDictionary *event in wordAndScore) {
+        NSString *word = [event objectForKey:@"event"];
+        if ([word isEqualToString:@"sil"]) continue;
+        NSNumber *score = [event objectForKey:@"score"];
+        NSNumber *wstart = [event objectForKey:@"start"];
+        NSNumber *wend = [event objectForKey:@"end"];
+        
+        UIView *exampleView = [[UIView alloc] init];
+        exampleView.translatesAutoresizingMaskIntoConstraints = NO;
+        [_scoreDisplayContainer addSubview:exampleView];
+        
+        // NSLog(@"word is %@",wordEntry);
+        // first example view constraints left side to left side of container
+        // all - top to top of container
+        // bottom to bottom of container
+        // after first, left side is right side of previous container, with margin
+        
+        // upper part is word, lower is phones
+        // upper has left, right top bound to container
+        // upper bottom is half container height
+        
+        // lower has left, right bottom bound to container
+        // lower has top that is equal to bottom of top or half container height
+        
+        [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                               constraintWithItem:exampleView
+                                               attribute:NSLayoutAttributeTop
+                                               relatedBy:NSLayoutRelationEqual
+                                               toItem:_scoreDisplayContainer
+                                               attribute:NSLayoutAttributeTop
+                                               multiplier:1.0
+                                               constant:0.0]];
+        
+        [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                               constraintWithItem:exampleView
+                                               attribute:NSLayoutAttributeBottom
+                                               relatedBy:NSLayoutRelationEqual
+                                               toItem:_scoreDisplayContainer
+                                               attribute:NSLayoutAttributeBottom
+                                               multiplier:1.0
+                                               constant:0.0]];
+        
+        if (leftView == nil) {
+            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                   constraintWithItem:exampleView
+                                                   attribute:NSLayoutAttributeLeft
+                                                   relatedBy:NSLayoutRelationEqual
+                                                   toItem:_scoreDisplayContainer
+                                                   attribute:NSLayoutAttributeLeft
+                                                   multiplier:1.0
+                                                   constant:0.0]];
+        }
+        else {
+            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                   constraintWithItem:exampleView
+                                                   attribute:NSLayoutAttributeLeft
+                                                   relatedBy:NSLayoutRelationEqual
+                                                   toItem:leftView
+                                                   attribute:NSLayoutAttributeRight
+                                                   multiplier:1.0
+                                                   constant:5.0]];
+        }
+        leftView = exampleView;
+        
+        UILabel *wordLabel = [[UILabel alloc] init];
+        
+        NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
+        
+        NSRange range = NSMakeRange(0, [coloredWord length]);
+        
+        // NSLog(@"score was %@ %f",scoreString,score);
+        if ([score floatValue] > 0) {
+            UIColor *color = [self getColor2:[score floatValue]];
+            [coloredWord addAttribute:NSBackgroundColorAttributeName
+                                value:color
+                                range:range];
+        }
+        
+        wordLabel.attributedText = coloredWord;
+        NSLog(@"label word is %@",wordLabel.attributedText);
+        
+        //        [wordLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:18.0f]];
+        [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+        
+        [exampleView addSubview:wordLabel];
+        
+        [exampleView addConstraint:[NSLayoutConstraint
+                                    constraintWithItem:wordLabel
+                                    attribute:NSLayoutAttributeTop
+                                    relatedBy:NSLayoutRelationEqual
+                                    toItem:exampleView
+                                    attribute:NSLayoutAttributeTop
+                                    multiplier:1.0
+                                    constant:0.0]];
+        
+        [exampleView addConstraint:[NSLayoutConstraint
+                                    constraintWithItem:wordLabel
+                                    attribute:NSLayoutAttributeLeft
+                                    relatedBy:NSLayoutRelationEqual
+                                    toItem:exampleView
+                                    attribute:NSLayoutAttributeLeft
+                                    multiplier:1.0
+                                    constant:0.0]];
+        
+        //  NSLog(@"label word is %@ constraint 3",wordLabel.text);
+        
+        [exampleView addConstraint:[NSLayoutConstraint
+                                    constraintWithItem:wordLabel
+                                    attribute:NSLayoutAttributeRight
+                                    relatedBy:NSLayoutRelationEqual
+                                    toItem:exampleView
+                                    attribute:NSLayoutAttributeRight
+                                    multiplier:1.0
+                                    constant:0.0]];
+        //NSLog(@"label word is %@ constraint 4",wordLabel.text);
+        
+        [exampleView addConstraint:[NSLayoutConstraint
+                                    constraintWithItem:wordLabel
+                                    attribute:NSLayoutAttributeHeight
+                                    relatedBy:NSLayoutRelationEqual
+                                    toItem:exampleView
+                                    attribute:NSLayoutAttributeHeight
+                                    multiplier:0.5
+                                    constant:0.0]];
+        
+        // get the phone sequence for the word
+        NSString *phoneToShow = @"";
+        for (NSDictionary *event in phoneAndScore) {
+            NSString *phone = [event objectForKey:@"event"];
+            if ([phone isEqualToString:@"sil"]) continue;
+
+            //NSNumber *pscore = [event objectForKey:@"score"];
+            NSNumber *start = [event objectForKey:@"start"];
+            NSNumber *end = [event objectForKey:@"end"];
+            
+            if ([start floatValue] >= [wstart floatValue] && [end floatValue] <= [wend floatValue]) {
+                phoneToShow = [phoneToShow stringByAppendingString:phone];
+                phoneToShow = [phoneToShow stringByAppendingString:@" "];
+            }
+        }
+        
+        // now mark the ranges in the string with colors
+        
+        NSMutableAttributedString *coloredPhones = [[NSMutableAttributedString alloc] initWithString:phoneToShow];
+        
+        int pstart = 0;
+        for (NSDictionary *event in phoneAndScore) {
+            NSString *phoneText = [event objectForKey:@"event"];
+            if ([phoneText isEqualToString:@"sil"]) continue;
+
+            NSNumber *pscore = [event objectForKey:@"score"];
+            NSNumber *start = [event objectForKey:@"start"];
+            NSNumber *end = [event objectForKey:@"end"];
+            
+            if ([start floatValue] >= [wstart floatValue] && [end floatValue] <= [wend floatValue]) {
+                NSRange range = NSMakeRange(pstart, [phoneText length]);
+                pstart += range.length+1;//1 + [phoneText length];
+                float score = [pscore floatValue];
+                UIColor *color = [self getColor2:score];
+        //        NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
+                [coloredPhones addAttribute:NSBackgroundColorAttributeName
+                                      value:color
+                                      range:range];
+            }
+            else {
+                NSLog(@"skipping %@ since not in %@", phoneText, word);
+            }
+            
+        }
+        
+        
+        
+        UILabel *phoneLabel = [[UILabel alloc] init];
+        phoneLabel.attributedText = coloredPhones;
+        
+        //      [phoneLabel setTextColor:[UIColor blackColor]];
+        //[phoneLabel setBackgroundColor:[UIColor colorWithHue:66 saturation:100 brightness:63 alpha:1]];
+        //[phoneLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:18.0f]];
+        [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+        
+        [exampleView addSubview:phoneLabel];
+        
+        [exampleView addConstraint:[NSLayoutConstraint
+                                    constraintWithItem:phoneLabel
+                                    attribute:NSLayoutAttributeHeight
+                                    relatedBy:NSLayoutRelationEqual
+                                    toItem:exampleView
+                                    attribute:NSLayoutAttributeHeight
+                                    multiplier:0.5
+                                    constant:0.0]];
+        
+        [exampleView addConstraint:[NSLayoutConstraint
+                                    constraintWithItem:phoneLabel
+                                    attribute:NSLayoutAttributeLeft
+                                    relatedBy:NSLayoutRelationEqual
+                                    toItem:exampleView
+                                    attribute:NSLayoutAttributeLeft
+                                    multiplier:1.0
+                                    constant:0.0]];
+        
+        [exampleView addConstraint:[NSLayoutConstraint
+                                    constraintWithItem:phoneLabel
+                                    attribute:NSLayoutAttributeRight
+                                    relatedBy:NSLayoutRelationEqual
+                                    toItem:exampleView
+                                    attribute:NSLayoutAttributeRight
+                                    multiplier:1.0
+                                    constant:0.0]];
+        
+        [exampleView addConstraint:[NSLayoutConstraint
+                                    constraintWithItem:phoneLabel
+                                    attribute:NSLayoutAttributeBottom
+                                    relatedBy:NSLayoutRelationEqual
+                                    toItem:exampleView
+                                    attribute:NSLayoutAttributeBottom
+                                    multiplier:1.0
+                                    constant:0.0]];
+    }
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
@@ -1204,10 +1436,10 @@ double gestureEnd;
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-   // NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
+    NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
     EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
+    
     EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
-    //wordReport.navigationItem.backBarButtonItem.title = @"Audio Flashcards";
     
     wordReport.language = _language;
     wordReport.chapterName = _chapterTitle;
