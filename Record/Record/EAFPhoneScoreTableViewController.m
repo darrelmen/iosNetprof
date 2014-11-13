@@ -97,7 +97,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 
     NSString *phone = [_phonesInOrder objectAtIndex:indexPath.row];
    
-    NSLog(@"tableView phone is %@",phone);
+ //   NSLog(@"tableView phone is %@",phone);
 
     for (UIView *v in [cell.contentView subviews]) {
         [v removeFromSuperview];
@@ -135,6 +135,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         // lower has left, right bottom bound to container
         // lower has top that is equal to bottom of top or half container height
         
+        // top
+        
         [cell.contentView addConstraint:[NSLayoutConstraint
                                          constraintWithItem:exampleView
                                          attribute:NSLayoutAttributeTop
@@ -143,6 +145,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                          attribute:NSLayoutAttributeTop
                                          multiplier:1.0
                                          constant:0.0]];
+        
+        // bottom
         
         [cell.contentView addConstraint:[NSLayoutConstraint
                                          constraintWithItem:exampleView
@@ -161,7 +165,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                              toItem:cell.contentView
                                              attribute:NSLayoutAttributeLeft
                                              multiplier:1.0
-                                             constant:0.0]];
+                                             constant:3.0]];
         }
         else {
             [cell.contentView addConstraint:[NSLayoutConstraint
@@ -173,6 +177,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                              multiplier:1.0
                                              constant:5.0]];
         }
+//        if (count % 2 != 0) {
+//            [exampleView setBackgroundColor:UIColor.lightGrayColor];
+//        }
+
+        
         leftView = exampleView;
         
         NSString *word = [wordEntry objectForKey:@"w"];
@@ -196,7 +205,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             }
             
             wordLabel.attributedText = coloredWord;
-            NSLog(@"label word is %@",wordLabel.attributedText);
+         //   NSLog(@"label word is %@",wordLabel.attributedText);
             
             //[wordLabel setTextColor:[UIColor blackColor]];
             //  [wordLabel setBackgroundColor:[UIColor colorWithHue:32 saturation:100 brightness:63 alpha:1]];
@@ -284,11 +293,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     
                     // NSLog(@"score was %@ %f",scoreString,score);
                     //if (score > 0) {
-                    NSLog(@"%@ vs %@ ",phoneText,phone);
+                   // NSLog(@"%@ vs %@ ",phoneText,phone);
                     BOOL match = [phoneText isEqualToString:phone];
                     //if ( || true) {
                     UIColor *color = match? [self getColor2:score] : [UIColor whiteColor];
-                        NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
+                     //   NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
                         [coloredPhones addAttribute:NSBackgroundColorAttributeName
                                               value:color
                                               range:range];
@@ -345,87 +354,22 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                                  constant:0.0]];
             }
         }
-      //  NSLog(@"word is %@ phones %@",word, phoneToShow);
-        //cell.textLabel.text = [word stringByAppendingString:phoneToShow];
-        //break;
+//        exampleView.clipsToBounds = YES;
+        
+        // add a boundary marker
+        
+        CALayer *rightBorder = [CALayer layer];
+        rightBorder.borderColor = [UIColor colorWithWhite:0.8f
+                                                    alpha:1.0f].CGColor;
+        rightBorder.borderWidth = 1;
+        rightBorder.frame = CGRectMake(-3, -1, 2, 44);
+
+        [exampleView.layer addSublayer:rightBorder];
     }
     
     return cell;
 }
 
-//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    // Configure the cell...
-//    MyTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"WordScoreCell" forIndexPath:indexPath];
-// 
-//    NSMutableArray *icons = [[NSMutableArray alloc] init];
-//    [icons addObject:cell.first];
-//    [icons addObject:cell.second];
-//    [icons addObject:cell.third];
-//    [icons addObject:cell.fourth];
-//    [icons addObject:cell.fifth];
-//    
-//    for (UIView *container in icons) {
-//        for (UIView *v in [container subviews]) {
-//            [v removeFromSuperview];
-//        }
-//    }
-//    
-//    NSInteger row = indexPath.row;
-//    NSString *exid = [_exList objectAtIndex:row];
-//    NSArray *answers = [_exToHistory objectForKey:exid];
-//    //NSLog(@"ex answers %@ %@",exid,answers);
-//
-//    int index = 0;
-//  //  int correctCount = 0;
-//  //  int incorrectCount = 0;
-//    for (NSString *correct in answers) {
-//      //  NSLog(@"ex %@ %@",exid,correct);
-//        UIView *container = [icons objectAtIndex:(index++ + (5-[answers count]))];
-//        
-//        FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
-//        correctView.image = nil;
-//        if ([correct isEqualToString:@"Y"]) {
-//            [correctView setDefaultIconIdentifier:@"fa-check"];
-//            correctView.defaultIconColor = [UIColor greenColor];
-//            correctView.defaultView.backgroundColor = [UIColor greenColor];
-////            if (index == [answers count]) {
-////                correctCount++;
-////            }
-//        }
-//        else {
-//            [correctView setDefaultIconIdentifier:@"fa-times"];
-//            correctView.defaultIconColor = [UIColor redColor];
-//            correctView.defaultView.backgroundColor = [UIColor redColor];
-////            if (index == [answers count]) {
-////                incorrectCount++;
-////            }
-//        }
-//       
-//        [container addSubview:correctView];
-//    }
-////    NSLog(@"correct %d incorrect %d",correctCount,incorrectCount);
-//    
-//    // TODO display and calc correct/incorrect skipped
-//    
-//    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_exToFL objectForKey:exid]];
-//
-//    NSRange range = NSMakeRange(0, [result length]);
-//    NSString *scoreString = [_exToScore objectForKey:exid];
-//    float score = [scoreString floatValue]/100.0f;
-//   
-//   // NSLog(@"score was %@ %f",scoreString,score);
-//    if (score > 0) {
-//        UIColor *color = [self getColor2:score];
-//        [result addAttribute:NSBackgroundColorAttributeName
-//                       value:color
-//                       range:range];
-//    }
-//    
-//    cell.fl.attributedText = result;
-//    
-//    return cell;
-//}
 
 - (UIColor *) getColor2:(float) score {
     if (score > 1.0) score = 1.0;
