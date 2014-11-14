@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */ = {isa = PBXBuildFile; fileRef = B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */; };
 		B61B82261A154C36009B00D1 /* EAFAudioView.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B82251A154C36009B00D1 /* EAFAudioView.m */; };
+		B61B82291A16C191009B00D1 /* rightAndWrong.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B82281A16C191009B00D1 /* rightAndWrong.png */; };
+		B61B822B1A16C921009B00D1 /* sounds.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B822A1A16C921009B00D1 /* sounds.png */; };
 		B62624671A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */; };
 		B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC41A09397200C3B62E /* EAFWordScoreTableViewController.m */; };
 		B636FFC71A09549E00C3B62E /* EAFScoreReportTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */; };
@@ -94,6 +96,8 @@
 		B610C00919D2240800CA9D8A /* EAFRecoFlashcardController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFRecoFlashcardController.h; sourceTree = "<group>"; };
 		B61B82251A154C36009B00D1 /* EAFAudioView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFAudioView.m; sourceTree = "<group>"; };
 		B61B82271A154C59009B00D1 /* EAFAudioView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EAFAudioView.h; sourceTree = "<group>"; };
+		B61B82281A16C191009B00D1 /* rightAndWrong.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rightAndWrong.png; sourceTree = "<group>"; };
+		B61B822A1A16C921009B00D1 /* sounds.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sounds.png; sourceTree = "<group>"; };
 		B62624651A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFPhoneScoreTableViewController.h; sourceTree = "<group>"; };
 		B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFPhoneScoreTableViewController.m; sourceTree = "<group>"; };
 		B636FFC31A09397200C3B62E /* EAFWordScoreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFWordScoreTableViewController.h; sourceTree = "<group>"; };
@@ -238,6 +242,8 @@
 		B66BACBF1970A57B00E28ECC /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B61B822A1A16C921009B00D1 /* sounds.png */,
+				B61B82281A16C191009B00D1 /* rightAndWrong.png */,
 				B6AB39BC19FACF4D00B250C1 /* redx32.png */,
 				B6AB39BA19FACF4300B250C1 /* checkmark32.png */,
 				B67666A419F0798800ECA678 /* micBiggerCircleTransparent.png */,
@@ -532,6 +538,7 @@
 				B66BACBE1970A2FE00E28ECC /* NewProF1.png in Resources */,
 				B6D0017A1970ADAC009554D5 /* squareStop.png in Resources */,
 				B6A8D97719770C2100E8F1D5 /* Icon-40.png in Resources */,
+				B61B822B1A16C921009B00D1 /* sounds.png in Resources */,
 				B69821321A02978500BB9865 /* FontAwesome.ttf in Resources */,
 				B6A8D97819770C2100E8F1D5 /* Icon-40@2x.png in Resources */,
 				B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */,
@@ -543,6 +550,7 @@
 				B68A5C341979B3480036B90C /* mic-icon.png in Resources */,
 				F6A5682818ECA98A00B844C6 /* InfoPlist.strings in Resources */,
 				B67666A519F0798800ECA678 /* micBiggerCircleTransparent.png in Resources */,
+				B61B82291A16C191009B00D1 /* rightAndWrong.png in Resources */,
 				B6A8D97919770C2100E8F1D5 /* Icon-60.png in Resources */,
 				F6A5683118ECA98B00B844C6 /* Main.storyboard in Resources */,
 			);

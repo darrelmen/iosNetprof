@@ -23,7 +23,7 @@
     NSLog(@"got word score table view did load");
     
     _user=1;  // TODO find this out at login/sign up
-
+     
     [self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;

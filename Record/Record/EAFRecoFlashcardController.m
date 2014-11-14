@@ -1475,7 +1475,8 @@ double gestureEnd;
     EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
     
     EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
-    
+    wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+   // wordReport.tabBarItem.image.renderingMode = UIImageRenderingModeAlwaysOriginal;
     wordReport.language = _language;
     wordReport.chapterName = _chapterTitle;
     wordReport.chapterSelection = _currentChapter;
@@ -1495,6 +1496,7 @@ double gestureEnd;
     wordReport.exToEnglish = exToEnglish;   
    
     EAFPhoneScoreTableViewController *phoneReport = [[tabBarController viewControllers] objectAtIndex:1];
+    phoneReport.tabBarItem.image = [[UIImage imageNamed:@"sounds.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     
     phoneReport.language = _language;
     phoneReport.chapterName = _chapterTitle;
