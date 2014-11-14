@@ -132,9 +132,9 @@
         [_whatToShow setTitle:@"Def." forSegmentAtIndex:0];
     }
     
-     _showScores = [BButton awesomeButtonWithOnlyIcon:FATrophy
-                                  type: BButtonTypeDefault
-                                 style:BButtonStyleBootstrapV3];
+//     _showScores = [BButton awesomeButtonWithOnlyIcon:FATrophy
+//                                  type: BButtonTypeDefault
+//                                 style:BButtonStyleBootstrapV3];
    // [_showScores sizeToFit];
 //    CGRect frame = CGRectMake(32.0f + (0 * 144.0f),
 //                              40.0f + (1 * 60.0f),
@@ -959,7 +959,7 @@ double gestureEnd;
     
    // NSLog(@"file length %@",postLength);
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
-    NSLog(@"talking to %@",_url);
+  //  NSLog(@"talking to %@",_url);
 
    // NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
@@ -1072,12 +1072,42 @@ double gestureEnd;
 }
 
 - (void)setDisplayMessage:(NSString *) toUse {
+    NSLog(@"display %@",toUse);
     UILabel *toShow = [[UILabel alloc] init];
+    [toShow setTranslatesAutoresizingMaskIntoConstraints:NO];
+
     toShow.text =toUse;//@"Please speak louder";
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
     }
     [_scoreDisplayContainer addSubview:toShow];
+    
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                constraintWithItem:toShow
+                                attribute:NSLayoutAttributeHeight
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:_scoreDisplayContainer
+                                attribute:NSLayoutAttributeHeight
+                                multiplier:1.0
+                                constant:0.0]];
+    
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint constraintWithItem:toShow
+                                                          attribute:NSLayoutAttributeCenterX
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:_scoreDisplayContainer
+                                                          attribute:NSLayoutAttributeCenterX
+                                                         multiplier:1
+                                                           constant:0]];
+    
+    
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                constraintWithItem:toShow
+                                attribute:NSLayoutAttributeBottom
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:_scoreDisplayContainer
+                                attribute:NSLayoutAttributeBottom
+                                multiplier:1.0
+                                constant:0.0]];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
@@ -1086,7 +1116,7 @@ double gestureEnd;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 
     [_recoFeedbackImage stopAnimating];
-    //NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSASCIIStringEncoding];  
+    //NSString *stringVersion = [[NSString alloc] initWithData:_responseData encoding:NSASCIIStringEncoding];
     //NSLog(@"go response %@",stringVersion);
     
     NSError * error;
@@ -1101,7 +1131,7 @@ double gestureEnd;
   //  NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
   //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *valid = [json objectForKey:@"valid"];
-  //  NSLog(@"validity was %@",valid);
+    NSLog(@"validity was %@",valid);
     
     // show text highlighted with score per word
 //    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
@@ -1145,6 +1175,10 @@ double gestureEnd;
     else {
         if ([valid containsString:@"MIC"] || [valid containsString:@"TOO_QUIET"]) {
             [self setDisplayMessage:@"Please speak louder"];
+        }
+        else if ([valid containsString:@"TOO_LOUD"]) {
+            [self setDisplayMessage:@"Please speak softer"];
+
         }
         else {
             [self setDisplayMessage:[json objectForKey:@"valid"]];

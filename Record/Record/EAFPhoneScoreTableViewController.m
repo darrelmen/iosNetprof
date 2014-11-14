@@ -11,6 +11,7 @@
 #import "MyTableViewCell.h"
 #import "EAFAudioView.h"
 #import <AudioToolbox/AudioServices.h>
+#import "FAImageView.h"
 
 @interface EAFPhoneScoreTableViewController ()
 
@@ -26,12 +27,28 @@
     
     _user=1;  // TODO find this out at login/sign up
 
+    playingIcon = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
+    playingIcon.image = nil;
+    [playingIcon setDefaultIconIdentifier:@"fa-volume-up"];
+    playingIcon.defaultView.textColor = [UIColor blueColor];
+
     [self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+   // _tableView.cancelTouchesInView = NO;
+    
+}
+
+- (BOOL) cancelTouchesInView {
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
 }
 
 - (void)askServerForJson {
@@ -198,6 +215,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             NSString *wordInResult = [wordResult objectForKey:@"id"];
             UILabel *wordLabel = [[UILabel alloc] init];
             
+//            UITapGestureRecognizer *singleFingerTap =
+//            [[UITapGestureRecognizer alloc] initWithTarget:self
+//                                                    action:@selector(gotLabelTap:)];
+//            [wordLabel addGestureRecognizer:singleFingerTap];
+            
             NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
             
             NSRange range = NSMakeRange(0, [coloredWord length]);
@@ -359,29 +381,110 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         
       //  [exampleView addTarget:self action:@selector(playAudioClick:) forControlEvents:UIControlEventTouchUpInside];
 
+        exampleView.userInteractionEnabled = YES;
         
+//        UITapGestureRecognizer *singleFingerTap =
+//        [[UITapGestureRecognizer alloc] initWithTarget:self
+//                                                action:@selector(playAudioClick:)];
+//        singleFingerTap.delegate = self;
+//        [exampleView addGestureRecognizer:singleFingerTap];
         
-        UITapGestureRecognizer *singleFingerTap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                action:@selector(playAudioClick:)];
-        [exampleView addGestureRecognizer:singleFingerTap];
-       
+//        NSLog(@"add gesture %@ (%lu) to %@",singleFingerTap,
+//              (unsigned long)exampleView.gestureRecognizers.count,exampleView);
+//
+//
+        
+        // click goes to example view
+//        singleFingerTap =
+//        [[UITapGestureRecognizer alloc] initWithTarget:exampleView
+//                                                action:@selector(gotClick:)];
+//        singleFingerTap.delegate = self;
+//
+//        [exampleView addGestureRecognizer:singleFingerTap];
+
     }
     
     return cell;
 }
 
 - (IBAction)playAudioClick:(UITapGestureRecognizer *)sender {
- //   NSLog(@"got click on %@",sender);
-   // NSLog(@"got click on %@",sender.view);
-    //NSLog(@"got click on %@ %@",sender.refAudio,sender.answer);
-    playingRef = TRUE;
+    
+    NSLog(@"playAudioClick %@",sender);
 
+    playingRef = TRUE;
     currentAudioSelection = (EAFAudioView *)sender.view;
+    [currentAudioSelection addSubview:playingIcon];
     [self playRefAudio:(EAFAudioView *)sender.view];
 }
 
+- (IBAction)gotTap:(id)sender {
+    NSLog(@"gotTap %@",sender);
+}
 
+- (IBAction)gotTapGesture:(UITapGestureRecognizer *) sender {
+    NSLog(@"gotTapGesture %@",sender);
+    
+    CGPoint p = [sender locationInView:sender.view];
+    NSLog(@"Got point %f %f",p.x,p.y);
+    
+    p = [sender locationInView:self.tableView];
+    NSLog(@"Got point %f %f",p.x,p.y);
+    
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
+    NSLog(@"Got path %@",indexPath);
+    
+    if (indexPath == nil) {
+        NSLog(@"press on table view but not on a row");
+    } else {
+        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+        //if (cell.isHighlighted) {
+            NSLog(@" press on table view at section %ld row %ld", (long)indexPath.section, (long)indexPath.row);
+        //}
+        p = [sender locationInView:cell.contentView];
+        NSLog(@"Got point in cell content view %f %f",p.x,p.y);
+        
+        for (UIView *subview in [cell.contentView subviews]) {
+            CGPoint loc = [sender locationInView:subview];
+            
+            NSLog(@"Loc in %@ is %f %f",subview,loc.x,loc.y);
+            
+            if(CGRectContainsPoint(subview.frame, loc))
+            {
+                NSLog(@"--------> In View for %@",subview);
+                //return myView;
+            }
+            
+            if(CGRectContainsPoint(subview.bounds, loc))
+            {
+                NSLog(@"-XXXX-----> In View for %@",subview);
+                //return myView;
+            
+                
+                playingRef = TRUE;
+                currentAudioSelection = (EAFAudioView *)subview;
+                [currentAudioSelection addSubview:playingIcon];
+                [self playRefAudio:(EAFAudioView *)subview];
+            }
+//                  //  UITouchesEvent *touch = (UITouchesEvent *) event;
+//                    CGPoint convertedPoint = [subview convertPoint:p fromView:cell.contentView];
+//                    UIView *hitTestView = [subview hitTest:convertedPoint withEvent:sender.];
+//                    if (hitTestView) {
+//                        NSLog(@"got hit at %@",hitTestView);
+//                        //return hitTestView;
+//                    }
+                }
+    }
+}
+
+- (IBAction)gotTap2:(id)sender {
+    NSLog(@"gotTap2 %@",sender);
+}
+
+- (IBAction)gotLabelTap:(id)sender {
+    NSLog(@"gotLabelTap %@",sender);
+}
+
+FAImageView *playingIcon;
 EAFAudioView * currentAudioSelection;
 bool playingRef = TRUE;
 
@@ -446,6 +549,13 @@ bool playingRef = TRUE;
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
     NSLog(@" playerItemDidReachEnd");
+    
+    for (UIView *v in [currentAudioSelection subviews]) {
+        if (v == playingIcon) {
+            [v removeFromSuperview];
+        }
+    }
+
     if (playingRef) {
         playingRef = FALSE;
         [self playRefAudio:currentAudioSelection];
@@ -454,6 +564,11 @@ bool playingRef = TRUE;
 
 - (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
     NSLog(@"Got error %@", error);
+    for (UIView *v in [currentAudioSelection subviews]) {
+        if (v == playingIcon) {
+            [v removeFromSuperview];
+        }
+    }
 }
 
 
@@ -498,7 +613,7 @@ bool playingRef = TRUE;
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't play audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alert show];
             
-            NSLog(@"player status failed %@",_player.status);
+          //  NSLog(@"player status failed %@",_player.status);
             
             [_player removeObserver:self forKeyPath:@"status"];
         }

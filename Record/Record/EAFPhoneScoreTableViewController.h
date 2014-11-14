@@ -10,7 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 
-@interface EAFPhoneScoreTableViewController : UITableViewController<NSURLConnectionDelegate,AVAudioPlayerDelegate>
+@interface EAFPhoneScoreTableViewController : UITableViewController<NSURLConnectionDelegate,AVAudioPlayerDelegate, UIGestureRecognizerDelegate>
 
 @property (strong, nonatomic) NSMutableData *responseData;
 
@@ -28,5 +28,6 @@
 @property NSString *url;
 
 @property long user;
+- (IBAction)playAudioClick:(UITapGestureRecognizer *)sender;
 
 @end

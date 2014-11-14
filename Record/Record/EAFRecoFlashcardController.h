@@ -50,7 +50,7 @@
 @property (strong, nonatomic) IBOutlet UIProgressView *scoreProgress;
 @property AVPlayer *player;
 @property (strong, nonatomic) IBOutlet UIView *scoreButtonView;
-@property (strong, nonatomic) IBOutlet BButton *showScores;
+//@property (strong, nonatomic) IBOutlet BButton *showScores;
 - (IBAction)showScoresClick:(id)sender;
 
 

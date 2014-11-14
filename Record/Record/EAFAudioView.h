@@ -8,10 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EAFAudioView : UIView
+@interface EAFAudioView : UIView<UIGestureRecognizerDelegate>
 
 @property (nonatomic, weak) NSString* refAudio;
 @property (nonatomic, weak) NSString* answer;
+- (IBAction)gotClick:(id)sender;
+- (IBAction)handleGesture:(UITapGestureRecognizer *)gestureRecognizer;
 
 @end
 
