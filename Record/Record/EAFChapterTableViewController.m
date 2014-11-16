@@ -8,6 +8,7 @@
 
 #import "EAFChapterTableViewController.h"
 #import "EAFItemTableViewController.h"
+#import "SSKeychain.h"
 
 @interface EAFChapterTableViewController ()
 
@@ -31,6 +32,11 @@
     if (self.chapters == nil) {
         self.chapters = [[NSMutableArray alloc] init];
     }
+    
+    _language = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
+
+   // NSString *newTitle = [NSString stringWithFormat:@"%@ %@",_language];
+    [self setTitle:_language];
     NSLog(@"viewDidLoad lang %@ %@ back = '%@'", _language, [self title], self.navigationItem.backBarButtonItem.title);
     
     if (_jsonContentArray == nil) {
@@ -422,8 +428,6 @@ NSArray *currentItems;
             }
         }
     }
-    
-    //NSLog(@"jump type is %@",controllerToJumpTo);
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath

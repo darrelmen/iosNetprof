@@ -26,12 +26,12 @@
     NSLog(@"got phone score table view did load");
     
     _user=1;  // TODO find this out at login/sign up
-
+    
     playingIcon = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
     playingIcon.image = nil;
     [playingIcon setDefaultIconIdentifier:@"fa-volume-up"];
     playingIcon.defaultView.textColor = [UIColor blueColor];
-
+    
     [self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -39,7 +39,7 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
-   // _tableView.cancelTouchesInView = NO;
+    // _tableView.cancelTouchesInView = NO;
     
 }
 
@@ -52,7 +52,7 @@
 }
 
 - (void)askServerForJson {
-   // NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
+    // NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=phoneReport&user=%ld&%@=%@", _language, _user, _chapterName, _chapterSelection];
     
     NSLog(@"EAFPhoneScoreTableViewController url %@",baseurl);
@@ -109,20 +109,20 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Configure the cell...
-  //  MyTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"WordScoreCell" forIndexPath:indexPath];
+    //  MyTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"WordScoreCell" forIndexPath:indexPath];
     static NSString *CellIdentifier = @"PhoneCell";
-
+    
     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     UIView *bgColorView = [[UIView alloc] init];
-
+    
     [bgColorView setBackgroundColor:[UIColor whiteColor]];
     [cell setSelectedBackgroundView:bgColorView];
     
     NSString *phone = [_phonesInOrder objectAtIndex:indexPath.row];
-   
- //   NSLog(@"tableView phone is %@",phone);
-
+    
+    //   NSLog(@"tableView phone is %@",phone);
+    
     for (UIView *v in [cell.contentView subviews]) {
         [v removeFromSuperview];
     }
@@ -142,16 +142,16 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSArray *resultWords = [_resultToWords objectForKey:result];
         
         
-       // UIView *exampleView = [[UIView alloc] init];
+        // UIView *exampleView = [[UIView alloc] init];
         EAFAudioView *exampleView = [[EAFAudioView alloc] init];
         exampleView.translatesAutoresizingMaskIntoConstraints = NO;
         [cell.contentView addSubview:exampleView];
         
         exampleView.refAudio = [_resultToRef objectForKey:result];
         exampleView.answer =[_resultToAnswer objectForKey:result];
-
+        
         //NSLog(@"ref %@ %@",exampleView.refAudio, exampleView.answer);
-       // NSLog(@"word is %@",wordEntry);
+        // NSLog(@"word is %@",wordEntry);
         // first example view constraints left side to left side of container
         // all - top to top of container
         // bottom to bottom of container
@@ -215,10 +215,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             NSString *wordInResult = [wordResult objectForKey:@"id"];
             UILabel *wordLabel = [[UILabel alloc] init];
             
-//            UITapGestureRecognizer *singleFingerTap =
-//            [[UITapGestureRecognizer alloc] initWithTarget:self
-//                                                    action:@selector(gotLabelTap:)];
-//            [wordLabel addGestureRecognizer:singleFingerTap];
+            //            UITapGestureRecognizer *singleFingerTap =
+            //            [[UITapGestureRecognizer alloc] initWithTarget:self
+            //                                                    action:@selector(gotLabelTap:)];
+            //            [wordLabel addGestureRecognizer:singleFingerTap];
             
             NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
             
@@ -235,7 +235,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             }
             
             wordLabel.attributedText = coloredWord;
-         //   NSLog(@"label word is %@",wordLabel.attributedText);
+            //   NSLog(@"label word is %@",wordLabel.attributedText);
             
             //[wordLabel setTextColor:[UIColor blackColor]];
             //  [wordLabel setBackgroundColor:[UIColor colorWithHue:32 saturation:100 brightness:63 alpha:1]];
@@ -244,47 +244,47 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             
             
             [exampleView addSubview:wordLabel];
-
-            [exampleView addConstraint:[NSLayoutConstraint
-                                             constraintWithItem:wordLabel
-                                             attribute:NSLayoutAttributeTop
-                                             relatedBy:NSLayoutRelationEqual
-                                             toItem:exampleView
-                                             attribute:NSLayoutAttributeTop
-                                             multiplier:1.0
-                                             constant:0.0]];
             
             [exampleView addConstraint:[NSLayoutConstraint
-                                             constraintWithItem:wordLabel
-                                             attribute:NSLayoutAttributeLeft
-                                             relatedBy:NSLayoutRelationEqual
-                                             toItem:exampleView
-                                             attribute:NSLayoutAttributeLeft
-                                             multiplier:1.0
-                                             constant:0.0]];
+                                        constraintWithItem:wordLabel
+                                        attribute:NSLayoutAttributeTop
+                                        relatedBy:NSLayoutRelationEqual
+                                        toItem:exampleView
+                                        attribute:NSLayoutAttributeTop
+                                        multiplier:1.0
+                                        constant:0.0]];
             
             [exampleView addConstraint:[NSLayoutConstraint
-                                             constraintWithItem:wordLabel
-                                             attribute:NSLayoutAttributeRight
-                                             relatedBy:NSLayoutRelationEqual
-                                             toItem:exampleView
-                                             attribute:NSLayoutAttributeRight
-                                             multiplier:1.0
-                                             constant:0.0]];
-
+                                        constraintWithItem:wordLabel
+                                        attribute:NSLayoutAttributeLeft
+                                        relatedBy:NSLayoutRelationEqual
+                                        toItem:exampleView
+                                        attribute:NSLayoutAttributeLeft
+                                        multiplier:1.0
+                                        constant:0.0]];
+            
             [exampleView addConstraint:[NSLayoutConstraint
-                                             constraintWithItem:wordLabel
-                                             attribute:NSLayoutAttributeHeight
-                                             relatedBy:NSLayoutRelationEqual
-                                             toItem:exampleView
-                                             attribute:NSLayoutAttributeHeight
-                                             multiplier:0.5
-                                             constant:0.0]];
-     
+                                        constraintWithItem:wordLabel
+                                        attribute:NSLayoutAttributeRight
+                                        relatedBy:NSLayoutRelationEqual
+                                        toItem:exampleView
+                                        attribute:NSLayoutAttributeRight
+                                        multiplier:1.0
+                                        constant:0.0]];
+            
+            [exampleView addConstraint:[NSLayoutConstraint
+                                        constraintWithItem:wordLabel
+                                        attribute:NSLayoutAttributeHeight
+                                        relatedBy:NSLayoutRelationEqual
+                                        toItem:exampleView
+                                        attribute:NSLayoutAttributeHeight
+                                        multiplier:0.5
+                                        constant:0.0]];
+            
             if ([wordInResult isEqualToString:wordPhoneAppearsIn]) {
                 
                 NSString *phoneToShow = @"";
-
+                
                 for (NSDictionary *phoneInfo in [wordResult objectForKey:@"phones"]) {
                     NSString *phoneText =[phoneInfo objectForKey:@"p"];
                     phoneToShow = [phoneToShow stringByAppendingString:phoneText];
@@ -292,13 +292,13 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 }
                 
                 NSMutableAttributedString *coloredPhones = [[NSMutableAttributedString alloc] initWithString:phoneToShow];
-               
+                
                 int start = 0;
                 for (NSDictionary *phoneInfo in [wordResult objectForKey:@"phones"]) {
                     NSString *phoneText =[phoneInfo objectForKey:@"p"];
                     //phoneToShow = [phoneToShow stringByAppendingString:phoneText];
                     //phoneToShow = [phoneToShow stringByAppendingString:@" "];
-                
+                    
                     NSRange range = NSMakeRange(start, [phoneText length]);
                     start += range.length+1;//1 + [phoneText length];
                     NSString *scoreString = [phoneInfo objectForKey:@"s"];
@@ -306,20 +306,20 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     
                     // NSLog(@"score was %@ %f",scoreString,score);
                     //if (score > 0) {
-                   // NSLog(@"%@ vs %@ ",phoneText,phone);
+                    // NSLog(@"%@ vs %@ ",phoneText,phone);
                     BOOL match = [phoneText isEqualToString:phone];
                     //if ( || true) {
                     UIColor *color = match? [self getColor2:score] : [UIColor whiteColor];
-                     //   NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
-                        [coloredPhones addAttribute:NSBackgroundColorAttributeName
-                                              value:color
-                                              range:range];
-                   // }
+                    //   NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
+                    [coloredPhones addAttribute:NSBackgroundColorAttributeName
+                                          value:color
+                                          range:range];
+                    // }
                     //}
-                
+                    
                 }
                 
-             
+                
                 UILabel *phoneLabel = [[UILabel alloc] init];
                 phoneLabel.attributedText = coloredPhones;
                 
@@ -331,43 +331,43 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 [exampleView addSubview:phoneLabel];
                 
                 [exampleView addConstraint:[NSLayoutConstraint
-                                                 constraintWithItem:phoneLabel
-                                                 attribute:NSLayoutAttributeHeight
-                                                 relatedBy:NSLayoutRelationEqual
-                                                 toItem:exampleView
-                                                 attribute:NSLayoutAttributeHeight
-                                                 multiplier:0.5
-                                                 constant:0.0]];
+                                            constraintWithItem:phoneLabel
+                                            attribute:NSLayoutAttributeHeight
+                                            relatedBy:NSLayoutRelationEqual
+                                            toItem:exampleView
+                                            attribute:NSLayoutAttributeHeight
+                                            multiplier:0.5
+                                            constant:0.0]];
                 
                 [exampleView addConstraint:[NSLayoutConstraint
-                                                 constraintWithItem:phoneLabel
-                                                 attribute:NSLayoutAttributeLeft
-                                                 relatedBy:NSLayoutRelationEqual
-                                                 toItem:exampleView
-                                                 attribute:NSLayoutAttributeLeft
-                                                 multiplier:1.0
-                                                 constant:0.0]];
+                                            constraintWithItem:phoneLabel
+                                            attribute:NSLayoutAttributeLeft
+                                            relatedBy:NSLayoutRelationEqual
+                                            toItem:exampleView
+                                            attribute:NSLayoutAttributeLeft
+                                            multiplier:1.0
+                                            constant:0.0]];
                 
                 [exampleView addConstraint:[NSLayoutConstraint
-                                                 constraintWithItem:phoneLabel
-                                                 attribute:NSLayoutAttributeRight
-                                                 relatedBy:NSLayoutRelationEqual
-                                                 toItem:exampleView
-                                                 attribute:NSLayoutAttributeRight
-                                                 multiplier:1.0
-                                                 constant:0.0]];
+                                            constraintWithItem:phoneLabel
+                                            attribute:NSLayoutAttributeRight
+                                            relatedBy:NSLayoutRelationEqual
+                                            toItem:exampleView
+                                            attribute:NSLayoutAttributeRight
+                                            multiplier:1.0
+                                            constant:0.0]];
                 
                 [exampleView addConstraint:[NSLayoutConstraint
-                                                 constraintWithItem:phoneLabel
-                                                 attribute:NSLayoutAttributeBottom
-                                                 relatedBy:NSLayoutRelationEqual
-                                                 toItem:exampleView
-                                                 attribute:NSLayoutAttributeBottom
-                                                 multiplier:1.0
-                                                 constant:0.0]];
+                                            constraintWithItem:phoneLabel
+                                            attribute:NSLayoutAttributeBottom
+                                            relatedBy:NSLayoutRelationEqual
+                                            toItem:exampleView
+                                            attribute:NSLayoutAttributeBottom
+                                            multiplier:1.0
+                                            constant:0.0]];
             }
         }
-//        exampleView.clipsToBounds = YES;
+        //        exampleView.clipsToBounds = YES;
         
         // add a boundary marker
         
@@ -376,77 +376,77 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                                     alpha:1.0f].CGColor;
         rightBorder.borderWidth = 1;
         rightBorder.frame = CGRectMake(-3, -1, 2, 44);
-
+        
         [exampleView.layer addSublayer:rightBorder];
         
-      //  [exampleView addTarget:self action:@selector(playAudioClick:) forControlEvents:UIControlEventTouchUpInside];
-
+        //  [exampleView addTarget:self action:@selector(playAudioClick:) forControlEvents:UIControlEventTouchUpInside];
+        
         exampleView.userInteractionEnabled = YES;
         
-//        UITapGestureRecognizer *singleFingerTap =
-//        [[UITapGestureRecognizer alloc] initWithTarget:self
-//                                                action:@selector(playAudioClick:)];
-//        singleFingerTap.delegate = self;
-//        [exampleView addGestureRecognizer:singleFingerTap];
+        //        UITapGestureRecognizer *singleFingerTap =
+        //        [[UITapGestureRecognizer alloc] initWithTarget:self
+        //                                                action:@selector(playAudioClick:)];
+        //        singleFingerTap.delegate = self;
+        //        [exampleView addGestureRecognizer:singleFingerTap];
         
-//        NSLog(@"add gesture %@ (%lu) to %@",singleFingerTap,
-//              (unsigned long)exampleView.gestureRecognizers.count,exampleView);
-//
-//
+        //        NSLog(@"add gesture %@ (%lu) to %@",singleFingerTap,
+        //              (unsigned long)exampleView.gestureRecognizers.count,exampleView);
+        //
+        //
         
         // click goes to example view
-//        singleFingerTap =
-//        [[UITapGestureRecognizer alloc] initWithTarget:exampleView
-//                                                action:@selector(gotClick:)];
-//        singleFingerTap.delegate = self;
-//
-//        [exampleView addGestureRecognizer:singleFingerTap];
-
+        //        singleFingerTap =
+        //        [[UITapGestureRecognizer alloc] initWithTarget:exampleView
+        //                                                action:@selector(gotClick:)];
+        //        singleFingerTap.delegate = self;
+        //
+        //        [exampleView addGestureRecognizer:singleFingerTap];
+        
     }
     
     return cell;
 }
 
-- (IBAction)playAudioClick:(UITapGestureRecognizer *)sender {
-    
-    NSLog(@"playAudioClick %@",sender);
+//- (IBAction)playAudioClick:(UITapGestureRecognizer *)sender {
+//
+//    NSLog(@"playAudioClick %@",sender);
+//
+//    playingRef = TRUE;
+//    currentAudioSelection = (EAFAudioView *)sender.view;
+//    [currentAudioSelection addSubview:playingIcon];
+//    [self playRefAudio:(EAFAudioView *)sender.view];
+//}
 
-    playingRef = TRUE;
-    currentAudioSelection = (EAFAudioView *)sender.view;
-    [currentAudioSelection addSubview:playingIcon];
-    [self playRefAudio:(EAFAudioView *)sender.view];
-}
-
-- (IBAction)gotTap:(id)sender {
-    NSLog(@"gotTap %@",sender);
-}
+//- (IBAction)gotTap:(id)sender {
+//    NSLog(@"gotTap %@",sender);//
+//}
 
 - (IBAction)gotTapGesture:(UITapGestureRecognizer *) sender {
-    NSLog(@"gotTapGesture %@",sender);
+    ///  NSLog(@"gotTapGesture %@",sender);
     
     CGPoint p = [sender locationInView:sender.view];
-    NSLog(@"Got point %f %f",p.x,p.y);
+    //  NSLog(@"Got point %f %f",p.x,p.y);
     
     p = [sender locationInView:self.tableView];
-    NSLog(@"Got point %f %f",p.x,p.y);
+    //  NSLog(@"Got point %f %f",p.x,p.y);
     
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
-    NSLog(@"Got path %@",indexPath);
+    //  NSLog(@"Got path %@",indexPath);
     
     if (indexPath == nil) {
         NSLog(@"press on table view but not on a row");
     } else {
         UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
         //if (cell.isHighlighted) {
-            NSLog(@" press on table view at section %ld row %ld", (long)indexPath.section, (long)indexPath.row);
+        //    NSLog(@" press on table view at section %ld row %ld", (long)indexPath.section, (long)indexPath.row);
         //}
         p = [sender locationInView:cell.contentView];
-        NSLog(@"Got point in cell content view %f %f",p.x,p.y);
+        //  NSLog(@"Got point in cell content view %f %f",p.x,p.y);
         
         for (UIView *subview in [cell.contentView subviews]) {
             CGPoint loc = [sender locationInView:subview];
             
-            NSLog(@"Loc in %@ is %f %f",subview,loc.x,loc.y);
+            //        NSLog(@"Loc in %@ is %f %f",subview,loc.x,loc.y);
             
             if(CGRectContainsPoint(subview.frame, loc))
             {
@@ -457,32 +457,23 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             if(CGRectContainsPoint(subview.bounds, loc))
             {
                 NSLog(@"-XXXX-----> In View for %@",subview);
-                //return myView;
-            
                 
                 playingRef = TRUE;
                 currentAudioSelection = (EAFAudioView *)subview;
                 [currentAudioSelection addSubview:playingIcon];
                 [self playRefAudio:(EAFAudioView *)subview];
             }
-//                  //  UITouchesEvent *touch = (UITouchesEvent *) event;
-//                    CGPoint convertedPoint = [subview convertPoint:p fromView:cell.contentView];
-//                    UIView *hitTestView = [subview hitTest:convertedPoint withEvent:sender.];
-//                    if (hitTestView) {
-//                        NSLog(@"got hit at %@",hitTestView);
-//                        //return hitTestView;
-//                    }
-                }
+        }
     }
 }
 
-- (IBAction)gotTap2:(id)sender {
-    NSLog(@"gotTap2 %@",sender);
-}
-
-- (IBAction)gotLabelTap:(id)sender {
-    NSLog(@"gotLabelTap %@",sender);
-}
+//- (IBAction)gotTap2:(id)sender {
+//    NSLog(@"gotTap2 %@",sender);
+//}
+//
+//- (IBAction)gotLabelTap:(id)sender {
+//    NSLog(@"gotLabelTap %@",sender);
+//}
 
 FAImageView *playingIcon;
 EAFAudioView * currentAudioSelection;
@@ -491,7 +482,7 @@ bool playingRef = TRUE;
 // look for local file with mp3 and use it if it's there.
 - (IBAction)playRefAudio:(EAFAudioView *)sender {
     NSLog(@"playRefAudio %@",sender);
-
+    
     NSString *refPath = playingRef ? sender.refAudio : sender.answer;
     
     NSString *refAudioPath;
@@ -555,7 +546,7 @@ bool playingRef = TRUE;
             [v removeFromSuperview];
         }
     }
-
+    
     if (playingRef) {
         playingRef = FALSE;
         [self playRefAudio:currentAudioSelection];
@@ -581,15 +572,7 @@ bool playingRef = TRUE;
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
             NSLog(@" audio ready so playing...");
-            
-//            NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
-//            
-//            NSRange range= NSMakeRange(0, [result length]);
-//            [result addAttribute:NSBackgroundColorAttributeName
-//                           value:[UIColor yellowColor]
-//                           range:range];
-//            [_foreignLang setAttributedText:result];
-//            
+
             [_player play];
             
             AVPlayerItem *currentItem = [_player currentItem];
@@ -613,7 +596,7 @@ bool playingRef = TRUE;
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't play audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alert show];
             
-          //  NSLog(@"player status failed %@",_player.status);
+            //  NSLog(@"player status failed %@",_player.status);
             
             [_player removeObserver:self forKeyPath:@"status"];
         }
@@ -653,42 +636,42 @@ bool playingRef = TRUE;
 }
 
 /*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
+ // Override to support conditional editing of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ // Return NO if you do not want the specified item to be editable.
+ return YES;
+ }
+ */
 
 /*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
+ // Override to support editing the table view.
+ - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ if (editingStyle == UITableViewCellEditingStyleDelete) {
+ // Delete the row from the data source
+ [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+ } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+ // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+ }
+ }
+ */
 
 /*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
+ // Override to support rearranging the table view.
+ - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+ {
+ }
+ */
 
 /*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
+ // Override to support conditional rearranging of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ // Return NO if you do not want the item to be re-orderable.
+ return YES;
+ }
+ */
 
 #pragma mark NSURLConnection Delegate Methods
 
@@ -698,19 +681,17 @@ bool playingRef = TRUE;
     // Furthermore, this method is called each time there is a redirect so reinitializing it
     // also serves to clear it
     
-  //  NSLog(@"didReceiveResponse ----- ");
-
+    //  NSLog(@"didReceiveResponse ----- ");
+    
     _responseData = [[NSMutableData alloc] init];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-   // NSLog(@"didReceiveData ----- ");
-
+    // NSLog(@"didReceiveData ----- ");
+    
     // Append the new data to the instance variable you declared
     [_responseData appendData:data];
 }
-//NSDictionary* chapterInfo;
-//BOOL hasModel;
 
 - (BOOL)useJsonChapterData {
     NSError * error;
@@ -724,7 +705,7 @@ bool playingRef = TRUE;
         return false;
     }
     
- //   NSLog(@"useJsonChapter data ");
+    //   NSLog(@"useJsonChapter data ");
     
     NSDictionary *phoneDict = [json objectForKey:@"phones"];
     NSDictionary *resultsDict = [json objectForKey:@"results"];
@@ -734,9 +715,9 @@ bool playingRef = TRUE;
     _resultToRef   = [[NSMutableDictionary alloc] init];
     _resultToAnswer   = [[NSMutableDictionary alloc] init];
     _resultToWords   = [[NSMutableDictionary alloc] init];
-
+    
     for (NSString *phone in phoneDict) {
-         NSArray *wordsPhoneAppearsIn = [phoneDict objectForKey:phone];
+        NSArray *wordsPhoneAppearsIn = [phoneDict objectForKey:phone];
         [_phoneToWords setValue:wordsPhoneAppearsIn forKey:phone];
     }
     
@@ -752,7 +733,7 @@ bool playingRef = TRUE;
     UIViewController  *parent = [self parentViewController];
     report = [NSString stringWithFormat:@"Overall Sound Score is %@",phoneScore];
     parent.navigationItem.title = report;
-
+    
     [[self tableView] reloadData];
     
     return true;
@@ -760,20 +741,9 @@ bool playingRef = TRUE;
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
-    
-    //[loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
-    
-    //BOOL dataIsValid =
+   
     [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-    
-  //  receivedCount++;
-  //  if (receivedCount != reqCount) {
-  //      NSLog(@"ignoring out of order requests %d vs %d",reqCount,receivedCount);
-  //  }
-  //  else if (dataIsValid) {
-  //      [self writeToCache:_responseData];
-   // }
 }
 
 - (NSCachedURLResponse *)connection:(NSURLConnection *)connection
@@ -786,7 +756,7 @@ bool playingRef = TRUE;
     // The request has failed for some reason!
     // Check the error var
     NSLog(@"Download content failed with %@",error);
-
+    
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
@@ -805,16 +775,16 @@ bool playingRef = TRUE;
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
-//    EAFChapterTableViewController *chapterController = [segue destinationViewController];
+    //    EAFChapterTableViewController *chapterController = [segue destinationViewController];
     
-  //  NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-  //  NSString *tappedItem = [languages objectAtIndex:indexPath.row];
+    //  NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+    //  NSString *tappedItem = [languages objectAtIndex:indexPath.row];
     
-  //  [chapterController setLanguage:tappedItem];
-  //  if ([tappedItem isEqualToString:@"CM"]) {
-  //      tappedItem = @"Mandarin";
-  //  }
-   // [chapterController setTitle:tappedItem];
+    //  [chapterController setLanguage:tappedItem];
+    //  if ([tappedItem isEqualToString:@"CM"]) {
+    //      tappedItem = @"Mandarin";
+    //  }
+    // [chapterController setTitle:tappedItem];
 }
 
 

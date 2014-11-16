@@ -11,6 +11,9 @@
 		B61B82261A154C36009B00D1 /* EAFAudioView.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B82251A154C36009B00D1 /* EAFAudioView.m */; };
 		B61B82291A16C191009B00D1 /* rightAndWrong.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B82281A16C191009B00D1 /* rightAndWrong.png */; };
 		B61B822B1A16C921009B00D1 /* sounds.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B822A1A16C921009B00D1 /* sounds.png */; };
+		B61B822D1A16CF99009B00D1 /* dliIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B822C1A16CF99009B00D1 /* dliIcon.png */; };
+		B61B822F1A16CFA2009B00D1 /* mitllLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B822E1A16CFA2009B00D1 /* mitllLogo.png */; };
+		B61B82321A16D223009B00D1 /* EAFLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B82311A16D223009B00D1 /* EAFLoginViewController.m */; };
 		B62624671A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */; };
 		B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC41A09397200C3B62E /* EAFWordScoreTableViewController.m */; };
 		B636FFC71A09549E00C3B62E /* EAFScoreReportTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */; };
@@ -98,6 +101,10 @@
 		B61B82271A154C59009B00D1 /* EAFAudioView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EAFAudioView.h; sourceTree = "<group>"; };
 		B61B82281A16C191009B00D1 /* rightAndWrong.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rightAndWrong.png; sourceTree = "<group>"; };
 		B61B822A1A16C921009B00D1 /* sounds.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sounds.png; sourceTree = "<group>"; };
+		B61B822C1A16CF99009B00D1 /* dliIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dliIcon.png; sourceTree = "<group>"; };
+		B61B822E1A16CFA2009B00D1 /* mitllLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mitllLogo.png; sourceTree = "<group>"; };
+		B61B82301A16D223009B00D1 /* EAFLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFLoginViewController.h; sourceTree = "<group>"; };
+		B61B82311A16D223009B00D1 /* EAFLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFLoginViewController.m; sourceTree = "<group>"; };
 		B62624651A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFPhoneScoreTableViewController.h; sourceTree = "<group>"; };
 		B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFPhoneScoreTableViewController.m; sourceTree = "<group>"; };
 		B636FFC31A09397200C3B62E /* EAFWordScoreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFWordScoreTableViewController.h; sourceTree = "<group>"; };
@@ -242,6 +249,8 @@
 		B66BACBF1970A57B00E28ECC /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B61B822E1A16CFA2009B00D1 /* mitllLogo.png */,
+				B61B822C1A16CF99009B00D1 /* dliIcon.png */,
 				B61B822A1A16C921009B00D1 /* sounds.png */,
 				B61B82281A16C191009B00D1 /* rightAndWrong.png */,
 				B6AB39BC19FACF4D00B250C1 /* redx32.png */,
@@ -410,6 +419,8 @@
 				B636FFD61A0993A100C3B62E /* MyTableViewCell.m */,
 				B61B82251A154C36009B00D1 /* EAFAudioView.m */,
 				B61B82271A154C59009B00D1 /* EAFAudioView.h */,
+				B61B82301A16D223009B00D1 /* EAFLoginViewController.h */,
+				B61B82311A16D223009B00D1 /* EAFLoginViewController.m */,
 			);
 			path = Record;
 			sourceTree = "<group>";
@@ -542,6 +553,8 @@
 				B69821321A02978500BB9865 /* FontAwesome.ttf in Resources */,
 				B6A8D97819770C2100E8F1D5 /* Icon-40@2x.png in Resources */,
 				B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */,
+				B61B822F1A16CFA2009B00D1 /* mitllLogo.png in Resources */,
+				B61B822D1A16CF99009B00D1 /* dliIcon.png in Resources */,
 				B6AB39BB19FACF4300B250C1 /* checkmark32.png in Resources */,
 				B68A5C381979B4AE0036B90C /* micBigger.png in Resources */,
 				B696890319993B910094A297 /* micBiggerCircle.png in Resources */,
@@ -581,6 +594,7 @@
 				B67E1BC8197EFC0500F42143 /* SSZipArchive.m in Sources */,
 				B68A5C4B1979C8B70036B90C /* MSNeedleView.m in Sources */,
 				B636FFCB1A098D4100C3B62E /* FAImageView.m in Sources */,
+				B61B82321A16D223009B00D1 /* EAFLoginViewController.m in Sources */,
 				B636FFD41A098FD200C3B62E /* UIFont+FontAwesome2.m in Sources */,
 				B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */,
 				B636FFCE1A098D8500C3B62E /* UIFont+FontAwesome.m in Sources */,
