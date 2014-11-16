@@ -9,6 +9,7 @@
 #import "EAFWordScoreTableViewController.h"
 #import "FAImageView.h"
 #import "MyTableViewCell.h"
+#import "SSKeychain.h"
 
 @interface EAFWordScoreTableViewController ()
 
@@ -22,8 +23,8 @@
     
     NSLog(@"got word score table view did load");
     
-    _user=1;  // TODO find this out at login/sign up
-     
+    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
+    _user = [userid intValue];
     [self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -268,7 +269,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSString *correct = [json objectForKey:@"lastCorrect"];
         NSString *incorrect = [json objectForKey:@"lastIncorrect"];
         float total = [correct floatValue] + [incorrect floatValue];
-        float percent =[correct floatValue]/total;
+        float percent = total == 0.0f ? 0.0f : [correct floatValue]/total;
         percent *= 100;
         int percentInt = round(percent);
         int totalInt = round(total);
