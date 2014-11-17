@@ -44,6 +44,7 @@
     
    // NSLog(@"username is %@",_username.text);
     _username.text = _userFromLogin;
+    _password.text = _passFromLogin;
     [_languagePicker selectRow:_languageIndex inComponent:0 animated:false];
   
     _username.delegate = self;
@@ -308,7 +309,6 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    
     
     EAFChapterTableViewController *chapterController = [segue destinationViewController];
     

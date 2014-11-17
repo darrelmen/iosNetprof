@@ -294,6 +294,7 @@
         NSLog(@"language %@ %@ %@",chosenLanguage,_username.text,_password.text);
         
         signUp.userFromLogin = _username.text;
+        signUp.passFromLogin = _password.text;
         signUp.languageIndex = selection;
       
     }

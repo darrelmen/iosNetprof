@@ -154,7 +154,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="D0k-He-nFx">
+                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D0k-He-nFx">
                                 <rect key="frame" x="24" y="82" width="280" height="320"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LDy-Lh-sWf">
@@ -414,7 +414,7 @@
             <objects>
                 <viewController storyboardIdentifier="soundScores" title="Sound Scores" id="Zf4-6q-7PM" customClass="EAFPhoneScoreTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Vob-ud-UTK">
-                        <rect key="frame" x="0.0" y="64" width="320" height="519"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="455"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
@@ -448,7 +448,7 @@
             <objects>
                 <viewController storyboardIdentifier="wordScores" title="Word Scores" id="U7m-Ih-ip0" customClass="EAFWordScoreTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="66" id="R5B-EF-pkp">
-                        <rect key="frame" x="0.0" y="64" width="320" height="519"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="455"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
@@ -891,7 +891,7 @@
                         <outlet property="passwordFeedback" destination="5nk-uO-XmY" id="Whw-PV-QAf"/>
                         <outlet property="username" destination="SCH-Yu-fFS" id="46e-LV-oye"/>
                         <outlet property="usernameFeedback" destination="kI6-jb-j3A" id="tVD-XN-3hg"/>
-                        <segue destination="VFl-2k-NIH" kind="modal" identifier="goToChapterFromSignUp" id="q28-aI-wTP"/>
+                        <segue destination="VFl-2k-NIH" kind="push" identifier="goToChapterFromSignUp" id="q28-aI-wTP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="j60-vc-4ha" userLabel="First Responder" sceneMemberID="firstResponder"/>
