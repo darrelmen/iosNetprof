@@ -37,7 +37,7 @@
    // NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@", _language, _user, _chapterName, _chapterSelection];
     
-   // NSLog(@"url %@",baseurl);
+    NSLog(@"url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -52,12 +52,6 @@
     
     [connection start];
 }
-
-//- (void)didReceiveMemoryWarning
-//{
-//    [super didReceiveMemoryWarning];
-//    // Dispose of any resources that can be recreated.
-//}
 
 #pragma mark - Table view data source
 
@@ -92,6 +86,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 {
     // Return the number of rows in the section.
     return _exToScore.count;
+   // return _exToFL.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -115,7 +110,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger row = indexPath.row;
     NSString *exid = [_exList objectAtIndex:row];
     NSArray *answers = [_exToHistory objectForKey:exid];
-    //NSLog(@"ex answers %@ %@",exid,answers);
+    NSLog(@"ex answers %@ %@",exid,answers);
 
     int index = 0;
     for (NSString *correct in answers) {
@@ -137,22 +132,29 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         [container addSubview:correctView];
     }
     
-    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_exToFL objectForKey:exid]];
-
-    NSRange range = NSMakeRange(0, [result length]);
-    NSString *scoreString = [_exToScore objectForKey:exid];
-    float score = [scoreString floatValue]/100.0f;
-   
-   // NSLog(@"score was %@ %f",scoreString,score);
-    if (score > 0) {
-        UIColor *color = [self getColor2:score];
-        [result addAttribute:NSBackgroundColorAttributeName
-                       value:color
-                       range:range];
+    NSString *fl = [_exToFL objectForKey:exid];
+    if (fl == nil) {
+        NSLog(@"arg -- error! no fl for %@",exid);
+        cell.fl.text = @"";
     }
-    
-    cell.fl.attributedText = result;
-    
+    else {
+        NSLog(@"fl is %@",fl);
+        NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:fl];
+        
+        NSRange range = NSMakeRange(0, [result length]);
+        NSString *scoreString = [_exToScore objectForKey:exid];
+        float score = [scoreString floatValue]/100.0f;
+        
+        // NSLog(@"score was %@ %f",scoreString,score);
+        if (score > 0) {
+            UIColor *color = [self getColor2:score];
+            [result addAttribute:NSBackgroundColorAttributeName
+                           value:color
+                           range:range];
+        }
+        
+        cell.fl.attributedText = result;
+    }
     return cell;
 }
 
@@ -254,16 +256,18 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         _exList = [[NSMutableArray alloc] init];
         for (NSDictionary *entry in jsonArray) {
             NSString *ex = [entry objectForKey:@"ex"];
-         //   NSLog(@"ex key %@",ex);
-            NSString *score = [entry objectForKey:@"s"];
-            
-         //   NSLog(@"score  %@",score);
-            [_exToScore setValue:score forKey:ex];
-            
-            NSArray *jsonArrayHistory = [entry objectForKey:@"h"];
-
-            [_exToHistory setValue:jsonArrayHistory forKey:ex];
-            [_exList addObject:ex];
+            if ([_exToFL objectForKey:ex] != nil) {
+                //   NSLog(@"ex key %@",ex);
+                NSString *score = [entry objectForKey:@"s"];
+                
+                //   NSLog(@"score  %@",score);
+                [_exToScore setValue:score forKey:ex];
+                
+                NSArray *jsonArrayHistory = [entry objectForKey:@"h"];
+                
+                [_exToHistory setValue:jsonArrayHistory forKey:ex];
+                [_exList addObject:ex];
+            }
         }
         //NSLog(@"ex to score %lu",(unsigned long)[_exToScore count]);
         NSString *correct = [json objectForKey:@"lastCorrect"];

@@ -37,7 +37,7 @@
 
    // NSString *newTitle = [NSString stringWithFormat:@"%@ %@",_language];
     [self setTitle:_language];
-    NSLog(@"viewDidLoad lang %@ %@ back = '%@'", _language, [self title], self.navigationItem.backBarButtonItem.title);
+    NSLog(@"EAFChapterTableViewController viewDidLoad lang %@ %@ back = '%@'", _language, [self title], self.navigationItem.backBarButtonItem.title);
     
     if (_jsonContentArray == nil) {
         [self loadInitialData];
@@ -48,6 +48,12 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    NSMutableArray *navigationArray = [[NSMutableArray alloc] initWithArray: self.navigationController.viewControllers];
+    
+    for (UIViewController *controller in self.navigationController.viewControllers) {
+        NSLog(@"EAFChapterTableViewController controller %@",controller);
+    }
 }
 
 int reqCount = 0;;

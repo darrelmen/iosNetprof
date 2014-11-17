@@ -23,6 +23,8 @@
 		B636FFD41A098FD200C3B62E /* UIFont+FontAwesome2.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFD31A098FD200C3B62E /* UIFont+FontAwesome2.m */; };
 		B636FFD71A0993A100C3B62E /* MyTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFD61A0993A100C3B62E /* MyTableViewCell.m */; };
 		B642BAD01A0DD3A500D939F2 /* PhoneTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B642BACF1A0DD3A500D939F2 /* PhoneTableViewCell.m */; };
+		B649198B1A1A59BC0054CA13 /* mitllLogo2.png in Resources */ = {isa = PBXBuildFile; fileRef = B649198A1A1A59BC0054CA13 /* mitllLogo2.png */; };
+		B649198E1A1A5CE00054CA13 /* EAFSignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B649198D1A1A5CE00054CA13 /* EAFSignUpViewController.m */; };
 		B66461F2196F193900943BC2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66461F1196F193900943BC2 /* AVFoundation.framework */; };
 		B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */; };
 		B66BACB8197094C000E28ECC /* EAFItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACB7197094C000E28ECC /* EAFItemTableViewController.m */; };
@@ -123,6 +125,9 @@
 		B636FFD61A0993A100C3B62E /* MyTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyTableViewCell.m; sourceTree = "<group>"; };
 		B642BACE1A0DD39C00D939F2 /* PhoneTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneTableViewCell.h; sourceTree = "<group>"; };
 		B642BACF1A0DD3A500D939F2 /* PhoneTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneTableViewCell.m; sourceTree = "<group>"; };
+		B649198A1A1A59BC0054CA13 /* mitllLogo2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mitllLogo2.png; sourceTree = "<group>"; };
+		B649198C1A1A5CE00054CA13 /* EAFSignUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFSignUpViewController.h; sourceTree = "<group>"; };
+		B649198D1A1A5CE00054CA13 /* EAFSignUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFSignUpViewController.m; sourceTree = "<group>"; };
 		B66461F1196F193900943BC2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B66BACAD197055F500E28ECC /* EAFChapterTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFChapterTableViewController.h; sourceTree = "<group>"; };
 		B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFChapterTableViewController.m; sourceTree = "<group>"; };
@@ -249,6 +254,7 @@
 		B66BACBF1970A57B00E28ECC /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B649198A1A1A59BC0054CA13 /* mitllLogo2.png */,
 				B61B822E1A16CFA2009B00D1 /* mitllLogo.png */,
 				B61B822C1A16CF99009B00D1 /* dliIcon.png */,
 				B61B822A1A16C921009B00D1 /* sounds.png */,
@@ -376,6 +382,8 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
+				B649198C1A1A5CE00054CA13 /* EAFSignUpViewController.h */,
+				B649198D1A1A5CE00054CA13 /* EAFSignUpViewController.m */,
 				B62624651A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.h */,
 				B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */,
 				B636FFD21A098FD200C3B62E /* UIFont+FontAwesome2.h */,
@@ -551,6 +559,7 @@
 				B6A8D97719770C2100E8F1D5 /* Icon-40.png in Resources */,
 				B61B822B1A16C921009B00D1 /* sounds.png in Resources */,
 				B69821321A02978500BB9865 /* FontAwesome.ttf in Resources */,
+				B649198B1A1A59BC0054CA13 /* mitllLogo2.png in Resources */,
 				B6A8D97819770C2100E8F1D5 /* Icon-40@2x.png in Resources */,
 				B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */,
 				B61B822F1A16CFA2009B00D1 /* mitllLogo.png in Resources */,
@@ -607,6 +616,7 @@
 				B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */,
 				B6B9F392197827A700CD0140 /* EAFLanguageTableViewController.m in Sources */,
 				B636FFD11A098FC700C3B62E /* NSString+FontAwesome2.m in Sources */,
+				B649198E1A1A5CE00054CA13 /* EAFSignUpViewController.m in Sources */,
 				B67E1BC4197EFC0500F42143 /* ioapi.c in Sources */,
 				B636FFC71A09549E00C3B62E /* EAFScoreReportTabBarController.m in Sources */,
 				B69821411A029CA500BB9865 /* UIColor+BButton.m in Sources */,

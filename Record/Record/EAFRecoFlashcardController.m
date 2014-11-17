@@ -982,7 +982,9 @@ double gestureEnd;
 //    httpConn.setRequestProperty("device", "01234567890");
 //    httpConn.setRequestProperty("exercise", ""+2549);
 //    httpConn.setRequestProperty("request", decode ? "decode" :"align");
-    [urlRequest setValue:@"1" forHTTPHeaderField:@"user"]; // TODO : just testing!  Need to find out user id
+    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
+
+    [urlRequest setValue:userid forHTTPHeaderField:@"user"];
     [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
 
@@ -1492,12 +1494,17 @@ double gestureEnd;
         [exToEnglish setValue:englishPhrases forKey:id];
     }
     
+    NSLog(@"setting exToFl to %lu",(unsigned long)exToFL.count);
     wordReport.exToFL = exToFL;
     wordReport.exToEnglish = exToEnglish;   
    
     EAFPhoneScoreTableViewController *phoneReport = [[tabBarController viewControllers] objectAtIndex:1];
     phoneReport.tabBarItem.image = [[UIImage imageNamed:@"sounds.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     
+    NSLog(@"setting language to %@",_language);
+    NSLog(@"setting chapterName to %@",_chapterTitle);
+    NSLog(@"setting chapterSelection to %@",_currentChapter);
+
     phoneReport.language = _language;
     phoneReport.chapterName = _chapterTitle;
     phoneReport.chapterSelection = _currentChapter;

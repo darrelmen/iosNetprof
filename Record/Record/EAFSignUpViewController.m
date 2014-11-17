@@ -6,17 +6,16 @@
 //  Copyright (c) 2014 Ferme, Elizabeth - 0553 - MITLL. All rights reserved.
 //
 
-#import "EAFLoginViewController.h"
+#import "EAFSignUpViewController.h"
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
-#import "EAFSignUpViewController.h"
 
-@interface EAFLoginViewController ()
+@interface EAFSignUpViewController ()
 
 @end
 
-@implementation EAFLoginViewController
+@implementation EAFSignUpViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -24,7 +23,7 @@
     //not japanese or levantine -- consider levantine?
     // TODO : get list of languages from server call?
 
-    _langauges = [NSArray arrayWithObjects: @"Dari", @"English",@"Egyptian",@"Farsi", @"Korean", @"CM", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
+    _languages = [NSArray arrayWithObjects: @"Dari", @"English",@"Egyptian",@"Farsi", @"Korean", @"CM", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
   
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
     
@@ -38,16 +37,30 @@
                                name:UITextFieldTextDidChangeNotification
                              object:_password];
     
-    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
+    [notificationCenter addObserver:self
+                           selector:@selector (emailChanged:)
+                               name:UITextFieldTextDidChangeNotification
+                             object:_email];
     
+   // NSLog(@"username is %@",_username.text);
+    _username.text = _userFromLogin;
+    [_languagePicker selectRow:_languageIndex inComponent:0 animated:false];
+  
     _username.delegate = self;
     _password.delegate = self;
+    _email.delegate = self;
     
-    if (userid != nil) {
-      //  _username.text = userid;
-        [self performSegueWithIdentifier:@"goToChapter" sender:self];
-        return;
+    NSMutableArray *navigationArray = [[NSMutableArray alloc] initWithArray: self.navigationController.viewControllers];
+    
+    for (UIViewController *controller in self.navigationController.viewControllers) {
+        NSLog(@"controller %@",controller);
     }
+    // [navigationArray removeAllObjects];    // This is just for remove all view controller from navigation stack.
+  //  [navigationArray removeObjectAtIndex: 2];  // You can pass your index here
+ //   self.navigationController.viewControllers = navigationArray;
+    
+   // NSLog(@"username is %@",_username.text);
+
 }
 
 - (void)didReceiveMemoryWarning {
@@ -56,7 +69,7 @@
 }
 
 - (IBAction)onClick:(id)sender {
-   // NSLog(@"Got click");
+    NSLog(@"\n\n\n--->Got click");
     BOOL valid = true;
     if (_username.text.length == 0) {
         _usernameFeedback.text = @"Please enter a username";
@@ -66,15 +79,25 @@
         _passwordFeedback.text = @"Please enter a password";
         valid = false;
     }
-    
-    NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
-    
-    NSLog(@"language %@",chosenLanguage);
+    if (_email.text.length == 0) {
+        _emailFeedback.text = @"Please enter your email.";
+        valid = false;
+    }
     
     if (valid) {
+        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        
+        NSLog(@"language %@",chosenLanguage);
+        
         NSLog(@"password '%@'",_password.text);
-        NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?hasUser=%@&p=%@", chosenLanguage,_username.text,[[self MD5:_password.text] uppercaseString]];
-        //scoreServlet?hasUser=
+        NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet",//=%@&p=%@&e=%@",
+                             chosenLanguage
+                             //,
+                             //_username.text,
+                             //[[self MD5:_password.text] uppercaseString],
+                             //[[self MD5:_email.text] uppercaseString]
+                             ];
+
         NSURL *url = [NSURL URLWithString:baseurl];
         
         NSLog(@"url %@",url);
@@ -82,9 +105,14 @@
         NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
         [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
         
-        [urlRequest setHTTPMethod: @"GET"];
+        [urlRequest setHTTPMethod: @"POST"];
         [urlRequest setValue:@"application/x-www-form-urlencoded"
           forHTTPHeaderField:@"Content-Type"];
+        
+        [urlRequest setValue:_username.text forHTTPHeaderField:@"user"];
+        [urlRequest setValue:[[self MD5:_password.text] uppercaseString] forHTTPHeaderField:@"passwordH"];
+        [urlRequest setValue:[[self MD5:_email.text] uppercaseString]    forHTTPHeaderField:@"emailH"];
+        [urlRequest setValue:@"addUser"    forHTTPHeaderField:@"request"];
         
         NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
@@ -102,13 +130,13 @@
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
     //set number of rows
-    return _langauges.count;
+    return _languages.count;
 }
 
 -(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
     //set item per row
-    NSString *lang = [_langauges objectAtIndex:row];
+    NSString *lang = [_languages objectAtIndex:row];
     if ([lang isEqualToString:@"CM"]) {
         return @"Mandarin";
     }
@@ -120,14 +148,48 @@
 - (void) textFieldText:(id)notification {
     _usernameFeedback.text = @"";
     _passwordFeedback.text = @"";
-    _signUpFeedback.text = @"";
+    _emailFeedback.text = @"";
 
 }
 
 - (void) passwordChanged:(id)notification {
     _usernameFeedback.text = @"";
     _passwordFeedback.text = @"";
-    _signUpFeedback.text = @"";
+    _emailFeedback.text = @"";}
+
+- (void) emailChanged:(id)notification {
+    _usernameFeedback.text = @"";
+    _passwordFeedback.text = @"";
+    _emailFeedback.text = @"";
+}
+
+- (IBAction)gotSingleTap:(id)sender {
+    NSLog(@"dismiss keyboard! %@",_currentResponder);
+    
+    [_currentResponder resignFirstResponder];
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    NSLog(@"got text field start on %@",textField);
+    _currentResponder = textField;
+}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
+    
+    NSLog(@"textFieldShouldBeginEditing text field start on %@",textField);
+    
+    _currentResponder = textField;
+    
+    return YES;
+}
+
+// It is important for you to hide kwyboard
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return YES;
 }
 
 - (NSString*)MD5:(NSString*)toConvert
@@ -187,29 +249,33 @@
     }
     
        NSLog(@"useJsonChapter got %@ ",json);
+    //ExistingUserName
+    NSString *existing = [json objectForKey:@"ExistingUserName"];
+    
     
     NSString *userIDExisting = [json objectForKey:@"userid"];
-    BOOL passCorrect = [[json objectForKey:@"passwordCorrect"] boolValue];
+   // BOOL passCorrect = [[json objectForKey:@"passwordCorrect"] boolValue];
     
-    if ([userIDExisting integerValue] == -1) {
+    if (existing != nil) {
         // no user with that name
-        _signUpFeedback.text = @"Have you signed up?";
+        _usernameFeedback.text = @"Username exists already.";
     }
-    else if (passCorrect) {
+    else {//if (passCorrect) {
         // OK store info and segue
         NSLog(@"userid %@",userIDExisting);
         NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];
         [SSKeychain setPassword:converted forService:@"mitll.proFeedback.device" account:@"userid"];
-        NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         NSLog(@"chosenLanguage %@",chosenLanguage);
 
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
-        [self performSegueWithIdentifier:@"goToChapter" sender:self];
-   } else {
+        [self performSegueWithIdentifier:@"goToChapterFromSignUp" sender:self];
+   }
+    //else {
         // password is bad
-        _passwordFeedback.text = @"Username or password incorrect";
+   //     _passwordFeedback.text = @"Username or password incorrect";
 
-    }
+//    }
     return true;
 }
 
@@ -235,34 +301,6 @@
     [alert show];
 }
 
-- (IBAction)gotSingleTap:(id)sender {
-    NSLog(@"dismiss keyboard! %@",_currentResponder);
-
-    [_currentResponder resignFirstResponder];
-}
-
-- (void)textFieldDidBeginEditing:(UITextField *)textField {
-    NSLog(@"got text field start on %@",textField);
-    _currentResponder = textField;
-}
-
-- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
-{
-    
-    NSLog(@"textFieldShouldBeginEditing text field start on %@",textField);
-
-    _currentResponder = textField;
-
-    return YES;
-}
-
-// It is important for you to hide kwyboard
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
-{
-    [textField resignFirstResponder];
-    return YES;
-}
 
 #pragma mark - Navigation
 
@@ -271,32 +309,17 @@
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
-    if ([segue.identifier isEqualToString:@"goToChapter"]) {       
-        EAFChapterTableViewController *chapterController = [segue destinationViewController];
-        
-        NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
-        [chapterController setLanguage:chosenLanguage];
-        
-        NSString *toShow = chosenLanguage;
-        if ([toShow isEqualToString:@"CM"]) {
-            toShow = @"Mandarin";
-        }
-        [chapterController setTitle:toShow];
+    
+    EAFChapterTableViewController *chapterController = [segue destinationViewController];
+    
+     NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+    [chapterController setLanguage:chosenLanguage];
+    
+    NSString *toShow = chosenLanguage;
+    if ([toShow isEqualToString:@"CM"]) {
+        toShow = @"Mandarin";
     }
-    else {
-        EAFSignUpViewController *signUp = [segue destinationViewController];
-        
-        long selection = [_languagePicker selectedRowInComponent:0];
-        
-        NSString *chosenLanguage = [_langauges objectAtIndex:selection];
-        [signUp.languagePicker selectRow:selection inComponent:0 animated:false];
-        
-        NSLog(@"language %@ %@ %@",chosenLanguage,_username.text,_password.text);
-        
-        signUp.userFromLogin = _username.text;
-        signUp.languageIndex = selection;
-      
-    }
+    [chapterController setTitle:toShow];
 }
 
 
