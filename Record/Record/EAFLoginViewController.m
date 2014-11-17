@@ -74,7 +74,6 @@
     if (valid) {
         NSLog(@"password '%@'",_password.text);
         NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?hasUser=%@&p=%@", chosenLanguage,_username.text,[[self MD5:_password.text] uppercaseString]];
-        //scoreServlet?hasUser=
         NSURL *url = [NSURL URLWithString:baseurl];
         
         NSLog(@"url %@",url);
@@ -90,6 +89,7 @@
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
         
         [connection start];
+        [_activityIndicator startAnimating];
     }
 }
 
@@ -186,13 +186,15 @@
         return false;
     }
     
-       NSLog(@"useJsonChapter got %@ ",json);
+    [_activityIndicator stopAnimating];
+    //NSLog(@"useJsonChapter got %@ ",json);
     
     NSString *userIDExisting = [json objectForKey:@"userid"];
     BOOL passCorrect = [[json objectForKey:@"passwordCorrect"] boolValue];
     
     if ([userIDExisting integerValue] == -1) {
         // no user with that name
+        _passwordFeedback.text = @"Username or password incorrect";
         _signUpFeedback.text = @"Have you signed up?";
     }
     else if (passCorrect) {
@@ -224,7 +226,8 @@
     // The request has failed for some reason!
     // Check the error var
     NSLog(@"Download content failed with %@",error);
-    
+    [_activityIndicator stopAnimating];
+
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
@@ -296,7 +299,10 @@
         signUp.userFromLogin = _username.text;
         signUp.passFromLogin = _password.text;
         signUp.languageIndex = selection;
-      
+        
+        _usernameFeedback.text = @"";
+        _passwordFeedback.text = @"";
+        _signUpFeedback.text = @"";
     }
 }
 

@@ -51,8 +51,22 @@
     
     NSMutableArray *navigationArray = [[NSMutableArray alloc] initWithArray: self.navigationController.viewControllers];
     
+    BOOL found = false;
     for (UIViewController *controller in self.navigationController.viewControllers) {
-        NSLog(@"EAFChapterTableViewController controller %@",controller);
+     //   NSLog(@"EAFChapterTableViewController controller %@",controller);
+        NSString *name = [NSString stringWithFormat:@"%@",controller];
+        if ([name containsString:@"SignUp"]) {
+            found = TRUE;
+            [navigationArray removeObject:controller];
+        }
+        else {
+       //     NSLog(@"Name %@",name);
+         //   navigationArray arrayByAddingObject
+        }
+    }
+    if (found) {
+        self.navigationController.viewControllers = navigationArray;
+
     }
 }
 

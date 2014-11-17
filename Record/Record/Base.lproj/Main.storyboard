@@ -154,7 +154,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D0k-He-nFx">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="D0k-He-nFx">
                                 <rect key="frame" x="24" y="82" width="280" height="320"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LDy-Lh-sWf">
@@ -679,6 +679,9 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="dliIcon.png" translatesAutoresizingMaskIntoConstraints="NO" id="dHK-7D-hbQ">
                                 <rect key="frame" x="211" y="4" width="54" height="70"/>
                             </imageView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" restorationIdentifier="recoIndicator" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="jYO-aD-nI4">
+                                <rect key="frame" x="200" y="363" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
@@ -696,6 +699,7 @@
                             <constraint firstItem="aTh-Xw-7oD" firstAttribute="top" secondItem="xWs-V3-BGT" secondAttribute="bottom" constant="1" id="PRG-Is-K13"/>
                             <constraint firstItem="n6p-AP-fgq" firstAttribute="top" secondItem="aTh-Xw-7oD" secondAttribute="bottom" constant="5" id="PRO-mB-GCF"/>
                             <constraint firstItem="aTh-Xw-7oD" firstAttribute="leading" secondItem="xWs-V3-BGT" secondAttribute="leading" id="RoL-uw-glC"/>
+                            <constraint firstItem="jYO-aD-nI4" firstAttribute="centerY" secondItem="o2e-xg-EB1" secondAttribute="centerY" constant="1" id="SeL-Bj-rP8"/>
                             <constraint firstItem="Ab3-9Q-niJ" firstAttribute="top" secondItem="Dg9-JQ-QMF" secondAttribute="bottom" constant="15" id="VZn-Hd-NKg"/>
                             <constraint firstAttribute="centerX" secondItem="o2e-xg-EB1" secondAttribute="centerX" id="Yn4-Rk-O5c"/>
                             <constraint firstItem="E8Z-pq-Hoc" firstAttribute="top" secondItem="n6p-AP-fgq" secondAttribute="bottom" constant="1" id="aw4-gD-oVV"/>
@@ -705,6 +709,7 @@
                             <constraint firstAttribute="centerX" secondItem="xWs-V3-BGT" secondAttribute="centerX" constant="-7" id="jGD-EA-CLU"/>
                             <constraint firstAttribute="trailingMargin" secondItem="pdU-uI-gaQ" secondAttribute="trailing" constant="-9" id="kZI-my-zF2"/>
                             <constraint firstItem="W1c-hO-87v" firstAttribute="centerY" secondItem="Ab3-9Q-niJ" secondAttribute="centerY" id="kyN-WY-LMt"/>
+                            <constraint firstItem="jYO-aD-nI4" firstAttribute="leading" secondItem="o2e-xg-EB1" secondAttribute="trailing" constant="11" id="l69-AO-Bia"/>
                             <constraint firstItem="QA1-pl-s2n" firstAttribute="top" secondItem="rQr-BW-qEu" secondAttribute="bottom" constant="-3" id="mCI-w1-cy5"/>
                             <constraint firstItem="dHK-7D-hbQ" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="W1c-hO-87v" secondAttribute="trailing" constant="-6" id="n9n-mv-56W"/>
                             <constraint firstItem="n6p-AP-fgq" firstAttribute="leading" secondItem="E8Z-pq-Hoc" secondAttribute="leading" id="oC7-M1-hO8"/>
@@ -719,6 +724,7 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="piq-Cq-Hyu"/>
                     <connections>
+                        <outlet property="activityIndicator" destination="jYO-aD-nI4" id="x3s-dM-yx2"/>
                         <outlet property="languagePicker" destination="vuU-7j-fEd" id="giv-0a-qtc"/>
                         <outlet property="logIn" destination="o2e-xg-EB1" id="cUt-96-Cb9"/>
                         <outlet property="password" destination="n6p-AP-fgq" id="BLC-4x-Ll9"/>
@@ -917,6 +923,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="q28-aI-wTP"/>
+        <segue reference="U5f-EU-68h"/>
     </inferredMetricsTieBreakers>
 </document>

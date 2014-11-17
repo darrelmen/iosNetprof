@@ -84,6 +84,10 @@
         _emailFeedback.text = @"Please enter your email.";
         valid = false;
     }
+    if (![self validateEmail:_email.text]) {
+        _emailFeedback.text = @"Please enter a valid email address.";
+        valid = false;
+    }
     
     if (valid) {
         NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
@@ -191,6 +195,14 @@
 {
     [textField resignFirstResponder];
     return YES;
+}
+
+
+- (BOOL) validateEmail: (NSString *) candidate {
+    NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}";
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
+    
+    return [emailTest evaluateWithObject:candidate];
 }
 
 - (NSString*)MD5:(NSString*)toConvert

@@ -21,5 +21,6 @@
 @property (strong, nonatomic) NSMutableData *responseData;
 @property (nonatomic, assign) id currentResponder;
 
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 
 @end
