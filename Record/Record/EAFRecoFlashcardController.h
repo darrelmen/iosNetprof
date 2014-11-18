@@ -21,7 +21,7 @@
 
 @property (strong, nonatomic) IBOutlet UIButton *playRefAudioButton;
 @property (strong, nonatomic) IBOutlet UIButton *recordButton;
-@property (strong, nonatomic) IBOutlet UIButton *playButton;
+//@property (strong, nonatomic) IBOutlet UIButton *playButton;
 
 - (IBAction)recordAudio:(id)sender;
 - (IBAction)playAudio:(id)sender;
