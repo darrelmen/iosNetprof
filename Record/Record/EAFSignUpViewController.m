@@ -42,7 +42,6 @@
                                name:UITextFieldTextDidChangeNotification
                              object:_email];
     
-   // NSLog(@"username is %@",_username.text);
     _username.text = _userFromLogin;
     _password.text = _passFromLogin;
     [_languagePicker selectRow:_languageIndex inComponent:0 animated:false];
@@ -50,34 +49,24 @@
     _username.delegate = self;
     _password.delegate = self;
     _email.delegate = self;
-    
-    NSMutableArray *navigationArray = [[NSMutableArray alloc] initWithArray: self.navigationController.viewControllers];
-    
-    for (UIViewController *controller in self.navigationController.viewControllers) {
-        NSLog(@"controller %@",controller);
-    }
-    // [navigationArray removeAllObjects];    // This is just for remove all view controller from navigation stack.
-  //  [navigationArray removeObjectAtIndex: 2];  // You can pass your index here
- //   self.navigationController.viewControllers = navigationArray;
-    
-   // NSLog(@"username is %@",_username.text);
-
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (IBAction)onClick:(id)sender {
-    NSLog(@"\n\n\n--->Got click");
     BOOL valid = true;
     if (_username.text.length == 0) {
         _usernameFeedback.text = @"Please enter a username";
         valid = false;
     }
+    if (_username.text.length < 4) {
+        _usernameFeedback.text = @"Please enter a longer username.";
+        valid = false;
+    }
     if (_password.text.length == 0) {
         _passwordFeedback.text = @"Please enter a password";
+        valid = false;
+    }
+    if (_password.text.length < 4) {
+        _passwordFeedback.text = @"Please enter a longer password";
         valid = false;
     }
     if (_email.text.length == 0) {
@@ -92,20 +81,16 @@
     if (valid) {
         NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         
-        NSLog(@"language %@",chosenLanguage);
+        //NSLog(@"language %@",chosenLanguage);
         
-        NSLog(@"password '%@'",_password.text);
-        NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet",//=%@&p=%@&e=%@",
+        //NSLog(@"password '%@'",_password.text);
+        NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet",
                              chosenLanguage
-                             //,
-                             //_username.text,
-                             //[[self MD5:_password.text] uppercaseString],
-                             //[[self MD5:_email.text] uppercaseString]
                              ];
 
         NSURL *url = [NSURL URLWithString:baseurl];
         
-        NSLog(@"url %@",url);
+        //NSLog(@"url %@",url);
 
         NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
         [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
@@ -118,6 +103,10 @@
         [urlRequest setValue:[[self MD5:_password.text] uppercaseString] forHTTPHeaderField:@"passwordH"];
         [urlRequest setValue:[[self MD5:_email.text] uppercaseString]    forHTTPHeaderField:@"emailH"];
         [urlRequest setValue:@"addUser"    forHTTPHeaderField:@"request"];
+        [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
+        NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
+        
+        [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
         
         NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
@@ -175,28 +164,26 @@
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
-    NSLog(@"got text field start on %@",textField);
+    //NSLog(@"got text field start on %@",textField);
     _currentResponder = textField;
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
     
-    NSLog(@"textFieldShouldBeginEditing text field start on %@",textField);
+    //NSLog(@"textFieldShouldBeginEditing text field start on %@",textField);
     
     _currentResponder = textField;
     
     return YES;
 }
 
-// It is important for you to hide kwyboard
-
+// hide keyboard
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
     return YES;
 }
-
 
 - (BOOL) validateEmail: (NSString *) candidate {
     NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}";

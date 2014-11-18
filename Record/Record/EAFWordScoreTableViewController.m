@@ -86,7 +86,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 {
     // Return the number of rows in the section.
     return _exToScore.count;
-   // return _exToFL.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -110,7 +109,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger row = indexPath.row;
     NSString *exid = [_exList objectAtIndex:row];
     NSArray *answers = [_exToHistory objectForKey:exid];
-    NSLog(@"ex answers %@ %@",exid,answers);
+    //NSLog(@"ex answers %@ %@",exid,answers);
 
     int index = 0;
     for (NSString *correct in answers) {
@@ -138,7 +137,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         cell.fl.text = @"";
     }
     else {
-        NSLog(@"fl is %@",fl);
+        //NSLog(@"fl is %@",fl);
         NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:fl];
         
         NSRange range = NSMakeRange(0, [result length]);
@@ -335,18 +334,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    
-//    EAFChapterTableViewController *chapterController = [segue destinationViewController];
-    
-  //  NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-  //  NSString *tappedItem = [languages objectAtIndex:indexPath.row];
-    
-  //  [chapterController setLanguage:tappedItem];
-  //  if ([tappedItem isEqualToString:@"CM"]) {
-  //      tappedItem = @"Mandarin";
-  //  }
-   // [chapterController setTitle:tappedItem];
 }
-
 
 @end

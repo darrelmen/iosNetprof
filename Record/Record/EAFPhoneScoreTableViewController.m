@@ -24,9 +24,8 @@
 {
     [super viewDidLoad];
     
-    NSLog(@"got phone score table view did load");
+   // NSLog(@"got phone score table view did load");
     
-    //_user=1;  // TODO find this out at login/sign up
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
     playingIcon = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
@@ -217,13 +216,12 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             NSString *wordInResult = [wordResult objectForKey:@"id"];
             UILabel *wordLabel = [[UILabel alloc] init];
             
-            //            UITapGestureRecognizer *singleFingerTap =
-            //            [[UITapGestureRecognizer alloc] initWithTarget:self
-            //                                                    action:@selector(gotLabelTap:)];
-            //            [wordLabel addGestureRecognizer:singleFingerTap];
+            if ([_language isEqualToString:@"English"]) {
+                word = [word lowercaseString];
+            }
             
             NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
-            
+           
             NSRange range = NSMakeRange(0, [coloredWord length]);
             NSString *scoreString = [wordResult objectForKey:@"s"];
             float score = [scoreString floatValue];
@@ -409,20 +407,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return cell;
 }
 
-//- (IBAction)playAudioClick:(UITapGestureRecognizer *)sender {
-//
-//    NSLog(@"playAudioClick %@",sender);
-//
-//    playingRef = TRUE;
-//    currentAudioSelection = (EAFAudioView *)sender.view;
-//    [currentAudioSelection addSubview:playingIcon];
-//    [self playRefAudio:(EAFAudioView *)sender.view];
-//}
-
-//- (IBAction)gotTap:(id)sender {
-//    NSLog(@"gotTap %@",sender);//
-//}
-
 - (IBAction)gotTapGesture:(UITapGestureRecognizer *) sender {
     ///  NSLog(@"gotTapGesture %@",sender);
     
@@ -462,20 +446,12 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 
                 playingRef = TRUE;
                 currentAudioSelection = (EAFAudioView *)subview;
-                [currentAudioSelection addSubview:playingIcon];
+//                [currentAudioSelection addSubview:playingIcon];
                 [self playRefAudio:(EAFAudioView *)subview];
             }
         }
     }
 }
-
-//- (IBAction)gotTap2:(id)sender {
-//    NSLog(@"gotTap2 %@",sender);
-//}
-//
-//- (IBAction)gotLabelTap:(id)sender {
-//    NSLog(@"gotLabelTap %@",sender);
-//}
 
 FAImageView *playingIcon;
 EAFAudioView * currentAudioSelection;
@@ -483,14 +459,16 @@ bool playingRef = TRUE;
 
 // look for local file with mp3 and use it if it's there.
 - (IBAction)playRefAudio:(EAFAudioView *)sender {
-    NSLog(@"playRefAudio %@",sender);
+   // NSLog(@"playRefAudio %@",sender);
     
     NSString *refPath = playingRef ? sender.refAudio : sender.answer;
-    
+ //   NSLog(@"ref path %@ playing ref %@",refPath, (playingRef ? @"YES":@"NO"));
+
     NSString *refAudioPath;
     NSString *rawRefAudioPath;
     
     if (refPath) {
+      //  NSLog(@"has ref path %@",refPath);
         refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
                                                      withString:@".mp3"];
         
@@ -500,8 +478,13 @@ bool playingRef = TRUE;
         rawRefAudioPath = refPath;
     }
     else {
+      //  NSLog(@"does not have ref path %@",refPath);
+
         refAudioPath = @"NO";
         rawRefAudioPath = @"NO";
+        playingRef = FALSE;
+        [self playRefAudio:currentAudioSelection];
+        return;
     }
     
     NSURL *url = [NSURL URLWithString:refAudioPath];
@@ -522,7 +505,7 @@ bool playingRef = TRUE;
     }
     else {
         NSLog(@"can't find local url %@",destFileName);
-        //NSLog(@"playRefAudio URL     %@", _refAudioPath);
+        NSLog(@"playRefAudio URL     %@", url);
     }
     NSString *PlayerStatusContext;
     
@@ -540,14 +523,18 @@ bool playingRef = TRUE;
     [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
 }
 
-- (void)playerItemDidReachEnd:(NSNotification *)notification {
-    NSLog(@" playerItemDidReachEnd");
-    
+- (void)removePlayingAudioIcon {
     for (UIView *v in [currentAudioSelection subviews]) {
         if (v == playingIcon) {
             [v removeFromSuperview];
         }
     }
+}
+
+- (void)playerItemDidReachEnd:(NSNotification *)notification {
+    NSLog(@" playerItemDidReachEnd");
+    
+    [self removePlayingAudioIcon];
     
     if (playingRef) {
         playingRef = FALSE;
@@ -557,11 +544,7 @@ bool playingRef = TRUE;
 
 - (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
     NSLog(@"Got error %@", error);
-    for (UIView *v in [currentAudioSelection subviews]) {
-        if (v == playingIcon) {
-            [v removeFromSuperview];
-        }
-    }
+    [self removePlayingAudioIcon];
 }
 
 
@@ -574,6 +557,7 @@ bool playingRef = TRUE;
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
             NSLog(@" audio ready so playing...");
+            [currentAudioSelection addSubview:playingIcon];
 
             [_player play];
             
@@ -594,7 +578,8 @@ bool playingRef = TRUE;
             
         } else if (_player.status == AVPlayerStatusFailed) {
             // something went wrong. player.error should contain some information
-            
+            [self removePlayingAudioIcon];
+
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't play audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alert show];
             
@@ -683,14 +668,10 @@ bool playingRef = TRUE;
     // Furthermore, this method is called each time there is a redirect so reinitializing it
     // also serves to clear it
     
-    //  NSLog(@"didReceiveResponse ----- ");
-    
     _responseData = [[NSMutableData alloc] init];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    // NSLog(@"didReceiveData ----- ");
-    
     // Append the new data to the instance variable you declared
     [_responseData appendData:data];
 }
@@ -733,7 +714,9 @@ bool playingRef = TRUE;
     NSString *report;
     NSString *phoneScore = [json objectForKey:@"phoneScore"];
     UIViewController  *parent = [self parentViewController];
-    report = [NSString stringWithFormat:@"Overall Sound Score is %@",phoneScore];
+  //  report = [NSString stringWithFormat:@"Overall Sound Score is %@",phoneScore];
+   // report = [NSString stringWithFormat:@"Score is %@, touch a word to hear yourself",phoneScore];
+    report = [NSString stringWithFormat:@"Touch a word to hear yourself"];
     parent.navigationItem.title = report;
     
     [[self tableView] reloadData];

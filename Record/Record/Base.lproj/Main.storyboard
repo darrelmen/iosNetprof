@@ -547,7 +547,9 @@
             <objects>
                 <tabBarController storyboardIdentifier="wordAndPhoneReport" title="Word and Sound Scores" id="v6I-8h-4xT" customClass="EAFScoreReportTabBarController" sceneMemberID="viewController">
                     <extendedEdge key="edgesForExtendedLayout"/>
-                    <navigationItem key="navigationItem" id="BRr-Z5-680"/>
+                    <navigationItem key="navigationItem" id="BRr-Z5-680">
+                        <barButtonItem key="backBarButtonItem" title="Word" id="Tj2-x3-ca0"/>
+                    </navigationItem>
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="paj-aZ-7Cw">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="49"/>

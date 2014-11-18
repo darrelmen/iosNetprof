@@ -28,6 +28,6 @@
 @property NSString *url;
 
 @property long user;
-- (IBAction)playAudioClick:(UITapGestureRecognizer *)sender;
+//- (IBAction)playAudioClick:(UITapGestureRecognizer *)sender;
 
 @end

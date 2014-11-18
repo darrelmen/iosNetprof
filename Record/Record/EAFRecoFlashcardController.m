@@ -972,16 +972,6 @@ double gestureEnd;
     
     // old style
     [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
-//    NSString *escapedString = [fl stringByReplacingOccurrencesOfString:@"/" withString:@" "];
- //   NSLog(@"word is %@",escapedString);
-  //  [urlRequest setValue:escapedString forHTTPHeaderField:@"word"];
-  
-//    httpConn.setRequestProperty("fileName", uploadFile.getName());
-//    httpConn.setRequestProperty("user", "1");
-//    httpConn.setRequestProperty("deviceType", "iPad");
-//    httpConn.setRequestProperty("device", "01234567890");
-//    httpConn.setRequestProperty("exercise", ""+2549);
-//    httpConn.setRequestProperty("request", decode ? "decode" :"align");
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
 
     [urlRequest setValue:userid forHTTPHeaderField:@"user"];
@@ -1478,7 +1468,6 @@ double gestureEnd;
     
     EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
     wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-   // wordReport.tabBarItem.image.renderingMode = UIImageRenderingModeAlwaysOriginal;
     wordReport.language = _language;
     wordReport.chapterName = _chapterTitle;
     wordReport.chapterSelection = _currentChapter;

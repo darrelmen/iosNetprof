@@ -62,8 +62,9 @@
     }
     
     _itemIndex = 0;
-    [self getAudioForCurrentItem];
-    
+    if ([_rawPaths count] > 0) {
+        [self getAudioForCurrentItem];
+    }
     //NSLog(@"viewDidLoad found '%@' = %ld",currentChapter,(unsigned long)self.items.count);
 
     // Uncomment the following line to preserve selection between presentations.
@@ -75,20 +76,6 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
-
-//-(NSString *) getAudioDestDir:(NSString *) whichLanguage {
-//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-//    NSString *documentsDirectory = [paths objectAtIndex:0];
-//    
-//    NSString *destFileName = [NSString stringWithFormat:@"%@_audio",whichLanguage];
-//    return [documentsDirectory stringByAppendingPathComponent:destFileName];
-//}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 NSString *currentChapter;
