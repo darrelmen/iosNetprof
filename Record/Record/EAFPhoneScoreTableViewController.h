@@ -23,11 +23,9 @@
 @property NSDictionary *resultToAnswer;
 @property NSDictionary *resultToWords;
 @property NSArray *phonesInOrder;
-//@property (strong, nonatomic) AVAudioPlayer *audioPlayer;
 @property AVPlayer *player;
 @property NSString *url;
 
 @property long user;
-//- (IBAction)playAudioClick:(UITapGestureRecognizer *)sender;
 
 @end

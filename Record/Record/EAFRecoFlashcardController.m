@@ -846,11 +846,11 @@ double gestureEnd;
     }
 }
 
+// called when touch on highlighted word
 - (IBAction)playAudio:(id)sender {
     if (!_audioRecorder.recording)
     {
         NSLog(@"playAudio %@",_audioRecorder.url);
-        // _playButton.enabled = NO;
         
         NSError *error;
         AVAudioSession *session = [AVAudioSession sharedInstance];
@@ -870,7 +870,7 @@ double gestureEnd;
                   [error localizedDescription]);
         } else {
             [_audioPlayer setVolume:3];
-            NSLog(@"volume %f",[_audioPlayer volume]);
+         //   NSLog(@"volume %f",[_audioPlayer volume]);
             [_audioPlayer play];
         }
     }
@@ -881,7 +881,6 @@ double gestureEnd;
     if (debugRecord)  NSLog(@"stopAudio Event duration was %f",(now-then2));
     if (debugRecord)  NSLog(@"stopAudio now  time =        %f",now);
     
-    // _playButton.enabled = YES;
     _recordButton.enabled = YES;
     
     if (_audioRecorder.recording)
@@ -1215,6 +1214,12 @@ double gestureEnd;
         UIView *exampleView = [[UIView alloc] init];
         exampleView.translatesAutoresizingMaskIntoConstraints = NO;
         [_scoreDisplayContainer addSubview:exampleView];
+
+        UITapGestureRecognizer *singleFingerTap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(playAudio:)];
+        singleFingerTap.delegate = self;
+        [exampleView addGestureRecognizer:singleFingerTap];
         
         // NSLog(@"word is %@",wordEntry);
         // first example view constraints left side to left side of container
@@ -1368,9 +1373,9 @@ double gestureEnd;
                                       value:color
                                       range:range];
             }
-            else {
-                NSLog(@"skipping %@ since not in %@", phoneText, word);
-            }
+            //else {
+          //      NSLog(@"skipping %@ since not in %@", phoneText, word);
+          //  }
         }
         
         UILabel *phoneLabel = [[UILabel alloc] init];

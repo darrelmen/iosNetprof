@@ -11,7 +11,7 @@
 #import "BButton.h"
 
 @interface EAFRecoFlashcardController : UIViewController
-        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate>
+        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate>
 
 @property (strong, nonatomic) IBOutlet UIView *cardBackground;
 @property (strong, nonatomic) IBOutlet UIView *recordButtonContainer;
@@ -21,14 +21,12 @@
 
 @property (strong, nonatomic) IBOutlet UIButton *playRefAudioButton;
 @property (strong, nonatomic) IBOutlet UIButton *recordButton;
-//@property (strong, nonatomic) IBOutlet UIButton *playButton;
 
 - (IBAction)recordAudio:(id)sender;
 - (IBAction)playAudio:(id)sender;
 - (IBAction)stopAudio:(id)sender;
 @property (strong, nonatomic) NSMutableData *responseData;
 
-//@property (strong, nonatomic) IBOutlet UITextView *foreignLang;
 @property (strong, nonatomic) IBOutlet UILabel *foreignLang;
 @property (strong, nonatomic) IBOutlet UILabel *english;
 @property (strong, nonatomic) IBOutlet UILabel *shuffle;
@@ -45,14 +43,11 @@
 @property NSString *chapterTitle;
 @property NSString *language;
 
-//@property (weak, nonatomic) IBOutlet UILabel *scoreDisplay;
 @property (weak, nonatomic) IBOutlet UIView *scoreDisplayContainer;
 @property (strong, nonatomic) IBOutlet UIProgressView *scoreProgress;
 @property AVPlayer *player;
 @property (strong, nonatomic) IBOutlet UIView *scoreButtonView;
-//@property (strong, nonatomic) IBOutlet BButton *showScores;
 - (IBAction)showScoresClick:(id)sender;
-
 
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressGesture;
 @property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *leftSwipe;
