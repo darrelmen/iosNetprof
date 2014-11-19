@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <SplunkMint-iOS/SplunkMint-iOS.h>
 
 @interface EAFWordScoreTableViewController : UITableViewController<NSURLConnectionDelegate>
 

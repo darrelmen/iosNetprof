@@ -25,77 +25,8 @@
         NSLog(@"made UUID %@",UUID);
         retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     }
-    
-//    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
-//    
-//
-//    BOOL shouldShowAnotherViewControllerAsRoot = userid == nil;
-//    
-//    if (shouldShowAnotherViewControllerAsRoot) {
-//        UIStoryboard *storyboard = self.window.rootViewController.storyboard;
-//        UIViewController *rootViewController = [storyboard instantiateViewControllerWithIdentifier:@"LoginViewController"];
-//        
-//        
-//        
-//        
-//       // MainViewController *vc = [[MainViewController alloc]init];
-//        
-//        UINavigationController *nc = [[UINavigationController alloc]initWithRootViewController:rootViewController];
-//       // self.navigationController=nc;  // I have a property on the app delegate that references the root view controller, which is my navigation controller.
-//
-//        
-//        
-//        self.window.rootViewController = nc;
-//        [self.window makeKeyAndVisible];
-//    }
-//    else {
-//        
-//       NSString * language = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
-//   
-//        UIStoryboard *storyboard = self.window.rootViewController.storyboard;
-//        EAFChapterTableViewController *rootViewController = [storyboard instantiateViewControllerWithIdentifier:@"ChapterViewController"];
-//        [rootViewController setLanguage:language];
-//        
-//        
-//        NSString *toShow = language;
-//        if ([toShow isEqualToString:@"CM"]) {
-//            toShow = @"Mandarin";
-//        }
-//        [rootViewController setTitle:toShow];
-//        
-//        self.window.rootViewController = rootViewController;
-//        [self.window makeKeyAndVisible];
-//    //    [self.navigationController pushViewController: myController animated:YES];
-//        
-//
-//    }
-    
-//    
-//    self.window = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
-//    
-//    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main.storyboard" bundle:nil];
-//    
-//    UIViewController *viewController =[storyboard instantiateViewControllerWithIdentifier:@"LoginViewController"];
-//    
-//    self.window.rootViewController = viewController;
-//    [self.window makeKeyAndVisible];
-//    
-    
     return YES;
 }
-
-//- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-//{
-//    BOOL shouldShowAnotherViewControllerAsRoot = YES;
-//    if (shouldShowAnotherViewControllerAsRoot) {
-//        UIStoryboard *storyboard = self.window.rootViewController.storyboard;
-//        UIViewController *rootViewController = [storyboard instantiateViewControllerWithIdentifier:@"LoginViewController"];
-//        self.window.rootViewController = rootViewController;
-//        [self.window makeKeyAndVisible];
-//    }
-//    
-//    return YES;
-//}
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {

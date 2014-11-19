@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <SplunkMint-iOS/SplunkMint-iOS.h>
 
-@interface EAFSignUpViewController : UIViewController<NSURLConnectionDelegate,UITextFieldDelegate>
+@interface EAFSignUpViewController : UIViewController<NSURLConnectionDelegate,UITextFieldDelegate,UIGestureRecognizerDelegate>
 @property (strong, nonatomic) IBOutlet UITextField *username;
 @property (strong, nonatomic) IBOutlet UITextField *password;
 @property (strong, nonatomic) IBOutlet UITextField *email;
@@ -25,5 +25,6 @@
 @property (strong, nonatomic) NSString *passFromLogin;
 @property long languageIndex;
 @property (nonatomic, assign) id currentResponder;
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 
 @end

@@ -7,22 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <SplunkMint-iOS/SplunkMint-iOS.h>
 
 @interface EAFScoreReportTabBarController : UITabBarController
-//
-//@property (strong, nonatomic) NSMutableData *responseData;
-//@property NSArray *jsonContentArray;
-//
-//@property NSString *language;
-//
-//@property NSString *chapterName;
-//@property NSArray *scores;
-//
-//@property NSDictionary *exToFL;
-//@property NSDictionary *exToEnglish;
-//
-//@property NSDictionary *exToScore;
-//@property NSDictionary *exToHistory;
-
 
 @end

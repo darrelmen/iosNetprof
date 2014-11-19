@@ -43,6 +43,15 @@
     _username.delegate = self;
     _password.delegate = self;
     
+    NSString *rememberedUserID = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenUserID"];
+    if (rememberedUserID != nil) {
+        _username.text = rememberedUserID;
+    }
+    NSString *rememberedPass = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenPassword"];
+    if (rememberedPass != nil) {
+        _password.text = rememberedPass;
+    }
+    
     UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
     gestureRecognizer.cancelsTouchesInView = NO;
      gestureRecognizer.delegate = self;
@@ -70,11 +79,6 @@
       //  NSLog( @"Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
         [self onClick:nil];
     }
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (IBAction)onClick:(id)sender {
@@ -112,6 +116,7 @@
         
         [connection start];
         [_activityIndicator startAnimating];
+        _logIn.enabled = false;
     }
 }
 
@@ -209,11 +214,11 @@
     }
     
     [_activityIndicator stopAnimating];
-    //NSLog(@"useJsonChapter got %@ ",json);
     
     NSString *userIDExisting = [json objectForKey:@"userid"];
     BOOL passCorrect = [[json objectForKey:@"passwordCorrect"] boolValue];
     
+    _logIn.enabled = true;
     if ([userIDExisting integerValue] == -1) {
         // no user with that name
         _passwordFeedback.text = @"Username or password incorrect";
@@ -221,9 +226,10 @@
     }
     else if (passCorrect) {
         // OK store info and segue
-//        NSLog(@"userid %@",userIDExisting);
         NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];
         [SSKeychain setPassword:converted forService:@"mitll.proFeedback.device" account:@"userid"];
+        [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
+        [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
         NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         NSLog(@"chosenLanguage %@",chosenLanguage);
 

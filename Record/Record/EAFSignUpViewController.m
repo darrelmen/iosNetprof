@@ -49,9 +49,40 @@
     _username.delegate = self;
     _password.delegate = self;
     _email.delegate = self;
+    
+    NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
+    if (rememberedEmail != nil) {
+        _email.text = rememberedEmail;
+    }
+    
+    UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
+    gestureRecognizer.cancelsTouchesInView = NO;
+    gestureRecognizer.delegate = self;
+    [self.languagePicker addGestureRecognizer:gestureRecognizer];
+}
+
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
+    return true;
+}
+
+- (void)pickerViewTapGestureRecognized:(UITapGestureRecognizer*)gestureRecognizer
+{
+    CGPoint touchPoint = [gestureRecognizer locationInView:gestureRecognizer.view.superview];
+    
+    CGRect frame = _languagePicker.frame;
+    CGRect selectorFrame = CGRectInset( frame, 0.0, _languagePicker.bounds.size.height * 0.85 / 2.0 );
+    // NSLog( @"Got tap -- Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
+    
+    if( CGRectContainsPoint( selectorFrame, touchPoint) )
+    {
+        //  NSLog( @"Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
+        [self onClick:nil];
+    }
 }
 
 - (IBAction)onClick:(id)sender {
+    _signUp.enabled = false;
+    
     BOOL valid = true;
     if (_username.text.length == 0) {
         _usernameFeedback.text = @"Please enter a username";
@@ -112,6 +143,7 @@
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
         
         [connection start];
+        [_activityIndicator startAnimating];
     }
 }
 
@@ -242,40 +274,38 @@
                           JSONObjectWithData:_responseData
                           options:NSJSONReadingAllowFragments
                           error:&error];
-    
+    [_activityIndicator stopAnimating];
+
     if (error) {
         NSLog(@"useJsonChapterData error %@",error.description);
+        _signUp.enabled = true;
         return false;
     }
     
-       NSLog(@"useJsonChapter got %@ ",json);
-    //ExistingUserName
+    //   NSLog(@"useJsonChapter got %@ ",json);
     NSString *existing = [json objectForKey:@"ExistingUserName"];
     
-    
     NSString *userIDExisting = [json objectForKey:@"userid"];
-   // BOOL passCorrect = [[json objectForKey:@"passwordCorrect"] boolValue];
-    
+   
     if (existing != nil) {
         // no user with that name
         _usernameFeedback.text = @"Username exists already.";
     }
-    else {//if (passCorrect) {
+    else {
         // OK store info and segue
         NSLog(@"userid %@",userIDExisting);
         NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];
         [SSKeychain setPassword:converted forService:@"mitll.proFeedback.device" account:@"userid"];
         NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
-        NSLog(@"chosenLanguage %@",chosenLanguage);
-
+        //NSLog(@"chosenLanguage %@",chosenLanguage);
+        
+        [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
+        [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
+        [SSKeychain setPassword:_email.text forService:@"mitll.proFeedback.device" account:@"chosenEmail"];
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
+        
         [self performSegueWithIdentifier:@"goToChapterFromSignUp" sender:self];
    }
-    //else {
-        // password is bad
-   //     _passwordFeedback.text = @"Username or password incorrect";
-
-//    }
     return true;
 }
 
@@ -290,7 +320,8 @@
     // The request has failed for some reason!
     // Check the error var
     NSLog(@"Download content failed with %@",error);
-    
+    _signUp.enabled = true;
+
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"

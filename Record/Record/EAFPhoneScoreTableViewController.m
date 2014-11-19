@@ -11,7 +11,6 @@
 #import "MyTableViewCell.h"
 #import "EAFAudioView.h"
 #import <AudioToolbox/AudioServices.h>
-#import "FAImageView.h"
 #import "SSKeychain.h"
 
 @interface EAFPhoneScoreTableViewController ()
@@ -128,9 +127,19 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     [cell.contentView removeConstraints:cell.contentView.constraints];
     cell.contentView.translatesAutoresizingMaskIntoConstraints = NO;
     
-    NSArray *words = [_phoneToWords objectForKey:phone];
-    //BOOL first = true;
+    NSLayoutConstraint *constraint = [NSLayoutConstraint
+                                      constraintWithItem:cell.contentView
+                                      attribute:NSLayoutAttributeLeft
+                                      relatedBy:NSLayoutRelationEqual
+                                      toItem:cell.contentView.superview
+                                      attribute:NSLayoutAttributeLeft
+                                      multiplier:1.0
+                                      constant:3.0];
     
+    [cell.contentView.superview addConstraint:constraint];
+    
+    NSArray *words = [_phoneToWords objectForKey:phone];
+   
     UIView *leftView = nil;
     
     int count = 0;
@@ -141,9 +150,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSArray *resultWords = [_resultToWords objectForKey:result];
         
         
-        // UIView *exampleView = [[UIView alloc] init];
         EAFAudioView *exampleView = [[EAFAudioView alloc] init];
-        exampleView.translatesAutoresizingMaskIntoConstraints = NO;
+        
+         exampleView.translatesAutoresizingMaskIntoConstraints = NO;
         [cell.contentView addSubview:exampleView];
         
         exampleView.refAudio = [_resultToRef objectForKey:result];
@@ -186,24 +195,31 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                          constant:0.0]];
         
         if (leftView == nil) {
-            [cell.contentView addConstraint:[NSLayoutConstraint
-                                             constraintWithItem:exampleView
-                                             attribute:NSLayoutAttributeLeft
-                                             relatedBy:NSLayoutRelationEqual
-                                             toItem:cell.contentView
-                                             attribute:NSLayoutAttributeLeft
-                                             multiplier:1.0
-                                             constant:3.0]];
+            NSLayoutConstraint *constraint = [NSLayoutConstraint
+             constraintWithItem:exampleView
+             attribute:NSLayoutAttributeLeft
+             relatedBy:NSLayoutRelationEqual
+             toItem:cell.contentView
+             attribute:NSLayoutAttributeLeft
+             multiplier:1.0
+             constant:3.0];
+            
+            [cell.contentView addConstraint:constraint];
+        //    NSLog(@"adding (no left view) constraint %@",constraint);
         }
         else {
-            [cell.contentView addConstraint:[NSLayoutConstraint
-                                             constraintWithItem:exampleView
-                                             attribute:NSLayoutAttributeLeft
-                                             relatedBy:NSLayoutRelationEqual
-                                             toItem:leftView
-                                             attribute:NSLayoutAttributeRight
-                                             multiplier:1.0
-                                             constant:5.0]];
+            NSLayoutConstraint *constraint = [NSLayoutConstraint
+             constraintWithItem:exampleView
+             attribute:NSLayoutAttributeLeft
+             relatedBy:NSLayoutRelationEqual
+             toItem:leftView
+             attribute:NSLayoutAttributeRight
+             multiplier:1.0
+             constant:5.0];
+            
+            [cell.contentView addConstraint:constraint];
+          //  NSLog(@"adding (to left view) constraint %@",constraint);
+
         }
         
         leftView = exampleView;
@@ -224,7 +240,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             NSString *scoreString = [wordResult objectForKey:@"s"];
             float score = [scoreString floatValue];
             
-            // NSLog(@"score was %@ %f",scoreString,score);
+           // NSLog(@"score was %@ %f",scoreString,score);
             if (score > 0) {
                 UIColor *color = [self getColor2:score];
                 [coloredWord addAttribute:NSBackgroundColorAttributeName
@@ -233,7 +249,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             }
             
             wordLabel.attributedText = coloredWord;
-            //   NSLog(@"label word is %@",wordLabel.attributedText);
+            //NSLog(@"label word is %@",wordLabel.attributedText);
             
             //[wordLabel setTextColor:[UIColor blackColor]];
             //  [wordLabel setBackgroundColor:[UIColor colorWithHue:32 saturation:100 brightness:63 alpha:1]];
@@ -243,6 +259,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             
             [exampleView addSubview:wordLabel];
             
+            // top
             [exampleView addConstraint:[NSLayoutConstraint
                                         constraintWithItem:wordLabel
                                         attribute:NSLayoutAttributeTop
@@ -252,6 +269,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                         multiplier:1.0
                                         constant:0.0]];
             
+            // left
             [exampleView addConstraint:[NSLayoutConstraint
                                         constraintWithItem:wordLabel
                                         attribute:NSLayoutAttributeLeft
@@ -261,6 +279,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                         multiplier:1.0
                                         constant:0.0]];
             
+            // right
             [exampleView addConstraint:[NSLayoutConstraint
                                         constraintWithItem:wordLabel
                                         attribute:NSLayoutAttributeRight
@@ -270,6 +289,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                         multiplier:1.0
                                         constant:0.0]];
             
+            // height
             [exampleView addConstraint:[NSLayoutConstraint
                                         constraintWithItem:wordLabel
                                         attribute:NSLayoutAttributeHeight
@@ -306,15 +326,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     //if (score > 0) {
                     // NSLog(@"%@ vs %@ ",phoneText,phone);
                     BOOL match = [phoneText isEqualToString:phone];
-                    //if ( || true) {
                     UIColor *color = match? [self getColor2:score] : [UIColor whiteColor];
                     //   NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
                     [coloredPhones addAttribute:NSBackgroundColorAttributeName
                                           value:color
                                           range:range];
-                    // }
-                    //}
-                    
                 }
                 
                 
@@ -377,29 +393,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         
         [exampleView.layer addSublayer:rightBorder];
         
-        //  [exampleView addTarget:self action:@selector(playAudioClick:) forControlEvents:UIControlEventTouchUpInside];
-        
         exampleView.userInteractionEnabled = YES;
-        
-        //        UITapGestureRecognizer *singleFingerTap =
-        //        [[UITapGestureRecognizer alloc] initWithTarget:self
-        //                                                action:@selector(playAudioClick:)];
-        //        singleFingerTap.delegate = self;
-        //        [exampleView addGestureRecognizer:singleFingerTap];
-        
-        //        NSLog(@"add gesture %@ (%lu) to %@",singleFingerTap,
-        //              (unsigned long)exampleView.gestureRecognizers.count,exampleView);
-        //
-        //
-        
-        // click goes to example view
-        //        singleFingerTap =
-        //        [[UITapGestureRecognizer alloc] initWithTarget:exampleView
-        //                                                action:@selector(gotClick:)];
-        //        singleFingerTap.delegate = self;
-        //
-        //        [exampleView addGestureRecognizer:singleFingerTap];
-        
     }
     
     return cell;
@@ -421,9 +415,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSLog(@"press on table view but not on a row");
     } else {
         UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-        //if (cell.isHighlighted) {
-        //    NSLog(@" press on table view at section %ld row %ld", (long)indexPath.section, (long)indexPath.row);
-        //}
         p = [sender locationInView:cell.contentView];
         //  NSLog(@"Got point in cell content view %f %f",p.x,p.y);
         
@@ -432,19 +423,17 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             
             //        NSLog(@"Loc in %@ is %f %f",subview,loc.x,loc.y);
             
-            if(CGRectContainsPoint(subview.frame, loc))
-            {
-                NSLog(@"--------> In View for %@",subview);
-                //return myView;
-            }
+//            if(CGRectContainsPoint(subview.frame, loc))
+//            {
+//                NSLog(@"--------> In View for %@",subview);
+//            }
             
             if(CGRectContainsPoint(subview.bounds, loc))
             {
-                NSLog(@"-XXXX-----> In View for %@",subview);
+              //  NSLog(@"-XXXX-----> In View for %@",subview);
                 
                 playingRef = TRUE;
                 currentAudioSelection = (EAFAudioView *)subview;
-//                [currentAudioSelection addSubview:playingIcon];
                 [self playRefAudio:(EAFAudioView *)subview];
             }
         }

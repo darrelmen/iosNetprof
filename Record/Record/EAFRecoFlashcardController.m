@@ -13,6 +13,7 @@
 #import "math.h"
 #import <AudioToolbox/AudioServices.h>
 #import "SSKeychain.h"
+//#import "FAImageView.h"
 #import "UIFont+FontAwesome.h"
 #import "NSString+FontAwesome.h"
 #import "BButton.h"
@@ -33,9 +34,13 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-    //  _playButton.enabled = NO;
-    
+
+    playingIcon = [BButton awesomeButtonWithOnlyIcon:FAVolumeUp
+                                                  type: BButtonTypeDefault
+                                                 style:BButtonStyleBootstrapV3];
+    playingIcon.color = [UIColor colorWithWhite:1.0f alpha:0.0f];
+    [playingIcon setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+   
     [[self view] sendSubviewToBack:_cardBackground];
     
     _cardBackground.layer.cornerRadius = 15.f;
@@ -131,18 +136,6 @@
     if ([_language isEqualToString:@"English"]) {
         [_whatToShow setTitle:@"Def." forSegmentAtIndex:0];
     }
-    
-    //     _showScores = [BButton awesomeButtonWithOnlyIcon:FATrophy
-    //                                  type: BButtonTypeDefault
-    //                                 style:BButtonStyleBootstrapV3];
-    // [_showScores sizeToFit];
-    //    CGRect frame = CGRectMake(32.0f + (0 * 144.0f),
-    //                              40.0f + (1 * 60.0f),
-    //                              112.0f,
-    //                              44.0f);
-    
-    // _showScores.frame = CGRectMake(_showScores.frame.origin.x, _showScores.frame.origin.y, 112.0f, 44.0f);
-    
     
     BButton * btn = [BButton awesomeButtonWithOnlyIcon:FATrophy
                                                   type: BButtonTypeDefault
@@ -558,20 +551,6 @@ BOOL preventPlayAudio = false;
     [self respondToSwipe];
 }
 
-
-//- (void)setPlayRefEnabled
-//{
-//   // NSLog(@"checking path %@",_refAudioPath);
-//
-//    if ([self hasRefAudio]) {
-//        _playRefAudioButton.enabled = YES;
-//    } else {
-//        NSLog(@"disabling button since path %@",_refAudioPath);
-//
-//        _playRefAudioButton.enabled = NO;
-//    }
-//}
-
 - (BOOL) hasRefAudio
 {
     return _refAudioPath && ![_refAudioPath hasSuffix:@"NO"];
@@ -587,6 +566,16 @@ BOOL preventPlayAudio = false;
 (AVAudioPlayer *)player successfully:(BOOL)flag
 {
     _recordButton.enabled = YES;
+    [self removePlayingAudioIcon];
+}
+
+BButton *playingIcon;
+- (void)removePlayingAudioIcon {
+    for (UIView *v in [_scoreDisplayContainer subviews]) {
+        if (v == playingIcon) {
+            [v removeFromSuperview];
+        }
+    }
 }
 
 - (void)audioPlayerDecodeErrorDidOccur:
@@ -745,14 +734,6 @@ BOOL preventPlayAudio = false;
 CFAbsoluteTime then2 ;
 CFAbsoluteTime now;
 
-//- (void)showRecordingFeedback {
-//    if (debugRecord) NSLog(@"showRecordingFeedback time = %f",CFAbsoluteTimeGetCurrent());
-//    
-//    // _playButton.enabled = NO;
-//    _recordButton.enabled = NO;
-//  //  _recordButtonContainer.backgroundColor =[UIColor greenColor];
-//}
-
 - (void)logError:(NSError *)error {
     NSLog(@"Domain:      %@", error.domain);
     NSLog(@"Error Code:  %ld", (long)error.code);
@@ -863,7 +844,9 @@ double gestureEnd;
                         error:&error];
         
         _audioPlayer.delegate = self;
-        
+
+        [_scoreDisplayContainer addSubview:playingIcon];
+
         if (error)
         {
             NSLog(@"Error: %@",
