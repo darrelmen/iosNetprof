@@ -8,42 +8,6 @@
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
-        <!--Pronunciation Feedback-->
-        <scene sceneID="L4k-YJ-Lfb">
-            <objects>
-                <tableViewController storyboardIdentifier="languageChoices" title="Pronunciation Feedback" id="re6-Vy-sbI" customClass="EAFLanguageTableViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="F0V-Qb-2BA">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" restorationIdentifier="English" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="LanguageListPrototypeCell" id="pya-OP-p6k">
-                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="pya-OP-p6k" id="XGs-zD-PSB">
-                                    <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                                <accessibility key="accessibilityConfiguration" label="English"/>
-                                <connections>
-                                    <segue destination="VFl-2k-NIH" kind="push" id="5VC-mv-1sd"/>
-                                </connections>
-                            </tableViewCell>
-                        </prototypes>
-                        <sections/>
-                        <connections>
-                            <outlet property="dataSource" destination="re6-Vy-sbI" id="Kxb-3R-t7U"/>
-                            <outlet property="delegate" destination="re6-Vy-sbI" id="5hg-oy-yZ6"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" title="Pronunciation Feedback" id="5cM-vS-2m3">
-                        <barButtonItem key="backBarButtonItem" title="Languages" id="hmN-kf-X4d"/>
-                    </navigationItem>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="s3P-Fq-plc" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1212" y="785"/>
-        </scene>
         <!--Chapter List-->
         <scene sceneID="4D6-cV-XRV">
             <objects>
@@ -205,27 +169,31 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" restorationIdentifier="scoreContainer" translatesAutoresizingMaskIntoConstraints="NO" id="vlT-Ea-UA6">
-                                        <rect key="frame" x="8" y="182" width="269" height="44"/>
+                                        <rect key="frame" x="8" y="177" width="269" height="44"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="44" id="nMQ-q0-cCJ"/>
                                         </constraints>
                                     </view>
-                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" restorationIdentifier="recoIndicator" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="D19-P2-ZOH">
-                                        <rect key="frame" x="24" y="234" width="20" height="20"/>
-                                    </activityIndicatorView>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="checkmark32.png" translatesAutoresizingMaskIntoConstraints="NO" id="ZN1-US-MJW">
-                                        <rect key="frame" x="52" y="228" width="32" height="32"/>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" restorationIdentifier="correctnessIndicator" image="checkmark32.png" translatesAutoresizingMaskIntoConstraints="NO" id="ZN1-US-MJW">
+                                        <rect key="frame" x="52" y="228" width="44" height="44"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="32" id="X52-iz-Og2"/>
                                         </constraints>
                                     </imageView>
-                                    <view userInteractionEnabled="NO" contentMode="scaleToFill" restorationIdentifier="scoringIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="vmx-bc-B8p" customClass="UIProgressView">
-                                        <rect key="frame" x="101" y="237" width="165" height="14"/>
+                                    <view userInteractionEnabled="NO" contentMode="scaleToFill" misplaced="YES" restorationIdentifier="scoringIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="vmx-bc-B8p" customClass="UIProgressView">
+                                        <rect key="frame" x="101" y="237" width="165" height="24"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="14" id="eGw-2Z-N2T"/>
+                                            <constraint firstAttribute="height" constant="24" id="eGw-2Z-N2T"/>
                                         </constraints>
                                     </view>
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" restorationIdentifier="recoIndicator" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="D19-P2-ZOH">
+                                        <rect key="frame" x="24" y="224" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="D19-P2-ZOH" secondAttribute="height" multiplier="1:1" id="A8l-pJ-Ey9"/>
+                                            <constraint firstAttribute="width" constant="30" id="kQ0-ul-50x"/>
+                                        </constraints>
+                                    </activityIndicatorView>
                                 </subviews>
                                 <gestureRecognizers/>
                                 <constraints>
@@ -635,11 +603,11 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" enablesReturnKeyAutomatically="YES" secureTextEntry="YES"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o2e-xg-EB1">
-                                <rect key="frame" x="131" y="353" width="58" height="38"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="21"/>
+                            <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o2e-xg-EB1">
+                                <rect key="frame" x="127" y="353" width="66" height="41"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <state key="normal" title="Log In">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
                                     <action selector="onClick:" destination="Erf-jW-zql" eventType="touchUpInside" id="ggL-oa-QZ5"/>
@@ -651,7 +619,7 @@
                                 <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" restorationIdentifier="signUpFeedback" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QA1-pl-s2n">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" restorationIdentifier="signUpFeedback" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QA1-pl-s2n">
                                 <rect key="frame" x="35" y="472" width="250" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
@@ -663,6 +631,9 @@
                             </label>
                             <pickerView contentMode="scaleToFill" restorationIdentifier="languages" translatesAutoresizingMaskIntoConstraints="NO" id="vuU-7j-fEd">
                                 <rect key="frame" x="35" y="183" width="250" height="162"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="162" id="rsw-Bw-pyV"/>
+                                </constraints>
                                 <connections>
                                     <outlet property="dataSource" destination="Erf-jW-zql" id="c0J-Zl-UhZ"/>
                                     <outlet property="delegate" destination="Erf-jW-zql" id="QCa-yy-c8C"/>
@@ -671,17 +642,17 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="dliIcon.png" translatesAutoresizingMaskIntoConstraints="NO" id="dHK-7D-hbQ">
                                 <rect key="frame" x="211" y="4" width="54" height="70"/>
                             </imageView>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" restorationIdentifier="recoIndicator" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="jYO-aD-nI4">
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" restorationIdentifier="recoIndicator" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="jYO-aD-nI4">
                                 <rect key="frame" x="200" y="363" width="20" height="20"/>
                             </activityIndicatorView>
                             <button opaque="NO" contentMode="scaleToFill" misplaced="YES" restorationIdentifier="signUp" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rQr-BW-qEu">
-                                <rect key="frame" x="123" y="446" width="74" height="38"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="21"/>
+                                <rect key="frame" x="118" y="429" width="85" height="50"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <state key="normal" title="Sign Up">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="8eL-jw-jXE" kind="push" id="zAa-zt-elC"/>
+                                    <segue destination="8eL-jw-jXE" kind="push" identifier="goToSignUp" id="c7J-Xa-ebf"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -704,7 +675,7 @@
                             <constraint firstItem="aTh-Xw-7oD" firstAttribute="top" secondItem="xWs-V3-BGT" secondAttribute="bottom" constant="1" id="PRG-Is-K13"/>
                             <constraint firstItem="n6p-AP-fgq" firstAttribute="top" secondItem="aTh-Xw-7oD" secondAttribute="bottom" constant="5" id="PRO-mB-GCF"/>
                             <constraint firstItem="aTh-Xw-7oD" firstAttribute="leading" secondItem="xWs-V3-BGT" secondAttribute="leading" id="RoL-uw-glC"/>
-                            <constraint firstItem="jYO-aD-nI4" firstAttribute="centerY" secondItem="o2e-xg-EB1" secondAttribute="centerY" constant="1" id="SeL-Bj-rP8"/>
+                            <constraint firstItem="jYO-aD-nI4" firstAttribute="centerY" secondItem="o2e-xg-EB1" secondAttribute="centerY" id="SeL-Bj-rP8"/>
                             <constraint firstAttribute="centerX" secondItem="o2e-xg-EB1" secondAttribute="centerX" id="Yn4-Rk-O5c"/>
                             <constraint firstItem="QA1-pl-s2n" firstAttribute="height" secondItem="aTh-Xw-7oD" secondAttribute="height" id="ZF2-zu-GNr"/>
                             <constraint firstItem="E8Z-pq-Hoc" firstAttribute="top" secondItem="n6p-AP-fgq" secondAttribute="bottom" constant="1" id="aw4-gD-oVV"/>
@@ -726,7 +697,7 @@
                             <constraint firstItem="n6p-AP-fgq" firstAttribute="width" secondItem="vuU-7j-fEd" secondAttribute="width" id="z1g-Ik-rB0"/>
                         </constraints>
                         <connections>
-                            <outletCollection property="gestureRecognizers" destination="vWr-H3-c3x" appends="YES" id="SHB-lH-sdf"/>
+                            <outletCollection property="gestureRecognizers" destination="rrw-wN-8gl" appends="YES" id="VYm-eL-0CC"/>
                         </connections>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
@@ -745,9 +716,9 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UGn-ZS-Vdb" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="vWr-H3-c3x">
+                <tapGestureRecognizer id="rrw-wN-8gl">
                     <connections>
-                        <action selector="gotSingleTap:" destination="Erf-jW-zql" id="trW-1J-0Tb"/>
+                        <action selector="gotSingleTap:" destination="Erf-jW-zql" id="G5h-k3-87X"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
@@ -911,7 +882,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="724" y="583"/>
+            <point key="canvasLocation" x="724" y="547"/>
         </scene>
     </scenes>
     <resources>
@@ -927,6 +898,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="q28-aI-wTP"/>
+        <segue reference="U5f-EU-68h"/>
     </inferredMetricsTieBreakers>
 </document>

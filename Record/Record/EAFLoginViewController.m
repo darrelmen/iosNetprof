@@ -43,10 +43,32 @@
     _username.delegate = self;
     _password.delegate = self;
     
+    UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
+    gestureRecognizer.cancelsTouchesInView = NO;
+     gestureRecognizer.delegate = self;
+    [self.languagePicker addGestureRecognizer:gestureRecognizer];
+    
     if (userid != nil) {
-      //  _username.text = userid;
         [self performSegueWithIdentifier:@"goToChapter" sender:self];
-        return;
+    }
+}
+
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
+    return true;
+}
+
+- (void)pickerViewTapGestureRecognized:(UITapGestureRecognizer*)gestureRecognizer
+{
+    CGPoint touchPoint = [gestureRecognizer locationInView:gestureRecognizer.view.superview];
+    
+    CGRect frame = _languagePicker.frame;
+    CGRect selectorFrame = CGRectInset( frame, 0.0, _languagePicker.bounds.size.height * 0.85 / 2.0 );
+   // NSLog( @"Got tap -- Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
+
+    if( CGRectContainsPoint( selectorFrame, touchPoint) )
+    {
+      //  NSLog( @"Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
+        [self onClick:nil];
     }
 }
 
@@ -199,7 +221,7 @@
     }
     else if (passCorrect) {
         // OK store info and segue
-        NSLog(@"userid %@",userIDExisting);
+//        NSLog(@"userid %@",userIDExisting);
         NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];
         [SSKeychain setPassword:converted forService:@"mitll.proFeedback.device" account:@"userid"];
         NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
@@ -210,7 +232,6 @@
    } else {
         // password is bad
         _passwordFeedback.text = @"Username or password incorrect";
-
     }
     return true;
 }
@@ -251,7 +272,6 @@
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
-    
     NSLog(@"textFieldShouldBeginEditing text field start on %@",textField);
 
     _currentResponder = textField;
@@ -266,6 +286,10 @@
     [textField resignFirstResponder];
     return YES;
 }
+
+//- (IBAction)gotSignUp:(id)sender {
+//        [self performSegueWithIdentifier: @"goToSignUp" sender: self];
+//}
 
 #pragma mark - Navigation
 
@@ -291,10 +315,10 @@
         
         long selection = [_languagePicker selectedRowInComponent:0];
         
-        NSString *chosenLanguage = [_langauges objectAtIndex:selection];
-        [signUp.languagePicker selectRow:selection inComponent:0 animated:false];
+       // NSString *chosenLanguage = [_langauges objectAtIndex:selection];
+        //[signUp.languagePicker selectRow:selection inComponent:0 animated:false];
         
-        NSLog(@"language %@ %@ %@",chosenLanguage,_username.text,_password.text);
+       // NSLog(@"language %@ %@ %@",chosenLanguage,_username.text,_password.text);
         
         signUp.userFromLogin = _username.text;
         signUp.passFromLogin = _password.text;
@@ -305,6 +329,5 @@
         _signUpFeedback.text = @"";
     }
 }
-
 
 @end

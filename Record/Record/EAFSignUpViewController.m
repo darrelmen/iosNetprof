@@ -74,7 +74,7 @@
         valid = false;
     }
     if (![self validateEmail:_email.text]) {
-        _emailFeedback.text = @"Please enter a valid email address.";
+        _emailFeedback.text = @"Please enter a valid email.";
         valid = false;
     }
     

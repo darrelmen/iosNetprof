@@ -821,6 +821,9 @@ double gestureEnd;
         
         _recordButtonContainer.backgroundColor =[UIColor greenColor];
         _recordButton.enabled = NO;
+        [_correctFeedback setHidden:true];
+        _scoreProgress.hidden = true;
+
         [self setDisplayMessage:@""];
 
         [self recordAudio:nil];

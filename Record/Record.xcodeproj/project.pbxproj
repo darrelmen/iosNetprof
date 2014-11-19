@@ -69,7 +69,6 @@
 		B6A8D97E19770C2100E8F1D5 /* Icon-Small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D97619770C2100E8F1D5 /* Icon-Small@2x.png */; };
 		B6AB39BB19FACF4300B250C1 /* checkmark32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6AB39BA19FACF4300B250C1 /* checkmark32.png */; };
 		B6AB39BD19FACF4D00B250C1 /* redx32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6AB39BC19FACF4D00B250C1 /* redx32.png */; };
-		B6B9F392197827A700CD0140 /* EAFLanguageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9F391197827A700CD0140 /* EAFLanguageTableViewController.m */; };
 		B6D001761970ACD3009554D5 /* record.png in Resources */ = {isa = PBXBuildFile; fileRef = B6D001751970ACD3009554D5 /* record.png */; };
 		B6D001781970AD28009554D5 /* record24.png in Resources */ = {isa = PBXBuildFile; fileRef = B6D001771970AD28009554D5 /* record24.png */; };
 		B6D0017A1970ADAC009554D5 /* squareStop.png in Resources */ = {isa = PBXBuildFile; fileRef = B6D001791970ADAC009554D5 /* squareStop.png */; };
@@ -195,8 +194,6 @@
 		B6A8D97619770C2100E8F1D5 /* Icon-Small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small@2x.png"; sourceTree = "<group>"; };
 		B6AB39BA19FACF4300B250C1 /* checkmark32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkmark32.png; sourceTree = "<group>"; };
 		B6AB39BC19FACF4D00B250C1 /* redx32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redx32.png; sourceTree = "<group>"; };
-		B6B9F390197827A700CD0140 /* EAFLanguageTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFLanguageTableViewController.h; sourceTree = "<group>"; };
-		B6B9F391197827A700CD0140 /* EAFLanguageTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFLanguageTableViewController.m; sourceTree = "<group>"; };
 		B6D001751970ACD3009554D5 /* record.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record.png; sourceTree = "<group>"; };
 		B6D001771970AD28009554D5 /* record24.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record24.png; sourceTree = "<group>"; };
 		B6D001791970ADAC009554D5 /* squareStop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = squareStop.png; sourceTree = "<group>"; };
@@ -418,8 +415,6 @@
 				B698212F1A019A7200BB9865 /* SSKeychain.m */,
 				B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */,
 				B610C00919D2240800CA9D8A /* EAFRecoFlashcardController.h */,
-				B6B9F390197827A700CD0140 /* EAFLanguageTableViewController.h */,
-				B6B9F391197827A700CD0140 /* EAFLanguageTableViewController.m */,
 				B66BACAD197055F500E28ECC /* EAFChapterTableViewController.h */,
 				B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */,
 				F6A5682C18ECA98A00B844C6 /* EAFAppDelegate.h */,
@@ -626,7 +621,6 @@
 				B68A5C491979C8B70036B90C /* MSArcLayer.m in Sources */,
 				B68A5C4A1979C8B70036B90C /* MSGradientArcLayer.m in Sources */,
 				B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */,
-				B6B9F392197827A700CD0140 /* EAFLanguageTableViewController.m in Sources */,
 				B636FFD11A098FC700C3B62E /* NSString+FontAwesome2.m in Sources */,
 				B649198E1A1A5CE00054CA13 /* EAFSignUpViewController.m in Sources */,
 				B67E1BC4197EFC0500F42143 /* ioapi.c in Sources */,
