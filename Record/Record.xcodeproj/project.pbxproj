@@ -14,6 +14,9 @@
 		B61B822D1A16CF99009B00D1 /* dliIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B822C1A16CF99009B00D1 /* dliIcon.png */; };
 		B61B822F1A16CFA2009B00D1 /* mitllLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B822E1A16CFA2009B00D1 /* mitllLogo.png */; };
 		B61B82321A16D223009B00D1 /* EAFLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B82311A16D223009B00D1 /* EAFLoginViewController.m */; };
+		B6252AA41A1C50810083AE7A /* SplunkMint-iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA31A1C50810083AE7A /* SplunkMint-iOS.framework */; };
+		B6252AA61A1C50EA0083AE7A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA51A1C50EA0083AE7A /* SystemConfiguration.framework */; };
+		B6252AA81A1C50FF0083AE7A /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA71A1C50FF0083AE7A /* CoreTelephony.framework */; };
 		B62624671A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */; };
 		B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC41A09397200C3B62E /* EAFWordScoreTableViewController.m */; };
 		B636FFC71A09549E00C3B62E /* EAFScoreReportTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */; };
@@ -107,6 +110,9 @@
 		B61B822E1A16CFA2009B00D1 /* mitllLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mitllLogo.png; sourceTree = "<group>"; };
 		B61B82301A16D223009B00D1 /* EAFLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFLoginViewController.h; sourceTree = "<group>"; };
 		B61B82311A16D223009B00D1 /* EAFLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFLoginViewController.m; sourceTree = "<group>"; };
+		B6252AA31A1C50810083AE7A /* SplunkMint-iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "SplunkMint-iOS.framework"; path = "../../../SplunkMint-iOS.framework"; sourceTree = "<group>"; };
+		B6252AA51A1C50EA0083AE7A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		B6252AA71A1C50FF0083AE7A /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		B62624651A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFPhoneScoreTableViewController.h; sourceTree = "<group>"; };
 		B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFPhoneScoreTableViewController.m; sourceTree = "<group>"; };
 		B636FFC31A09397200C3B62E /* EAFWordScoreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFWordScoreTableViewController.h; sourceTree = "<group>"; };
@@ -221,6 +227,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B67E1BB6197EC25D00F42143 /* libz.dylib in Frameworks */,
+				B6252AA81A1C50FF0083AE7A /* CoreTelephony.framework in Frameworks */,
+				B6252AA61A1C50EA0083AE7A /* SystemConfiguration.framework in Frameworks */,
+				B6252AA41A1C50810083AE7A /* SplunkMint-iOS.framework in Frameworks */,
 				B66461F2196F193900943BC2 /* AVFoundation.framework in Frameworks */,
 				F6A5682018ECA98A00B844C6 /* CoreGraphics.framework in Frameworks */,
 				F6A5682218ECA98A00B844C6 /* UIKit.framework in Frameworks */,
@@ -369,6 +378,9 @@
 		F6A5681C18ECA98A00B844C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B6252AA71A1C50FF0083AE7A /* CoreTelephony.framework */,
+				B6252AA51A1C50EA0083AE7A /* SystemConfiguration.framework */,
+				B6252AA31A1C50810083AE7A /* SplunkMint-iOS.framework */,
 				B67E1BB5197EC25D00F42143 /* libz.dylib */,
 				B66461F1196F193900943BC2 /* AVFoundation.framework */,
 				F6A5681D18ECA98A00B844C6 /* Foundation.framework */,
@@ -756,12 +768,22 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Gordon Vidaver (T5YA8RC67N)";
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/go22670/Projects,
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				STRIP_INSTALLED_PRODUCT = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
@@ -774,12 +796,22 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Gordon Vidaver (T5YA8RC67N)";
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/go22670/Projects,
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				STRIP_INSTALLED_PRODUCT = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};

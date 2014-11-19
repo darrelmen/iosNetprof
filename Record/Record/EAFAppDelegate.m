@@ -16,7 +16,8 @@
 {
     // Override point for customization after application launch.
     // [SSKeychain deletePasswordForService:@"mitll.proFeedback.device" account:@"userid"];
-
+    [[Mint sharedInstance] initAndStartSession:@"1cad0755"];
+    
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     if (retrieveuuid == NULL) {
         NSString *UUID = [EAFAppDelegate GetUUID];

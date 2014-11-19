@@ -264,22 +264,13 @@
     jsonObject = [self getCurrentJson];
     NSString *exercise = [jsonObject objectForKey:@"fl"];
     NSString *englishPhrases = [jsonObject objectForKey:@"en"];
-    
+    exercise = [exercise stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
     [_foreignLang setText:exercise];
     [_english setText:englishPhrases];
     
-    //   _english.lineBreakMode = NSLineBreakByWordWrapping;
-    //   _english.numberOfLines = 0;
-    
-    //    _foreignLang.lineBreakMode = NSLineBreakByWordWrapping;
-    //    _foreignLang.numberOfLines = 0;
-    
     _foreignLang.adjustsFontSizeToFitWidth=YES;
     _english.adjustsFontSizeToFitWidth=YES;
-    // _english.minimumScaleFactor=0.5;
-    
-    // _scoreDisplay.lineBreakMode = NSLineBreakByWordWrapping;
-    // _scoreDisplay.numberOfLines = 0;
 }
 
 - (unsigned long)getItemIndex {
@@ -385,24 +376,26 @@
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
     
-    
-    // _foreignLang.font = [UIFont systemFontOfSize:38];
-    //  _english.font = [UIFont systemFontOfSize:38];
-    
+    flAtIndex = [flAtIndex stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
     [_foreignLang setText:flAtIndex];
     [_english setText:enAtIndex];
-    
-    // [_foreignLang sizeToFit];
-    // [_english sizeToFit];
     
     if ([[UIDevice currentDevice].model containsString:@"iPhone"] &&
         [flAtIndex length] > 15) {
         _foreignLang.font = [UIFont systemFontOfSize:24];
     }
+    else {
+        _foreignLang.font = [UIFont systemFontOfSize:32];
+
+    }
     
     if ([[UIDevice currentDevice].model containsString:@"iPhone"] &&
         [enAtIndex length] > 15) {
         _english.font = [UIFont systemFontOfSize:24];
+    }
+    else {
+        _english.font = [UIFont systemFontOfSize:32];
     }
     
     // final experiment
@@ -1275,6 +1268,9 @@ double gestureEnd;
         
         UILabel *wordLabel = [[UILabel alloc] init];
         
+        if ([_language isEqualToString:@"English"]) {
+            word = [word lowercaseString];
+        }
         NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
         
         NSRange range = NSMakeRange(0, [coloredWord length]);
@@ -1289,7 +1285,8 @@ double gestureEnd;
         
         wordLabel.attributedText = coloredWord;
         //  NSLog(@"label word is %@",wordLabel.attributedText);
-        
+        [wordLabel setFont:[UIFont systemFontOfSize:24.0f]];
+
         //        [wordLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:18.0f]];
         [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
         
@@ -1436,7 +1433,6 @@ double gestureEnd;
 - (UIColor *) getColor2:(float) score {
     if (score > 1.0) score = 1.0;
     if (score < 0)  score = 0;
-    
     //  NSLog(@"getColor2 score %f",score);
     
     float red   = fmaxf(0,(255 - (fmaxf(0, score-0.5)*2*255)));

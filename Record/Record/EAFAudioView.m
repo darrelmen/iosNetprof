@@ -43,7 +43,7 @@
     CGPoint p = [gestureRecognizer locationInView:self];
     
    
-    NSLog(@"got gesture at %@",p);
+   // NSLog(@"got gesture at %@",p);
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer

@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <SplunkMint-iOS/SplunkMint-iOS.h>
 
 @interface EAFLoginViewController : UIViewController<NSURLConnectionDelegate,UITextFieldDelegate>
 @property (strong, nonatomic) IBOutlet UITextField *username;

@@ -23,9 +23,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-   // NSLog(@"got phone score table view did load");
-    
+        
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
     playingIcon = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
@@ -712,7 +710,7 @@ bool playingRef = TRUE;
     }
     
     NSString *report;
-    NSString *phoneScore = [json objectForKey:@"phoneScore"];
+//    NSString *phoneScore = [json objectForKey:@"phoneScore"];
     UIViewController  *parent = [self parentViewController];
   //  report = [NSString stringWithFormat:@"Overall Sound Score is %@",phoneScore];
    // report = [NSString stringWithFormat:@"Score is %@, touch a word to hear yourself",phoneScore];
