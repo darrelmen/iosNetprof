@@ -110,25 +110,36 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *exid = [_exList objectAtIndex:row];
     NSArray *answers = [_exToHistory objectForKey:exid];
     //NSLog(@"ex answers %@ %@",exid,answers);
-
-    int index = 0;
-    for (NSString *correct in answers) {
-        UIView *container = [icons objectAtIndex:(index++ + (5-[answers count]))];
-        
+    
+    if (answers == nil || answers.count == 0) {
         FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
         correctView.image = nil;
-        if ([correct isEqualToString:@"Y"]) {
-            [correctView setDefaultIconIdentifier:@"fa-check"];
-            correctView.defaultIconColor = [UIColor greenColor];
-            correctView.defaultView.backgroundColor = [UIColor greenColor];
+        [correctView setDefaultIconIdentifier:@"fa-question"];
+        //   correctView.defaultIconColor = [UIColor greenColor];
+        //   correctView.defaultView.backgroundColor = [UIColor greenColor];
+        [cell.fifth addSubview:correctView];
+        
+    }
+    else {
+        int index = 0;
+        for (NSString *correct in answers) {
+            UIView *container = [icons objectAtIndex:(index++ + (5-[answers count]))];
+            
+            FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
+            correctView.image = nil;
+            if ([correct isEqualToString:@"Y"]) {
+                [correctView setDefaultIconIdentifier:@"fa-check"];
+                correctView.defaultIconColor = [UIColor greenColor];
+                correctView.defaultView.backgroundColor = [UIColor greenColor];
+            }
+            else {
+                [correctView setDefaultIconIdentifier:@"fa-times"];
+                correctView.defaultIconColor = [UIColor redColor];
+                correctView.defaultView.backgroundColor = [UIColor redColor];
+            }
+            
+            [container addSubview:correctView];
         }
-        else {
-            [correctView setDefaultIconIdentifier:@"fa-times"];
-            correctView.defaultIconColor = [UIColor redColor];
-            correctView.defaultView.backgroundColor = [UIColor redColor];
-        }
-       
-        [container addSubview:correctView];
     }
     
     NSString *fl = [_exToFL objectForKey:exid];
@@ -292,18 +303,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     // The request is complete and data has been received
     
     //[loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
-    
-    //BOOL dataIsValid =
     [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-    
-  //  receivedCount++;
-  //  if (receivedCount != reqCount) {
-  //      NSLog(@"ignoring out of order requests %d vs %d",reqCount,receivedCount);
-  //  }
-  //  else if (dataIsValid) {
-  //      [self writeToCache:_responseData];
-   // }
 }
 
 - (NSCachedURLResponse *)connection:(NSURLConnection *)connection
