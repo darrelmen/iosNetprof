@@ -27,5 +27,6 @@
 @property NSString *url;
 
 @property long user;
+-(void)setCurrentTitle;
 
 @end

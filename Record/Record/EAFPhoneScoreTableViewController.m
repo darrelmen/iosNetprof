@@ -41,6 +41,11 @@
     
 }
 
+-(void)setCurrentTitle {
+    UIViewController  *parent = [self parentViewController];
+    parent.navigationItem.title = @"Touch a word to hear yourself";
+}
+
 - (BOOL) cancelTouchesInView {
     return NO;
 }

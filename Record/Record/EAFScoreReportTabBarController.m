@@ -20,9 +20,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
- //   NSLog(@"Got score report viewDidLoad!!! ");
-    
-    
+    self.delegate = self;
 
     //[self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.
@@ -32,27 +30,24 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
+// this is OK - I just go looking for the method
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
+   // NSLog(@"got selection event %@",viewController);
+    
+    if ( [viewController respondsToSelector:@selector(setCurrentTitle)] )
+    {
+        [viewController performSelector:@selector(setCurrentTitle)];
+    }
+}
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    
-  //  NSLog(@"Got score report segue!!! ");
 
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    
-    //    EAFChapterTableViewController *chapterController = [segue destinationViewController];
-    
-    //  NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-    //  NSString *tappedItem = [languages objectAtIndex:indexPath.row];
-    
-    //  [chapterController setLanguage:tappedItem];
-    //  if ([tappedItem isEqualToString:@"CM"]) {
-    //      tappedItem = @"Mandarin";
-    //  }
-    // [chapterController setTitle:tappedItem];
 }
 
 

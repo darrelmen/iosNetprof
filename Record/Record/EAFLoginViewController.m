@@ -24,7 +24,9 @@
     //not japanese or levantine -- consider levantine?
     // TODO : get list of languages from server call?
 
-    _langauges = [NSArray arrayWithObjects: @"Dari", @"English",@"Egyptian",@"Farsi", @"Korean", @"CM", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
+    _langauges = [NSArray arrayWithObjects: @"Dari", @"English",
+                  //@"Egyptian",
+                  @"Farsi", @"Korean", @"CM", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
   
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
     

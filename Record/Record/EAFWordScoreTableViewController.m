@@ -291,12 +291,20 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSString *wordReport;
         wordReport = [NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt];
         parent.navigationItem.title = wordReport;
+        myCurrentTitle = wordReport;
        // [self setTitle:[NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt]];
     }
 
     [[self tableView] reloadData];
     
     return true;
+}
+
+NSString *myCurrentTitle;
+
+-(void)setCurrentTitle {
+    UIViewController  *parent = [self parentViewController];
+    parent.navigationItem.title = myCurrentTitle;
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {

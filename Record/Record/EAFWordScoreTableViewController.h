@@ -28,7 +28,10 @@
 @property NSDictionary *exToScore;
 @property NSDictionary *exToHistory;
 @property NSMutableArray *exList;
+//@property NSString *currentTitle;
 
 @property long user;
+
+-(void)setCurrentTitle;
 
 @end
