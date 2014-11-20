@@ -1184,7 +1184,15 @@ double gestureEnd;
     
     [_scoreDisplayContainer removeConstraints:_scoreDisplayContainer.constraints];
     _scoreDisplayContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    
+  
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                           constraintWithItem:_scoreDisplayContainer
+                                           attribute:NSLayoutAttributeHeight
+                                           relatedBy:NSLayoutRelationEqual
+                                           toItem:nil
+                                           attribute:NSLayoutAttributeNotAnAttribute
+                                           multiplier:1.0
+                                           constant:52.0]];
     UIView *leftView = nil;
     
     for (NSDictionary *event in wordAndScore) {
@@ -1217,6 +1225,8 @@ double gestureEnd;
         // lower has left, right bottom bound to container
         // lower has top that is equal to bottom of top or half container height
         
+        // top
+        
         [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
                                                constraintWithItem:exampleView
                                                attribute:NSLayoutAttributeTop
@@ -1225,6 +1235,8 @@ double gestureEnd;
                                                attribute:NSLayoutAttributeTop
                                                multiplier:1.0
                                                constant:0.0]];
+        
+        // bottom
         
         [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
                                                constraintWithItem:exampleView
@@ -1277,12 +1289,11 @@ double gestureEnd;
         wordLabel.attributedText = coloredWord;
         //  NSLog(@"label word is %@",wordLabel.attributedText);
         [wordLabel setFont:[UIFont systemFontOfSize:24.0f]];
-
-        //        [wordLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:18.0f]];
         [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
         
         [exampleView addSubview:wordLabel];
         
+        // top
         [exampleView addConstraint:[NSLayoutConstraint
                                     constraintWithItem:wordLabel
                                     attribute:NSLayoutAttributeTop
@@ -1309,16 +1320,16 @@ double gestureEnd;
                                     attribute:NSLayoutAttributeRight
                                     multiplier:1.0
                                     constant:0.0]];
-        
-        [exampleView addConstraint:[NSLayoutConstraint
-                                    constraintWithItem:wordLabel
-                                    attribute:NSLayoutAttributeHeight
-                                    relatedBy:NSLayoutRelationEqual
-                                    toItem:exampleView
-                                    attribute:NSLayoutAttributeHeight
-                                    multiplier:0.5
-                                    constant:0.0]];
-        
+//        
+//        [exampleView addConstraint:[NSLayoutConstraint
+//                                    constraintWithItem:wordLabel
+//                                    attribute:NSLayoutAttributeHeight
+//                                    relatedBy:NSLayoutRelationEqual
+//                                    toItem:exampleView
+//                                    attribute:NSLayoutAttributeHeight
+//                                    multiplier:0.5
+//                                    constant:0.0]];
+//        
         // get the phone sequence for the word
         NSString *phoneToShow = @"";
         for (NSDictionary *event in phoneAndScore) {
@@ -1363,10 +1374,6 @@ double gestureEnd;
         
         UILabel *phoneLabel = [[UILabel alloc] init];
         phoneLabel.attributedText = coloredPhones;
-        
-        //      [phoneLabel setTextColor:[UIColor blackColor]];
-        //[phoneLabel setBackgroundColor:[UIColor colorWithHue:66 saturation:100 brightness:63 alpha:1]];
-        //[phoneLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:18.0f]];
         [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
         
         [exampleView addSubview:phoneLabel];
@@ -1405,7 +1412,7 @@ double gestureEnd;
                                     toItem:exampleView
                                     attribute:NSLayoutAttributeBottom
                                     multiplier:1.0
-                                    constant:0.0]];
+                                    constant:2.0]];
     }
 }
 
