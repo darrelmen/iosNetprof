@@ -7,15 +7,12 @@
 //
 
 #import "EAFItemTableViewController.h"
-//#import "EAFExercise.h"
 #import "EAFAudioCache.h"
 #import "EAFRecoFlashcardController.h"
 
 @interface EAFItemTableViewController ()
 
 @end
-
-EAFAudioCache *audioCache;
 
 @implementation EAFItemTableViewController
 
@@ -38,7 +35,7 @@ EAFAudioCache *audioCache;
 {
     [super viewDidLoad];
     
-    audioCache = [[EAFAudioCache alloc] init];
+    _audioCache = [[EAFAudioCache alloc] init];
     
     self.paths = [[NSMutableArray alloc] init];
     self.rawPaths = [[NSMutableArray alloc] init];
@@ -61,7 +58,7 @@ EAFAudioCache *audioCache;
         }
     }
     
-    [audioCache goGetAudio:_rawPaths paths:_paths language:_language];
+    [_audioCache goGetAudio:_rawPaths paths:_paths language:_language];
 
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;

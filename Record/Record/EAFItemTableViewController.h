@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <SplunkMint-iOS/SplunkMint-iOS.h>
+#import "EAFAudioCache.h"
 
 @interface EAFItemTableViewController : UITableViewController
 
@@ -23,5 +24,6 @@
 
 @property NSMutableData *mp3Audio;
 @property int itemIndex;
+@property EAFAudioCache *audioCache;
 
 @end

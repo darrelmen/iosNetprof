@@ -264,6 +264,8 @@
     [_foreignLang setText:exercise];
     [_english setText:englishPhrases];
     
+//    [_foreignLang baseWritingDirectionForPosition];
+    
     _foreignLang.adjustsFontSizeToFitWidth=YES;
     _english.adjustsFontSizeToFitWidth=YES;
 }
@@ -1100,37 +1102,7 @@ double gestureEnd;
     //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *valid = [json objectForKey:@"valid"];
     NSLog(@"validity was %@",valid);
-    
-    // show text highlighted with score per word
-    //    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
-    //    NSString * lower =[[_foreignLang text] lowercaseString];
-    //
-    //    NSArray *wordAndScore = [json objectForKey:@"WORD_TRANSCRIPT"];
-    //
-    //    int offset = 0;
-    //
-    //    for (NSDictionary *event in wordAndScore) {
-    //        NSString *word = [event objectForKey:@"event"];
-    //        NSNumber *score = [event objectForKey:@"score"];
-    //        NSString *lowerWord = [word lowercaseString];
-    //        NSRange range, searchCharRange;
-    //
-    //        searchCharRange = NSMakeRange(offset, [lower length]-offset);
-    //
-    //        range = [lower rangeOfString:lowerWord options:0 range:searchCharRange];
-    //
-    //        if (range.length > 0) {
-    //            UIColor *color = [self getColor2:score.floatValue];
-    //            if (wordAndScore.count == 1) { // TODO : hack to make score consistent
-    //                color = [self getColor2:overallScore.floatValue];
-    //            }
-    //            [result addAttribute:NSBackgroundColorAttributeName
-    //                           value:color
-    //                           range:range];
-    //            offset += range.length;
-    //        }
-    //    }
-    
+
     if ([valid containsString:@"OK"]) {
         if (correct) {
             [self updateScoreDisplay:json];
@@ -1164,12 +1136,19 @@ double gestureEnd;
     [_correctFeedback setHidden:false];
 }
 
+- (NSArray *)reversedArray:(NSArray *) toReverse {
+    NSMutableArray *array = [NSMutableArray arrayWithCapacity:[toReverse count]];
+    NSEnumerator *enumerator = [toReverse reverseObjectEnumerator];
+    for (id element in enumerator) {
+        [array addObject:element];
+    }
+    return array;
+}
+
+// worries about RTL languages
 - (void)updateScoreDisplay:(NSDictionary*) json {
     NSArray *wordAndScore  = [json objectForKey:@"WORD_TRANSCRIPT"];
     NSArray *phoneAndScore = [json objectForKey:@"PHONE_TRANSCRIPT"];
-    
-    //   NSLog(@"got words %@",wordAndScore);
-    //   NSLog(@"got phones %@",phoneAndScore);
     
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
@@ -1187,6 +1166,18 @@ double gestureEnd;
                                            multiplier:1.0
                                            constant:52.0]];
     UIView *leftView = nil;
+    
+    NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
+                  @"Egyptian",
+                  @"Farsi",
+                    @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
+    
+    
+    
+    if ([rtl containsObject:_language]) {
+//        NSLog(@"reversing order!");
+        wordAndScore = [self reversedArray:wordAndScore];
+    }
     
     for (NSDictionary *event in wordAndScore) {
         NSString *word = [event objectForKey:@"event"];

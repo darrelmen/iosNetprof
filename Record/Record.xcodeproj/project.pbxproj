@@ -17,6 +17,7 @@
 		B6252AA41A1C50810083AE7A /* SplunkMint-iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA31A1C50810083AE7A /* SplunkMint-iOS.framework */; };
 		B6252AA61A1C50EA0083AE7A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA51A1C50EA0083AE7A /* SystemConfiguration.framework */; };
 		B6252AA81A1C50FF0083AE7A /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA71A1C50FF0083AE7A /* CoreTelephony.framework */; };
+		B6252AAB1A1EB53B0083AE7A /* EAFAudioCache.m in Sources */ = {isa = PBXBuildFile; fileRef = B6252AAA1A1EB53B0083AE7A /* EAFAudioCache.m */; };
 		B62624671A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */; };
 		B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC41A09397200C3B62E /* EAFWordScoreTableViewController.m */; };
 		B636FFC71A09549E00C3B62E /* EAFScoreReportTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */; };
@@ -112,6 +113,8 @@
 		B6252AA31A1C50810083AE7A /* SplunkMint-iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "SplunkMint-iOS.framework"; path = "../../../SplunkMint-iOS.framework"; sourceTree = "<group>"; };
 		B6252AA51A1C50EA0083AE7A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		B6252AA71A1C50FF0083AE7A /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		B6252AA91A1EB53B0083AE7A /* EAFAudioCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFAudioCache.h; sourceTree = "<group>"; };
+		B6252AAA1A1EB53B0083AE7A /* EAFAudioCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFAudioCache.m; sourceTree = "<group>"; };
 		B62624651A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFPhoneScoreTableViewController.h; sourceTree = "<group>"; };
 		B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFPhoneScoreTableViewController.m; sourceTree = "<group>"; };
 		B636FFC31A09397200C3B62E /* EAFWordScoreTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFWordScoreTableViewController.h; sourceTree = "<group>"; };
@@ -436,6 +439,8 @@
 				B61B82271A154C59009B00D1 /* EAFAudioView.h */,
 				B61B82301A16D223009B00D1 /* EAFLoginViewController.h */,
 				B61B82311A16D223009B00D1 /* EAFLoginViewController.m */,
+				B6252AA91A1EB53B0083AE7A /* EAFAudioCache.h */,
+				B6252AAA1A1EB53B0083AE7A /* EAFAudioCache.m */,
 			);
 			path = Record;
 			sourceTree = "<group>";
@@ -616,6 +621,7 @@
 				B636FFCE1A098D8500C3B62E /* UIFont+FontAwesome.m in Sources */,
 				F6A5682A18ECA98A00B844C6 /* main.m in Sources */,
 				B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */,
+				B6252AAB1A1EB53B0083AE7A /* EAFAudioCache.m in Sources */,
 				B6D0017D1970B091009554D5 /* EAFExercise.m in Sources */,
 				B642BAD01A0DD3A500D939F2 /* PhoneTableViewCell.m in Sources */,
 				B68A5C491979C8B70036B90C /* MSArcLayer.m in Sources */,
