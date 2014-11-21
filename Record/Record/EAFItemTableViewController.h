@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <SplunkMint-iOS/SplunkMint-iOS.h>
 
-@interface EAFItemTableViewController : UITableViewController<NSURLConnectionDelegate>
+@interface EAFItemTableViewController : UITableViewController
 
 @property NSMutableArray *paths;
 @property NSMutableArray *rawPaths;

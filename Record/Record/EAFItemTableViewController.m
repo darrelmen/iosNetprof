@@ -7,16 +7,18 @@
 //
 
 #import "EAFItemTableViewController.h"
-#import "EAFExercise.h"
-//#import "EAFViewController.h"
+//#import "EAFExercise.h"
+#import "EAFAudioCache.h"
 #import "EAFRecoFlashcardController.h"
-//#import "EAFFlashcardViewController.h"
 
 @interface EAFItemTableViewController ()
 
 @end
 
+EAFAudioCache *audioCache;
+
 @implementation EAFItemTableViewController
+
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -35,6 +37,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    audioCache = [[EAFAudioCache alloc] init];
+    
     self.paths = [[NSMutableArray alloc] init];
     self.rawPaths = [[NSMutableArray alloc] init];
     NSArray *items =_jsonItems;
@@ -54,18 +59,9 @@
                 [_rawPaths addObject:refPath];
             }
         }
-      
-       // else {
-       //     [_paths addObject:@"NO"];
-       //     [_rawPaths addObject:@"NO"];
-       // }
     }
     
-    _itemIndex = 0;
-    if ([_rawPaths count] > 0) {
-        [self getAudioForCurrentItem];
-    }
-    //NSLog(@"viewDidLoad found '%@' = %ld",currentChapter,(unsigned long)self.items.count);
+    [audioCache goGetAudio:_rawPaths paths:_paths language:_language];
 
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
@@ -179,112 +175,5 @@ NSString *chapterTitle = @"Chapter";
     itemController.chapterTitle = chapterTitle;
     itemController.currentChapter = currentChapter;
 }
-
-// see getAudioForCurrentItem
-- (NSString *)getCurrentCachePath
-{
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    
-    NSString *audioDir = [NSString stringWithFormat:@"%@_audio",_language];
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
-    NSString *rawRefAudioPath = [_rawPaths objectAtIndex: _itemIndex];
-    NSString *destFileName = [filePath stringByAppendingPathComponent:rawRefAudioPath];
-    return destFileName;
-}
-
-//- (NSString *) getRawRefPath
-//{
-//    NSString *refPath = [object objectForKey:@"ref"];
-//    if (refPath) {
-//        refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
-//                                                     withString:@".mp3"];
-//        
-//        NSMutableString *mu = [NSMutableString stringWithString:refPath];
-//        [mu insertString:[self getURL] atIndex:0];
-//        [_paths addObject:mu];
-//        //     [_rawPaths addObject:refPath];
-//    }
-//    else {
-//        [_paths addObject:@"NO"];
-//        //     [_rawPaths addObject:@"NO"];
-//    }
-//}
-
-// go and get ref audio per item, make individual requests -- quite fast
-- (void)getAudioForCurrentItem
-{
-    NSString *destFileName = [self getCurrentCachePath];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:destFileName] || [destFileName hasSuffix:@"NO"]) {
-        [self checkNextAudioFile];
-    }
-    else {
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[_paths objectAtIndex:_itemIndex]]];
-        
-        // Create url connection and fire request
-        NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:TRUE];
-    }
-}
-
-#pragma mark NSURLConnection Delegate Methods
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-    // A response has been received, this is where we initialize the instance var you created
-    // so that we can append data to it in the didReceiveData method
-    // Furthermore, this method is called each time there is a redirect so reinitializing it
-    // also serves to clear it
-    
-    _mp3Audio = [[NSMutableData alloc] init];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    // NSLog(@"didReceiveData ----- ");
-    
-    // Append the new data to the instance variable you declared
-    [_mp3Audio appendData:data];
-}
-
-- (NSCachedURLResponse *)connection:(NSURLConnection *)connection
-                  willCacheResponse:(NSCachedURLResponse*)cachedResponse {
-    // Return nil to indicate not necessary to store a cached response for this connection
-    return nil;
-}
-
-- (void)checkNextAudioFile {
-    if (_itemIndex < _paths.count-1) {
-        _itemIndex++;
-        [self getAudioForCurrentItem];
-    }
-    else {
-        NSLog(@"%d downloads complete.",_itemIndex);
-    }
-}
-
-// cache mp3 file
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    NSString *destFileName = [self getCurrentCachePath];
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-   // NSLog(@"writing to      %@",destFileName);
-    
-    NSString *parent = [destFileName stringByDeletingLastPathComponent];
-    
-    if (![[NSFileManager defaultManager] fileExistsAtPath:parent]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:parent withIntermediateDirectories:YES attributes:nil error:nil];
-    }
-    
-    [_mp3Audio writeToFile:destFileName atomically:YES];
-    
-    if (![[NSFileManager defaultManager] fileExistsAtPath:destFileName]) {
-        NSLog(@"huh? can't find     %@",destFileName);
-    }
-    
-    [self checkNextAudioFile];
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-}
-
 
 @end

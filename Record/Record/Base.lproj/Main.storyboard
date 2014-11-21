@@ -262,7 +262,7 @@
                                     <action selector="audioOnSelection:" destination="vXZ-lx-hvc" eventType="valueChanged" id="wnV-5j-7M3"/>
                                 </connections>
                             </switch>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" restorationIdentifier="whatToShow" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="XFG-NF-cL4">
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="500" verticalCompressionResistancePriority="1000" restorationIdentifier="whatToShow" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="XFG-NF-cL4">
                                 <rect key="frame" x="126" y="484" width="176" height="29"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="28" id="3zh-Ju-JNK"/>
@@ -303,6 +303,7 @@
                             <constraint firstItem="qGs-TT-9Ym" firstAttribute="top" secondItem="XFG-NF-cL4" secondAttribute="bottom" constant="15" id="9HS-W2-PMe"/>
                             <constraint firstItem="vPr-x7-V3R" firstAttribute="centerY" secondItem="qGs-TT-9Ym" secondAttribute="centerY" id="Aph-QN-I3a"/>
                             <constraint firstItem="mdF-G9-2CM" firstAttribute="centerX" secondItem="NAp-JA-wTD" secondAttribute="centerX" constant="4" id="Dau-5B-fkM"/>
+                            <constraint firstItem="XFG-NF-cL4" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="YP1-wr-gfA" secondAttribute="trailing" constant="1" id="Ep4-Q1-Seh"/>
                             <constraint firstAttribute="centerX" secondItem="vPr-x7-V3R" secondAttribute="centerX" priority="750" id="HnF-bk-KFc"/>
                             <constraint firstItem="vPr-x7-V3R" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="7cj-Bu-gyQ" secondAttribute="trailing" constant="4" id="KaH-bz-DoP"/>
                             <constraint firstItem="NAp-JA-wTD" firstAttribute="leading" secondItem="mdF-G9-2CM" secondAttribute="leading" id="LEF-mh-7zd"/>

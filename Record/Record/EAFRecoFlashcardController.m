@@ -13,7 +13,6 @@
 #import "math.h"
 #import <AudioToolbox/AudioServices.h>
 #import "SSKeychain.h"
-//#import "FAImageView.h"
 #import "UIFont+FontAwesome.h"
 #import "NSString+FontAwesome.h"
 #import "BButton.h"
@@ -135,6 +134,9 @@
     [_whatToShow setTitle:_language forSegmentAtIndex:1];
     if ([_language isEqualToString:@"English"]) {
         [_whatToShow setTitle:@"Def." forSegmentAtIndex:0];
+    }
+    else if ([_language isEqualToString:@"Sudanese"]) {
+        [_whatToShow setTitle:@"Sudan" forSegmentAtIndex:1];
     }
     
     BButton * btn = [BButton awesomeButtonWithOnlyIcon:FATrophy
@@ -887,15 +889,6 @@ double gestureEnd;
                                     repeats:NO];
     
 }
-
-//- (IBAction)startRecordingFeedbackWithDelay {
-//    [NSTimer scheduledTimerWithTimeInterval:0.1
-//                                     target:self
-//                                   selector:@selector(showRecordingFeedback)
-//                                   userInfo:nil
-//                                    repeats:NO];
-//    
-//}
 
 - (NSDictionary *)userInfo {
     return @{ @"StartDate" : [NSDate date] };
