@@ -123,9 +123,6 @@
     if (valid) {
         NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         
-        //NSLog(@"language %@",chosenLanguage);
-        
-        //NSLog(@"password '%@'",_password.text);
         NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet",
                              chosenLanguage
                              ];

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <SplunkMint-iOS/SplunkMint-iOS.h>
+#import "BButton.h"
 
 @interface EAFLoginViewController : UIViewController<NSURLConnectionDelegate,UITextFieldDelegate,UIGestureRecognizerDelegate>
 @property (strong, nonatomic) IBOutlet UITextField *username;
@@ -21,6 +22,8 @@
 @property (strong, nonatomic) NSArray *langauges;
 @property (strong, nonatomic) NSMutableData *responseData;
 @property (nonatomic, assign) id currentResponder;
+@property (strong, nonatomic) IBOutlet BButton *forgotUsername;
+@property (strong, nonatomic) IBOutlet BButton *forgotPassword;
 
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 

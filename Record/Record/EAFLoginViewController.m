@@ -11,6 +11,7 @@
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
 #import "EAFSignUpViewController.h"
+#import "EAFForgotUserNameViewController.h"
 
 @interface EAFLoginViewController ()
 
@@ -53,6 +54,27 @@
     if (rememberedPass != nil) {
         _password.text = rememberedPass;
     }
+    
+    NSString *rememberedLanguage = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
+    if (rememberedLanguage != nil) {
+      //  _password.text = rememberedLanguage;
+        // TODO : set picket with chosen language
+    
+    }
+    
+    [_forgotUsername initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
+                             color:[UIColor colorWithWhite:1.0f alpha:0.0f]
+                             style:BButtonStyleBootstrapV3
+                              icon:FAQuestion
+                          fontSize:20.0f];
+    [_forgotUsername setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+
+    [_forgotPassword initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
+                             color:[UIColor colorWithWhite:1.0f alpha:0.0f]
+                             style:BButtonStyleBootstrapV3
+                              icon:FAQuestion
+                          fontSize:20.0f];
+    [_forgotPassword setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     
     UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
     gestureRecognizer.cancelsTouchesInView = NO;
@@ -306,7 +328,13 @@
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
-    if ([segue.identifier isEqualToString:@"goToChapter"]) {       
+    if ([segue.identifier isEqualToString:@"goToForgotUsername"]) {
+        EAFForgotUsernameViewController *forgotUserName = [segue destinationViewController];
+        
+        NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        [forgotUserName setLanguage:chosenLanguage];
+    }
+    else if ([segue.identifier isEqualToString:@"goToChapter"]) {
         EAFChapterTableViewController *chapterController = [segue destinationViewController];
         
         NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];

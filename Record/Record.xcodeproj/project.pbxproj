@@ -14,6 +14,7 @@
 		B61B822D1A16CF99009B00D1 /* dliIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B822C1A16CF99009B00D1 /* dliIcon.png */; };
 		B61B822F1A16CFA2009B00D1 /* mitllLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B822E1A16CFA2009B00D1 /* mitllLogo.png */; };
 		B61B82321A16D223009B00D1 /* EAFLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B82311A16D223009B00D1 /* EAFLoginViewController.m */; };
+		B61B946D1A1FA1210049462E /* EAFForgotUsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B946C1A1FA1210049462E /* EAFForgotUsernameViewController.m */; };
 		B6252AA41A1C50810083AE7A /* SplunkMint-iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA31A1C50810083AE7A /* SplunkMint-iOS.framework */; };
 		B6252AA61A1C50EA0083AE7A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA51A1C50EA0083AE7A /* SystemConfiguration.framework */; };
 		B6252AA81A1C50FF0083AE7A /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA71A1C50FF0083AE7A /* CoreTelephony.framework */; };
@@ -110,6 +111,8 @@
 		B61B822E1A16CFA2009B00D1 /* mitllLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mitllLogo.png; sourceTree = "<group>"; };
 		B61B82301A16D223009B00D1 /* EAFLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFLoginViewController.h; sourceTree = "<group>"; };
 		B61B82311A16D223009B00D1 /* EAFLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFLoginViewController.m; sourceTree = "<group>"; };
+		B61B946B1A1FA1210049462E /* EAFForgotUsernameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFForgotUsernameViewController.h; sourceTree = "<group>"; };
+		B61B946C1A1FA1210049462E /* EAFForgotUsernameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFForgotUsernameViewController.m; sourceTree = "<group>"; };
 		B6252AA31A1C50810083AE7A /* SplunkMint-iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "SplunkMint-iOS.framework"; path = "../../../SplunkMint-iOS.framework"; sourceTree = "<group>"; };
 		B6252AA51A1C50EA0083AE7A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		B6252AA71A1C50FF0083AE7A /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
@@ -394,6 +397,8 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
+				B61B946B1A1FA1210049462E /* EAFForgotUsernameViewController.h */,
+				B61B946C1A1FA1210049462E /* EAFForgotUsernameViewController.m */,
 				B649198C1A1A5CE00054CA13 /* EAFSignUpViewController.h */,
 				B649198D1A1A5CE00054CA13 /* EAFSignUpViewController.m */,
 				B62624651A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.h */,
@@ -617,6 +622,7 @@
 				B636FFCB1A098D4100C3B62E /* FAImageView.m in Sources */,
 				B61B82321A16D223009B00D1 /* EAFLoginViewController.m in Sources */,
 				B636FFD41A098FD200C3B62E /* UIFont+FontAwesome2.m in Sources */,
+				B61B946D1A1FA1210049462E /* EAFForgotUsernameViewController.m in Sources */,
 				B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */,
 				B636FFCE1A098D8500C3B62E /* UIFont+FontAwesome.m in Sources */,
 				F6A5682A18ECA98A00B844C6 /* main.m in Sources */,
