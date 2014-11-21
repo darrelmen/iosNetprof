@@ -9,6 +9,7 @@
 #import "EAFItemTableViewController.h"
 #import "EAFAudioCache.h"
 #import "EAFRecoFlashcardController.h"
+#import "SSKeychain.h"
 
 @interface EAFItemTableViewController ()
 
@@ -35,6 +36,7 @@
 {
     [super viewDidLoad];
     
+    _itemIndex = 0;
     _audioCache = [[EAFAudioCache alloc] init];
     
     self.paths = [[NSMutableArray alloc] init];
@@ -63,7 +65,11 @@
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
     [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,chapterTitle,currentChapter]];
-   
+    
+    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
+    _user = [userid intValue];
+    
+    [self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
@@ -103,9 +109,12 @@ NSString *chapterTitle = @"Chapter";
 {
     static NSString *CellIdentifier = @"WordListPrototype";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:indexPath.row];
+    
     NSString *exercise = [jsonObject objectForKey:@"fl"];
     NSString *englishPhrases = [jsonObject objectForKey:@"en"];
+    
     cell.textLabel.text = exercise;
     cell.detailTextLabel.text = englishPhrases;
     
@@ -158,19 +167,134 @@ NSString *chapterTitle = @"Chapter";
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
-    EAFRecoFlashcardController *itemController = [segue destinationViewController];
+    EAFRecoFlashcardController *flashcardController = [segue destinationViewController];
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSInteger row = indexPath.row;
     NSLog(@"got seque row %ld %@ %@",(long)indexPath.row, chapterTitle, currentChapter );
  
-    itemController.jsonItems = _jsonItems;
-    itemController.index = row;
-    itemController.language = _language;
-    itemController.url = [self getURL];
-    [itemController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
-    [itemController setHasModel:_hasModel];
-    itemController.chapterTitle = chapterTitle;
-    itemController.currentChapter = currentChapter;
+    flashcardController.jsonItems = _jsonItems;
+    flashcardController.index = row;
+    flashcardController.language = _language;
+    flashcardController.url = [self getURL];
+    [flashcardController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
+    [flashcardController setHasModel:_hasModel];
+    flashcardController.chapterTitle = chapterTitle;
+    flashcardController.currentChapter = currentChapter;
+}
+
+- (void)askServerForJson {
+    // NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
+    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@", _language, _user, chapterTitle, currentChapter];
+    
+    NSLog(@"askServerForJson url %@",baseurl);
+    
+    NSURL *url = [NSURL URLWithString:baseurl];
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+    
+    [urlRequest setHTTPMethod: @"GET"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded"
+      forHTTPHeaderField:@"Content-Type"];
+    
+    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+    
+    [connection start];
+}
+
+#pragma mark NSURLConnection Delegate Methods
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+    // A response has been received, this is where we initialize the instance var you created
+    // so that we can append data to it in the didReceiveData method
+    // Furthermore, this method is called each time there is a redirect so reinitializing it
+    // also serves to clear it
+    
+    //  NSLog(@"didReceiveResponse ----- ");
+    
+    _responseData = [[NSMutableData alloc] init];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+    // NSLog(@"didReceiveData ----- ");
+    
+    // Append the new data to the instance variable you declared
+    [_responseData appendData:data];
+}
+
+- (BOOL)useJsonChapterData {
+    NSError * error;
+    NSDictionary* json = [NSJSONSerialization
+                          JSONObjectWithData:_responseData
+                          options:NSJSONReadingAllowFragments
+                          error:&error];
+    
+    if (error) {
+        NSLog(@"useJsonChapterData error %@",error.description);
+        return false;
+    }
+    
+    NSArray *jsonArray = [json objectForKey:@"scores"];
+  //  NSLog(@"useJsonChapterData Got %lu",(unsigned long)jsonArray.count);
+    if (jsonArray != nil) {
+        _exToScore   = [[NSMutableDictionary alloc] init];
+        _exToHistory = [[NSMutableDictionary alloc] init];
+        _exList = [[NSMutableArray alloc] init];
+        for (NSDictionary *entry in jsonArray) {
+            NSString *ex = [entry objectForKey:@"ex"];
+            //if ([_exToFL objectForKey:ex] != nil) {
+             //   NSLog(@"ex key %@",ex);
+                NSString *score = [entry objectForKey:@"s"];
+                
+                //   NSLog(@"score  %@",score);
+                [_exToScore setValue:score forKey:ex];
+                
+                NSArray *jsonArrayHistory = [entry objectForKey:@"h"];
+                
+                [_exToHistory setValue:jsonArrayHistory forKey:ex];
+                [_exList addObject:ex];
+           // }
+        }
+    }
+    else {
+        NSLog(@"got empty json???");
+    }
+    
+    // [[self tableView] reloadData];
+    
+    return true;
+}
+
+//NSString *myCurrentTitle;
+//
+//-(void)setCurrentTitle {
+//    UIViewController  *parent = [self parentViewController];
+//    parent.navigationItem.title = myCurrentTitle;
+//}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    // The request is complete and data has been received
+    
+    //[loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
+    NSLog(@"connectionDidFinishLoading... "
+          );
+
+    [self useJsonChapterData];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+}
+
+- (NSCachedURLResponse *)connection:(NSURLConnection *)connection
+                  willCacheResponse:(NSCachedURLResponse*)cachedResponse {
+    // Return nil to indicate not necessary to store a cached response for this connection
+    return nil;
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    // The request has failed for some reason!
+    // Check the error var
+    NSLog(@"Download content failed with %@",error);
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 
 @end

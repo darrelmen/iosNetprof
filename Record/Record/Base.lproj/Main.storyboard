@@ -150,7 +150,7 @@
                                         </connections>
                                     </view>
                                     <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="900" restorationIdentifier="foreignLang" text="foreign language" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="j6L-63-Jyx">
-                                        <rect key="frame" x="8" y="109" width="269" height="56"/>
+                                        <rect key="frame" x="8" y="109" width="269" height="105"/>
                                         <gestureRecognizers/>
                                         <fontDescription key="fontDescription" type="system" pointSize="44"/>
                                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -205,11 +205,12 @@
                                     <constraint firstAttribute="bottom" secondItem="LDy-Lh-sWf" secondAttribute="bottom" constant="3" id="OB0-8b-0lA"/>
                                     <constraint firstItem="j6L-63-Jyx" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="8" id="XFK-G3-UNW"/>
                                     <constraint firstAttribute="trailing" secondItem="vmx-bc-B8p" secondAttribute="trailing" constant="19" id="XjO-Ja-Knf"/>
+                                    <constraint firstAttribute="centerX" secondItem="vlT-Ea-UA6" secondAttribute="centerX" id="Xna-Ex-NgX"/>
                                     <constraint firstAttribute="centerX" secondItem="wAh-a0-3Cd" secondAttribute="centerX" id="YVf-NC-0yu"/>
                                     <constraint firstItem="D19-P2-ZOH" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="24" id="Yhl-lW-9re"/>
                                     <constraint firstItem="vmx-bc-B8p" firstAttribute="centerY" secondItem="ZN1-US-MJW" secondAttribute="centerY" id="Ywx-UW-a5w"/>
                                     <constraint firstItem="j6L-63-Jyx" firstAttribute="top" relation="greaterThanOrEqual" secondItem="wAh-a0-3Cd" secondAttribute="bottom" constant="2" id="cLZ-At-LKM"/>
-                                    <constraint firstItem="vlT-Ea-UA6" firstAttribute="top" relation="greaterThanOrEqual" secondItem="j6L-63-Jyx" secondAttribute="bottom" constant="5" id="cdA-2M-MAD"/>
+                                    <constraint firstItem="vlT-Ea-UA6" firstAttribute="top" relation="greaterThanOrEqual" secondItem="j6L-63-Jyx" secondAttribute="bottom" priority="750" constant="2" id="cdA-2M-MAD"/>
                                     <constraint firstItem="wAh-a0-3Cd" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="8" id="cwy-vs-jeX"/>
                                     <constraint firstItem="LDy-Lh-sWf" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="4" id="dTm-qP-y6K"/>
                                     <constraint firstItem="LDy-Lh-sWf" firstAttribute="top" relation="greaterThanOrEqual" secondItem="D19-P2-ZOH" secondAttribute="bottom" constant="7" id="e9V-55-761"/>
@@ -597,6 +598,7 @@
                                 <rect key="frame" x="35" y="82" width="250" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="250" id="OFa-si-ch3"/>
+                                    <constraint firstAttribute="height" constant="30" id="U5T-yk-r5Y"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" enablesReturnKeyAutomatically="YES"/>
@@ -604,6 +606,7 @@
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" restorationIdentifier="password" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="n6p-AP-fgq">
                                 <rect key="frame" x="35" y="148" width="250" height="30"/>
                                 <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="3LF-NZ-SZb"/>
                                     <constraint firstAttribute="width" constant="250" id="wyn-a3-KAK"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
@@ -645,7 +648,7 @@
                                     <outlet property="delegate" destination="Erf-jW-zql" id="QCa-yy-c8C"/>
                                 </connections>
                             </pickerView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="dliIcon.png" translatesAutoresizingMaskIntoConstraints="NO" id="dHK-7D-hbQ">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" misplaced="YES" image="dliIcon.png" translatesAutoresizingMaskIntoConstraints="NO" id="dHK-7D-hbQ">
                                 <rect key="frame" x="211" y="4" width="54" height="70"/>
                             </imageView>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" restorationIdentifier="recoIndicator" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="jYO-aD-nI4">

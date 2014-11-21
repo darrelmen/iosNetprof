@@ -57,6 +57,15 @@
         _email.text = rememberedEmail;
     }
     
+    NSString *rememberedUserID = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenUserID"];
+    if (rememberedUserID != nil) {
+        _username.text = rememberedUserID;
+    }
+    NSString *rememberedPass = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenPassword"];
+    if (rememberedPass != nil) {
+        _password.text = rememberedPass;
+    }
+    
     UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
     gestureRecognizer.cancelsTouchesInView = NO;
     gestureRecognizer.delegate = self;

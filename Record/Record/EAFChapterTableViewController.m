@@ -379,7 +379,7 @@ NSArray *currentItems;
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
     NSLog(@"Chapter table view controller prepareForSegue identifier %@ %@ %@",segue.identifier,_chapterName,tappedItem);
 
-    [itemController setItemIndex:0];
+    //[itemController setItemIndex:0];
     [itemController setChapterToItems:chapterInfo];
     [itemController setJsonItems:currentItems];
     [itemController setChapterTitle:_chapterName];
