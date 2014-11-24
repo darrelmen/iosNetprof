@@ -12,6 +12,8 @@
 #import "EAFChapterTableViewController.h"
 #import "EAFSignUpViewController.h"
 #import "EAFForgotUserNameViewController.h"
+#import "EAFForgotPasswordViewController.h"
+#import "EAFSetPasswordViewController.h"
 
 @interface EAFLoginViewController ()
 
@@ -41,7 +43,6 @@
                                name:UITextFieldTextDidChangeNotification
                              object:_password];
     
-    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     
     _username.delegate = self;
     _password.delegate = self;
@@ -58,8 +59,7 @@
     NSString *rememberedLanguage = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
     if (rememberedLanguage != nil) {
       //  _password.text = rememberedLanguage;
-        // TODO : set picket with chosen language
-    
+        // TODO : set picker with chosen language
     }
     
     [_forgotUsername initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
@@ -81,6 +81,7 @@
      gestureRecognizer.delegate = self;
     [self.languagePicker addGestureRecognizer:gestureRecognizer];
     
+    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     if (userid != nil) {
         [self performSegueWithIdentifier:@"goToChapter" sender:self];
     }
@@ -241,6 +242,7 @@
     
     NSString *userIDExisting = [json objectForKey:@"userid"];
     BOOL passCorrect = [[json objectForKey:@"passwordCorrect"] boolValue];
+    NSString *resetToken = [json objectForKey:@"token"];
     
     _logIn.enabled = true;
     if ([userIDExisting integerValue] == -1) {
@@ -248,7 +250,11 @@
         _passwordFeedback.text = @"Username or password incorrect";
         _signUpFeedback.text = @"Have you signed up?";
     }
-    else if (passCorrect) {
+    else if (resetToken.length > 0) {
+        _token = resetToken;
+        [self performSegueWithIdentifier:@"goToSetPassword" sender:self];
+
+    } else if (passCorrect) {
         // OK store info and segue
         NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];
         [SSKeychain setPassword:converted forService:@"mitll.proFeedback.device" account:@"userid"];
@@ -333,6 +339,23 @@
         
         NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [forgotUserName setLanguage:chosenLanguage];
+    }
+    else if ([segue.identifier isEqualToString:@"goToForgotPassword"]) {
+        EAFForgotPasswordViewController *forgotUserName = [segue destinationViewController];
+        
+        NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        [forgotUserName setLanguage:chosenLanguage];
+        NSLog(@"username %@",_username.text);
+        forgotUserName.userFromLogin = _username.text;
+    }
+    else if ([segue.identifier isEqualToString:@"goToSetPassword"]) {
+        [SSKeychain deletePasswordForService:@"mitll.proFeedback.device" account:@"password"];
+        _password.text = @"";
+        EAFSetPasswordViewController *forgotUserName = [segue destinationViewController];
+        
+        NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        [forgotUserName setLanguage:chosenLanguage];
+        forgotUserName.token  = _token;
     }
     else if ([segue.identifier isEqualToString:@"goToChapter"]) {
         EAFChapterTableViewController *chapterController = [segue destinationViewController];

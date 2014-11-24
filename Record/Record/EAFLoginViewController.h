@@ -26,5 +26,6 @@
 @property (strong, nonatomic) IBOutlet BButton *forgotPassword;
 
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+@property NSString *token;
 
 @end

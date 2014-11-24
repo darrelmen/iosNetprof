@@ -6,23 +6,29 @@
 //  Copyright (c) 2014 Ferme, Elizabeth - 0553 - MITLL. All rights reserved.
 //
 
-#import "EAFForgotUsernameViewController.h"
+#import "EAFForgotPasswordViewController.h"
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 
-@interface EAFForgotUsernameViewController ()
+@interface EAFForgotPasswordViewController ()
 
 @end
 
-@implementation EAFForgotUsernameViewController
+@implementation EAFForgotPasswordViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setTitle:[NSString stringWithFormat:@"Forgot username for %@",_language]];
+    [self setTitle:[NSString stringWithFormat:@"Forgot password for %@",_language]];
+    _username.text = _userFromLogin;
 }
 
 - (IBAction)gotClick:(id)sender {
     BOOL valid = true;
+    
+    if (_username.text.length == 0) {
+        _usernameFeedback.text = @"Please enter a username";
+        valid = false;
+    }
     
     if (_email.text.length == 0) {
         _emailFeedback.text = @"Please enter your email.";
@@ -40,14 +46,6 @@
         [self forgotUsername:_email.text language:_language];
     }
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                           selector:@selector (textFieldText:)
-                               name:UITextFieldTextDidChangeNotification
-                             object:_email];
-}
-
-- (void) textFieldText:(id)notification {
-    _emailFeedback.text = @"";
 }
 
 - (BOOL) validateEmail: (NSString *) candidate {
@@ -61,7 +59,7 @@
 
 
 - (void) forgotUsername:(NSString *)email language:(NSString *)lang {
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?forgotUsername=%@", lang, email];
+    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?resetPassword=%@&email=%@", lang, _username.text, email];
     
     NSLog(@"url %@",baseurl);
     
@@ -118,16 +116,15 @@
     }
     
     NSLog(@"connectionDidFinishLoading got %@ ",json);
-    NSString *validEmail = [json objectForKey:@"valid"];
-    BOOL value = [validEmail boolValue];
-    if (value) {//[validEmail isEqualToString:@"true"]) {
+    NSString *validEmail = [json objectForKey:@"token"];
+   
+    if ([validEmail isEqualToString:@"PASSWORD_EMAIL_SENT"]) {
         _emailFeedback.text = @"Please check your email";
         _emailFeedback.textColor = [UIColor blackColor];
     }
     else {
-        _emailFeedback.text = @"Unknown email address";
+        _emailFeedback.text = @"Unknown email address for user.";
         _emailFeedback.textColor = [UIColor redColor];
-
     }
 }
 
@@ -145,8 +142,6 @@
                                           otherButtonTitles:nil];
     [alert show];
 }
-
-
 
 #pragma mark - Navigation
 //

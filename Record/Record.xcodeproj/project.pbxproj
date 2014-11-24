@@ -16,6 +16,8 @@
 		B61B82321A16D223009B00D1 /* EAFLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B82311A16D223009B00D1 /* EAFLoginViewController.m */; };
 		B61B946D1A1FA1210049462E /* EAFForgotUsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B946C1A1FA1210049462E /* EAFForgotUsernameViewController.m */; };
 		B61B946F1A1FF02F0049462E /* questionIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B946E1A1FF02F0049462E /* questionIcon.png */; };
+		B61B94721A23AC1A0049462E /* EAFForgotPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B94711A23AC1A0049462E /* EAFForgotPasswordViewController.m */; };
+		B61B94751A23BB770049462E /* EAFSetPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B94741A23BB770049462E /* EAFSetPasswordViewController.m */; };
 		B6252AA41A1C50810083AE7A /* SplunkMint-iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA31A1C50810083AE7A /* SplunkMint-iOS.framework */; };
 		B6252AA61A1C50EA0083AE7A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA51A1C50EA0083AE7A /* SystemConfiguration.framework */; };
 		B6252AA81A1C50FF0083AE7A /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA71A1C50FF0083AE7A /* CoreTelephony.framework */; };
@@ -115,6 +117,10 @@
 		B61B946B1A1FA1210049462E /* EAFForgotUsernameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFForgotUsernameViewController.h; sourceTree = "<group>"; };
 		B61B946C1A1FA1210049462E /* EAFForgotUsernameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFForgotUsernameViewController.m; sourceTree = "<group>"; };
 		B61B946E1A1FF02F0049462E /* questionIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = questionIcon.png; sourceTree = "<group>"; };
+		B61B94701A23AC1A0049462E /* EAFForgotPasswordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFForgotPasswordViewController.h; sourceTree = "<group>"; };
+		B61B94711A23AC1A0049462E /* EAFForgotPasswordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFForgotPasswordViewController.m; sourceTree = "<group>"; };
+		B61B94731A23BB770049462E /* EAFSetPasswordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFSetPasswordViewController.h; sourceTree = "<group>"; };
+		B61B94741A23BB770049462E /* EAFSetPasswordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFSetPasswordViewController.m; sourceTree = "<group>"; };
 		B6252AA31A1C50810083AE7A /* SplunkMint-iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "SplunkMint-iOS.framework"; path = "../../../SplunkMint-iOS.framework"; sourceTree = "<group>"; };
 		B6252AA51A1C50EA0083AE7A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		B6252AA71A1C50FF0083AE7A /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
@@ -400,6 +406,10 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
+				B61B94731A23BB770049462E /* EAFSetPasswordViewController.h */,
+				B61B94741A23BB770049462E /* EAFSetPasswordViewController.m */,
+				B61B94701A23AC1A0049462E /* EAFForgotPasswordViewController.h */,
+				B61B94711A23AC1A0049462E /* EAFForgotPasswordViewController.m */,
 				B61B946B1A1FA1210049462E /* EAFForgotUsernameViewController.h */,
 				B61B946C1A1FA1210049462E /* EAFForgotUsernameViewController.m */,
 				B649198C1A1A5CE00054CA13 /* EAFSignUpViewController.h */,
@@ -647,6 +657,8 @@
 				B69821441A029F6400BB9865 /* NSString+FontAwesome.m in Sources */,
 				B68A5C481979C8B70036B90C /* MSAnnotatedGauge.m in Sources */,
 				F6A5682E18ECA98A00B844C6 /* EAFAppDelegate.m in Sources */,
+				B61B94721A23AC1A0049462E /* EAFForgotPasswordViewController.m in Sources */,
+				B61B94751A23BB770049462E /* EAFSetPasswordViewController.m in Sources */,
 				B62624671A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m in Sources */,
 				B636FFD71A0993A100C3B62E /* MyTableViewCell.m in Sources */,
 			);
@@ -786,7 +798,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -814,7 +826,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",

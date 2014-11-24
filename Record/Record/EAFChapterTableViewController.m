@@ -7,6 +7,7 @@
 //
 
 #import "EAFChapterTableViewController.h"
+#import "EAFSignUpViewController.h"
 #import "EAFItemTableViewController.h"
 #import "SSKeychain.h"
 
@@ -55,7 +56,13 @@
     for (UIViewController *controller in self.navigationController.viewControllers) {
      //   NSLog(@"EAFChapterTableViewController controller %@",controller);
         NSString *name = [NSString stringWithFormat:@"%@",controller];
+        BOOL isSignUp = [controller isKindOfClass:[EAFSignUpViewController class]];
         if ([name containsString:@"SignUp"]) {
+            
+            if (isSignUp) {
+                NSLog(@"---> Name %@",name);
+            }
+            
             found = TRUE;
             [navigationArray removeObject:controller];
         }

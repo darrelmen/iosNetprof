@@ -6,62 +6,74 @@
 //  Copyright (c) 2014 Ferme, Elizabeth - 0553 - MITLL. All rights reserved.
 //
 
-#import "EAFForgotUsernameViewController.h"
+#import "EAFSetPasswordViewController.h"
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 
-@interface EAFForgotUsernameViewController ()
+@interface EAFSetPasswordViewController ()
 
 @end
 
-@implementation EAFForgotUsernameViewController
+@implementation EAFSetPasswordViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setTitle:[NSString stringWithFormat:@"Forgot username for %@",_language]];
+    [self setTitle:[NSString stringWithFormat:@"Set new password for %@",_language]];
+    _confirmPassword.text = _userFromLogin;
 }
 
 - (IBAction)gotClick:(id)sender {
     BOOL valid = true;
     
-    if (_email.text.length == 0) {
-        _emailFeedback.text = @"Please enter your email.";
-        _emailFeedback.textColor = [UIColor redColor];
+    if (_password.text.length == 0) {
+        _passwordFeedback.text = @"Please enter a password";
+        _passwordFeedback.textColor = [UIColor redColor];
+        valid = false;
+    }
+    
+    if (_confirmPassword.text.length == 0) {
+        _confirmPasswordFeedback.text = @"Please enter a password.";
+        _confirmPasswordFeedback.textColor = [UIColor redColor];
         valid = false;
     }
 
-    if (![self validateEmail:_email.text]) {
-        _emailFeedback.text = @"Please enter a valid email.";
-        _emailFeedback.textColor = [UIColor redColor];
+    if (![_password.text isEqualToString:_confirmPassword.text]) {
+        _confirmPasswordFeedback.text = @"Please enter the same email as above.";
+        _confirmPasswordFeedback.textColor = [UIColor redColor];
         valid = false;
     }
-
     if (valid) {
-        [self forgotUsername:_email.text language:_language];
+        
+        [self forgotUsername:[self MD5:_password.text] language:_language];
     }
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                           selector:@selector (textFieldText:)
-                               name:UITextFieldTextDidChangeNotification
-                             object:_email];
 }
 
-- (void) textFieldText:(id)notification {
-    _emailFeedback.text = @"";
-}
 
-- (BOOL) validateEmail: (NSString *) candidate {
-    NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}";
-    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
+- (NSString*)MD5:(NSString*)toConvert
+{
+    // Create pointer to the string as UTF8
+    const char *ptr = [toConvert UTF8String];
     
-    return [emailTest evaluateWithObject:candidate];
+    // Create byte array of unsigned chars
+    unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
+    
+    // Create 16 byte MD5 hash value, store in buffer
+    CC_MD5(ptr, strlen(ptr), md5Buffer);
+    
+    // Convert MD5 value in the buffer to NSString of hex values
+    NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
+    for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++)
+        [output appendFormat:@"%02x",md5Buffer[i]];
+    
+    return output;
 }
 
 #pragma mark NSURLConnection Delegate Methods
 
 
-- (void) forgotUsername:(NSString *)email language:(NSString *)lang {
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?forgotUsername=%@", lang, email];
+- (void) forgotUsername:(NSString *)passwordH language:(NSString *)lang {
+    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?setPassword=%@&email=%@", lang, _token, passwordH];
     
     NSLog(@"url %@",baseurl);
     
@@ -117,18 +129,30 @@
         NSLog(@"connectionDidFinishLoading error %@",error.description);
     }
     
-    NSLog(@"connectionDidFinishLoading got %@ ",json);
+    NSLog(@"set password - connectionDidFinishLoading got %@ ",json);
     NSString *validEmail = [json objectForKey:@"valid"];
-    BOOL value = [validEmail boolValue];
-    if (value) {//[validEmail isEqualToString:@"true"]) {
-        _emailFeedback.text = @"Please check your email";
-        _emailFeedback.textColor = [UIColor blackColor];
+
+    if ([validEmail boolValue]) {
+        // force user to enter in userid and password again
+        [SSKeychain deletePasswordForService:@"mitll.proFeedback.device" account:@"userid"];
+
+  //      [self performSegueWithIdentifier:@"goBackToLogin" sender:self];
+        
+        [self.navigationController popToRootViewControllerAnimated:YES];
     }
     else {
-        _emailFeedback.text = @"Unknown email address";
-        _emailFeedback.textColor = [UIColor redColor];
-
+        _passwordFeedback.text = @"Error setting new password.";
+               _passwordFeedback.textColor = [UIColor redColor];
     }
+    //
+//    if ([validEmail isEqualToString:@"PASSWORD_EMAIL_SENT"]) {
+//        _confirmPasswordFeedback.text = @"Please check your email";
+//        _confirmPasswordFeedback.textColor = [UIColor blackColor];
+//    }
+//    else {
+//        _confirmPasswordFeedback.text = @"Unknown email address for user.";
+//        _confirmPasswordFeedback.textColor = [UIColor redColor];
+//    }
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
@@ -145,8 +169,6 @@
                                           otherButtonTitles:nil];
     [alert show];
 }
-
-
 
 #pragma mark - Navigation
 //
