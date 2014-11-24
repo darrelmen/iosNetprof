@@ -59,14 +59,13 @@
             found = TRUE;
             [navigationArray removeObject:controller];
         }
-        else {
+      //  else {
        //     NSLog(@"Name %@",name);
          //   navigationArray arrayByAddingObject
-        }
+      //  }
     }
     if (found) {
         self.navigationController.viewControllers = navigationArray;
-
     }
 }
 

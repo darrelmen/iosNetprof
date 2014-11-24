@@ -10,6 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "BButton.h"
 #import <SplunkMint-iOS/SplunkMint-iOS.h>
+//#import "EAFItemTableViewController.h"
 
 @interface EAFRecoFlashcardController : UIViewController
         <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate>
@@ -74,6 +75,9 @@
 - (IBAction)genderSelection:(id)sender;
 - (IBAction)speedSelection:(id)sender;
 - (IBAction)audioOnSelection:(id)sender;
+- (void)respondToSwipe;
+
+@property UITableViewController *itemViewController;
 
 //- (float)heightOfLabelForText:(UILabel *)label withText:(NSString *)withText;
 

@@ -242,8 +242,19 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     // Append the new data to the instance variable you declared
     [_responseData appendData:data];
 }
-//NSDictionary* chapterInfo;
-//BOOL hasModel;
+
+- (void)setTitleGivenCorrect:(NSString *)incorrect correct:(NSString *)correct {
+    float total = [correct floatValue] + [incorrect floatValue];
+    float percent = total == 0.0f ? 0.0f : [correct floatValue]/total;
+    percent *= 100;
+    int percentInt = round(percent);
+    int totalInt = round(total);
+    UIViewController  *parent = [self parentViewController];
+    NSString *wordReport;
+    wordReport = [NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt];
+    parent.navigationItem.title = wordReport;
+    myCurrentTitle = wordReport;
+}
 
 - (BOOL)useJsonChapterData {
     NSError * error;
@@ -258,9 +269,16 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     
     NSArray *jsonArray = [json objectForKey:@"scores"];
-    
+ 
+//    NSMutableDictionary *exToEntry = [[NSMutableDictionary alloc] init];
+//    for (NSDictionary *entry in _jsonItems) {
+//        NSString *ex = [entry objectForKey:@"id"];
+//        [exToEntry setObject:entry forKey:ex];
+//    }
+//    NSMutableArray *newOrder = [[NSMutableArray alloc] init];
+//    
     if (jsonArray != nil) {
-        _jsonContentArray = jsonArray; // remove
+      //  _jsonContentArray = jsonArray; // remove
         _exToScore   = [[NSMutableDictionary alloc] init];
         _exToHistory = [[NSMutableDictionary alloc] init];
         _exList = [[NSMutableArray alloc] init];
@@ -282,16 +300,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         //NSLog(@"ex to score %lu",(unsigned long)[_exToScore count]);
         NSString *correct = [json objectForKey:@"lastCorrect"];
         NSString *incorrect = [json objectForKey:@"lastIncorrect"];
-        float total = [correct floatValue] + [incorrect floatValue];
-        float percent = total == 0.0f ? 0.0f : [correct floatValue]/total;
-        percent *= 100;
-        int percentInt = round(percent);
-        int totalInt = round(total);
-        UIViewController  *parent = [self parentViewController];
-        NSString *wordReport;
-        wordReport = [NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt];
-        parent.navigationItem.title = wordReport;
-        myCurrentTitle = wordReport;
+        [self setTitleGivenCorrect:incorrect correct:correct];
        // [self setTitle:[NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt]];
     }
     else {

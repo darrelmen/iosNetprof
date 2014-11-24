@@ -16,7 +16,7 @@
 #import "UIFont+FontAwesome.h"
 #import "NSString+FontAwesome.h"
 #import "BButton.h"
-
+#import "EAFItemTableViewController.h"
 @interface EAFRecoFlashcardController ()
 
 @end
@@ -378,21 +378,20 @@
     [_foreignLang setText:flAtIndex];
     [_english setText:enAtIndex];
     
-    if ([[UIDevice currentDevice].model containsString:@"iPhone"] &&
-        [flAtIndex length] > 15) {
+    NSString *model =[UIDevice currentDevice].model;
+    BOOL isIPhone = [model containsString:@"iPhone"];
+    if (isIPhone && [flAtIndex length] > 15) {
         _foreignLang.font = [UIFont systemFontOfSize:24];
     }
     else {
-        _foreignLang.font = [UIFont systemFontOfSize:32];
-
+        _foreignLang.font = [UIFont systemFontOfSize:isIPhone ? 32 :44];
     }
     
-    if ([[UIDevice currentDevice].model containsString:@"iPhone"] &&
-        [enAtIndex length] > 15) {
+    if (isIPhone && [enAtIndex length] > 15) {
         _english.font = [UIFont systemFontOfSize:24];
     }
     else {
-        _english.font = [UIFont systemFontOfSize:32];
+        _english.font = [UIFont systemFontOfSize:isIPhone ? 32 :44];
     }
     
     // final experiment
@@ -513,9 +512,13 @@ BOOL preventPlayAudio = false;
     if (onLast) {
         preventPlayAudio = TRUE;
     }
-    [self respondToSwipe];
+   // [self respondToSwipe];
     if (onLast) {
         [self showScoresClick:nil];
+        [((EAFItemTableViewController*)_itemViewController) askServerForJson];
+    }
+    else {
+        [self respondToSwipe];
     }
 }
 
@@ -1415,7 +1418,6 @@ double gestureEnd;
 - (UIColor *) getColor2:(float) score {
     if (score > 1.0) score = 1.0;
     if (score < 0)  score = 0;
-    //  NSLog(@"getColor2 score %f",score);
     
     float red   = fmaxf(0,(255 - (fmaxf(0, score-0.5)*2*255)));
     float green = fminf(255, score*2*255);

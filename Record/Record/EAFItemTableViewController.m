@@ -114,6 +114,27 @@ NSString *chapterTitle = @"Chapter";
     
     NSString *exercise = [jsonObject objectForKey:@"fl"];
     NSString *englishPhrases = [jsonObject objectForKey:@"en"];
+    NSString *id = [jsonObject objectForKey:@"id"];
+    NSArray *answers = [_exToHistory objectForKey:id];
+    
+    if (answers == nil || answers.count == 0) {
+        cell.imageView.image = [UIImage imageNamed:@"questionIcon.png"];
+    }
+    else {
+        int index = 0;
+        for (NSString *correct in answers) {
+            if ([correct isEqualToString:@"Y"]) {
+                cell.imageView.image = [UIImage imageNamed:@"checkmark32.png"];
+
+            }
+            else {
+                cell.imageView.image = [UIImage imageNamed:@"redx32.png"];
+            }
+            
+        }
+    }
+    
+    
     
     cell.textLabel.text = exercise;
     cell.detailTextLabel.text = englishPhrases;
@@ -180,6 +201,8 @@ NSString *chapterTitle = @"Chapter";
     [flashcardController setHasModel:_hasModel];
     flashcardController.chapterTitle = chapterTitle;
     flashcardController.currentChapter = currentChapter;
+    flashcardController.itemViewController = self;
+    _notifyFlashcardController = flashcardController;
 }
 
 - (void)askServerForJson {
@@ -210,14 +233,10 @@ NSString *chapterTitle = @"Chapter";
     // Furthermore, this method is called each time there is a redirect so reinitializing it
     // also serves to clear it
     
-    //  NSLog(@"didReceiveResponse ----- ");
-    
     _responseData = [[NSMutableData alloc] init];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    // NSLog(@"didReceiveData ----- ");
-    
     // Append the new data to the instance variable you declared
     [_responseData appendData:data];
 }
@@ -234,43 +253,54 @@ NSString *chapterTitle = @"Chapter";
         return false;
     }
     
+    NSMutableDictionary *exToEntry = [[NSMutableDictionary alloc] init];
+    for (NSDictionary *entry in _jsonItems) {
+        NSString *ex = [entry objectForKey:@"id"];
+       [exToEntry setObject:entry forKey:ex];
+    }
+    NSMutableArray *newOrder = [[NSMutableArray alloc] init];
+    
     NSArray *jsonArray = [json objectForKey:@"scores"];
-  //  NSLog(@"useJsonChapterData Got %lu",(unsigned long)jsonArray.count);
     if (jsonArray != nil) {
         _exToScore   = [[NSMutableDictionary alloc] init];
         _exToHistory = [[NSMutableDictionary alloc] init];
         _exList = [[NSMutableArray alloc] init];
         for (NSDictionary *entry in jsonArray) {
             NSString *ex = [entry objectForKey:@"ex"];
-            //if ([_exToFL objectForKey:ex] != nil) {
-             //   NSLog(@"ex key %@",ex);
-                NSString *score = [entry objectForKey:@"s"];
-                
-                //   NSLog(@"score  %@",score);
-                [_exToScore setValue:score forKey:ex];
-                
-                NSArray *jsonArrayHistory = [entry objectForKey:@"h"];
-                
-                [_exToHistory setValue:jsonArrayHistory forKey:ex];
-                [_exList addObject:ex];
-           // }
+            
+            NSDictionary *entryForID = [exToEntry objectForKey:ex];
+            if (entryForID != nil) {
+                [newOrder addObject:entryForID];
+            }
+            //   NSLog(@"ex key %@",ex);
+            NSString *score = [entry objectForKey:@"s"];
+            //   NSLog(@"score  %@",score);
+            [_exToScore setValue:score forKey:ex];
+            
+            NSArray *jsonArrayHistory = [entry objectForKey:@"h"];
+            
+            [_exToHistory setValue:jsonArrayHistory forKey:ex];
+            [_exList addObject:ex];
+        }
+        
+        if ([newOrder count] > 0) {
+            _jsonItems = newOrder;
+            if (_notifyFlashcardController != nil) {
+                _notifyFlashcardController.jsonItems = _jsonItems;
+                [_notifyFlashcardController respondToSwipe ];
+            }
+            [[self tableView] reloadData];
         }
     }
     else {
         NSLog(@"got empty json???");
+        if (_notifyFlashcardController != nil) {
+            [_notifyFlashcardController respondToSwipe ];
+        }
     }
-    
-    // [[self tableView] reloadData];
     
     return true;
 }
-
-//NSString *myCurrentTitle;
-//
-//-(void)setCurrentTitle {
-//    UIViewController  *parent = [self parentViewController];
-//    parent.navigationItem.title = myCurrentTitle;
-//}
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received

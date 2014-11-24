@@ -6,18 +6,30 @@
 //  Copyright (c) 2014 Ferme, Elizabeth - 0553 - MITLL. All rights reserved.
 //
 
-#import "EAFAudioCache.h"
+#import "EAFForgotUsername.h"
+#import "EAFLoginViewController.h"
 
-@implementation EAFAudioCache
+@implementation EAFForgotUsername
 
-- (void) goGetAudio:(NSArray *)rawPaths paths:(NSArray *)ppaths language:(NSString *)lang {
-    _itemIndex = 0;
-    _rawPaths = [NSArray arrayWithArray:rawPaths];
-    _paths = [NSArray arrayWithArray:ppaths];
-    _language = lang;
-    if ([_rawPaths count] > 0) {
-        [self getAudioForCurrentItem];
-    }
+- (void) forgotUsername:(NSString *)email language:(NSString *)lang loginView:(EAFLoginViewController *)loginViewController {
+    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?forgotUsername=%@", lang, email];
+    
+    NSLog(@"url %@",baseurl);
+    
+    NSURL *url = [NSURL URLWithString:baseurl];
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+    
+    [urlRequest setHTTPMethod: @"GET"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded"
+      forHTTPHeaderField:@"Content-Type"];
+    
+    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+    
+    _login = loginViewController;
+    [connection start];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:TRUE];
 }
 
 #pragma mark NSURLConnection Delegate Methods
@@ -28,14 +40,14 @@
     // Furthermore, this method is called each time there is a redirect so reinitializing it
     // also serves to clear it
     
-    _mp3Audio = [[NSMutableData alloc] init];
+    _responseData = [[NSMutableData alloc] init];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
     // NSLog(@"didReceiveData ----- ");
     
     // Append the new data to the instance variable you declared
-    [_mp3Audio appendData:data];
+    [_responseData appendData:data];
 }
 
 - (NSCachedURLResponse *)connection:(NSURLConnection *)connection
@@ -44,64 +56,24 @@
     return nil;
 }
 
-- (void)checkNextAudioFile {
-    if (_itemIndex < _paths.count-1) {
-        _itemIndex++;
-        [self getAudioForCurrentItem];
-    }
-    else {
-        NSLog(@"%d downloads complete.",_itemIndex);
-    }
-}
-
-// see getAudioForCurrentItem
-- (NSString *)getCurrentCachePath
-{
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    
-    NSString *audioDir = [NSString stringWithFormat:@"%@_audio",_language];
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
-    NSString *rawRefAudioPath = [_rawPaths objectAtIndex: _itemIndex];
-    NSString *destFileName = [filePath stringByAppendingPathComponent:rawRefAudioPath];
-    return destFileName;
-}
-
-// go and get ref audio per item, make individual requests -- quite fast
-- (void)getAudioForCurrentItem
-{
-    NSString *destFileName = [self getCurrentCachePath];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:destFileName] || [destFileName hasSuffix:@"NO"]) {
-        [self checkNextAudioFile];
-    }
-    else {
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[_paths objectAtIndex:_itemIndex]]];
-        
-        // Create url connection and fire request
-        NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:TRUE];
-    }
-}
-
-// cache mp3 file
+//
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    NSString *destFileName = [self getCurrentCachePath];
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-  //   NSLog(@"writing to      %@",destFileName);
+    NSError * error;
+    NSDictionary* json = [NSJSONSerialization
+                          JSONObjectWithData:_responseData
+                          options:NSJSONReadingAllowFragments
+                          error:&error];
     
-    NSString *parent = [destFileName stringByDeletingLastPathComponent];
-    
-    if (![[NSFileManager defaultManager] fileExistsAtPath:parent]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:parent withIntermediateDirectories:YES attributes:nil error:nil];
+    if (error) {
+        NSLog(@"useJsonChapterData error %@",error.description);
     }
     
-    [_mp3Audio writeToFile:destFileName atomically:YES];
+    //   NSLog(@"useJsonChapter got %@ ",json);
+    NSString *validEmail = [json objectForKey:@"valid"];
     
-    if (![[NSFileManager defaultManager] fileExistsAtPath:destFileName]) {
-        NSLog(@"huh? can't find     %@",destFileName);
+    if ([validEmail isEqualToString:@"true"]) {
+        _login.ema
     }
-    
-    [self checkNextAudioFile];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {

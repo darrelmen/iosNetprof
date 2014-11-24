@@ -7,16 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "EAFLoginViewController.h"
 
-@interface EAFAudioCache : NSObject<NSURLConnectionDelegate>
+@interface EAFForgotUsername : NSObject<NSURLConnectionDelegate>
 
-@property NSArray *paths;
-@property NSArray *rawPaths;
-@property NSString *language;
+- (void) forgotUsername:(NSString *)email language:(NSString *)lang loginView:(EAFLoginViewController *)loginViewController;
 
-@property NSMutableData *mp3Audio;
-@property int itemIndex;
-
-- (void) goGetAudio:(NSArray *)rawPaths paths:(NSArray *)ppaths language:(NSString *)lang;
+@property (strong, nonatomic) NSMutableData *responseData;
+@property NSArray *jsonContentArray;
+@property EAFLoginViewController *login;
 
 @end
