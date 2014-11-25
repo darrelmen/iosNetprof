@@ -12,7 +12,6 @@
 		B61B82291A16C191009B00D1 /* rightAndWrong.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B82281A16C191009B00D1 /* rightAndWrong.png */; };
 		B61B822B1A16C921009B00D1 /* sounds.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B822A1A16C921009B00D1 /* sounds.png */; };
 		B61B822D1A16CF99009B00D1 /* dliIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B822C1A16CF99009B00D1 /* dliIcon.png */; };
-		B61B822F1A16CFA2009B00D1 /* mitllLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B822E1A16CFA2009B00D1 /* mitllLogo.png */; };
 		B61B82321A16D223009B00D1 /* EAFLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B82311A16D223009B00D1 /* EAFLoginViewController.m */; };
 		B61B946D1A1FA1210049462E /* EAFForgotUsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B946C1A1FA1210049462E /* EAFForgotUsernameViewController.m */; };
 		B61B946F1A1FF02F0049462E /* questionIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B946E1A1FF02F0049462E /* questionIcon.png */; };
@@ -78,6 +77,10 @@
 		B6D001781970AD28009554D5 /* record24.png in Resources */ = {isa = PBXBuildFile; fileRef = B6D001771970AD28009554D5 /* record24.png */; };
 		B6D0017A1970ADAC009554D5 /* squareStop.png in Resources */ = {isa = PBXBuildFile; fileRef = B6D001791970ADAC009554D5 /* squareStop.png */; };
 		B6D0017D1970B091009554D5 /* EAFExercise.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D0017C1970B091009554D5 /* EAFExercise.m */; };
+		B6DF209B1A25171400CA31B1 /* checkAndEar.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF209A1A25171400CA31B1 /* checkAndEar.png */; };
+		B6DF209D1A2518FB00CA31B1 /* checkAndEar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF209C1A2518FB00CA31B1 /* checkAndEar@2x.png */; };
+		B6DF209F1A25190400CA31B1 /* questionIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF209E1A25190400CA31B1 /* questionIcon@2x.png */; };
+		B6DF20A11A251C8700CA31B1 /* micBiggerCircleTransparent@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF20A01A251C8700CA31B1 /* micBiggerCircleTransparent@2x.png */; };
 		F6A5681E18ECA98A00B844C6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5681D18ECA98A00B844C6 /* Foundation.framework */; };
 		F6A5682018ECA98A00B844C6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5681F18ECA98A00B844C6 /* CoreGraphics.framework */; };
 		F6A5682218ECA98A00B844C6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5682118ECA98A00B844C6 /* UIKit.framework */; };
@@ -111,7 +114,6 @@
 		B61B82281A16C191009B00D1 /* rightAndWrong.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rightAndWrong.png; sourceTree = "<group>"; };
 		B61B822A1A16C921009B00D1 /* sounds.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sounds.png; sourceTree = "<group>"; };
 		B61B822C1A16CF99009B00D1 /* dliIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dliIcon.png; sourceTree = "<group>"; };
-		B61B822E1A16CFA2009B00D1 /* mitllLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mitllLogo.png; sourceTree = "<group>"; };
 		B61B82301A16D223009B00D1 /* EAFLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFLoginViewController.h; sourceTree = "<group>"; };
 		B61B82311A16D223009B00D1 /* EAFLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFLoginViewController.m; sourceTree = "<group>"; };
 		B61B946B1A1FA1210049462E /* EAFForgotUsernameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFForgotUsernameViewController.h; sourceTree = "<group>"; };
@@ -213,6 +215,10 @@
 		B6D001791970ADAC009554D5 /* squareStop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = squareStop.png; sourceTree = "<group>"; };
 		B6D0017B1970B091009554D5 /* EAFExercise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFExercise.h; sourceTree = "<group>"; };
 		B6D0017C1970B091009554D5 /* EAFExercise.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFExercise.m; sourceTree = "<group>"; };
+		B6DF209A1A25171400CA31B1 /* checkAndEar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkAndEar.png; sourceTree = "<group>"; };
+		B6DF209C1A2518FB00CA31B1 /* checkAndEar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkAndEar@2x.png"; sourceTree = "<group>"; };
+		B6DF209E1A25190400CA31B1 /* questionIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "questionIcon@2x.png"; sourceTree = "<group>"; };
+		B6DF20A01A251C8700CA31B1 /* micBiggerCircleTransparent@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "micBiggerCircleTransparent@2x.png"; sourceTree = "<group>"; };
 		F6A5681A18ECA98A00B844C6 /* Record.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Record.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6A5681D18ECA98A00B844C6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F6A5681F18ECA98A00B844C6 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -274,15 +280,18 @@
 		B66BACBF1970A57B00E28ECC /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B6DF20A01A251C8700CA31B1 /* micBiggerCircleTransparent@2x.png */,
+				B67666A419F0798800ECA678 /* micBiggerCircleTransparent.png */,
+				B6DF209C1A2518FB00CA31B1 /* checkAndEar@2x.png */,
+				B6DF209A1A25171400CA31B1 /* checkAndEar.png */,
 				B61B946E1A1FF02F0049462E /* questionIcon.png */,
+				B6DF209E1A25190400CA31B1 /* questionIcon@2x.png */,
 				B649198A1A1A59BC0054CA13 /* mitllLogo2.png */,
-				B61B822E1A16CFA2009B00D1 /* mitllLogo.png */,
 				B61B822C1A16CF99009B00D1 /* dliIcon.png */,
 				B61B822A1A16C921009B00D1 /* sounds.png */,
 				B61B82281A16C191009B00D1 /* rightAndWrong.png */,
 				B6AB39BC19FACF4D00B250C1 /* redx32.png */,
 				B6AB39BA19FACF4300B250C1 /* checkmark32.png */,
-				B67666A419F0798800ECA678 /* micBiggerCircleTransparent.png */,
 				B696890219993B910094A297 /* micBiggerCircle.png */,
 				B68A5C371979B4AE0036B90C /* micBigger.png */,
 				B68A5C351979B4590036B90C /* mic-4.svg */,
@@ -574,9 +583,12 @@
 			files = (
 				F6A5683618ECA98B00B844C6 /* Images.xcassets in Resources */,
 				B6A8D97B19770C2100E8F1D5 /* Icon-76.png in Resources */,
+				B6DF209D1A2518FB00CA31B1 /* checkAndEar@2x.png in Resources */,
 				B6A8D97E19770C2100E8F1D5 /* Icon-Small@2x.png in Resources */,
 				B6AB39BD19FACF4D00B250C1 /* redx32.png in Resources */,
 				B6A8D96D1976F27C00E8F1D5 /* media-record-3_32x32.png in Resources */,
+				B6DF209B1A25171400CA31B1 /* checkAndEar.png in Resources */,
+				B6DF20A11A251C8700CA31B1 /* micBiggerCircleTransparent@2x.png in Resources */,
 				B66BACC11970A5CD00E28ECC /* play.png in Resources */,
 				B6D001761970ACD3009554D5 /* record.png in Resources */,
 				B66BACC31970A5DC00E28ECC /* pause.png in Resources */,
@@ -591,8 +603,8 @@
 				B69821321A02978500BB9865 /* FontAwesome.ttf in Resources */,
 				B649198B1A1A59BC0054CA13 /* mitllLogo2.png in Resources */,
 				B6A8D97819770C2100E8F1D5 /* Icon-40@2x.png in Resources */,
+				B6DF209F1A25190400CA31B1 /* questionIcon@2x.png in Resources */,
 				B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */,
-				B61B822F1A16CFA2009B00D1 /* mitllLogo.png in Resources */,
 				B61B822D1A16CF99009B00D1 /* dliIcon.png in Resources */,
 				B6AB39BB19FACF4300B250C1 /* checkmark32.png in Resources */,
 				B68A5C381979B4AE0036B90C /* micBigger.png in Resources */,
