@@ -138,15 +138,9 @@
     else if ([_language isEqualToString:@"Sudanese"]) {
         [_whatToShow setTitle:@"Sudan" forSegmentAtIndex:1];
     }
-//    
-//    BButton * btn = [BButton awesomeButtonWithOnlyIcon:FATrophy
-//                                                  type: BButtonTypeDefault
-//                                                 style:BButtonStyleBootstrapV3];
-//    [btn addTarget:self action:@selector(showScoresClick:) forControlEvents:UIControlEventTouchUpInside];
-//    
-    //btn.frame = CGRectMake(frame.origin.x, frame.origin.y, btn.frame.size.width, btn.frame.size.width);
-  //  [_scoreButtonView addSubview:btn];
-    
+    else if ([_language isEqualToString:@"CM"]) {
+        [_whatToShow setTitle:@"Mandarin" forSegmentAtIndex:1];
+    }
 }
 
 - (IBAction)showScoresClick:(id)sender {
@@ -296,20 +290,20 @@
 //    }
 //}
 
-- (float)getHeight:(UILabel *)label {
-    //NSLog(@"one line height %f", [self expectedHeight:_english]);
-    
-    CGSize perfectSize = [label.text sizeWithFont:label.font constrainedToSize:CGSizeMake(label.bounds.size.width, NSIntegerMax) lineBreakMode:label.lineBreakMode];
-    float h = perfectSize.height;
-    return h;
-}
-
-- (void)scaleHeight:(UILabel *)label {
-    float height = [self getHeight:label];
-    float allowed = label.bounds.size.height;
-    float newFont = 38*(allowed/height);
-    label.font = [UIFont systemFontOfSize:newFont];
-}
+//- (float)getHeight:(UILabel *)label {
+//    //NSLog(@"one line height %f", [self expectedHeight:_english]);
+//    
+//    CGSize perfectSize = [label.text sizeWithFont:label.font constrainedToSize:CGSizeMake(label.bounds.size.width, NSIntegerMax) lineBreakMode:label.lineBreakMode];
+//    float h = perfectSize.height;
+//    return h;
+//}
+//
+//- (void)scaleHeight:(UILabel *)label {
+//    float height = [self getHeight:label];
+//    float allowed = label.bounds.size.height;
+//    float newFont = 38*(allowed/height);
+//    label.font = [UIFont systemFontOfSize:newFont];
+//}
 
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
@@ -380,11 +374,14 @@
     
     NSString *model =[UIDevice currentDevice].model;
     BOOL isIPhone = [model containsString:@"iPhone"];
-    if (isIPhone && [flAtIndex length] > 15) {
-        _foreignLang.font = [UIFont systemFontOfSize:24];
-    }
-    else {
-        _foreignLang.font = [UIFont systemFontOfSize:isIPhone ? 32 :44];
+    
+    if (false) {
+        if (isIPhone && [flAtIndex length] > 15) {
+            _foreignLang.font = [UIFont systemFontOfSize:24];
+        }
+        else {
+            _foreignLang.font = [UIFont systemFontOfSize:isIPhone ? 32 :44];
+        }
     }
     
     if (isIPhone && [enAtIndex length] > 15) {
@@ -594,8 +591,7 @@ BButton *playingIcon;
 - (void)audioRecorderDidFinishRecording:
 (AVAudioRecorder *)recorder successfully:(BOOL)flag
 {
-    NSLog(@"audioRecorderDidFinishRecording time = %f",CFAbsoluteTimeGetCurrent());
-   // _recordButtonContainer.backgroundColor = [UIColor whiteColor];
+    if (debugRecord)  NSLog(@"audioRecorderDidFinishRecording time = %f",CFAbsoluteTimeGetCurrent());
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
     CMTime time = asset.duration;
     double durationInSeconds = CMTimeGetSeconds(time);
@@ -637,7 +633,10 @@ BButton *playingIcon;
     }
 }
 
+NSString *flashcardPlayerStatusContext;
+
 // look for local file with mp3 and use it if it's there.
+//
 - (IBAction)playRefAudio:(id)sender {
     NSURL *url = [NSURL URLWithString:_refAudioPath];
     
@@ -659,7 +658,6 @@ BButton *playingIcon;
         NSLog(@"can't find local url %@",destFileName);
         NSLog(@"playRefAudio URL     %@", _refAudioPath);
     }
-    NSString *PlayerStatusContext;
     
     if (_player) {
         [self removePlayObserver];
@@ -672,7 +670,7 @@ BButton *playingIcon;
     
     _player = [AVPlayer playerWithURL:url];
     
-    [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
+    [_player addObserver:self forKeyPath:@"status" options:0 context:&flashcardPlayerStatusContext];
     _playRefAudioButton.enabled = NO;
 }
 
@@ -686,23 +684,31 @@ BButton *playingIcon;
     [_foreignLang setAttributedText:result];
 }
 
+- (void)highlightFLWhilePlaying
+{
+    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
+    
+ //   NSLog(@"highlight %@",result);
+    
+    NSRange range= NSMakeRange(0, [result length]);
+    [result addAttribute:NSBackgroundColorAttributeName
+                   value:[UIColor yellowColor]
+                   range:range];
+    [_foreignLang setAttributedText:result];
+}
+
 // So this is more complicated -- we have to wait until the mp3 has arrived from the server before we can play it
 // we remove the observer, or else we will later get a message when the player discarded
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                         change:(NSDictionary *)change context:(void *)context {
-    //NSLog(@" observeValueForKeyPath %@",keyPath);
+    NSLog(@" observeValueForKeyPath %@",keyPath);
+  //  NSLog(@" observeValueForKeyPath %@ %@",keyPath,context);
     
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
             NSLog(@" audio ready so playing...");
             
-            NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
-            
-            NSRange range= NSMakeRange(0, [result length]);
-            [result addAttribute:NSBackgroundColorAttributeName
-                           value:[UIColor yellowColor]
-                           range:range];
-            [_foreignLang setAttributedText:result];
+            [self highlightFLWhilePlaying];
             
             [_player play];
             
@@ -875,7 +881,7 @@ double gestureEnd;
     
     if (_audioRecorder.recording)
     {
-        NSLog(@"stopAudio stop time = %f",CFAbsoluteTimeGetCurrent());
+       if (debugRecord)  NSLog(@"stopAudio stop time = %f",CFAbsoluteTimeGetCurrent());
         [_audioRecorder stop];
         
     } else {
@@ -1161,23 +1167,13 @@ double gestureEnd;
     
     [_scoreDisplayContainer removeConstraints:_scoreDisplayContainer.constraints];
     _scoreDisplayContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  
-    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                           constraintWithItem:_scoreDisplayContainer
-                                           attribute:NSLayoutAttributeHeight
-                                           relatedBy:NSLayoutRelationEqual
-                                           toItem:nil
-                                           attribute:NSLayoutAttributeNotAnAttribute
-                                           multiplier:1.0
-                                           constant:52.0]];
+
     UIView *leftView = nil;
     
     NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
                   @"Egyptian",
                   @"Farsi",
                     @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
-    
-    
     
     if ([rtl containsObject:_language]) {
         wordAndScore = [self reversedArray:wordAndScore];
@@ -1253,7 +1249,7 @@ double gestureEnd;
                                                    toItem:leftView
                                                    attribute:NSLayoutAttributeRight
                                                    multiplier:1.0
-                                                   constant:5.0]];
+                                                   constant:3.0]];
         }
         leftView = exampleView;
         
@@ -1276,6 +1272,13 @@ double gestureEnd;
         
         wordLabel.attributedText = coloredWord;
         wordLabel.font = _foreignLang.font; // font sizes should match
+        
+        NSString *model =[UIDevice currentDevice].model;
+        BOOL isIPhone = [model containsString:@"iPhone"];
+        
+        if (isIPhone && [_foreignLang.text length] > 15) {
+            wordLabel.font  = [UIFont systemFontOfSize:24];
+        }
         
         [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
         wordLabel.adjustsFontSizeToFitWidth=YES;
@@ -1309,16 +1312,7 @@ double gestureEnd;
                                     attribute:NSLayoutAttributeRight
                                     multiplier:1.0
                                     constant:0.0]];
-//        
-//        [exampleView addConstraint:[NSLayoutConstraint
-//                                    constraintWithItem:wordLabel
-//                                    attribute:NSLayoutAttributeHeight
-//                                    relatedBy:NSLayoutRelationEqual
-//                                    toItem:exampleView
-//                                    attribute:NSLayoutAttributeHeight
-//                                    multiplier:0.5
-//                                    constant:0.0]];
-//        
+
         // get the phone sequence for the word
         NSString *phoneToShow = @"";
         for (NSDictionary *event in phoneAndScore) {
@@ -1348,7 +1342,7 @@ double gestureEnd;
             
             if ([start floatValue] >= [wstart floatValue] && [end floatValue] <= [wend floatValue]) {
                 NSRange range = NSMakeRange(pstart, [phoneText length]);
-                pstart += range.length+1;//1 + [phoneText length];
+                pstart += range.length+1;
                 float score = [pscore floatValue];
                 UIColor *color = [self getColor2:score];
                 //        NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
@@ -1356,9 +1350,6 @@ double gestureEnd;
                                       value:color
                                       range:range];
             }
-            //else {
-          //      NSLog(@"skipping %@ since not in %@", phoneText, word);
-          //  }
         }
         
         UILabel *phoneLabel = [[UILabel alloc] init];
@@ -1366,16 +1357,6 @@ double gestureEnd;
         [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
         
         [exampleView addSubview:phoneLabel];
-//        
-//        [exampleView addConstraint:[NSLayoutConstraint
-//                                    constraintWithItem:phoneLabel
-//                                    attribute:NSLayoutAttributeHeight
-//                                    relatedBy:NSLayoutRelationEqual
-//                                    toItem:exampleView
-//                                    attribute:NSLayoutAttributeHeight
-//                                    multiplier:0.5
-//                                    constant:0.0]];
-        
         
         [exampleView addConstraint:[NSLayoutConstraint
                                     constraintWithItem:phoneLabel
@@ -1384,7 +1365,7 @@ double gestureEnd;
                                     toItem:wordLabel
                                     attribute:NSLayoutAttributeBottom
                                     multiplier:1.0
-                                    constant:3.0]];
+                                    constant:+2.0]];
         
         [exampleView addConstraint:[NSLayoutConstraint
                                     constraintWithItem:phoneLabel
@@ -1411,7 +1392,7 @@ double gestureEnd;
                                     toItem:exampleView
                                     attribute:NSLayoutAttributeBottom
                                     multiplier:1.0
-                                    constant:4.0]];
+                                    constant:2.0]];
     }
 }
 

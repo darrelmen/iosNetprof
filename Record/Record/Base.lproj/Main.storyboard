@@ -312,7 +312,7 @@
                                 </connections>
                             </switch>
                             <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ag3-Sw-3Gm">
-                                <rect key="frame" x="254" y="480" width="94" height="32"/>
+                                <rect key="frame" x="253" y="480" width="94" height="32"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="64" id="hyY-43-n5K"/>
                                 </constraints>
@@ -357,7 +357,7 @@
                             </constraint>
                             <constraint firstItem="vPr-x7-V3R" firstAttribute="centerY" secondItem="qGs-TT-9Ym" secondAttribute="centerY" id="Aph-QN-I3a"/>
                             <constraint firstItem="mdF-G9-2CM" firstAttribute="centerX" secondItem="NAp-JA-wTD" secondAttribute="centerX" constant="4" id="Dau-5B-fkM"/>
-                            <constraint firstItem="XFG-NF-cL4" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="YP1-wr-gfA" secondAttribute="trailing" constant="1" id="Ep4-Q1-Seh"/>
+                            <constraint firstItem="XFG-NF-cL4" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="YP1-wr-gfA" secondAttribute="trailing" constant="2" id="Ep4-Q1-Seh"/>
                             <constraint firstAttribute="centerX" secondItem="vPr-x7-V3R" secondAttribute="centerX" priority="750" id="HnF-bk-KFc"/>
                             <constraint firstItem="vPr-x7-V3R" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="7cj-Bu-gyQ" secondAttribute="trailing" constant="4" id="KaH-bz-DoP"/>
                             <constraint firstItem="NAp-JA-wTD" firstAttribute="leading" secondItem="mdF-G9-2CM" secondAttribute="leading" id="LEF-mh-7zd"/>
@@ -384,7 +384,7 @@
                             </constraint>
                             <constraint firstItem="7cj-Bu-gyQ" firstAttribute="leading" secondItem="NAp-JA-wTD" secondAttribute="trailing" constant="8" id="npR-zh-EA7"/>
                             <constraint firstItem="YP1-wr-gfA" firstAttribute="leading" secondItem="mdF-G9-2CM" secondAttribute="trailing" constant="1" id="sxq-zI-hVi"/>
-                            <constraint firstAttribute="centerX" secondItem="Ag3-Sw-3Gm" secondAttribute="centerX" constant="-1" id="xSJ-W0-wiq"/>
+                            <constraint firstAttribute="centerX" secondItem="Ag3-Sw-3Gm" secondAttribute="centerX" id="xSJ-W0-wiq"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">

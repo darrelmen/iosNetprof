@@ -456,7 +456,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSRange range = NSMakeRange(0, [coloredWord length]);
     
     float overallAvg = totalPhoneScore/totalPhones;
-    NSLog(@"%@ score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
+ //   NSLog(@"%@ score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
     if (overallAvg > 0) {
         UIColor *color = [self getColor2:overallAvg];
         [coloredWord addAttribute:NSBackgroundColorAttributeName

@@ -228,14 +228,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     // Furthermore, this method is called each time there is a redirect so reinitializing it
     // also serves to clear it
     
-  //  NSLog(@"didReceiveResponse ----- ");
-
     _responseData = [[NSMutableData alloc] init];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-   // NSLog(@"didReceiveData ----- ");
-
     // Append the new data to the instance variable you declared
     [_responseData appendData:data];
 }
@@ -249,6 +245,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     UIViewController  *parent = [self parentViewController];
     NSString *wordReport;
     wordReport = [NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt];
+    NSLog(@"setting correct title %@",wordReport);
     parent.navigationItem.title = wordReport;
     myCurrentTitle = wordReport;
 }
@@ -266,16 +263,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     
     NSArray *jsonArray = [json objectForKey:@"scores"];
- 
-//    NSMutableDictionary *exToEntry = [[NSMutableDictionary alloc] init];
-//    for (NSDictionary *entry in _jsonItems) {
-//        NSString *ex = [entry objectForKey:@"id"];
-//        [exToEntry setObject:entry forKey:ex];
-//    }
-//    NSMutableArray *newOrder = [[NSMutableArray alloc] init];
-//    
+   // NSLog(@"json for scores was %@",jsonArray);
     if (jsonArray != nil) {
-      //  _jsonContentArray = jsonArray; // remove
         _exToScore   = [[NSMutableDictionary alloc] init];
         _exToHistory = [[NSMutableDictionary alloc] init];
         _exList = [[NSMutableArray alloc] init];
@@ -294,11 +283,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 [_exList addObject:ex];
             }
         }
-        //NSLog(@"ex to score %lu",(unsigned long)[_exToScore count]);
         NSString *correct = [json objectForKey:@"lastCorrect"];
         NSString *incorrect = [json objectForKey:@"lastIncorrect"];
         [self setTitleGivenCorrect:incorrect correct:correct];
-       // [self setTitle:[NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt]];
     }
     else {
         UIViewController  *parent = [self parentViewController];
