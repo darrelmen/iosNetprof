@@ -123,7 +123,11 @@
     [_correctFeedback setHidden:true];
     
     if (!_hasModel) {
+        NSLog(@"----> No model for %@",_language);
         _recordButtonContainer.hidden = true;
+    }
+    else {
+        _recordButtonContainer.hidden = false;
     }
     
     _scoreProgress.hidden = true;
@@ -519,9 +523,10 @@ BOOL preventPlayAudio = false;
     }
 }
 
-
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender{
-    if ([_audioOnSelector isOn] && [self hasRefAudio]) {
+    if (
+        //[_audioOnSelector isOn] &&
+        [self hasRefAudio]) {
         [self playRefAudio:nil];
     }
 }
