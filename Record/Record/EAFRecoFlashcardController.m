@@ -523,7 +523,7 @@ BButton *playingIcon;
 }
 
 - (void)removePlayObserver {
-    //NSLog(@" remove observer");
+    NSLog(@" remove observer");
     
     @try {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
@@ -561,6 +561,7 @@ NSString *flashcardPlayerStatusContext;
     }
     
     if (_player) {
+        [_player pause];
         [self removePlayObserver];
     }
     
@@ -1332,8 +1333,13 @@ double gestureEnd;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
     NSLog(@"got %@",error);
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't connect to server." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alert show];
+    if ([[error localizedDescription] containsString:@"timed"]) {
+        [self setDisplayMessage:@"Network connection problem, please try again."];
+    }
+    else {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't connect to server." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+    }
 }
 
 

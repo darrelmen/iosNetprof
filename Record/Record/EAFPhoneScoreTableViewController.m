@@ -43,7 +43,7 @@
 
 -(void)setCurrentTitle {
     UIViewController  *parent = [self parentViewController];
-    parent.navigationItem.title = @"Touch a word to hear yourself";
+    parent.navigationItem.title = @"Touch to compare audio";
 }
 
 - (BOOL) cancelTouchesInView {
@@ -112,6 +112,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 - (UILabel *)getOverallPhoneLabel:(NSString *)phone cell:(UITableViewCell *)cell
 {
     UILabel *overallPhoneLabel = [[UILabel alloc] init];
+    [cell.contentView addSubview:overallPhoneLabel];
+
     overallPhoneLabel.translatesAutoresizingMaskIntoConstraints = NO;
     
     overallPhoneLabel.text = phone;
@@ -200,7 +202,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     UIView *leftView = nil;
     
     UILabel *overallPhoneLabel = [self getOverallPhoneLabel:phone cell:cell];
-    [cell.contentView addSubview:overallPhoneLabel];
     
     float totalPhoneScore = 0.0f;
     float totalPhones = 0.0f;
@@ -574,6 +575,9 @@ bool playingRef = TRUE;
     NSString *PlayerStatusContext;
     
     if (_player) {
+        [_player pause];
+        NSLog(@"removing current observer");
+
         [self removePlayObserver];
     }
     
@@ -658,14 +662,14 @@ bool playingRef = TRUE;
 }
 
 - (void)removePlayObserver {
-    //NSLog(@" remove observer");
+    NSLog(@" remove observer");
     
     @try {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
         [_player removeObserver:self forKeyPath:@"status"];
     }
     @catch (NSException *exception) {
-        // NSLog(@"initial create - got exception %@",exception.description);
+        NSLog(@"initial create - got exception %@",exception.description);
     }
 }
 
@@ -775,14 +779,9 @@ bool playingRef = TRUE;
         [_resultToWords setValue:[[fields objectForKey:@"result"] objectForKey:@"words"] forKey:resultID];
     }
     
-    NSString *report;
-//    NSString *phoneScore = [json objectForKey:@"phoneScore"];
     UIViewController  *parent = [self parentViewController];
-  //  report = [NSString stringWithFormat:@"Overall Sound Score is %@",phoneScore];
-   // report = [NSString stringWithFormat:@"Score is %@, touch a word to hear yourself",phoneScore];
-    report = [NSString stringWithFormat:@"Touch a word to hear yourself"];
-    parent.navigationItem.title = report;
-    
+    parent.navigationItem.title = @"Touch to compare audio";
+
     [[self tableView] reloadData];
     
     return true;
@@ -823,18 +822,6 @@ bool playingRef = TRUE;
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    
-    //    EAFChapterTableViewController *chapterController = [segue destinationViewController];
-    
-    //  NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-    //  NSString *tappedItem = [languages objectAtIndex:indexPath.row];
-    
-    //  [chapterController setLanguage:tappedItem];
-    //  if ([tappedItem isEqualToString:@"CM"]) {
-    //      tappedItem = @"Mandarin";
-    //  }
-    // [chapterController setTitle:tappedItem];
 }
-
 
 @end
