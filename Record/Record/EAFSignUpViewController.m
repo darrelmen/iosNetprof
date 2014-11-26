@@ -113,18 +113,21 @@
     }
     if (_email.text.length == 0) {
         _emailFeedback.text = @"Please enter your email.";
+        _emailFeedback.textColor = [UIColor redColor];
         valid = false;
     }
     if (![self validateEmail:_email.text]) {
         _emailFeedback.text = @"Please enter a valid email.";
+        _emailFeedback.textColor = [UIColor redColor];
         valid = false;
     }
     
     if (valid) {
+        _emailFeedback.textColor = [UIColor blackColor];
+
         NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         
-        NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet",
-                             chosenLanguage
+        NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet",chosenLanguage
                              ];
 
         NSURL *url = [NSURL URLWithString:baseurl];
@@ -204,17 +207,12 @@
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
-    //NSLog(@"got text field start on %@",textField);
     _currentResponder = textField;
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
-    
-    //NSLog(@"textFieldShouldBeginEditing text field start on %@",textField);
-    
     _currentResponder = textField;
-    
     return YES;
 }
 

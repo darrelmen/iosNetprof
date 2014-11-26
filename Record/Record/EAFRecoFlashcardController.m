@@ -281,33 +281,6 @@
     return toUse;
 }
 
-//- (BOOL)isTooBig:(UILabel *) label {
-//    float h;
-//    h = [self getHeight:label];
-//    if (h > label.bounds.size.height) {
-//        NSLog(@"TOO MUCH %f %f",h,label.bounds.size.height);
-//        return true;
-//    }
-//    else {
-//        NSLog(@"NOT TOO MUCH %f %f",h,label.bounds.size.height);
-//        return false;
-//    }
-//}
-
-//- (float)getHeight:(UILabel *)label {
-//    //NSLog(@"one line height %f", [self expectedHeight:_english]);
-//    
-//    CGSize perfectSize = [label.text sizeWithFont:label.font constrainedToSize:CGSizeMake(label.bounds.size.width, NSIntegerMax) lineBreakMode:label.lineBreakMode];
-//    float h = perfectSize.height;
-//    return h;
-//}
-//
-//- (void)scaleHeight:(UILabel *)label {
-//    float height = [self getHeight:label];
-//    float allowed = label.bounds.size.height;
-//    float newFont = 38*(allowed/height);
-//    label.font = [UIFont systemFontOfSize:newFont];
-//}
 
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
@@ -394,58 +367,7 @@
     else {
         _english.font = [UIFont systemFontOfSize:isIPhone ? 32 :44];
     }
-    
-    // final experiment
-    // this seems to work on iphone simultor but not on ipad
-    
-    //    NSLog(@"fl height %f", [self expectedHeight:_foreignLang]);
-    //    NSLog(@"en height %f", [self expectedHeight:_english]);
-    //
-    //    float heightForFL = 2*[self heightOfLabelForText:_foreignLang withText:@"test"];
-    //    float currHeightFL = [self expectedHeight:_foreignLang];
-    //    if (currHeightFL > heightForFL) {
-    //        float newFont = 38*(heightForFL/currHeightFL);
-    //        _foreignLang.font = [UIFont systemFontOfSize:newFont];
-    //    }
-    //
-    //    float heightForEN = 2*[self heightOfLabelForText:_english withText:@"test"];
-    //    float currHeightEN = [self expectedHeight:_english];
-    //    if (currHeightEN > heightForEN) {
-    //        float newFont = 38*(heightForEN/currHeightEN);
-    //        _english.font = [UIFont systemFontOfSize:newFont];
-    //    }
-    //
-    //    NSLog(@"after fl height %f", [self expectedHeight:_foreignLang]);
-    //    NSLog(@"after en height %f", [self expectedHeight:_english]);
-    //
-    
-    
-    //if ([self isTooBig:_foreignLang]) {
-    //    [self scaleHeight:_foreignLang];
-    // }
-    // if ([self isTooBig:_english]) {
-    //     [self scaleHeight:_english];
-    // }
-    
-    //    while ([self isTooBig:_english]) {
-    //        CGFloat current = _english.font.pointSize;
-    //        NSLog(@"before %f",current);
-    //        current -=2;
-    //        NSLog(@"after %f",current);
-    //        if (current < 10) break;
-    //        _english.font = [UIFont systemFontOfSize:current];
-    //        [_english sizeToFit];
-    //    }
-    
-    //    perfectSize = [_english.text sizeWithFont:_english.font constrainedToSize:CGSizeMake(_english.bounds.size.width, NSIntegerMax) lineBreakMode:_english.lineBreakMode];
-    //    if (perfectSize.height > _english.bounds.size.height) {
-    //        NSLog(@"EN TOO MUCH %f %f",perfectSize.height,_english.bounds.size.height);
-    //    }
-    //    else {
-    //        NSLog(@"EN NOT TOO MUCH %f %f",perfectSize.height,_english.bounds.size.height);
-    //    }
-    //
-    //    [_scoreDisplay setText:@" "];
+
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
     }
@@ -460,38 +382,6 @@
         //  NSLog(@"audio on %@",[_audioOnSelector isOn]? @"YES" : @"NO");
     }
 }
-
-//- (float)heightOfLabelForText:(UILabel *)label withText:(NSString *)withText {
-//    UIFont *font = [UIFont systemFontOfSize:38]; //Warning! It's an example, set the font, you need
-//
-//    NSDictionary *attributesDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-//                                          font, NSFontAttributeName,
-//                                          nil];
-//
-//    CGSize maximumLabelSize = CGSizeMake(label.frame.size.width,9999);
-//
-//    CGRect expectedLabelRect = [withText boundingRectWithSize:maximumLabelSize
-//                                                      options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
-//                                                   attributes:attributesDictionary
-//                                                      context:nil];
-//    CGSize *expectedLabelSize = &expectedLabelRect.size;
-//
-//    return expectedLabelSize->height;
-//}
-
-//-(float)expectedHeight:(UILabel *)label{
-////    [label setNumberOfLines:0];
-////    [label setLineBreakMode:NSLineBreakByWordWrapping];
-////
-////    CGSize maximumLabelSize = CGSizeMake(label.frame.size.width,9999);
-////    CGSize expectedLabelSize = [[label text] sizeWithFont:[label font]
-////                                       constrainedToSize:maximumLabelSize
-////                                           lineBreakMode:[label lineBreakMode]];
-////    return expectedLabelSize.height;
-//
-//    NSString *withText = [label text];
-//    return [self heightOfLabelForText:label withText:withText];
-//}
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
     _index--;
@@ -579,10 +469,16 @@ BOOL preventPlayAudio = false;
 }
 
 BButton *playingIcon;
+// find first subview and remove the icon from it
 - (void)removePlayingAudioIcon {
-    for (UIView *v in [_scoreDisplayContainer subviews]) {
-        if (v == playingIcon) {
-            [v removeFromSuperview];
+    NSArray *subviews = [_scoreDisplayContainer subviews];
+    if (subviews.count > 0) {
+        UIView *first = [subviews objectAtIndex:0];
+        for (UIView *v in [first subviews]) {
+            if (v == playingIcon) {
+                [v removeFromSuperview];
+                break;
+            }
         }
     }
 }
@@ -863,12 +759,16 @@ double gestureEnd;
         
         _audioPlayer.delegate = self;
 
-        [_scoreDisplayContainer addSubview:playingIcon];
+        // add icon to first subview
+        NSArray *subviews = [_scoreDisplayContainer subviews];
+        if (subviews.count > 0) {
+            UIView *first = [subviews objectAtIndex:0];
+            [first addSubview:playingIcon];
+        }
 
         if (error)
         {
-            NSLog(@"Error: %@",
-                  [error localizedDescription]);
+            NSLog(@"Error: %@", [error localizedDescription]);
         } else {
             [_audioPlayer setVolume:3];
          //   NSLog(@"volume %f",[_audioPlayer volume]);
@@ -989,53 +889,53 @@ double gestureEnd;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
 }
 
--(void)postAudio2 {
-    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
-    //NSLog(@"talking to %@",_url);
-    
-    [_recoFeedbackImage startAnimating];
-    
-    NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
-    
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:baseurl]];
-    
-    [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
-    [request setHTTPShouldHandleCookies:NO];
-    [request setTimeoutInterval:60];
-    [request setHTTPMethod:@"POST"];
-    NSString *boundary = @"unique-consistent-string---BOUNDARY---BOUNDARY---BOUNDARY---";
-    // set Content-Type in HTTP header
-    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
-    [request setValue:contentType forHTTPHeaderField: @"Content-Type"];
-    // post body
-    NSMutableData *body = [NSMutableData data];
-    // add params (all params are strings)
-    
-    [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=%@\r\n\r\n", @"word"] dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    NSString *escapedString = [[[self getCurrentJson] objectForKey:@"fl"] stringByReplacingOccurrencesOfString:@"/" withString:@" "];
-    
-    [body appendData:[[NSString stringWithFormat:@"%@\r\n", escapedString] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=%@; filename=MyAudioMemo.wav\r\n", @"audio"] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[@"Content-Type: audio/x-wav\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:postData];
-    [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-    // setting the body of the post to the reqeust
-    [request setHTTPBody:body];
-    // set the content-length
-    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[body length]];
-    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-    
-    
-    NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
-    NSLog(@"posting to %@",_url);
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-    
-    [connection start];
-}
+//-(void)postAudio2 {
+//    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
+//    //NSLog(@"talking to %@",_url);
+//    
+//    [_recoFeedbackImage startAnimating];
+//    
+//    NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
+//    
+//    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:baseurl]];
+//    
+//    [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
+//    [request setHTTPShouldHandleCookies:NO];
+//    [request setTimeoutInterval:60];
+//    [request setHTTPMethod:@"POST"];
+//    NSString *boundary = @"unique-consistent-string---BOUNDARY---BOUNDARY---BOUNDARY---";
+//    // set Content-Type in HTTP header
+//    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
+//    [request setValue:contentType forHTTPHeaderField: @"Content-Type"];
+//    // post body
+//    NSMutableData *body = [NSMutableData data];
+//    // add params (all params are strings)
+//    
+//    [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+//    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=%@\r\n\r\n", @"word"] dataUsingEncoding:NSUTF8StringEncoding]];
+//    
+//    NSString *escapedString = [[[self getCurrentJson] objectForKey:@"fl"] stringByReplacingOccurrencesOfString:@"/" withString:@" "];
+//    
+//    [body appendData:[[NSString stringWithFormat:@"%@\r\n", escapedString] dataUsingEncoding:NSUTF8StringEncoding]];
+//    [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+//    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=%@; filename=MyAudioMemo.wav\r\n", @"audio"] dataUsingEncoding:NSUTF8StringEncoding]];
+//    [body appendData:[@"Content-Type: audio/x-wav\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+//    [body appendData:postData];
+//    [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+//    [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+//    // setting the body of the post to the reqeust
+//    [request setHTTPBody:body];
+//    // set the content-length
+//    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[body length]];
+//    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+//    
+//    
+//    NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
+//    NSLog(@"posting to %@",_url);
+//    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+//    
+//    [connection start];
+//}
 
 #pragma mark NSURLConnection Delegate Methods
 
@@ -1058,13 +958,7 @@ double gestureEnd;
     return nil;
 }
 
-- (void)setDisplayMessage:(NSString *) toUse {
-    //NSLog(@"display %@",toUse);
-    UILabel *toShow = [[UILabel alloc] init];
-    [toShow setTranslatesAutoresizingMaskIntoConstraints:NO];
-    toShow.text =toUse;
-    [toShow setFont:[UIFont systemFontOfSize:24.0f]];
-
+- (void)addScoreDisplayConstraints:(UILabel *)toShow {
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
     }
@@ -1098,6 +992,30 @@ double gestureEnd;
                                            constant:0.0]];
 }
 
+- (void)setDisplayMessage:(NSString *) toUse {
+    //NSLog(@"display %@",toUse);
+    UILabel *toShow = [[UILabel alloc] init];
+    [toShow setTranslatesAutoresizingMaskIntoConstraints:NO];
+    toShow.text =toUse;
+    [toShow setFont:[UIFont systemFontOfSize:24.0f]];
+
+    [self addScoreDisplayConstraints:toShow];
+}
+
+
+- (void)setIncorrectMessage:(NSString *) toUse {
+    //NSLog(@"display %@",toUse);
+    UILabel *toShow = [self getWordLabel:toUse score:0];
+    toShow.userInteractionEnabled = YES;
+
+    UITapGestureRecognizer *singleFingerTap =
+    [[UITapGestureRecognizer alloc] initWithTarget:self
+                                            action:@selector(playAudio:)];
+    singleFingerTap.delegate = self;
+    [toShow addGestureRecognizer:singleFingerTap];
+    [self addScoreDisplayConstraints:toShow];
+}
+
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
     // You can parse the stuff in your instance variable now
@@ -1124,7 +1042,7 @@ double gestureEnd;
             [self updateScoreDisplay:json];
         }
         else {
-            [self setDisplayMessage:@""];
+            [self setIncorrectMessage:_foreignLang.text];
         }
     }
     else {
@@ -1159,6 +1077,40 @@ double gestureEnd;
         [array addObject:element];
     }
     return array;
+}
+
+- (UILabel *)getWordLabel:(NSString *)word score:(NSNumber *)score {
+    UILabel *wordLabel = [[UILabel alloc] init];
+    
+    NSString *wordActually = word;
+    if ([_language isEqualToString:@"English"]) {
+        wordActually = [word lowercaseString];
+    }
+    NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:wordActually];
+    
+    NSRange range = NSMakeRange(0, [coloredWord length]);
+    
+    // NSLog(@"score was %@ %f",scoreString,score);
+    if ([score floatValue] > -0.1) {
+        UIColor *color = [self getColor2:[score floatValue]];
+        [coloredWord addAttribute:NSBackgroundColorAttributeName
+                            value:color
+                            range:range];
+    }
+    
+    wordLabel.attributedText = coloredWord;
+    wordLabel.font = _foreignLang.font; // font sizes should match
+    
+    NSString *model =[UIDevice currentDevice].model;
+    BOOL isIPhone = [model containsString:@"iPhone"];
+    
+    if (isIPhone && [_foreignLang.text length] > 15) {
+        wordLabel.font  = [UIFont systemFontOfSize:24];
+    }
+    
+    [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    wordLabel.adjustsFontSizeToFitWidth=YES;
+    return wordLabel;
 }
 
 // worries about RTL languages
@@ -1258,35 +1210,7 @@ double gestureEnd;
         }
         leftView = exampleView;
         
-        UILabel *wordLabel = [[UILabel alloc] init];
-        
-        if ([_language isEqualToString:@"English"]) {
-            word = [word lowercaseString];
-        }
-        NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
-        
-        NSRange range = NSMakeRange(0, [coloredWord length]);
-        
-        // NSLog(@"score was %@ %f",scoreString,score);
-        if ([score floatValue] > 0) {
-            UIColor *color = [self getColor2:[score floatValue]];
-            [coloredWord addAttribute:NSBackgroundColorAttributeName
-                                value:color
-                                range:range];
-        }
-        
-        wordLabel.attributedText = coloredWord;
-        wordLabel.font = _foreignLang.font; // font sizes should match
-        
-        NSString *model =[UIDevice currentDevice].model;
-        BOOL isIPhone = [model containsString:@"iPhone"];
-        
-        if (isIPhone && [_foreignLang.text length] > 15) {
-            wordLabel.font  = [UIFont systemFontOfSize:24];
-        }
-        
-        [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-        wordLabel.adjustsFontSizeToFitWidth=YES;
+        UILabel *wordLabel = [self getWordLabel:word score:score];
 
         [exampleView addSubview:wordLabel];
         

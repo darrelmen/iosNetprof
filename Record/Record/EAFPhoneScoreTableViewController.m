@@ -109,54 +109,17 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return _phoneToWords.count;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UILabel *)getOverallPhoneLabel:(NSString *)phone cell:(UITableViewCell *)cell
 {
-    // Configure the cell...
-    //  MyTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"WordScoreCell" forIndexPath:indexPath];
-    static NSString *CellIdentifier = @"PhoneCell";
-    
-    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    
-    UIView *bgColorView = [[UIView alloc] init];
-    
-    [bgColorView setBackgroundColor:[UIColor whiteColor]];
-    [cell setSelectedBackgroundView:bgColorView];
-    
-    NSString *phone = [_phonesInOrder objectAtIndex:indexPath.row];
-    
-    //   NSLog(@"tableView phone is %@",phone);
-    
-    for (UIView *v in [cell.contentView subviews]) {
-        [v removeFromSuperview];
-    }
-    [cell.contentView removeConstraints:cell.contentView.constraints];
-    cell.contentView.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    NSLayoutConstraint *constraint = [NSLayoutConstraint
-                                      constraintWithItem:cell.contentView
-                                      attribute:NSLayoutAttributeLeft
-                                      relatedBy:NSLayoutRelationEqual
-                                      toItem:cell.contentView.superview
-                                      attribute:NSLayoutAttributeLeft
-                                      multiplier:1.0
-                                      constant:3.0];
-    
-    [cell.contentView.superview addConstraint:constraint];
-    
-    NSArray *words = [_phoneToWords objectForKey:phone];
-   
-    UIView *leftView = nil;
-    
     UILabel *overallPhoneLabel = [[UILabel alloc] init];
     overallPhoneLabel.translatesAutoresizingMaskIntoConstraints = NO;
-
+    
     overallPhoneLabel.text = phone;
     [overallPhoneLabel setFont:[UIFont systemFontOfSize:24]];
-
-    [cell.contentView addSubview:overallPhoneLabel];
+    
     
     // top
-
+    
     [cell.contentView addConstraint:[NSLayoutConstraint
                                      constraintWithItem:overallPhoneLabel
                                      attribute:NSLayoutAttributeTop
@@ -195,6 +158,50 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                      attribute:NSLayoutAttributeNotAnAttribute
                                      multiplier:1.0
                                      constant:40.0]];
+    return overallPhoneLabel;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Configure the cell...
+    //  MyTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"WordScoreCell" forIndexPath:indexPath];
+    static NSString *CellIdentifier = @"PhoneCell";
+    
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    
+    UIView *bgColorView = [[UIView alloc] init];
+    
+    [bgColorView setBackgroundColor:[UIColor whiteColor]];
+    [cell setSelectedBackgroundView:bgColorView];
+    
+    NSString *phone = [_phonesInOrder objectAtIndex:indexPath.row];
+    
+    //   NSLog(@"tableView phone is %@",phone);
+    
+    for (UIView *v in [cell.contentView subviews]) {
+        [v removeFromSuperview];
+    }
+    [cell.contentView removeConstraints:cell.contentView.constraints];
+    cell.contentView.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    NSLayoutConstraint *constraint = [NSLayoutConstraint
+                                      constraintWithItem:cell.contentView
+                                      attribute:NSLayoutAttributeLeft
+                                      relatedBy:NSLayoutRelationEqual
+                                      toItem:cell.contentView.superview
+                                      attribute:NSLayoutAttributeLeft
+                                      multiplier:1.0
+                                      constant:3.0];
+    
+    [cell.contentView.superview addConstraint:constraint];
+    
+    NSArray *words = [_phoneToWords objectForKey:phone];
+   
+    UIView *leftView = nil;
+    
+    UILabel *overallPhoneLabel = [self getOverallPhoneLabel:phone cell:cell];
+    [cell.contentView addSubview:overallPhoneLabel];
+    
     float totalPhoneScore = 0.0f;
     float totalPhones = 0.0f;
     int count = 0;
@@ -437,9 +444,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         
         // add a boundary marker
         
-
-        
-        
         CALayer *rightBorder = [CALayer layer];
         rightBorder.borderColor = [UIColor colorWithWhite:0.8f
                                                     alpha:1.0f].CGColor;
@@ -457,7 +461,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     float overallAvg = totalPhoneScore/totalPhones;
  //   NSLog(@"%@ score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
-    if (overallAvg > 0) {
+    if (overallAvg > -0.1) {
         UIColor *color = [self getColor2:overallAvg];
         [coloredWord addAttribute:NSBackgroundColorAttributeName
                             value:color

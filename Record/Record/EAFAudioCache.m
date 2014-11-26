@@ -32,8 +32,6 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    // NSLog(@"didReceiveData ----- ");
-    
     // Append the new data to the instance variable you declared
     [_mp3Audio appendData:data];
 }
