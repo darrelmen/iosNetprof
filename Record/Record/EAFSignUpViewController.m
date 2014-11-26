@@ -10,6 +10,7 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
+#import "EAFEventPoster.h"
 
 @interface EAFSignUpViewController ()
 
@@ -155,6 +156,9 @@
         
         [connection start];
         [_activityIndicator startAnimating];
+        
+        EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+        [poster postEvent:[NSString stringWithFormat:@"signUp by %@",_username.text] exid:@"N/A" lang:chosenLanguage widget:@"SignIn" widgetType:@"Button"];
     }
 }
 
@@ -303,7 +307,6 @@
         NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];
         [SSKeychain setPassword:converted forService:@"mitll.proFeedback.device" account:@"userid"];
         NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
-        //NSLog(@"chosenLanguage %@",chosenLanguage);
         
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];

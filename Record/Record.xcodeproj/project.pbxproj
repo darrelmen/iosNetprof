@@ -81,6 +81,7 @@
 		B6DF209D1A2518FB00CA31B1 /* checkAndEar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF209C1A2518FB00CA31B1 /* checkAndEar@2x.png */; };
 		B6DF209F1A25190400CA31B1 /* questionIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF209E1A25190400CA31B1 /* questionIcon@2x.png */; };
 		B6DF20A11A251C8700CA31B1 /* micBiggerCircleTransparent@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF20A01A251C8700CA31B1 /* micBiggerCircleTransparent@2x.png */; };
+		B6DF20A41A2679FC00CA31B1 /* EAFEventPoster.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DF20A31A2679FC00CA31B1 /* EAFEventPoster.m */; };
 		F6A5681E18ECA98A00B844C6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5681D18ECA98A00B844C6 /* Foundation.framework */; };
 		F6A5682018ECA98A00B844C6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5681F18ECA98A00B844C6 /* CoreGraphics.framework */; };
 		F6A5682218ECA98A00B844C6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5682118ECA98A00B844C6 /* UIKit.framework */; };
@@ -219,6 +220,8 @@
 		B6DF209C1A2518FB00CA31B1 /* checkAndEar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkAndEar@2x.png"; sourceTree = "<group>"; };
 		B6DF209E1A25190400CA31B1 /* questionIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "questionIcon@2x.png"; sourceTree = "<group>"; };
 		B6DF20A01A251C8700CA31B1 /* micBiggerCircleTransparent@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "micBiggerCircleTransparent@2x.png"; sourceTree = "<group>"; };
+		B6DF20A21A2679FC00CA31B1 /* EAFEventPoster.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFEventPoster.h; sourceTree = "<group>"; };
+		B6DF20A31A2679FC00CA31B1 /* EAFEventPoster.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFEventPoster.m; sourceTree = "<group>"; };
 		F6A5681A18ECA98A00B844C6 /* Record.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Record.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6A5681D18ECA98A00B844C6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F6A5681F18ECA98A00B844C6 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -415,6 +418,8 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
+				B6DF20A21A2679FC00CA31B1 /* EAFEventPoster.h */,
+				B6DF20A31A2679FC00CA31B1 /* EAFEventPoster.m */,
 				B61B94731A23BB770049462E /* EAFSetPasswordViewController.h */,
 				B61B94741A23BB770049462E /* EAFSetPasswordViewController.m */,
 				B61B94701A23AC1A0049462E /* EAFForgotPasswordViewController.h */,
@@ -668,6 +673,7 @@
 				B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */,
 				B69821441A029F6400BB9865 /* NSString+FontAwesome.m in Sources */,
 				B68A5C481979C8B70036B90C /* MSAnnotatedGauge.m in Sources */,
+				B6DF20A41A2679FC00CA31B1 /* EAFEventPoster.m in Sources */,
 				F6A5682E18ECA98A00B844C6 /* EAFAppDelegate.m in Sources */,
 				B61B94721A23AC1A0049462E /* EAFForgotPasswordViewController.m in Sources */,
 				B61B94751A23BB770049462E /* EAFSetPasswordViewController.m in Sources */,

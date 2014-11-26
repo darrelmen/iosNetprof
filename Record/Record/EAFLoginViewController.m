@@ -14,6 +14,7 @@
 #import "EAFForgotUserNameViewController.h"
 #import "EAFForgotPasswordViewController.h"
 #import "EAFSetPasswordViewController.h"
+#import "EAFEventPoster.h"
 
 @interface EAFLoginViewController ()
 
@@ -142,6 +143,9 @@
         [connection start];
         [_activityIndicator startAnimating];
         _logIn.enabled = false;
+        
+        EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+        [poster postEvent:@"login" exid:@"N/A" lang:chosenLanguage widget:@"LogIn" widgetType:@"Button"];
     }
 }
 

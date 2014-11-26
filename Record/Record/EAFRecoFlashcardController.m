@@ -17,6 +17,8 @@
 #import "NSString+FontAwesome.h"
 #import "BButton.h"
 #import "EAFItemTableViewController.h"
+#import "EAFEventPoster.h"
+
 @interface EAFRecoFlashcardController ()
 
 @end
@@ -148,7 +150,10 @@
 }
 
 - (IBAction)showScoresClick:(id)sender {
-    //NSLog(@"got click on show scores");
+    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
+    [poster postEvent:[NSString stringWithFormat:@"showScoresClick"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"showScores" widgetType:@"Button"];
+    
     [self performSegueWithIdentifier:@"goToReport" sender:self];
 }
 
@@ -381,12 +386,20 @@
         NSLog(@"not playing audio at path %@",_refAudioPath);
         //  NSLog(@"audio on %@",[_audioOnSelector isOn]? @"YES" : @"NO");
     }
+    
+//    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+//    [poster postEvent:[NSString stringWithFormat:@"showing item"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"N/A" widgetType:@"N/A"];
 }
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
     _index--;
     if (_index == -1) _index = _jsonItems.count  -1UL;
     [self whatToShowSelection:nil];
+    
+    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
+    [poster postEvent:[NSString stringWithFormat:@"swipeRight"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"N/A" widgetType:@"N/A"];
+    
     [self respondToSwipe];
 }
 
@@ -403,7 +416,11 @@ BOOL preventPlayAudio = false;
     if (onLast) {
         preventPlayAudio = TRUE;
     }
-   // [self respondToSwipe];
+    
+    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
+    [poster postEvent:[NSString stringWithFormat:@"swipeLeft"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"N/A" widgetType:@"N/A"];
+    
     if (onLast) {
         [self showScoresClick:nil];
         [((EAFItemTableViewController*)_itemViewController) askServerForJson];
@@ -662,6 +679,10 @@ bool debugRecord = false;
     then2 = CFAbsoluteTimeGetCurrent();
     if (debugRecord) NSLog(@"recordAudio time = %f",then2);
     
+    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
+    [poster postEvent:[NSString stringWithFormat:@"record audio start"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"record audio" widgetType:@"Button"];
+    
     if (!_audioRecorder.recording)
     {
         if (debugRecord) NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
@@ -669,7 +690,6 @@ bool debugRecord = false;
         for (UIView *v in [_scoreDisplayContainer subviews]) {
             [v removeFromSuperview];
         }
-       // [self startRecordingFeedbackWithDelay];
         
         NSError *error = nil;
         AVAudioSession *session = [AVAudioSession sharedInstance];
