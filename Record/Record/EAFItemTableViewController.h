@@ -22,7 +22,7 @@
 @property (strong, nonatomic) NSDictionary *chapterToItems;
 @property (strong, nonatomic) NSArray *jsonItems;
 
-@property int itemIndex;
+//@property int itemIndex;
 @property EAFAudioCache *audioCache;
 
 @property (strong, nonatomic) NSMutableData *responseData;

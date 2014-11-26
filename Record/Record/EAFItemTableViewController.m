@@ -32,19 +32,15 @@
     return [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/", _language];
 }
 
-- (void)viewDidLoad
+- (void)cacheAudio:(NSArray *)items
 {
-    [super viewDidLoad];
-    
-    _itemIndex = 0;
     _audioCache = [[EAFAudioCache alloc] init];
     
     self.paths = [[NSMutableArray alloc] init];
     self.rawPaths = [[NSMutableArray alloc] init];
-    NSArray *items =_jsonItems;
-
-     NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"mrs",@"frr",@"frs",nil];
-
+    
+    NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"mrs",@"frr",@"frs",nil];
+    
     for (NSDictionary *object in items) {
         for (NSString *id in fields) {
             NSString *refPath = [object objectForKey:id];
@@ -61,6 +57,15 @@
     }
     
     [_audioCache goGetAudio:_rawPaths paths:_paths language:_language];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+   // NSArray *items =_jsonItems;
+
+//    [self cacheAudio:items];
 
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
@@ -118,10 +123,10 @@ NSString *chapterTitle = @"Chapter";
     NSArray *answers = [_exToHistory objectForKey:id];
     
     if (answers == nil || answers.count == 0) {
-        cell.imageView.image = [UIImage imageNamed:@"questionIcon.png"];
+        cell.imageView.image = [UIImage imageNamed:@"questionIcon"];
     }
     else {
-        int index = 0;
+       // int index = 0;
         for (NSString *correct in answers) {
             if ([correct isEqualToString:@"Y"]) {
                 cell.imageView.image = [UIImage imageNamed:@"checkmark32.png"];
@@ -130,11 +135,8 @@ NSString *chapterTitle = @"Chapter";
             else {
                 cell.imageView.image = [UIImage imageNamed:@"redx32.png"];
             }
-            
         }
     }
-    
-    
     
     cell.textLabel.text = exercise;
     cell.detailTextLabel.text = englishPhrases;
@@ -290,6 +292,7 @@ NSString *chapterTitle = @"Chapter";
                 [_notifyFlashcardController respondToSwipe ];
             }
             [[self tableView] reloadData];
+            [self cacheAudio:_jsonItems];
         }
     }
     else {
@@ -306,8 +309,7 @@ NSString *chapterTitle = @"Chapter";
     // The request is complete and data has been received
     
     //[loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
-    NSLog(@"connectionDidFinishLoading... "
-          );
+    NSLog(@"ItemTableViewController connectionDidFinishLoading... ");
 
     [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];

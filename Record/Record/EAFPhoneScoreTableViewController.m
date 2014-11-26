@@ -147,6 +147,56 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
    
     UIView *leftView = nil;
     
+    UILabel *overallPhoneLabel = [[UILabel alloc] init];
+    overallPhoneLabel.translatesAutoresizingMaskIntoConstraints = NO;
+
+    overallPhoneLabel.text = phone;
+    [overallPhoneLabel setFont:[UIFont systemFontOfSize:24]];
+
+    [cell.contentView addSubview:overallPhoneLabel];
+    
+    // top
+
+    [cell.contentView addConstraint:[NSLayoutConstraint
+                                     constraintWithItem:overallPhoneLabel
+                                     attribute:NSLayoutAttributeTop
+                                     relatedBy:NSLayoutRelationEqual
+                                     toItem:cell.contentView
+                                     attribute:NSLayoutAttributeTop
+                                     multiplier:1.0
+                                     constant:0.0]];
+    
+    // bottom
+    
+    [cell.contentView addConstraint:[NSLayoutConstraint
+                                     constraintWithItem:overallPhoneLabel
+                                     attribute:NSLayoutAttributeBottom
+                                     relatedBy:NSLayoutRelationEqual
+                                     toItem:cell.contentView
+                                     attribute:NSLayoutAttributeBottom
+                                     multiplier:1.0
+                                     constant:0.0]];
+    // left
+    
+    [cell.contentView addConstraint:[NSLayoutConstraint
+                                     constraintWithItem:overallPhoneLabel
+                                     attribute:NSLayoutAttributeLeft
+                                     relatedBy:NSLayoutRelationEqual
+                                     toItem:cell.contentView
+                                     attribute:NSLayoutAttributeLeft
+                                     multiplier:1.0
+                                     constant:1.0]];
+    
+    [cell.contentView addConstraint:[NSLayoutConstraint
+                                     constraintWithItem:overallPhoneLabel
+                                     attribute:NSLayoutAttributeWidth
+                                     relatedBy:NSLayoutRelationGreaterThanOrEqual
+                                     toItem:nil
+                                     attribute:NSLayoutAttributeNotAnAttribute
+                                     multiplier:1.0
+                                     constant:40.0]];
+    float totalPhoneScore = 0.0f;
+    float totalPhones = 0.0f;
     int count = 0;
     for (NSDictionary *wordEntry in words) {
         // TODO iterate over first N words in example words for phone
@@ -154,10 +204,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSString *result = [wordEntry objectForKey:@"result"];
         NSArray *resultWords = [_resultToWords objectForKey:result];
         
-        
         EAFAudioView *exampleView = [[EAFAudioView alloc] init];
         
-         exampleView.translatesAutoresizingMaskIntoConstraints = NO;
+        exampleView.translatesAutoresizingMaskIntoConstraints = NO;
         [cell.contentView addSubview:exampleView];
         
         exampleView.refAudio = [_resultToRef objectForKey:result];
@@ -204,8 +253,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
              constraintWithItem:exampleView
              attribute:NSLayoutAttributeLeft
              relatedBy:NSLayoutRelationEqual
-             toItem:cell.contentView
-             attribute:NSLayoutAttributeLeft
+             toItem:overallPhoneLabel//cell.contentView
+             attribute:NSLayoutAttributeRight
              multiplier:1.0
              constant:3.0];
             
@@ -224,7 +273,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             
             [cell.contentView addConstraint:constraint];
           //  NSLog(@"adding (to left view) constraint %@",constraint);
-
         }
         
         leftView = exampleView;
@@ -258,10 +306,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             
             //[wordLabel setTextColor:[UIColor blackColor]];
             //  [wordLabel setBackgroundColor:[UIColor colorWithHue:32 saturation:100 brightness:63 alpha:1]];
-            [wordLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:18.0f]];
+        //    [wordLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:18.0f]];
             [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
             
-            
+
             [exampleView addSubview:wordLabel];
             
             // top
@@ -305,33 +353,36 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                         constant:0.0]];
             
             if ([wordInResult isEqualToString:wordPhoneAppearsIn]) {
-                
                 NSString *phoneToShow = @"";
-                
-                for (NSDictionary *phoneInfo in [wordResult objectForKey:@"phones"]) {
+                NSArray *phoneArray = [wordResult objectForKey:@"phones"];
+                NSDictionary *lastPhone = phoneArray.count > 0 ? [phoneArray objectAtIndex:phoneArray.count-1] : nil;
+                for (NSDictionary *phoneInfo in phoneArray) {
                     NSString *phoneText =[phoneInfo objectForKey:@"p"];
                     phoneToShow = [phoneToShow stringByAppendingString:phoneText];
-                    phoneToShow = [phoneToShow stringByAppendingString:@" "];
+                    if (phoneInfo != lastPhone) {
+                        phoneToShow = [phoneToShow stringByAppendingString:@" "];
+                    }
                 }
                 
                 NSMutableAttributedString *coloredPhones = [[NSMutableAttributedString alloc] initWithString:phoneToShow];
                 
                 int start = 0;
-                for (NSDictionary *phoneInfo in [wordResult objectForKey:@"phones"]) {
+                for (NSDictionary *phoneInfo in phoneArray) {
                     NSString *phoneText =[phoneInfo objectForKey:@"p"];
-                    //phoneToShow = [phoneToShow stringByAppendingString:phoneText];
-                    //phoneToShow = [phoneToShow stringByAppendingString:@" "];
-                    
                     NSRange range = NSMakeRange(start, [phoneText length]);
-                    start += range.length+1;//1 + [phoneText length];
+                    start += (phoneInfo != lastPhone) ? range.length+1 : range.length;
                     NSString *scoreString = [phoneInfo objectForKey:@"s"];
                     float score = [scoreString floatValue];
                     
                     // NSLog(@"score was %@ %f",scoreString,score);
-                    //if (score > 0) {
                     // NSLog(@"%@ vs %@ ",phoneText,phone);
                     BOOL match = [phoneText isEqualToString:phone];
+                  
                     UIColor *color = match? [self getColor2:score] : [UIColor whiteColor];
+                    if (match) {
+                        totalPhoneScore += score;
+                        totalPhones++;
+                    }
                     //   NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
                     [coloredPhones addAttribute:NSBackgroundColorAttributeName
                                           value:color
@@ -341,10 +392,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 
                 UILabel *phoneLabel = [[UILabel alloc] init];
                 phoneLabel.attributedText = coloredPhones;
-                
-                //      [phoneLabel setTextColor:[UIColor blackColor]];
-                //[phoneLabel setBackgroundColor:[UIColor colorWithHue:66 saturation:100 brightness:63 alpha:1]];
-                [phoneLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:18.0f]];
                 [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
                 
                 [exampleView addSubview:phoneLabel];
@@ -390,6 +437,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         
         // add a boundary marker
         
+
+        
+        
         CALayer *rightBorder = [CALayer layer];
         rightBorder.borderColor = [UIColor colorWithWhite:0.8f
                                                     alpha:1.0f].CGColor;
@@ -400,6 +450,22 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         
         exampleView.userInteractionEnabled = YES;
     }
+    
+    NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:overallPhoneLabel.text];
+    
+    NSRange range = NSMakeRange(0, [coloredWord length]);
+    
+    float overallAvg = totalPhoneScore/totalPhones;
+    NSLog(@"%@ score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
+    if (overallAvg > 0) {
+        UIColor *color = [self getColor2:overallAvg];
+        [coloredWord addAttribute:NSBackgroundColorAttributeName
+                            value:color
+                            range:range];
+    }
+    
+    overallPhoneLabel.attributedText = coloredWord;
+    
     
     return cell;
 }
@@ -431,15 +497,17 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 //            if(CGRectContainsPoint(subview.frame, loc))
 //            {
 //                NSLog(@"--------> In View for %@",subview);
-//            }
+            //            }
             
             if(CGRectContainsPoint(subview.bounds, loc))
             {
-              //  NSLog(@"-XXXX-----> In View for %@",subview);
+                NSLog(@"-XXXX-----> In View for %@",subview);
                 
-                playingRef = TRUE;
-                currentAudioSelection = (EAFAudioView *)subview;
-                [self playRefAudio:(EAFAudioView *)subview];
+                if ([subview isKindOfClass:[EAFAudioView class]]) {
+                    playingRef = TRUE;
+                    currentAudioSelection = (EAFAudioView *)subview;
+                    [self playRefAudio:(EAFAudioView *)subview];
+                }
             }
         }
     }

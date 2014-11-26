@@ -58,7 +58,6 @@
         NSString *name = [NSString stringWithFormat:@"%@",controller];
         BOOL isSignUp = [controller isKindOfClass:[EAFSignUpViewController class]];
         if ([name containsString:@"SignUp"]) {
-            
             if (isSignUp) {
                 NSLog(@"---> Name %@",name);
             }
@@ -84,6 +83,9 @@ int receivedCount = 0;;
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?nestedChapters", _language];
     
     NSURL *url = [NSURL URLWithString:baseurl];
+    
+    NSLog(@"askServerForJson %@",url);
+
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
     
@@ -100,7 +102,7 @@ int receivedCount = 0;;
 UIAlertView *loadingContentAlert;
 
 - (void)loadInitialData {
-    //NSLog(@"loadInitialData");
+    NSLog(@"loadInitialData");
 
     NSData *cachedData = [self getCachedJson];
     if (cachedData && [cachedData length] > 100) {
@@ -266,7 +268,8 @@ BOOL hasModel;
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
-    
+    NSLog(@"connectionDidFinishLoading : chapters");
+
     [loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
     
     BOOL dataIsValid = [self useJsonChapterData];

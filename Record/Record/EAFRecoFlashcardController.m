@@ -138,14 +138,14 @@
     else if ([_language isEqualToString:@"Sudanese"]) {
         [_whatToShow setTitle:@"Sudan" forSegmentAtIndex:1];
     }
-    
-    BButton * btn = [BButton awesomeButtonWithOnlyIcon:FATrophy
-                                                  type: BButtonTypeDefault
-                                                 style:BButtonStyleBootstrapV3];
-    [btn addTarget:self action:@selector(showScoresClick:) forControlEvents:UIControlEventTouchUpInside];
-    
+//    
+//    BButton * btn = [BButton awesomeButtonWithOnlyIcon:FATrophy
+//                                                  type: BButtonTypeDefault
+//                                                 style:BButtonStyleBootstrapV3];
+//    [btn addTarget:self action:@selector(showScoresClick:) forControlEvents:UIControlEventTouchUpInside];
+//    
     //btn.frame = CGRectMake(frame.origin.x, frame.origin.y, btn.frame.size.width, btn.frame.size.width);
-    [_scoreButtonView addSubview:btn];
+  //  [_scoreButtonView addSubview:btn];
     
 }
 
@@ -1051,7 +1051,9 @@ double gestureEnd;
     //NSLog(@"display %@",toUse);
     UILabel *toShow = [[UILabel alloc] init];
     [toShow setTranslatesAutoresizingMaskIntoConstraints:NO];
-    toShow.text =toUse;//@"Please speak louder";
+    toShow.text =toUse;
+    [toShow setFont:[UIFont systemFontOfSize:24.0f]];
+
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
     }
@@ -1178,7 +1180,6 @@ double gestureEnd;
     
     
     if ([rtl containsObject:_language]) {
-//        NSLog(@"reversing order!");
         wordAndScore = [self reversedArray:wordAndScore];
     }
     
@@ -1274,10 +1275,11 @@ double gestureEnd;
         }
         
         wordLabel.attributedText = coloredWord;
-        //  NSLog(@"label word is %@",wordLabel.attributedText);
-        [wordLabel setFont:[UIFont systemFontOfSize:24.0f]];
-        [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+        wordLabel.font = _foreignLang.font; // font sizes should match
         
+        [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+        wordLabel.adjustsFontSizeToFitWidth=YES;
+
         [exampleView addSubview:wordLabel];
         
         // top
@@ -1364,15 +1366,25 @@ double gestureEnd;
         [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
         
         [exampleView addSubview:phoneLabel];
+//        
+//        [exampleView addConstraint:[NSLayoutConstraint
+//                                    constraintWithItem:phoneLabel
+//                                    attribute:NSLayoutAttributeHeight
+//                                    relatedBy:NSLayoutRelationEqual
+//                                    toItem:exampleView
+//                                    attribute:NSLayoutAttributeHeight
+//                                    multiplier:0.5
+//                                    constant:0.0]];
+        
         
         [exampleView addConstraint:[NSLayoutConstraint
                                     constraintWithItem:phoneLabel
-                                    attribute:NSLayoutAttributeHeight
+                                    attribute:NSLayoutAttributeTop
                                     relatedBy:NSLayoutRelationEqual
-                                    toItem:exampleView
-                                    attribute:NSLayoutAttributeHeight
-                                    multiplier:0.5
-                                    constant:0.0]];
+                                    toItem:wordLabel
+                                    attribute:NSLayoutAttributeBottom
+                                    multiplier:1.0
+                                    constant:3.0]];
         
         [exampleView addConstraint:[NSLayoutConstraint
                                     constraintWithItem:phoneLabel
@@ -1399,7 +1411,7 @@ double gestureEnd;
                                     toItem:exampleView
                                     attribute:NSLayoutAttributeBottom
                                     multiplier:1.0
-                                    constant:2.0]];
+                                    constant:4.0]];
     }
 }
 
@@ -1437,7 +1449,7 @@ double gestureEnd;
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
+  //  NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
     EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
     
     EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];

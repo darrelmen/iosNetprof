@@ -110,22 +110,19 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *exid = [_exList objectAtIndex:row];
     NSArray *answers = [_exToHistory objectForKey:exid];
     //NSLog(@"ex answers %@ %@",exid,answers);
-    
+    float iconDim = 22.f;
     if (answers == nil || answers.count == 0) {
-        FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
+        FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, iconDim,iconDim)];
         correctView.image = nil;
         [correctView setDefaultIconIdentifier:@"fa-question"];
-        //   correctView.defaultIconColor = [UIColor greenColor];
-        //   correctView.defaultView.backgroundColor = [UIColor greenColor];
         [cell.fifth addSubview:correctView];
-        
     }
     else {
         int index = 0;
         for (NSString *correct in answers) {
             UIView *container = [icons objectAtIndex:(index++ + (5-[answers count]))];
             
-            FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
+            FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, iconDim, iconDim)];
             correctView.image = nil;
             if ([correct isEqualToString:@"Y"]) {
                 [correctView setDefaultIconIdentifier:@"fa-check"];

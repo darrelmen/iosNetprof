@@ -48,7 +48,7 @@
 @property (weak, nonatomic) IBOutlet UIView *scoreDisplayContainer;
 @property (strong, nonatomic) IBOutlet UIProgressView *scoreProgress;
 @property AVPlayer *player;
-@property (strong, nonatomic) IBOutlet UIView *scoreButtonView;
+//@property (strong, nonatomic) IBOutlet UIView *scoreButtonView;
 - (IBAction)showScoresClick:(id)sender;
 
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressGesture;

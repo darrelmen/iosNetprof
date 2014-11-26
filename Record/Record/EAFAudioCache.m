@@ -47,6 +47,8 @@
 - (void)checkNextAudioFile {
     if (_itemIndex < _paths.count-1) {
         _itemIndex++;
+       // NSLog(@"checkNextAudioFile %d downloads complete.",_itemIndex);
+
         [self getAudioForCurrentItem];
     }
     else {
@@ -87,7 +89,7 @@
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     NSString *destFileName = [self getCurrentCachePath];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-  //   NSLog(@"writing to      %@",destFileName);
+  //  NSLog(@"connectionDidFinishLoading : writing to      %@",destFileName);
     
     NSString *parent = [destFileName stringByDeletingLastPathComponent];
     
