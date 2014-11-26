@@ -36,8 +36,8 @@
 {
     _audioCache = [[EAFAudioCache alloc] init];
     
-    self.paths = [[NSMutableArray alloc] init];
-    self.rawPaths = [[NSMutableArray alloc] init];
+    NSMutableArray *paths = [[NSMutableArray alloc] init];
+    NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
     
     NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"mrs",@"frr",@"frs",nil];
     
@@ -50,23 +50,19 @@
                 
                 NSMutableString *mu = [NSMutableString stringWithString:refPath];
                 [mu insertString:[self getURL] atIndex:0];
-                [_paths addObject:mu];
-                [_rawPaths addObject:refPath];
+                [paths addObject:mu];
+                [rawPaths addObject:refPath];
             }
         }
     }
     
-    [_audioCache goGetAudio:_rawPaths paths:_paths language:_language];
+    [_audioCache goGetAudio:rawPaths paths:paths language:_language];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-   // NSArray *items =_jsonItems;
-
-//    [self cacheAudio:items];
-
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
     [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,chapterTitle,currentChapter]];

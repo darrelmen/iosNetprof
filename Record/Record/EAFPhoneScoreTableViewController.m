@@ -10,6 +10,7 @@
 #import "FAImageView.h"
 #import "MyTableViewCell.h"
 #import "EAFAudioView.h"
+#import "EAFAudioCache.h"
 #import <AudioToolbox/AudioServices.h>
 #import "SSKeychain.h"
 
@@ -58,7 +59,7 @@
     // NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=phoneReport&user=%ld&%@=%@", _language, _user, _chapterName, _chapterSelection];
     
-    NSLog(@"EAFPhoneScoreTableViewController url %@",baseurl);
+    //NSLog(@"EAFPhoneScoreTableViewController url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -75,17 +76,6 @@
 }
 
 #pragma mark - Table view data source
-
-//- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-//    if (indexPath.row%2 == 0) {
-//        UIColor *altCellColor = [UIColor colorWithWhite:0.7 alpha:0.1];
-//        cell.backgroundColor = altCellColor;
-//    }
-//    else {
-//        UIColor *altCellColor = [UIColor colorWithWhite:1.0 alpha:0.1];
-//        cell.backgroundColor = altCellColor;
-//    }
-//}
 
 - (CGFloat)tableView:(UITableView *)tableView
 estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -166,9 +156,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Configure the cell...
-    //  MyTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"WordScoreCell" forIndexPath:indexPath];
     static NSString *CellIdentifier = @"PhoneCell";
-    
     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     UIView *bgColorView = [[UIView alloc] init];
@@ -524,8 +512,6 @@ bool playingRef = TRUE;
 
 // look for local file with mp3 and use it if it's there.
 - (IBAction)playRefAudio:(EAFAudioView *)sender {
-   // NSLog(@"playRefAudio %@",sender);
-    
     NSString *refPath = playingRef ? sender.refAudio : sender.answer;
  //   NSLog(@"ref path %@ playing ref %@",refPath, (playingRef ? @"YES":@"NO"));
 
@@ -772,12 +758,31 @@ bool playingRef = TRUE;
         [_phoneToWords setValue:wordsPhoneAppearsIn forKey:phone];
     }
     
+    EAFAudioCache *audioCache = [[EAFAudioCache alloc] init];
+
+    NSMutableArray *paths = [[NSMutableArray alloc] init];
+    NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
+    
     for (NSString *resultID in resultsDict) {
         NSDictionary *fields = [resultsDict objectForKey:resultID];
         [_resultToRef setValue:[fields objectForKey:@"ref"] forKey:resultID];
-        [_resultToAnswer setValue:[fields objectForKey:@"answer"] forKey:resultID];
+        NSString *answer = [fields objectForKey:@"answer"];
+        [_resultToAnswer setValue:answer forKey:resultID];
         [_resultToWords setValue:[[fields objectForKey:@"result"] objectForKey:@"words"] forKey:resultID];
+        
+        
+        if (answer && answer.length > 2) { //i.e. not NO
+            NSString * refPath = [answer stringByReplacingOccurrencesOfString:@".wav"
+                                                                   withString:@".mp3"];
+            
+            NSMutableString *mu = [NSMutableString stringWithString:refPath];
+            [mu insertString:[self getURL] atIndex:0];
+            [paths addObject:mu];
+            [rawPaths addObject:refPath];
+        }
     }
+    
+    [audioCache goGetAudio:rawPaths paths:paths language:_language];
     
     UIViewController  *parent = [self parentViewController];
     parent.navigationItem.title = @"Touch to compare audio";
@@ -785,6 +790,11 @@ bool playingRef = TRUE;
     [[self tableView] reloadData];
     
     return true;
+}
+
+- (NSString *)getURL
+{
+    return [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/", _language];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {

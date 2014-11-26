@@ -1125,6 +1125,7 @@ double gestureEnd;
     
     [_scoreDisplayContainer removeConstraints:_scoreDisplayContainer.constraints];
     _scoreDisplayContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    _scoreDisplayContainer.clipsToBounds = YES;
 
     UIView *leftView = nil;
     

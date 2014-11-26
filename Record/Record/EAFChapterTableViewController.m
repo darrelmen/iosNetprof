@@ -464,13 +464,6 @@ NSArray *currentItems;
     NSLog(@"got call to accessory action");
 }
 
-//-(void)loadDestinationVC{
-//    if(condition == YES){
-//        
-//        [self performSegueWithIdentifier:@"conditionSegue" sender:nil];
-//    }  
-//}
-
 //- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 //{
 //    [tableView deselectRowAtIndexPath:indexPath animated:NO];

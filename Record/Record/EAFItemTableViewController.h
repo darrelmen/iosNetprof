@@ -13,8 +13,8 @@
 
 @interface EAFItemTableViewController : UITableViewController<NSURLConnectionDelegate>
 
-@property NSMutableArray *paths;
-@property NSMutableArray *rawPaths;
+//@property NSMutableArray *paths;
+//@property NSMutableArray *rawPaths;
 @property BOOL hasModel;
 
 -(void) setChapter:(NSString *)chapter;
@@ -22,7 +22,6 @@
 @property (strong, nonatomic) NSDictionary *chapterToItems;
 @property (strong, nonatomic) NSArray *jsonItems;
 
-//@property int itemIndex;
 @property EAFAudioCache *audioCache;
 
 @property (strong, nonatomic) NSMutableData *responseData;

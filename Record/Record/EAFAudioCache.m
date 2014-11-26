@@ -10,6 +10,7 @@
 
 @implementation EAFAudioCache
 
+// called from EAFItemTableViewController
 - (void) goGetAudio:(NSArray *)rawPaths paths:(NSArray *)ppaths language:(NSString *)lang {
     _itemIndex = 0;
     _rawPaths = [NSArray arrayWithArray:rawPaths];
