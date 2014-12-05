@@ -147,6 +147,8 @@
     else if ([_language isEqualToString:@"CM"]) {
         [_whatToShow setTitle:@"Mandarin" forSegmentAtIndex:1];
     }
+    
+    _pageControl.transform = CGAffineTransformMakeRotation(M_PI_2);
 }
 
 - (IBAction)showScoresClick:(id)sender {
@@ -443,18 +445,23 @@ BOOL preventPlayAudio = false;
 
 - (IBAction)whatToShowSelection:(id)sender {
     long selected = [_whatToShow selectedSegmentIndex];
-    //    NSLog(@"whatToShowSelection %ld", selected);
+       NSLog(@"whatToShowSelection %ld", selected);
     if (selected == 0) {
         [_foreignLang setHidden:true];
         [_english setHidden:false];
+        _pageControl.hidden = false;
+        _pageControl.currentPage = 0;
     }
     else if (selected == 1) {
         [_foreignLang setHidden:false];
         [_english setHidden:true];
+        _pageControl.hidden = false;
+        _pageControl.currentPage = 1;
     }
     else {
         [_foreignLang setHidden:false];
         [_english setHidden:false];
+        _pageControl.hidden = true;
     }
 }
 
@@ -719,6 +726,12 @@ bool debugRecord = false;
 - (IBAction)swipeUp:(id)sender {
     long selected = [_whatToShow selectedSegmentIndex];
     if (selected == 0 || selected == 1) {
+        if (_pageControl.currentPage == 0) {
+            _pageControl.currentPage = 1;
+        }
+        else {
+            _pageControl.currentPage = 0;
+        }
         [_foreignLang setHidden:!_foreignLang.hidden];
         [_english setHidden:!_english.hidden];
         if (!_foreignLang.hidden && [_audioOnSelector isOn] && [self hasRefAudio] && !preventPlayAudio) {

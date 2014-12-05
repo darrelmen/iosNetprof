@@ -61,7 +61,7 @@
 @property (strong) NSTimer *repeatingTimer;
 - (NSDictionary *)userInfo;
 
-- (void)invocationMethod:(NSDate *)date;
+//- (void)invocationMethod:(NSDate *)date;
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;
 @property (strong, nonatomic) IBOutlet UIImageView *correctFeedback;
 
@@ -77,6 +77,7 @@
 - (void)respondToSwipe;
 
 @property UITableViewController *itemViewController;
+@property (strong, nonatomic) IBOutlet UIPageControl *pageControl;
 
 //- (float)heightOfLabelForText:(UILabel *)label withText:(NSString *)withText;
 

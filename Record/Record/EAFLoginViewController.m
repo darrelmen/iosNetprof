@@ -124,6 +124,8 @@
     NSLog(@"language %@",chosenLanguage);
     
     if (valid) {
+        // make sure multiple events don't occur
+        _languagePicker.userInteractionEnabled = false;
         NSLog(@"password '%@'",_password.text);
         NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?hasUser=%@&p=%@", chosenLanguage,_username.text,[[self MD5:_password.text] uppercaseString]];
         NSURL *url = [NSURL URLWithString:baseurl];
@@ -177,7 +179,6 @@
     _usernameFeedback.text = @"";
     _passwordFeedback.text = @"";
     _signUpFeedback.text = @"";
-
 }
 
 - (void) passwordChanged:(id)notification {
@@ -249,10 +250,12 @@
     NSString *resetToken = [json objectForKey:@"token"];
     
     _logIn.enabled = true;
+    _languagePicker.userInteractionEnabled = true;
     if ([userIDExisting integerValue] == -1) {
         // no user with that name
         _passwordFeedback.text = @"Username or password incorrect";
         _signUpFeedback.text = @"Have you signed up?";
+
     }
     else if (resetToken.length > 0) {
         _token = resetToken;
@@ -286,7 +289,8 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     // The request has failed for some reason!
     // Check the error var
-    NSLog(@"Download content failed with %@",error);
+    _languagePicker.userInteractionEnabled = true;
+    NSLog(@"login call to server failed with %@",error);
     [_activityIndicator stopAnimating];
 
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
@@ -301,35 +305,30 @@
 
 - (IBAction)gotSingleTap:(id)sender {
     NSLog(@"dismiss keyboard! %@",_currentResponder);
-
     [_currentResponder resignFirstResponder];
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
-    NSLog(@"got text field start on %@",textField);
+ //   NSLog(@"got text field start on %@",textField);
     _currentResponder = textField;
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
-    NSLog(@"textFieldShouldBeginEditing text field start on %@",textField);
+//    NSLog(@"textFieldShouldBeginEditing text field start on %@",textField);
 
     _currentResponder = textField;
 
     return YES;
 }
 
-// It is important for you to hide kwyboard
+// It is important for you to hide keyboard
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
     return YES;
 }
-
-//- (IBAction)gotSignUp:(id)sender {
-//        [self performSegueWithIdentifier: @"goToSignUp" sender: self];
-//}
 
 #pragma mark - Navigation
 
