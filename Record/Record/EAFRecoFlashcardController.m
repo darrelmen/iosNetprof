@@ -378,7 +378,7 @@
     }
     _scoreProgress.hidden = true;
     
-    if ([_audioOnSelector isOn] && [self hasRefAudio] && !preventPlayAudio) {
+    if ([_audioOnSelector isOn] && [self hasRefAudio] && !preventPlayAudio && !_foreignLang.hidden) {
         [self playRefAudio:nil];
     }
     else {
@@ -436,6 +436,9 @@ BOOL preventPlayAudio = false;
         [self hasRefAudio]) {
         [self playRefAudio:nil];
     }
+    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
+    [poster postEvent:[NSString stringWithFormat:@"playAudioTouch"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"flText" widgetType:@"UILabel"];
 }
 
 - (IBAction)whatToShowSelection:(id)sender {
@@ -718,15 +721,20 @@ bool debugRecord = false;
     if (selected == 0 || selected == 1) {
         [_foreignLang setHidden:!_foreignLang.hidden];
         [_english setHidden:!_english.hidden];
+        if (!_foreignLang.hidden && [_audioOnSelector isOn] && [self hasRefAudio] && !preventPlayAudio) {
+            [self playRefAudio:nil];
+        }
     }
+    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
+    [poster postEvent:[NSString stringWithFormat:@"swipeUp"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"card" widgetType:@"card"];
 }
 
 - (IBAction)swipeDown:(id)sender {
-    long selected = [_whatToShow selectedSegmentIndex];
-    if (selected == 0 || selected == 1) {
-        [_foreignLang setHidden:!_foreignLang.hidden];
-        [_english setHidden:!_english.hidden];
-    }
+    [self swipeUp:sender ];
+//    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+//    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
+//    [poster postEvent:[NSString stringWithFormat:@"swipeDown"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"card" widgetType:@"card"];
 }
 
 double gestureStart;
@@ -830,10 +838,10 @@ double gestureEnd;
 - (NSDictionary *)userInfo {
     return @{ @"StartDate" : [NSDate date] };
 }
-
-- (void)invocationMethod:(NSDate *)date {
-    NSLog(@"Invocation for timer started on %@", date);
-}
+//
+//- (void)invocationMethod:(NSDate *)date {
+//    NSLog(@"Invocation for timer started on %@", date);
+//}
 
 - (IBAction)shuffleChange:(id)sender {
     NSLog(@"got shuffleChange");
@@ -843,6 +851,10 @@ double gestureEnd;
         [self doShuffle];
     }
     [self respondToSwipe];
+    
+    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
+    [poster postEvent:[NSString stringWithFormat:@"shuffle"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"shuffle" widgetType:@"UIRadio"];
 }
 
 - (void)doShuffle {
