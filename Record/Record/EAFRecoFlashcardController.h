@@ -54,6 +54,7 @@
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender;
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender;
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender;
+@property (strong, nonatomic) IBOutlet UIProgressView *progressThroughItems;
 
 @property (strong) NSTimer *repeatingTimer;
 

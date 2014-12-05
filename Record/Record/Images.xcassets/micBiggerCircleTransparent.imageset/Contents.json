@@ -1,18 +1,27 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
+      "idiom" : "iphone",
       "scale" : "1x",
       "filename" : "micBiggerCircleTransparent.png"
     },
     {
-      "idiom" : "universal",
-      "scale" : "2x",
+      "idiom" : "iphone",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "iphone",
+      "scale" : "3x"
+    },
+    {
+      "idiom" : "ipad",
+      "scale" : "1x",
       "filename" : "micBiggerCircleTransparent@2x.png"
     },
     {
-      "idiom" : "universal",
-      "scale" : "3x"
+      "idiom" : "ipad",
+      "scale" : "2x",
+      "filename" : "micBiggerCircleTransparent@2x-1.png"
     }
   ],
   "info" : {

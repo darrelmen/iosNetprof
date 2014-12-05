@@ -355,7 +355,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 for (NSDictionary *phoneInfo in phoneArray) {
                     NSString *phoneText =[phoneInfo objectForKey:@"p"];
                     phoneToShow = [phoneToShow stringByAppendingString:phoneText];
-                    if (phoneInfo != lastPhone) {
+                    if (phoneInfo != lastPhone && ![_language isEqualToString:@"Korean"]) {
                         phoneToShow = [phoneToShow stringByAppendingString:@" "];
                     }
                 }
@@ -366,7 +366,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 for (NSDictionary *phoneInfo in phoneArray) {
                     NSString *phoneText =[phoneInfo objectForKey:@"p"];
                     NSRange range = NSMakeRange(start, [phoneText length]);
-                    start += (phoneInfo != lastPhone) ? range.length+1 : range.length;
+                    if ([_language isEqualToString:@"Korean"])
+                    {
+                        start += range.length;
+                    }
+                    else {
+                        
+                        start += (phoneInfo != lastPhone) ? range.length+1 : range.length;
+                    }
                     NSString *scoreString = [phoneInfo objectForKey:@"s"];
                     float score = [scoreString floatValue];
                     
@@ -429,8 +436,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                             constant:0.0]];
             }
         }
-        //        exampleView.clipsToBounds = YES;
-        
         // add a boundary marker
         
         CALayer *rightBorder = [CALayer layer];

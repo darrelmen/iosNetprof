@@ -149,6 +149,9 @@
     }
     
     _pageControl.transform = CGAffineTransformMakeRotation(M_PI_2);
+    
+    _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
+    NSLog(@"progress is %f", _progressThroughItems.progress);
 }
 
 - (IBAction)showScoresClick:(id)sender {
@@ -396,6 +399,9 @@
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
     _index--;
     if (_index == -1) _index = _jsonItems.count  -1UL;
+    _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
+    NSLog(@"swipeRightDetected progress is %f", _progressThroughItems.progress);
+
     [self whatToShowSelection:nil];
     
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
@@ -413,6 +419,9 @@ BOOL preventPlayAudio = false;
         _index = 0;
         // TODO : get the sorted list and resort the items in incorrect first order
     }
+    _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
+    NSLog(@"swipeLeftDetected progress is %f", _progressThroughItems.progress);
+
     [self whatToShowSelection:nil];
     
     if (onLast) {
@@ -896,6 +905,7 @@ double gestureEnd;
     }
     
     _index = 0;
+    _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
 }
 
 // Posts audio with current fl field
@@ -918,7 +928,8 @@ double gestureEnd;
     [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
-    
+    [urlRequest setTimeoutInterval:15];
+
     // add request parameters
     
     // old style
@@ -972,6 +983,7 @@ double gestureEnd;
     }
     [_scoreDisplayContainer addSubview:toShow];
     
+    // height
     [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
                                            constraintWithItem:toShow
                                            attribute:NSLayoutAttributeHeight
@@ -998,6 +1010,25 @@ double gestureEnd;
                                            attribute:NSLayoutAttributeBottom
                                            multiplier:1.0
                                            constant:0.0]];
+    
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                           constraintWithItem:toShow
+                                           attribute:NSLayoutAttributeLeft
+                                           relatedBy:NSLayoutRelationGreaterThanOrEqual
+                                           toItem:_scoreDisplayContainer
+                                           attribute:NSLayoutAttributeLeft
+                                           multiplier:1.0
+                                           constant:0.0]];
+    
+    
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                           constraintWithItem:toShow
+                                           attribute:NSLayoutAttributeRight
+                                           relatedBy:NSLayoutRelationLessThanOrEqual
+                                           toItem:_scoreDisplayContainer
+                                           attribute:NSLayoutAttributeRight
+                                           multiplier:1.0
+                                           constant:0.0]];
 }
 
 - (void)setDisplayMessage:(NSString *) toUse {
@@ -1006,6 +1037,7 @@ double gestureEnd;
     [toShow setTranslatesAutoresizingMaskIntoConstraints:NO];
     toShow.text =toUse;
     [toShow setFont:[UIFont systemFontOfSize:24.0f]];
+    toShow.numberOfLines = 0;
 
     [self addScoreDisplayConstraints:toShow];
 }
