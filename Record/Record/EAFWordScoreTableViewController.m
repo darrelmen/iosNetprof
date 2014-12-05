@@ -250,7 +250,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     myCurrentTitle = wordReport;
 }
 
-- (BOOL)useJsonChapterData {
+- (void)useJsonChapterData {
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_responseData
@@ -259,44 +259,51 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if (error) {
         NSLog(@"useJsonChapterData error %@",error.description);
-        return false;
     }
-    
-    NSArray *jsonArray = [json objectForKey:@"scores"];
-   // NSLog(@"json for scores was %@",jsonArray);
-    if (jsonArray != nil) {
-        _exToScore   = [[NSMutableDictionary alloc] init];
-        _exToHistory = [[NSMutableDictionary alloc] init];
-        _exList = [[NSMutableArray alloc] init];
-        for (NSDictionary *entry in jsonArray) {
-            NSString *ex = [entry objectForKey:@"ex"];
-            if ([_exToFL objectForKey:ex] != nil) {
-                //   NSLog(@"ex key %@",ex);
-                NSString *score = [entry objectForKey:@"s"];
-                
-                //   NSLog(@"score  %@",score);
-                [_exToScore setValue:score forKey:ex];
-                
-                NSArray *jsonArrayHistory = [entry objectForKey:@"h"];
-                
-                [_exToHistory setValue:jsonArrayHistory forKey:ex];
-                [_exList addObject:ex];
+    else {        
+        NSArray *jsonArray = [json objectForKey:@"scores"];
+        // NSLog(@"json for scores was %@",jsonArray);
+        int indexOfFirst = -1;
+        if (jsonArray != nil) {
+            _exToScore   = [[NSMutableDictionary alloc] init];
+            _exToHistory = [[NSMutableDictionary alloc] init];
+            _exList = [[NSMutableArray alloc] init];
+            for (NSDictionary *entry in jsonArray) {
+                NSString *ex = [entry objectForKey:@"ex"];
+                if ([_exToFL objectForKey:ex] != nil) {
+                    //   NSLog(@"ex key %@",ex);
+                    NSString *score = [entry objectForKey:@"s"];
+                    
+                    //   NSLog(@"score  %@",score);
+                    [_exToScore setValue:score forKey:ex];
+                    
+                    NSArray *jsonArrayHistory = [entry objectForKey:@"h"];
+                    if (jsonArrayHistory.count > 0 && indexOfFirst == -1) {
+                        indexOfFirst = _exToHistory.count;
+                    }
+                    [_exToHistory setValue:jsonArrayHistory forKey:ex];
+                    [_exList addObject:ex];
+                }
             }
+            NSString *correct   = [json objectForKey:@"lastCorrect"];
+            NSString *incorrect = [json objectForKey:@"lastIncorrect"];
+            [self setTitleGivenCorrect:incorrect correct:correct];
         }
-        NSString *correct = [json objectForKey:@"lastCorrect"];
-        NSString *incorrect = [json objectForKey:@"lastIncorrect"];
-        [self setTitleGivenCorrect:incorrect correct:correct];
+        else {
+            UIViewController  *parent = [self parentViewController];
+            NSString *wordReport = @"0 of 0 Correct (0%)";
+            parent.navigationItem.title = wordReport;
+            myCurrentTitle = wordReport;
+        }
+        
+        [[self tableView] reloadData];
+        
+        // scroll to first item with history
+        if (indexOfFirst > -1) {
+            NSIndexPath *scrollIndexPath = [NSIndexPath indexPathForRow:indexOfFirst inSection:0];
+            [[self tableView] scrollToRowAtIndexPath:scrollIndexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+        }
     }
-    else {
-        UIViewController  *parent = [self parentViewController];
-        NSString *wordReport = @"0 of 0 Correct (0%)";
-        parent.navigationItem.title = wordReport;
-        myCurrentTitle = wordReport;
-    }
-
-    [[self tableView] reloadData];
-    
-    return true;
 }
 
 NSString *myCurrentTitle;
