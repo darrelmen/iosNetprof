@@ -10,7 +10,6 @@
 #import <AVFoundation/AVFoundation.h>
 #import "BButton.h"
 #import <SplunkMint-iOS/SplunkMint-iOS.h>
-//#import "EAFItemTableViewController.h"
 
 @interface EAFRecoFlashcardController : UIViewController
         <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate>
@@ -51,17 +50,13 @@
 - (IBAction)showScoresClick:(id)sender;
 
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressGesture;
-@property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *leftSwipe;
-@property (strong, nonatomic) IBOutlet UISwipeGestureRecognizer *rightSwipe;
 
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender;
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender;
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender;
 
 @property (strong) NSTimer *repeatingTimer;
-- (NSDictionary *)userInfo;
 
-//- (void)invocationMethod:(NSDate *)date;
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;
 @property (strong, nonatomic) IBOutlet UIImageView *correctFeedback;
 
@@ -78,7 +73,5 @@
 
 @property UITableViewController *itemViewController;
 @property (strong, nonatomic) IBOutlet UIPageControl *pageControl;
-
-//- (float)heightOfLabelForText:(UILabel *)label withText:(NSString *)withText;
 
 @end

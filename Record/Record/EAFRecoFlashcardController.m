@@ -497,13 +497,19 @@ BOOL preventPlayAudio = false;
 
 BButton *playingIcon;
 // find first subview and remove the icon from it
+// TODO : fix this for spacer case
 - (void)removePlayingAudioIcon {
     NSArray *subviews = [_scoreDisplayContainer subviews];
     if (subviews.count > 0) {
         UIView *first = [subviews objectAtIndex:0];
+        if (first.frame.size.height == 0 && subviews.count > 2) {
+            first = [subviews objectAtIndex:2];
+        //    NSLog(@"instead, removing playing icon from %@",first);
+        }
         for (UIView *v in [first subviews]) {
             if (v == playingIcon) {
                 [v removeFromSuperview];
+              //  NSLog(@"Removing playing icon from %@",first);
                 break;
             }
         }
@@ -805,7 +811,17 @@ double gestureEnd;
         NSArray *subviews = [_scoreDisplayContainer subviews];
         if (subviews.count > 0) {
             UIView *first = [subviews objectAtIndex:0];
+            if (first.frame.size.height == 0 && subviews.count > 2) {
+                first = [subviews objectAtIndex:2];
+               // NSLog(@"instead, adding playing icon to %@",first);
+            }
             [first addSubview:playingIcon];
+          //  NSLog(@"Adding playing icon to %@",first);
+
+        }
+        else {
+          //  NSLog(@"No subviews in %@",_scoreDisplayContainer);
+
         }
 
         if (error)
@@ -816,6 +832,9 @@ double gestureEnd;
          //   NSLog(@"volume %f",[_audioPlayer volume]);
             [_audioPlayer play];
         }
+        EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+        NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
+        [poster postEvent:[NSString stringWithFormat:@"playUserAudio"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"userScoreDisplay" widgetType:@"UIView"];
     }
 }
 
@@ -845,19 +864,10 @@ double gestureEnd;
                                    selector:@selector(stopAudio:)
                                    userInfo:nil
                                     repeats:NO];
-    
 }
-
-- (NSDictionary *)userInfo {
-    return @{ @"StartDate" : [NSDate date] };
-}
-//
-//- (void)invocationMethod:(NSDate *)date {
-//    NSLog(@"Invocation for timer started on %@", date);
-//}
 
 - (IBAction)shuffleChange:(id)sender {
-    NSLog(@"got shuffleChange");
+   // NSLog(@"got shuffleChange");
     
     BOOL value = [_shuffleSwitch isOn];
     if (value) {
@@ -934,54 +944,6 @@ double gestureEnd;
     NSLog(@"posting to %@",_url);
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
 }
-
-//-(void)postAudio2 {
-//    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
-//    //NSLog(@"talking to %@",_url);
-//    
-//    [_recoFeedbackImage startAnimating];
-//    
-//    NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
-//    
-//    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:baseurl]];
-//    
-//    [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
-//    [request setHTTPShouldHandleCookies:NO];
-//    [request setTimeoutInterval:60];
-//    [request setHTTPMethod:@"POST"];
-//    NSString *boundary = @"unique-consistent-string---BOUNDARY---BOUNDARY---BOUNDARY---";
-//    // set Content-Type in HTTP header
-//    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
-//    [request setValue:contentType forHTTPHeaderField: @"Content-Type"];
-//    // post body
-//    NSMutableData *body = [NSMutableData data];
-//    // add params (all params are strings)
-//    
-//    [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-//    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=%@\r\n\r\n", @"word"] dataUsingEncoding:NSUTF8StringEncoding]];
-//    
-//    NSString *escapedString = [[[self getCurrentJson] objectForKey:@"fl"] stringByReplacingOccurrencesOfString:@"/" withString:@" "];
-//    
-//    [body appendData:[[NSString stringWithFormat:@"%@\r\n", escapedString] dataUsingEncoding:NSUTF8StringEncoding]];
-//    [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-//    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=%@; filename=MyAudioMemo.wav\r\n", @"audio"] dataUsingEncoding:NSUTF8StringEncoding]];
-//    [body appendData:[@"Content-Type: audio/x-wav\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-//    [body appendData:postData];
-//    [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-//    [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-//    // setting the body of the post to the reqeust
-//    [request setHTTPBody:body];
-//    // set the content-length
-//    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[body length]];
-//    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-//    
-//    
-//    NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
-//    NSLog(@"posting to %@",_url);
-//    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-//    
-//    [connection start];
-//}
 
 #pragma mark NSURLConnection Delegate Methods
 
@@ -1173,6 +1135,7 @@ double gestureEnd;
     _scoreDisplayContainer.clipsToBounds = YES;
 
     UIView *leftView = nil;
+    UIView *rightView = nil;
     
     NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
                   @"Egyptian",
@@ -1182,6 +1145,45 @@ double gestureEnd;
     if ([rtl containsObject:_language]) {
         wordAndScore = [self reversedArray:wordAndScore];
     }
+    
+    UIView *spacerLeft  = [[UIView alloc] init];
+    UIView *spacerRight = [[UIView alloc] init];
+
+    spacerLeft.translatesAutoresizingMaskIntoConstraints = NO;
+    spacerRight.translatesAutoresizingMaskIntoConstraints = NO;
+   
+    [_scoreDisplayContainer addSubview:spacerLeft];
+    [_scoreDisplayContainer addSubview:spacerRight];
+
+    leftView = spacerLeft;
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                           constraintWithItem:spacerLeft
+                                           attribute:NSLayoutAttributeWidth
+                                           relatedBy:NSLayoutRelationEqual
+                                           toItem:spacerRight
+                                           attribute:NSLayoutAttributeWidth
+                                           multiplier:1.0
+                                           constant:0.0]];
+    
+    //right edge of right spacer
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                constraintWithItem:spacerRight
+                                attribute:NSLayoutAttributeRight
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:_scoreDisplayContainer
+                                attribute:NSLayoutAttributeRight
+                                multiplier:1.0
+                                constant:0.0]];
+    
+    // left edge of left spacer
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                           constraintWithItem:spacerLeft
+                                           attribute:NSLayoutAttributeLeft
+                                           relatedBy:NSLayoutRelationEqual
+                                           toItem:_scoreDisplayContainer
+                                           attribute:NSLayoutAttributeLeft
+                                           multiplier:1.0
+                                           constant:0.0]];
     
     for (NSDictionary *event in wordAndScore) {
         NSString *word = [event objectForKey:@"event"];
@@ -1193,7 +1195,7 @@ double gestureEnd;
         UIView *exampleView = [[UIView alloc] init];
         exampleView.translatesAutoresizingMaskIntoConstraints = NO;
         [_scoreDisplayContainer addSubview:exampleView];
-
+        rightView = exampleView;
         UITapGestureRecognizer *singleFingerTap =
         [[UITapGestureRecognizer alloc] initWithTarget:self
                                                 action:@selector(playAudio:)];
@@ -1235,30 +1237,19 @@ double gestureEnd;
                                                multiplier:1.0
                                                constant:0.0]];
         
-        if (leftView == nil) {
-            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                                   constraintWithItem:exampleView
-                                                   attribute:NSLayoutAttributeLeft
-                                                   relatedBy:NSLayoutRelationEqual
-                                                   toItem:_scoreDisplayContainer
-                                                   attribute:NSLayoutAttributeLeft
-                                                   multiplier:1.0
-                                                   constant:0.0]];
-        }
-        else {
-            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                                   constraintWithItem:exampleView
-                                                   attribute:NSLayoutAttributeLeft
-                                                   relatedBy:NSLayoutRelationEqual
-                                                   toItem:leftView
-                                                   attribute:NSLayoutAttributeRight
-                                                   multiplier:1.0
-                                                   constant:3.0]];
-        }
+        // left
+        [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                               constraintWithItem:exampleView
+                                               attribute:NSLayoutAttributeLeft
+                                               relatedBy:NSLayoutRelationEqual
+                                               toItem:leftView
+                                               attribute:NSLayoutAttributeRight
+                                               multiplier:1.0
+                                               constant:5.0]];
         leftView = exampleView;
         
         UILabel *wordLabel = [self getWordLabel:word score:score];
-
+        
         [exampleView addSubview:wordLabel];
         
         // top
@@ -1370,6 +1361,15 @@ double gestureEnd;
                                     multiplier:1.0
                                     constant:2.0]];
     }
+    
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                           constraintWithItem:rightView
+                                           attribute:NSLayoutAttributeRight
+                                           relatedBy:NSLayoutRelationEqual
+                                           toItem:spacerRight
+                                           attribute:NSLayoutAttributeLeft
+                                           multiplier:1.0
+                                           constant:0.0]];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
