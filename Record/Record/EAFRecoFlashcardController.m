@@ -295,7 +295,8 @@
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
     [self removePlayObserver];
-    
+    [_recoFeedbackImage stopAnimating];
+
     [_correctFeedback setHidden:true];
     [_scoreProgress     setProgress:0 ];
     
@@ -304,7 +305,7 @@
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:toUse];
     
     NSString *refAudio = [[self getCurrentJson] objectForKey:@"ref"];
-    NSLog(@"refAudio %@",refAudio);
+ //   NSLog(@"respondToSwipe - refAudio %@",refAudio);
     
     if ([_genderMaleSelector isOn]) {
         if ([_speedSelector isOn]) {
@@ -335,7 +336,7 @@
         }
     }
     
-    NSLog(@"after refAudio %@",refAudio);
+    NSLog(@"respondToSwipe after refAudio %@",refAudio);
     NSString *refPath = refAudio;
     if (refPath) {
         refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
@@ -921,7 +922,7 @@ double gestureEnd;
     
     // NSLog(@"file length %@",postLength);
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
-    //  NSLog(@"talking to %@",_url);
+   //   NSLog(@"talking to %@",baseurl);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
@@ -931,8 +932,6 @@ double gestureEnd;
     [urlRequest setTimeoutInterval:15];
 
     // add request parameters
-    
-    // old style
     [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     
@@ -958,16 +957,29 @@ double gestureEnd;
 
 #pragma mark NSURLConnection Delegate Methods
 
+NSInteger httpStatusCode;
+NSString *statusCodeDisplay;
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
     // A response has been received, this is where we initialize the instance var you created
     // so that we can append data to it in the didReceiveData method
     // Furthermore, this method is called each time there is a redirect so reinitializing it
     // also serves to clear it
+   
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse *resp = (NSHTTPURLResponse *)response;
+        httpStatusCode = resp.statusCode;
+        statusCodeDisplay = [NSHTTPURLResponse localizedStringForStatusCode:httpStatusCode];
+        if (httpStatusCode >= 400) {
+            NSLog(@"didReceiveResponse error - %@",response);
+        }
+    }
     _responseData = [[NSMutableData alloc] init];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
     // Append the new data to the instance variable you declared
+ //   NSLog(@"didReceiveData ");
+
     [_responseData appendData:data];
 }
 
@@ -1037,7 +1049,8 @@ double gestureEnd;
     [toShow setTranslatesAutoresizingMaskIntoConstraints:NO];
     toShow.text =toUse;
     [toShow setFont:[UIFont systemFontOfSize:24.0f]];
-    toShow.numberOfLines = 0;
+   // toShow.numberOfLines = 0;
+    toShow.adjustsFontSizeToFitWidth = YES;
 
     [self addScoreDisplayConstraints:toShow];
 }
@@ -1063,22 +1076,49 @@ double gestureEnd;
     
     [_recoFeedbackImage stopAnimating];
   
+    if (httpStatusCode != 200) {NSLog(@"got code %ld %@",(long)httpStatusCode, statusCodeDisplay);}
+ 
+    if (httpStatusCode == 408) {
+        [self setDisplayMessage:@"Please try again."];
+        return;
+    }
+    else if (httpStatusCode >= 400 && httpStatusCode < 500) {
+        [self setDisplayMessage:[NSString stringWithFormat:@"Network connection problem, please try again (%ld).",httpStatusCode]];
+        return;
+    }
+    else if (httpStatusCode >= 500) {
+        [self setDisplayMessage:[NSString stringWithFormat:@"Server error : %@",statusCodeDisplay]];
+        return;
+    }
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_responseData
                           options:NSJSONReadingMutableContainers
                           error:&error];
     
+    if (error != nil) {
+        NSLog(@"connectionDidFinishLoading - got error %@",error);
+    }
+    
     NSNumber *overallScore = [json objectForKey:@"score"];
     BOOL correct = [[json objectForKey:@"isCorrect"] boolValue];
+    BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
     //  NSLog(@"score was %@",overallScore);
     //  NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
     //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *valid = [json objectForKey:@"valid"];
-    NSLog(@"validity was %@",valid);
-
+    NSString *exid = [json objectForKey:@"exid"];
+    NSString *current = [[self getCurrentJson] objectForKey:@"id"];
+    if (![exid isEqualToString:current]) {
+        NSLog(@"got %@ vs expecting %@",exid,current );
+        return;
+    }
+    if (![valid isEqualToString:@"OK"]) {
+        NSLog(@"validity was %@",valid);
+    }
+    
     if ([valid containsString:@"OK"]) {
-        if (correct) {
+        if (saidWord) {
             [self updateScoreDisplay:json];
         }
         else {
@@ -1101,12 +1141,7 @@ double gestureEnd;
     [_scoreProgress setProgress:[overallScore floatValue]];
     [_scoreProgress setProgressTintColor:[self getColor2:[overallScore floatValue]]];
     
-    if (correct) {
-        [_correctFeedback setImage:[UIImage imageNamed:@"checkmark32.png"]];
-    }
-    else {
-        [_correctFeedback setImage:[UIImage imageNamed:@"redx32.png"]];
-    }
+    [_correctFeedback setImage:[UIImage imageNamed:correct ? @"checkmark32" : @"redx32"]];
     [_correctFeedback setHidden:false];
 }
 
@@ -1469,11 +1504,7 @@ double gestureEnd;
     
     EAFPhoneScoreTableViewController *phoneReport = [[tabBarController viewControllers] objectAtIndex:1];
     phoneReport.tabBarItem.image = [[UIImage imageNamed:@"sounds.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
-//    NSLog(@"setting language to %@",_language);
-//    NSLog(@"setting chapterName to %@",_chapterTitle);
-//    NSLog(@"setting chapterSelection to %@",_currentChapter);
-//    
+   
     phoneReport.language = _language;
     phoneReport.chapterName = _chapterTitle;
     phoneReport.chapterSelection = _currentChapter;
