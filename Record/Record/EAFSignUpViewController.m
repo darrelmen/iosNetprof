@@ -26,7 +26,9 @@
 
     _languages = [NSArray arrayWithObjects: @"Dari", @"English",
                   //@"Egyptian",
-                  @"Farsi", @"Korean", @"CM", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
+                  @"Farsi", @"Korean", @"CM",
+                  @"Levantine",
+                  @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
   
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
     
@@ -45,6 +47,7 @@
                                name:UITextFieldTextDidChangeNotification
                              object:_email];
     
+  //  NSLog(@"got user %@ %ld",_userFromLogin, _languageIndex);
     _username.text = _userFromLogin;
     _password.text = _passFromLogin;
     [_languagePicker selectRow:_languageIndex inComponent:0 animated:false];
@@ -59,11 +62,12 @@
     }
     
     NSString *rememberedUserID = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenUserID"];
-    if (rememberedUserID != nil) {
+    if (_userFromLogin == nil && rememberedUserID != nil) {
         _username.text = rememberedUserID;
     }
+    
     NSString *rememberedPass = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenPassword"];
-    if (rememberedPass != nil) {
+    if (_passFromLogin == nil && rememberedPass != nil) {
         _password.text = rememberedPass;
     }
     
@@ -90,6 +94,31 @@
         //  NSLog( @"Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
         [self onClick:nil];
     }
+}
+
+- (void)addUser:(NSString *)chosenLanguage username:(NSString *)username password:(NSString *)password email:(NSString *)email {
+    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet",chosenLanguage
+                         ];
+    
+    NSURL *url = [NSURL URLWithString:baseurl];
+    //NSLog(@"url %@",url);
+    
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+    
+    [urlRequest setHTTPMethod: @"POST"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded"
+      forHTTPHeaderField:@"Content-Type"];
+    
+    [urlRequest setValue:username forHTTPHeaderField:@"user"];
+    [urlRequest setValue:[[self MD5:password] uppercaseString] forHTTPHeaderField:@"passwordH"];
+    [urlRequest setValue:[[self MD5:email] uppercaseString]    forHTTPHeaderField:@"emailH"];
+    [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
+    NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
+    [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
+    
+    [urlRequest setValue:@"addUser"    forHTTPHeaderField:@"request"];
+    [[NSURLConnection connectionWithRequest:urlRequest delegate:self] start];
 }
 
 - (IBAction)onClick:(id)sender {
@@ -127,34 +156,13 @@
         _emailFeedback.textColor = [UIColor blackColor];
 
         NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        NSString *username = _username.text;
+        NSString *password = _password.text;
+        NSString *email = _email.text;
         
-        NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet",chosenLanguage
-                             ];
-
-        NSURL *url = [NSURL URLWithString:baseurl];
+        [self addUser:chosenLanguage username:username password:password email:email];
         
-        //NSLog(@"url %@",url);
-
-        NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-        [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-        
-        [urlRequest setHTTPMethod: @"POST"];
-        [urlRequest setValue:@"application/x-www-form-urlencoded"
-          forHTTPHeaderField:@"Content-Type"];
-        
-        [urlRequest setValue:_username.text forHTTPHeaderField:@"user"];
-        [urlRequest setValue:[[self MD5:_password.text] uppercaseString] forHTTPHeaderField:@"passwordH"];
-        [urlRequest setValue:[[self MD5:_email.text] uppercaseString]    forHTTPHeaderField:@"emailH"];
-        [urlRequest setValue:@"addUser"    forHTTPHeaderField:@"request"];
-        [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
-        NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
-        
-        [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
-        
-        NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-        
-        [connection start];
         [_activityIndicator startAnimating];
         
         EAFEventPoster *poster = [[EAFEventPoster alloc] init];
@@ -276,7 +284,6 @@
     // Return nil to indicate not necessary to store a cached response for this connection
     return nil;
 }
-
 
 - (BOOL)useJsonChapterData {
     NSError * error;

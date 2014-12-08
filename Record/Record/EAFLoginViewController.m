@@ -30,7 +30,9 @@
 
     _langauges = [NSArray arrayWithObjects: @"Dari", @"English",
                   //@"Egyptian",
-                  @"Farsi", @"Korean", @"CM", @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
+                  @"Farsi", @"Korean", @"CM",
+                  @"Levantine",
+                  @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
   
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
     
@@ -57,11 +59,11 @@
         _password.text = rememberedPass;
     }
     
-    NSString *rememberedLanguage = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
-    if (rememberedLanguage != nil) {
-      //  _password.text = rememberedLanguage;
-        // TODO : set picker with chosen language
-    }
+//    NSString *rememberedLanguage = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
+//    if (rememberedLanguage != nil) {
+//      //  _password.text = rememberedLanguage;
+//        // TODO : set picker with chosen language
+//    }
     
     [_forgotUsername initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
                              color:[UIColor colorWithWhite:1.0f alpha:0.0f]
@@ -138,7 +140,8 @@
         [urlRequest setHTTPMethod: @"GET"];
         [urlRequest setValue:@"application/x-www-form-urlencoded"
           forHTTPHeaderField:@"Content-Type"];
-        
+        [urlRequest setTimeoutInterval:15];
+
         NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
         
@@ -208,11 +211,22 @@
 
 #pragma mark NSURLConnection Delegate Methods
 
+NSInteger httpStatusCode;
+NSString *statusCodeDisplay;
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
     // A response has been received, this is where we initialize the instance var you created
     // so that we can append data to it in the didReceiveData method
     // Furthermore, this method is called each time there is a redirect so reinitializing it
     // also serves to clear it
+    
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+        NSHTTPURLResponse *resp = (NSHTTPURLResponse *)response;
+        httpStatusCode = resp.statusCode;
+        statusCodeDisplay = [NSHTTPURLResponse localizedStringForStatusCode:httpStatusCode];
+        if (httpStatusCode >= 400) {
+            NSLog(@"didReceiveResponse error - %@",response);
+        }
+    }
     
     _responseData = [[NSMutableData alloc] init];
 }
@@ -230,7 +244,6 @@
     return nil;
 }
 
-
 - (BOOL)useJsonChapterData {
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
@@ -246,21 +259,38 @@
     [_activityIndicator stopAnimating];
     
     NSString *userIDExisting = [json objectForKey:@"userid"];
-    BOOL passCorrect = [[json objectForKey:@"passwordCorrect"] boolValue];
+    NSString *passCorrectValue = [json objectForKey:@"passwordCorrect"];
+    BOOL passCorrect = passCorrectValue == nil || [passCorrectValue boolValue];
     NSString *resetToken = [json objectForKey:@"token"];
     
+    NSString *existing = [json objectForKey:@"ExistingUserName"];
+    
+    NSLog(@"useJsonChapterData existing %@",existing);
+    NSLog(@"useJsonChapterData resetToken %@",resetToken);
+    NSLog(@"useJsonChapterData userIDExisting %@",userIDExisting);
+    NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
+
     _logIn.enabled = true;
     _languagePicker.userInteractionEnabled = true;
+    
     if ([userIDExisting integerValue] == -1) {
-        // no user with that name
-        _passwordFeedback.text = @"Username or password incorrect";
-        _signUpFeedback.text = @"Have you signed up?";
-
+        NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
+        if (rememberedEmail != nil && existing == nil) {
+            NSLog(@"useJsonChapterData OK, let's sign up!");
+            NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+            [self addUser:chosenLanguage username:_username.text password: _password.text email:rememberedEmail];
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+            [_activityIndicator startAnimating];
+        }
+        else {
+            // no user with that name
+            _passwordFeedback.text = @"Username or password incorrect";
+            _signUpFeedback.text = @"Have you signed up?";
+        }
     }
     else if (resetToken.length > 0) {
         _token = resetToken;
         [self performSegueWithIdentifier:@"goToSetPassword" sender:self];
-
     } else if (passCorrect) {
         // OK store info and segue
         NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];
@@ -279,6 +309,31 @@
     return true;
 }
 
+- (void)addUser:(NSString *)chosenLanguage username:(NSString *)username password:(NSString *)password email:(NSString *)email {
+    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet",chosenLanguage
+                         ];
+    
+    NSURL *url = [NSURL URLWithString:baseurl];
+    //NSLog(@"url %@",url);
+    
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+    
+    [urlRequest setHTTPMethod: @"POST"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded"
+      forHTTPHeaderField:@"Content-Type"];
+    
+    [urlRequest setValue:username forHTTPHeaderField:@"user"];
+    [urlRequest setValue:[[self MD5:password] uppercaseString] forHTTPHeaderField:@"passwordH"];
+    [urlRequest setValue:[[self MD5:email] uppercaseString]    forHTTPHeaderField:@"emailH"];
+    [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
+    NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
+    [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
+    
+    [urlRequest setValue:@"addUser"    forHTTPHeaderField:@"request"];
+    [[NSURLConnection connectionWithRequest:urlRequest delegate:self] start];
+}
+
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
     
@@ -292,6 +347,7 @@
     _languagePicker.userInteractionEnabled = true;
     NSLog(@"login call to server failed with %@",error);
     [_activityIndicator stopAnimating];
+    _logIn.enabled = true;
 
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
@@ -316,9 +372,7 @@
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
 //    NSLog(@"textFieldShouldBeginEditing text field start on %@",textField);
-
     _currentResponder = textField;
-
     return YES;
 }
 
@@ -377,10 +431,10 @@
         
         long selection = [_languagePicker selectedRowInComponent:0];
         
-       // NSString *chosenLanguage = [_langauges objectAtIndex:selection];
+        NSString *chosenLanguage = [_langauges objectAtIndex:selection];
         //[signUp.languagePicker selectRow:selection inComponent:0 animated:false];
         
-       // NSLog(@"language %@ %@ %@",chosenLanguage,_username.text,_password.text);
+        NSLog(@"language %@ %@ %@",chosenLanguage,_username.text,_password.text);
         
         signUp.userFromLogin = _username.text;
         signUp.passFromLogin = _password.text;

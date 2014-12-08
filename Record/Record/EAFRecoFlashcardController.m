@@ -1206,7 +1206,8 @@ NSString *statusCodeDisplay;
     
     NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
                   @"Egyptian",
-                  @"Farsi",
+                    @"Farsi",
+                    @"Levantine",
                     @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
     
     if ([rtl containsObject:_language]) {
