@@ -1445,7 +1445,7 @@ NSString *statusCodeDisplay;
     [_recoFeedbackImage stopAnimating];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
-    NSLog(@"got %@",error);
+   // NSLog(@"got %@",error);
     if ([[error localizedDescription] containsString:@"timed"]) {
         [self setDisplayMessage:@"Network connection problem, please try again."];
     }
