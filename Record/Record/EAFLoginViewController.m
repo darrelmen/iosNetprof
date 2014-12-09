@@ -265,10 +265,10 @@ NSString *statusCodeDisplay;
     
     NSString *existing = [json objectForKey:@"ExistingUserName"];
     
-    NSLog(@"useJsonChapterData existing %@",existing);
-    NSLog(@"useJsonChapterData resetToken %@",resetToken);
-    NSLog(@"useJsonChapterData userIDExisting %@",userIDExisting);
-    NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
+//    NSLog(@"useJsonChapterData existing %@",existing);
+//    NSLog(@"useJsonChapterData resetToken %@",resetToken);
+//    NSLog(@"useJsonChapterData userIDExisting %@",userIDExisting);
+//    NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
 
     _logIn.enabled = true;
     _languagePicker.userInteractionEnabled = true;
@@ -276,7 +276,7 @@ NSString *statusCodeDisplay;
     if ([userIDExisting integerValue] == -1) {
         NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
         if (rememberedEmail != nil && existing == nil) {
-            NSLog(@"useJsonChapterData OK, let's sign up!");
+//            NSLog(@"useJsonChapterData OK, let's sign up!");
             NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
             [self addUser:chosenLanguage username:_username.text password: _password.text email:rememberedEmail];
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];

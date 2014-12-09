@@ -55,12 +55,12 @@
     BOOL found = false;
     for (UIViewController *controller in self.navigationController.viewControllers) {
      //   NSLog(@"EAFChapterTableViewController controller %@",controller);
-        NSString *name = [NSString stringWithFormat:@"%@",controller];
+       // NSString *name = [NSString stringWithFormat:@"%@",controller];
         BOOL isSignUp = [controller isKindOfClass:[EAFSignUpViewController class]];
-        if ([name containsString:@"SignUp"]) {
-            if (isSignUp) {
-                NSLog(@"---> Name %@",name);
-            }
+        if (isSignUp) {
+//            if (isSignUp) {
+//                NSLog(@"---> Name %@",name);
+//            }
             
             found = TRUE;
             [navigationArray removeObject:controller];

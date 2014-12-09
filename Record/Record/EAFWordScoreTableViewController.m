@@ -21,7 +21,7 @@
 {
     [super viewDidLoad];
     
-    NSLog(@"got word score table view did load");
+    //NSLog(@"got word score table view did load");
     
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
@@ -37,7 +37,7 @@
    // NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@", _language, _user, _chapterName, _chapterSelection];
     
-    NSLog(@"url %@",baseurl);
+ //   NSLog(@"url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -161,6 +161,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         
         cell.fl.attributedText = result;
+        cell.english.text = [_exToEnglish objectForKey:exid];
     }
     return cell;
 }
