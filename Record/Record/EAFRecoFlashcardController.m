@@ -17,9 +17,14 @@
 #import "NSString+FontAwesome.h"
 #import "BButton.h"
 #import "EAFItemTableViewController.h"
+#import "EAFContextPopupViewController.h"
 #import "EAFEventPoster.h"
+#import "MZFormSheetController.h"
 
 @interface EAFRecoFlashcardController ()
+
+@property (nonatomic, strong) UIPopoverController *detailViewPopover;
+//@property (nonatomic, strong) EAFContextPopupViewController *popup;
 
 @end
 
@@ -151,7 +156,70 @@
     _pageControl.transform = CGAffineTransformMakeRotation(M_PI_2);
     
     _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
-    NSLog(@"progress is %f", _progressThroughItems.progress);
+  //  NSLog(@"progress is %f", _progressThroughItems.progress);
+  
+//    _contextButton.image = nil;
+//    [_contextButton setDefaultIconIdentifier:@"fa-quote-left"];
+//
+//    UITapGestureRecognizer *singleFingerTap =
+//    [[UITapGestureRecognizer alloc] initWithTarget:self
+//                                            action:@selector(contextTap:)];
+//    [_contextButton addGestureRecognizer:singleFingerTap];
+//
+    
+    [_contextButton initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
+                    //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
+                            color:[UIColor blueColor]
+                             style:BButtonStyleBootstrapV3
+                              icon:FAQuoteLeft
+                          fontSize:20.0f];
+    
+//    self.popup = [self.storyboard instantiateViewControllerWithIdentifier:@"ContextPopover"];
+//    
+//    // Setup the popover for use in the detail view.
+//    self.detailViewPopover = [[UIPopoverController alloc] initWithContentViewController:self.popup];
+//    self.detailViewPopover.popoverContentSize = CGSizeMake(320., 320.);
+//    self.detailViewPopover.delegate = self;
+    
+    
+//    [_contextButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    
+ //   _contextButton = [BButton awesomeButtonWithOnlyIcon:FAQuoteLeft color:[UIColor blueColor] style:BButtonStyleBootstrapV3];
+ //   _contextButton = [BButton awesomeButtonWithOnlyIcon:FAQuoteLeft type:BButtonTypeDefault style:BButtonStyleBootstrapV2];
+    NSString *ct = [[self getCurrentJson] objectForKey:@"ct"];
+    _contextButton.hidden = (ct == nil || ct.length == 0);
+    
+    //[EAFRecoFlashcardController setPresentationStyleForSelfController:self presentingController:self];
+}
+
+- (IBAction)contextClick:(id)sender {
+    NSLog(@"got context tap");
+    
+    UIButton *tappedButton = (UIButton *)sender;
+    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
+
+    EAFContextPopupViewController *popup = [self.storyboard instantiateViewControllerWithIdentifier:@"ContextPopover"];
+
+    NSLog(@"Item is %@",jsonObject);
+    NSString *ct = [jsonObject objectForKey:@"ct"];
+    NSLog(@"1 Popup ct is %@ %@",ct,[ct class]);
+
+    popup.contextFL.text = ct;
+    
+    NSLog(@"2 Popup ct is %@",[jsonObject objectForKey:@"ct"]);
+    
+    [popup.contextFL setText:ct];
+    NSLog(@"3 Popup text is %@",popup.contextFL.text);
+    
+    // Setup the popover for use in the detail view.
+    self.detailViewPopover = [[UIPopoverController alloc] initWithContentViewController:popup];
+    self.detailViewPopover.popoverContentSize = CGSizeMake(320., 320.);
+    self.detailViewPopover.delegate = self;
+    
+
+    // Present the popover from the button that was tapped in the detail view.
+    [self.detailViewPopover presentPopoverFromRect:tappedButton.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+
 }
 
 - (IBAction)showScoresClick:(id)sender {
@@ -272,8 +340,6 @@
     [_foreignLang setText:exercise];
     [_english setText:englishPhrases];
     
-//    [_foreignLang baseWritingDirectionForPosition];
-    
     _foreignLang.adjustsFontSizeToFitWidth=YES;
     _english.adjustsFontSizeToFitWidth=YES;
 }
@@ -300,22 +366,20 @@
     [_correctFeedback setHidden:true];
     [_scoreProgress     setProgress:0 ];
     
-    unsigned long toUse = [self getItemIndex];
+    NSDictionary *jsonObject =[self getCurrentJson] ;
     
-    NSDictionary *jsonObject =[_jsonItems objectAtIndex:toUse];
-    
-    NSString *refAudio = [[self getCurrentJson] objectForKey:@"ref"];
+    NSString *refAudio = [jsonObject objectForKey:@"ref"];
  //   NSLog(@"respondToSwipe - refAudio %@",refAudio);
     
     if ([_genderMaleSelector isOn]) {
         if ([_speedSelector isOn]) {
-            NSString *test =  [[self getCurrentJson] objectForKey:@"msr"];
+            NSString *test =  [jsonObject objectForKey:@"msr"];
             if (test != NULL && ![test isEqualToString:@"NO"]) {
                 refAudio = test;
             }
         }
         else {
-            NSString *test =  [[self getCurrentJson] objectForKey:@"mrr"];
+            NSString *test =  [jsonObject objectForKey:@"mrr"];
             if (test != NULL && ![test isEqualToString:@"NO"]) {
                 refAudio = test;
             }
@@ -323,13 +387,13 @@
     }
     else {
         if ([_speedSelector isOn]) {
-            NSString *test =  [[self getCurrentJson] objectForKey:@"fsr"];
+            NSString *test =  [jsonObject objectForKey:@"fsr"];
             if (test != NULL && ![test isEqualToString:@"NO"]) {
                 refAudio = test;
             }
         }
         else {
-            NSString *test =  [[self getCurrentJson] objectForKey:@"frr"];
+            NSString *test =  [jsonObject objectForKey:@"frr"];
             if (test != NULL && ![test isEqualToString:@"NO"]) {
                 refAudio = test;
             }
@@ -633,8 +697,6 @@ NSString *flashcardPlayerStatusContext;
 {
     NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
     
- //   NSLog(@"highlight %@",result);
-    
     NSRange range= NSMakeRange(0, [result length]);
     [result addAttribute:NSBackgroundColorAttributeName
                    value:[UIColor yellowColor]
@@ -651,10 +713,11 @@ NSString *flashcardPlayerStatusContext;
     
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
-            NSLog(@" audio ready so playing...");
+            NSLog(@"observeValueForKeyPath audio ready so playing...");
             
             [self highlightFLWhilePlaying];
-            
+            NSLog(@"observeValueForKeyPath highlight");
+
             [_player play];
             
             AVPlayerItem *currentItem = [_player currentItem];
@@ -1472,6 +1535,59 @@ NSString *statusCodeDisplay;
     return [UIColor colorWithRed:red green:green blue:blue alpha:1];
 }
 
+#pragma mark - Popover controller delegates
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+    // If a popover is dismissed, set the last button tapped to nil.
+   // self.lastTappedButton = nil;
+    
+    NSLog(@"Got dismiss popover");
+}
+
+
+#pragma mark - Managing popovers
+
+- (IBAction)showPopover:(id)sender
+{
+    // Set the sender to a UIButton.
+//    UIButton *tappedButton = (UIButton *)sender;
+    
+    // Present the popover from the button that was tapped in the detail view.
+//    [self.detailViewPopover presentPopoverFromRect:tappedButton.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    [[MZFormSheetController appearance] setCornerRadius:20.0];
+   // [[MZFormSheetBackgroundWindow appearance] setBackgroundColor:[UIColor clearColor]];
+  //  [[MZFormSheetBackgroundWindow appearance] setBackgroundBlurEffect:YES];
+    
+    EAFContextPopupViewController *popupController = [self.storyboard instantiateViewControllerWithIdentifier:@"ContextPopover"];
+   // UINavigationController *container = [self.storyboard instantiateViewControllerWithIdentifier:@"ContextContainer"];
+    //EAFContextPopupViewController *popupController = container.visibleViewController;
+    
+    popupController.url = _url;
+    popupController.item = [[self getCurrentJson] objectForKey:@"fl"];
+    popupController.fl = [[self getCurrentJson] objectForKey:@"ct"];
+    popupController.en = [[self getCurrentJson] objectForKey:@"ctr"];
+    popupController.mref  = [[self getCurrentJson] objectForKey:@"ctmref"];
+    if (popupController.mref == nil) {
+        popupController.mref  = [[self getCurrentJson] objectForKey:@"ctref"];
+    }
+    popupController.fref  = [[self getCurrentJson] objectForKey:@"ctfref"];
+    
+    MZFormSheetController *formSheet = [[MZFormSheetController alloc] initWithViewController:popupController];
+    formSheet.transitionStyle = MZFormSheetTransitionStyleSlideFromTop;
+    formSheet.shouldDismissOnBackgroundViewTap = YES;
+    
+    [formSheet presentAnimated:YES completionHandler:^(UIViewController *presentedFSViewController) {
+        
+    }];
+    
+    formSheet.didTapOnBackgroundViewCompletionHandler = ^(CGPoint location)
+    {
+        
+    };   
+}
+
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -1479,36 +1595,56 @@ NSString *statusCodeDisplay;
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-  //  NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
-    EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
+    //  NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
     
-    EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
-    wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    wordReport.language = _language;
-    wordReport.chapterName = _chapterTitle;
-    wordReport.chapterSelection = _currentChapter;
-    
-    NSMutableDictionary *exToFL = [[NSMutableDictionary alloc] init];
-    NSMutableDictionary *exToEnglish = [[NSMutableDictionary alloc] init];
-    
-    for (NSDictionary *jsonObject in _jsonItems) {
-        NSString *id = [jsonObject objectForKey:@"id"];
-        NSString *exercise = [jsonObject objectForKey:@"fl"];
-        NSString *englishPhrases = [jsonObject objectForKey:@"en"];
-        [exToFL setValue:exercise forKey:id];
-        [exToEnglish setValue:englishPhrases forKey:id];
+    if ([segue.identifier isEqualToString:@"goToPopover"]) {
+      //   NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
+        EAFContextPopupViewController   *popupController = [segue destinationViewController];
+      //  popupController.contextFL.text = @"Bueller!";
+        
+        
+        
+       // NSLog(@"here %@",popupController.contextFL.text);
+      //  [self setModalPresentationStyle:UIModalPresentationCurrentContext];
+        popupController.fl = [[self getCurrentJson] objectForKey:@"ct"];
+        popupController.en = [[self getCurrentJson] objectForKey:@"ctr"];
+        popupController.mref  = [[self getCurrentJson] objectForKey:@"ctmref"];
+        if (popupController.mref == nil) {
+            popupController.mref  = [[self getCurrentJson] objectForKey:@"ctref"];
+        }
+        popupController.fref  = [[self getCurrentJson] objectForKey:@"ctfref"];
     }
-    
-   // NSLog(@"setting exToFl to %lu",(unsigned long)exToFL.count);
-    wordReport.exToFL = exToFL;
-    wordReport.exToEnglish = exToEnglish;   
-    
-    EAFPhoneScoreTableViewController *phoneReport = [[tabBarController viewControllers] objectAtIndex:1];
-    phoneReport.tabBarItem.image = [[UIImage imageNamed:@"sounds.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-   
-    phoneReport.language = _language;
-    phoneReport.chapterName = _chapterTitle;
-    phoneReport.chapterSelection = _currentChapter;
-    phoneReport.url = _url;
+    else {
+        EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
+        
+        EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
+        wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        wordReport.language = _language;
+        wordReport.chapterName = _chapterTitle;
+        wordReport.chapterSelection = _currentChapter;
+        
+        NSMutableDictionary *exToFL = [[NSMutableDictionary alloc] init];
+        NSMutableDictionary *exToEnglish = [[NSMutableDictionary alloc] init];
+        
+        for (NSDictionary *jsonObject in _jsonItems) {
+            NSString *id = [jsonObject objectForKey:@"id"];
+            NSString *exercise = [jsonObject objectForKey:@"fl"];
+            NSString *englishPhrases = [jsonObject objectForKey:@"en"];
+            [exToFL setValue:exercise forKey:id];
+            [exToEnglish setValue:englishPhrases forKey:id];
+        }
+        
+        // NSLog(@"setting exToFl to %lu",(unsigned long)exToFL.count);
+        wordReport.exToFL = exToFL;
+        wordReport.exToEnglish = exToEnglish;
+        
+        EAFPhoneScoreTableViewController *phoneReport = [[tabBarController viewControllers] objectAtIndex:1];
+        phoneReport.tabBarItem.image = [[UIImage imageNamed:@"sounds.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        
+        phoneReport.language = _language;
+        phoneReport.chapterName = _chapterTitle;
+        phoneReport.chapterSelection = _currentChapter;
+        phoneReport.url = _url;
+    }
 }
 @end

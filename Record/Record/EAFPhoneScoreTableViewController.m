@@ -26,6 +26,7 @@
         
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
+  
     playingIcon = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
     playingIcon.image = nil;
     [playingIcon setDefaultIconIdentifier:@"fa-volume-up"];

@@ -135,24 +135,12 @@
     if ([validEmail boolValue]) {
         // force user to enter in userid and password again
         [SSKeychain deletePasswordForService:@"mitll.proFeedback.device" account:@"userid"];
-
-  //      [self performSegueWithIdentifier:@"goBackToLogin" sender:self];
-        
         [self.navigationController popToRootViewControllerAnimated:YES];
     }
     else {
         _passwordFeedback.text = @"Error setting new password.";
-               _passwordFeedback.textColor = [UIColor redColor];
+        _passwordFeedback.textColor = [UIColor redColor];
     }
-    //
-//    if ([validEmail isEqualToString:@"PASSWORD_EMAIL_SENT"]) {
-//        _confirmPasswordFeedback.text = @"Please check your email";
-//        _confirmPasswordFeedback.textColor = [UIColor blackColor];
-//    }
-//    else {
-//        _confirmPasswordFeedback.text = @"Unknown email address for user.";
-//        _confirmPasswordFeedback.textColor = [UIColor redColor];
-//    }
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {

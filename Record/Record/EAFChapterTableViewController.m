@@ -38,7 +38,7 @@
 
    // NSString *newTitle = [NSString stringWithFormat:@"%@ %@",_language];
     [self setTitle:_language];
-    NSLog(@"EAFChapterTableViewController viewDidLoad lang %@ %@ back = '%@'", _language, [self title], self.navigationItem.backBarButtonItem.title);
+   // NSLog(@"EAFChapterTableViewController viewDidLoad lang %@ %@ back = '%@'", _language, [self title], self.navigationItem.backBarButtonItem.title);
     
     if (_jsonContentArray == nil) {
         [self loadInitialData];
@@ -54,21 +54,11 @@
     
     BOOL found = false;
     for (UIViewController *controller in self.navigationController.viewControllers) {
-     //   NSLog(@"EAFChapterTableViewController controller %@",controller);
-       // NSString *name = [NSString stringWithFormat:@"%@",controller];
         BOOL isSignUp = [controller isKindOfClass:[EAFSignUpViewController class]];
         if (isSignUp) {
-//            if (isSignUp) {
-//                NSLog(@"---> Name %@",name);
-//            }
-            
             found = TRUE;
             [navigationArray removeObject:controller];
         }
-      //  else {
-       //     NSLog(@"Name %@",name);
-         //   navigationArray arrayByAddingObject
-      //  }
     }
     if (found) {
         self.navigationController.viewControllers = navigationArray;
@@ -132,6 +122,8 @@ UIAlertView *loadingContentAlert;
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *fileName = [NSString stringWithFormat:@"%@_chapters.json",_language];
     NSString *appFile = [documentsDirectory stringByAppendingPathComponent:fileName];
+    
+    NSLog(@"Writing json data to file %@",appFile);
     [toWrite writeToFile:appFile atomically:YES];
 }
 
@@ -449,6 +441,11 @@ NSArray *currentItems;
             }
             else {
 //                NSLog(@"items is %@",items);
+                
+                
+                // TODO : ask for history here!
+                // when returns, go ahead and do segue
+                
                 _currentChapter = name;
                 currentItems = items;
                 [self performSegueWithIdentifier:@"ItemViewController" sender:self];

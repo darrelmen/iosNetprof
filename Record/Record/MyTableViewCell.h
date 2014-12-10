@@ -12,7 +12,7 @@
 @interface MyTableViewCell : UITableViewCell
 
 @property (nonatomic, weak) IBOutlet UILabel *fl;
-//@property (nonatomic, weak) IBOutlet UILabel *english;
+@property (nonatomic, weak) IBOutlet UILabel *english;
 @property (nonatomic, weak) IBOutlet UIView *first;
 @property (nonatomic, weak) IBOutlet UIView *second;
 @property (nonatomic, weak) IBOutlet UIView *third;

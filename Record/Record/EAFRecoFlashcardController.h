@@ -12,7 +12,7 @@
 #import <SplunkMint-iOS/SplunkMint-iOS.h>
 
 @interface EAFRecoFlashcardController : UIViewController
-        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate>
+        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate,UIPopoverControllerDelegate>
 
 @property (strong, nonatomic) IBOutlet UIView *cardBackground;
 @property (strong, nonatomic) IBOutlet UIView *recordButtonContainer;
@@ -71,6 +71,7 @@
 - (IBAction)speedSelection:(id)sender;
 - (IBAction)audioOnSelection:(id)sender;
 - (void)respondToSwipe;
+@property (strong, nonatomic) IBOutlet BButton *contextButton;
 
 @property UITableViewController *itemViewController;
 @property (strong, nonatomic) IBOutlet UIPageControl *pageControl;
