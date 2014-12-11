@@ -456,7 +456,7 @@
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Say the word, see your score" id="WLw-cB-ejT">
-                        <barButtonItem key="backBarButtonItem" title="Words" id="zRY-DR-Wv1"/>
+                        <barButtonItem key="backBarButtonItem" title="Vocab Item" id="zRY-DR-Wv1"/>
                     </navigationItem>
                     <connections>
                         <outlet property="audioOnSelector" destination="7cj-Bu-gyQ" id="3z2-As-bI9"/>
@@ -513,33 +513,6 @@
                 </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="3627" y="-114"/>
-        </scene>
-        <!--Root View Controller-->
-        <scene sceneID="AcI-Rz-Gf5">
-            <objects>
-                <tableViewController id="7Mc-gg-WPw" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Mbo-ob-Icw">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="N6J-7V-L1R">
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="N6J-7V-L1R" id="1Sl-ML-d0f">
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="7Mc-gg-WPw" id="aq6-J1-Cgc"/>
-                            <outlet property="delegate" destination="7Mc-gg-WPw" id="qhR-6l-6mi"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" title="Root View Controller" id="TWN-7l-AQS"/>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="YQ2-3x-hsb" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="4450" y="-870"/>
         </scene>
         <!--In Context-->
         <scene sceneID="YzQ-rN-OlP">
@@ -728,6 +701,9 @@
                     </tableView>
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <tabBarItem key="tabBarItem" title="Sounds" id="JKB-lb-zml"/>
+                    <navigationItem key="navigationItem" title="Sounds" id="y3c-C1-sII">
+                        <barButtonItem key="backBarButtonItem" title="Back to Items" id="D0P-JO-Hqg"/>
+                    </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9ca-Yq-0fn" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tapGestureRecognizer cancelsTouchesInView="NO" id="Lnc-Ji-4eA">
@@ -852,7 +828,7 @@
                         </prototypes>
                     </tableView>
                     <extendedEdge key="edgesForExtendedLayout"/>
-                    <tabBarItem key="tabBarItem" title="Words" id="YRI-VJ-lXY"/>
+                    <tabBarItem key="tabBarItem" title="Correct/Incorrect" id="YRI-VJ-lXY"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KY7-eJ-CCF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -863,8 +839,8 @@
             <objects>
                 <tabBarController storyboardIdentifier="wordAndPhoneReport" title="Word and Sound Scores" id="v6I-8h-4xT" customClass="EAFScoreReportTabBarController" sceneMemberID="viewController">
                     <extendedEdge key="edgesForExtendedLayout"/>
-                    <navigationItem key="navigationItem" id="BRr-Z5-680">
-                        <barButtonItem key="backBarButtonItem" title="Word" id="Tj2-x3-ca0"/>
+                    <navigationItem key="navigationItem" title="Scores" id="BRr-Z5-680">
+                        <barButtonItem key="backBarButtonItem" title="Item" id="Tj2-x3-ca0"/>
                     </navigationItem>
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="paj-aZ-7Cw">
@@ -1113,7 +1089,7 @@
                                 <variation key="heightClass=regular-widthClass=regular" constant="10"/>
                             </constraint>
                             <constraint firstItem="vuU-7j-fEd" firstAttribute="top" secondItem="E8Z-pq-Hoc" secondAttribute="bottom" constant="4" id="EdW-Kr-niH"/>
-                            <constraint firstItem="o2e-xg-EB1" firstAttribute="top" secondItem="vuU-7j-fEd" secondAttribute="bottom" constant="20" id="GHd-dz-cTX">
+                            <constraint firstItem="o2e-xg-EB1" firstAttribute="top" secondItem="vuU-7j-fEd" secondAttribute="bottom" constant="25" id="GHd-dz-cTX">
                                 <variation key="heightClass=regular-widthClass=regular" constant="25"/>
                             </constraint>
                             <constraint firstItem="Ab3-9Q-niJ" firstAttribute="leading" secondItem="5Dg-Rc-e29" secondAttribute="leadingMargin" constant="-6" id="GdV-nd-1Cs"/>
@@ -1931,7 +1907,7 @@
         <image name="sounds.png" width="36" height="36"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="q28-aI-wTP"/>
+        <segue reference="U5f-EU-68h"/>
         <segue reference="FlI-iz-r1d"/>
     </inferredMetricsTieBreakers>
 </document>

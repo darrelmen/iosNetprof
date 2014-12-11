@@ -110,7 +110,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     overallPhoneLabel.text = phone;
     [overallPhoneLabel setFont:[UIFont systemFontOfSize:24]];
     
-    
     // top
     
     [cell.contentView addConstraint:[NSLayoutConstraint
@@ -250,7 +249,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
              constraintWithItem:exampleView
              attribute:NSLayoutAttributeLeft
              relatedBy:NSLayoutRelationEqual
-             toItem:overallPhoneLabel//cell.contentView
+             toItem:overallPhoneLabel
              attribute:NSLayoutAttributeRight
              multiplier:1.0
              constant:3.0];
@@ -464,8 +463,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     
     overallPhoneLabel.attributedText = coloredWord;
-    
-    
     return cell;
 }
 
@@ -490,13 +487,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         
         for (UIView *subview in [cell.contentView subviews]) {
             CGPoint loc = [sender locationInView:subview];
-            
             //        NSLog(@"Loc in %@ is %f %f",subview,loc.x,loc.y);
-            
-//            if(CGRectContainsPoint(subview.frame, loc))
-//            {
-//                NSLog(@"--------> In View for %@",subview);
-            //            }
             
             if(CGRectContainsPoint(subview.bounds, loc))
             {
@@ -506,6 +497,17 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     playingRef = TRUE;
                     currentAudioSelection = (EAFAudioView *)subview;
                     [self playRefAudio:(EAFAudioView *)subview];
+                }
+                else if ([subview isKindOfClass:[UILabel class]]) {
+                    for (UIView *sibling in subview.superview.subviews) {
+                        if ([sibling isKindOfClass:[EAFAudioView class]]) {
+                            playingRef = TRUE;
+                            currentAudioSelection = (EAFAudioView *)sibling;
+                            [self playRefAudio:(EAFAudioView *)sibling];
+                            break;
+                        }
+                    }
+          
                 }
             }
         }
@@ -569,7 +571,6 @@ bool playingRef = TRUE;
     if (_player) {
         [_player pause];
         NSLog(@"removing current observer");
-
         [self removePlayObserver];
     }
     

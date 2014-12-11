@@ -32,7 +32,7 @@
                   //@"Egyptian",
                   @"Farsi",
                   @"Korean",
-                //  @"KoreanTest",
+           //       @"KoreanTest",
                   @"CM",
                   @"Levantine",
                   @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
