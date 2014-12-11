@@ -156,70 +156,16 @@
     _pageControl.transform = CGAffineTransformMakeRotation(M_PI_2);
     
     _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
-  //  NSLog(@"progress is %f", _progressThroughItems.progress);
-  
-//    _contextButton.image = nil;
-//    [_contextButton setDefaultIconIdentifier:@"fa-quote-left"];
-//
-//    UITapGestureRecognizer *singleFingerTap =
-//    [[UITapGestureRecognizer alloc] initWithTarget:self
-//                                            action:@selector(contextTap:)];
-//    [_contextButton addGestureRecognizer:singleFingerTap];
-//
-    
-    [_contextButton initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
+
+    [_contextButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
                     //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
                             color:[UIColor blueColor]
                              style:BButtonStyleBootstrapV3
                               icon:FAQuoteLeft
                           fontSize:20.0f];
     
-//    self.popup = [self.storyboard instantiateViewControllerWithIdentifier:@"ContextPopover"];
-//    
-//    // Setup the popover for use in the detail view.
-//    self.detailViewPopover = [[UIPopoverController alloc] initWithContentViewController:self.popup];
-//    self.detailViewPopover.popoverContentSize = CGSizeMake(320., 320.);
-//    self.detailViewPopover.delegate = self;
-    
-    
-//    [_contextButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-    
- //   _contextButton = [BButton awesomeButtonWithOnlyIcon:FAQuoteLeft color:[UIColor blueColor] style:BButtonStyleBootstrapV3];
- //   _contextButton = [BButton awesomeButtonWithOnlyIcon:FAQuoteLeft type:BButtonTypeDefault style:BButtonStyleBootstrapV2];
     NSString *ct = [[self getCurrentJson] objectForKey:@"ct"];
     _contextButton.hidden = (ct == nil || ct.length == 0);
-    
-    //[EAFRecoFlashcardController setPresentationStyleForSelfController:self presentingController:self];
-}
-
-- (IBAction)contextClick:(id)sender {
-    NSLog(@"got context tap");
-    
-    UIButton *tappedButton = (UIButton *)sender;
-    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-
-    EAFContextPopupViewController *popup = [self.storyboard instantiateViewControllerWithIdentifier:@"ContextPopover"];
-
-    NSLog(@"Item is %@",jsonObject);
-    NSString *ct = [jsonObject objectForKey:@"ct"];
-    NSLog(@"1 Popup ct is %@ %@",ct,[ct class]);
-
-    popup.contextFL.text = ct;
-    
-    NSLog(@"2 Popup ct is %@",[jsonObject objectForKey:@"ct"]);
-    
-    [popup.contextFL setText:ct];
-    NSLog(@"3 Popup text is %@",popup.contextFL.text);
-    
-    // Setup the popover for use in the detail view.
-    self.detailViewPopover = [[UIPopoverController alloc] initWithContentViewController:popup];
-    self.detailViewPopover.popoverContentSize = CGSizeMake(320., 320.);
-    self.detailViewPopover.delegate = self;
-    
-
-    // Present the popover from the button that was tapped in the detail view.
-    [self.detailViewPopover presentPopoverFromRect:tappedButton.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-
 }
 
 - (IBAction)showScoresClick:(id)sender {

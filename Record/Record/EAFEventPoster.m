@@ -11,31 +11,14 @@
 
 @implementation EAFEventPoster
 
-// called from EAFItemTableViewController
 - (void) postEvent:(NSString *)context exid:(NSString *)exid lang:(NSString *)lang widget:(NSString *)widget  widgetType:(NSString *)widgetType {
-    
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
-    
-//    [urlRequest setValue:userid forHTTPHeaderField:@"user"];
-//    [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
-    
-    /**
-     String user = request.getHeader("user");
-     String context = request.getHeader("context");
-     String exid = request.getHeader("exid");
-     String widgetid = request.getHeader("widget");
-     String widgetType = request.getHeader("widgetType");
-     */
-    
-   // NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
-    // NSLog(@"data %d",[postData length]);
     
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)0];
     
-    // NSLog(@"file length %@",postLength);
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", [self getURL:lang]];
-      NSLog(@"talking to %@",baseurl);
+    NSLog(@"talking to %@",baseurl);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
@@ -44,15 +27,12 @@
       forHTTPHeaderField:@"Content-Type"];
     
     // add request parameters
-    
-    // old style
-//    [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
-    
+
     [urlRequest setValue:userid forHTTPHeaderField:@"user"];
- //   [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
     
-    NSString *fullContext = [NSString stringWithFormat:@"%@ %@",retrieveuuid,context];
-    [urlRequest setValue:fullContext forHTTPHeaderField:@"context"];
+   // NSString *fullContext = [NSString stringWithFormat:@"%@ %@",retrieveuuid,context];
+    [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
+    [urlRequest setValue:context forHTTPHeaderField:@"context"];
     [urlRequest setValue:exid forHTTPHeaderField:@"exid"];
     [urlRequest setValue:widget forHTTPHeaderField:@"widget"];
     [urlRequest setValue:widgetType forHTTPHeaderField:@"widgetType"];
@@ -60,13 +40,10 @@
     
     // post the audio
     
-    //[urlRequest setHTTPBody:postData];
-    
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [connection start];
-    
-
 }
+
 - (NSString *)getURL:(NSString *) lang
 {
     return [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/", lang];

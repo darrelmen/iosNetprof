@@ -21,13 +21,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //not japanese or levantine -- consider levantine?
+    //not japanese or egyptian?
     // TODO : get list of languages from server call?
 
     _languages = [NSArray arrayWithObjects: @"Dari", @"English",
                   //@"Egyptian",
-                  @"Farsi", @"Korean", @"CM",
+                  @"Farsi", @"Korean",
                   @"Levantine",
+                  @"CM",
                   @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
   
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -47,7 +48,6 @@
                                name:UITextFieldTextDidChangeNotification
                              object:_email];
     
-  //  NSLog(@"got user %@ %ld",_userFromLogin, _languageIndex);
     _username.text = _userFromLogin;
     _password.text = _passFromLogin;
     [_languagePicker selectRow:_languageIndex inComponent:0 animated:false];
