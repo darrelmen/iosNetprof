@@ -12,16 +12,13 @@
 @interface EAFAudioPlayer : NSObject
 
 @property UIView *viewToAddIconTo;
-//@property FAImageView *playingIcon;
 @property NSString *language;
-
-//@property NSString *chapterName;
-//@property NSString *chapterSelection;
 
 @property AVPlayer *player;
 @property NSString *url;
 @property NSArray *audioPaths;
 @property int currentIndex;
+@property (strong, nonatomic) IBOutlet UIView *playingIcon;
 
 - (IBAction)playRefAudio;
 

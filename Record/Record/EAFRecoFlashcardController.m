@@ -1560,10 +1560,9 @@ NSString *statusCodeDisplay;
   //  [[MZFormSheetBackgroundWindow appearance] setBackgroundBlurEffect:YES];
     
     EAFContextPopupViewController *popupController = [self.storyboard instantiateViewControllerWithIdentifier:@"ContextPopover"];
-   // UINavigationController *container = [self.storyboard instantiateViewControllerWithIdentifier:@"ContextContainer"];
-    //EAFContextPopupViewController *popupController = container.visibleViewController;
     
     popupController.url = _url;
+    popupController.language = _language;
     popupController.item = [[self getCurrentJson] objectForKey:@"fl"];
     popupController.fl = [[self getCurrentJson] objectForKey:@"ct"];
     popupController.en = [[self getCurrentJson] objectForKey:@"ctr"];

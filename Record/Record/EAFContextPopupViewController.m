@@ -10,7 +10,7 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "MZFormSheetController.h"
-#import "FAImageView.h"
+//#import "FAImageView.h"
 
 @interface EAFContextPopupViewController ()
 
@@ -49,20 +49,29 @@
         [[_maleFemale.subviews objectAtIndex:1] setTintColor:[UIColor grayColor]];
         [_maleFemale setEnabled:NO forSegmentAtIndex:1];
 
-        NSLog(@"no female audio");
+      //  NSLog(@"no female audio");
     }
     else {
         if (!hasMale) {
             _maleFemale.selectedSegmentIndex = 1;
+            [audioCuts addObject:_fref];
         }
-        [audioCuts addObject:_fref];
     }
     _audioPlayer.audioPaths = audioCuts;
     _audioPlayer.viewToAddIconTo = _contextFL;
     _audioPlayer.url = _url;
+    _audioPlayer.language = _language;
     _maleFemale.enabled = audioCuts.count > 0;
-
-    NSLog(@"Audio paths now %@",_audioPlayer.audioPaths);
+    
+    [_playingIcon initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
+                             color:[UIColor colorWithWhite:1.0f alpha:0.0f]
+                             style:BButtonStyleBootstrapV3
+                              icon:FAVolumeUp
+                          fontSize:20.0f];
+    [_playingIcon setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    
+    _audioPlayer.playingIcon = _playingIcon;
+   // NSLog(@"Audio paths now %@",_audioPlayer.audioPaths);
 }
 
 - (IBAction)tapOnSentence:(id)sender {
@@ -77,8 +86,12 @@
     }];
 }
 
+- (IBAction)gotTouchInside:(id)sender {
+    [self onClick:sender];
+}
+
 - (IBAction)onClick:(id)sender {
-    NSLog(@"Got click");
+    NSLog(@"Got click %@",sender);
     
     NSMutableArray *audioCuts = [[NSMutableArray alloc] init];
     if (_maleFemale.selectedSegmentIndex == 0) {
@@ -87,6 +100,8 @@
     else {
         [audioCuts addObject:_fref];
     }
+    _audioPlayer.audioPaths = audioCuts;
+
     [_audioPlayer playRefAudio];
 }
 

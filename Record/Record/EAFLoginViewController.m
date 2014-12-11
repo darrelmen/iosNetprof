@@ -30,7 +30,10 @@
 
     _langauges = [NSArray arrayWithObjects: @"Dari", @"English",
                   //@"Egyptian",
-                  @"Farsi", @"Korean", @"CM",
+                  @"Farsi",
+                  @"Korean",
+                //  @"KoreanTest",
+                  @"CM",
                   @"Levantine",
                   @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
   
@@ -58,12 +61,6 @@
     if (rememberedPass != nil) {
         _password.text = rememberedPass;
     }
-    
-//    NSString *rememberedLanguage = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
-//    if (rememberedLanguage != nil) {
-//      //  _password.text = rememberedLanguage;
-//        // TODO : set picker with chosen language
-//    }
     
     [_forgotUsername initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
                              color:[UIColor colorWithWhite:1.0f alpha:0.0f]

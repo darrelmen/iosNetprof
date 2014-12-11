@@ -9,11 +9,11 @@
 #import "EAFAudioPlayer.h"
 #import "FAImageView.h"
 
-@interface EAFAudioPlayer ()
-
-@property FAImageView *playingIcon;
-
-@end
+//@interface EAFAudioPlayer ()
+//
+////@property FAImageView *playingIcon;
+//
+//@end
 
 @implementation EAFAudioPlayer
 
@@ -21,50 +21,32 @@
 {
     self = [super init];
     if (self) {
-        _playingIcon = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
-        _playingIcon.image = nil;
-        [_playingIcon setDefaultIconIdentifier:@"fa-volume-up"];
-        _playingIcon.defaultView.textColor = [UIColor blueColor];
+//        _playingIcon = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
+//        _playingIcon.image = nil;
+//        [_playingIcon setDefaultIconIdentifier:@"fa-volume-up"];
+//        _playingIcon.defaultView.textColor = [UIColor blueColor];
         _currentIndex = 0;
     }
     return self;
 }
 
-//EAFAudioView * currentAudioSelection;
-//bool playingRef = TRUE;
-FAImageView *audioPlayerplayingIcon;
-
 // look for local file with mp3 and use it if it's there.
 - (IBAction)playRefAudio {
-   // NSString *refPath = playingRef ? sender.refAudio : sender.answer;
     if (_audioPaths.count == 0) {
         return;
     }
-    NSString *refPath = [_audioPaths objectAtIndex:_currentIndex];//playingRef ? sender.refAudio : sender.answer;
-    //   NSLog(@"ref path %@ playing ref %@",refPath, (playingRef ? @"YES":@"NO"));
+    NSString *refPath = [_audioPaths objectAtIndex:_currentIndex];
     
     NSString *refAudioPath;
     NSString *rawRefAudioPath;
     
-    //if (refPath) {
-        //  NSLog(@"has ref path %@",refPath);
-        refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
-                                                     withString:@".mp3"];
-        
-        NSMutableString *mu = [NSMutableString stringWithString:refPath];
-        [mu insertString:_url atIndex:0];
-        refAudioPath = mu;
-        rawRefAudioPath = refPath;
-//    }
-//    else {
-//        //  NSLog(@"does not have ref path %@",refPath);
-//        
-//        refAudioPath = @"NO";
-//        rawRefAudioPath = @"NO";
-//        playingRef = FALSE;
-//        [self playRefAudio:viewToAddIconTo];
-//        return;
-//    }
+    refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+                                                 withString:@".mp3"];
+    
+    NSMutableString *mu = [NSMutableString stringWithString:refPath];
+    [mu insertString:_url atIndex:0];
+    refAudioPath = mu;
+    rawRefAudioPath = refPath;
     
     NSURL *url = [NSURL URLWithString:refAudioPath];
     
@@ -83,15 +65,14 @@ FAImageView *audioPlayerplayingIcon;
         url = [[NSURL alloc] initFileURLWithPath: destFileName];
     }
     else {
-        NSLog(@"can't find local url %@",destFileName);
+        NSLog(@"playRefAudio can't find local url %@",destFileName);
         NSLog(@"playRefAudio URL     %@", url);
     }
     NSString *PlayerStatusContext;
     
     if (_player) {
         [_player pause];
-        NSLog(@"removing current observer");
-        
+        //        NSLog(@"removing current observer");
         [self removePlayObserver];
     }
     
@@ -106,11 +87,12 @@ FAImageView *audioPlayerplayingIcon;
 }
 
 - (void)removePlayingAudioIcon {
-    for (UIView *v in [_viewToAddIconTo subviews]) {
-        if (v == _playingIcon) {
-            [v removeFromSuperview];
-        }
-    }
+    _playingIcon.hidden = true;
+//    for (UIView *v in [_viewToAddIconTo subviews]) {
+//        if (v == _playingIcon) {
+//            [v removeFromSuperview];
+//        }
+//    }
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
@@ -139,7 +121,49 @@ FAImageView *audioPlayerplayingIcon;
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
             NSLog(@" audio ready so playing...");
-            [_viewToAddIconTo addSubview:_playingIcon];
+     //       [_viewToAddIconTo addSubview:_playingIcon];
+            _playingIcon.hidden = false;
+//            _playingIcon.translatesAutoresizingMaskIntoConstraints = NO;
+//
+//          //  NSLayoutConstraint *toRemove = nil;
+//            
+//            NSMutableArray *toRemoveList= [[NSMutableArray alloc] init];
+//            
+//            for (NSLayoutConstraint *constraint in _viewToAddIconTo.superview.constraints) {
+//                if (constraint.firstItem == _playingIcon) {
+//                   // toRemove = constraint;
+//                    [toRemoveList addObject:constraint];
+//                    NSLog(@"got it %@",constraint);
+//                }
+//                else {
+//                    NSLog(@"skipping %@",constraint);
+//                }
+//            }
+//            
+//            for (
+//            if (toRemove != nil) {
+//                [_viewToAddIconTo.superview removeConstraint:toRemove];
+//            }
+//            //[cell.contentView removeConstraints:cell.contentView.constraints];
+//
+//            [_viewToAddIconTo.superview addConstraint:[NSLayoutConstraint
+//                                                       constraintWithItem:_playingIcon
+//                                                       attribute:NSLayoutAttributeLeft
+//                                                       relatedBy:NSLayoutRelationEqual
+//                                                       toItem:_viewToAddIconTo
+//                                                       attribute:NSLayoutAttributeLeft
+//                                                       multiplier:1.0
+//                                                       constant:5.0]];
+//            
+//            [_viewToAddIconTo.superview addConstraint:[NSLayoutConstraint
+//                                                       constraintWithItem:_playingIcon
+//                                                       attribute:NSLayoutAttributeTop
+//                                                       relatedBy:NSLayoutRelationEqual
+//                                                       toItem:_viewToAddIconTo
+//                                                       attribute:NSLayoutAttributeTop
+//                                                       multiplier:1.0
+//                                                       constant:5.0]];
+//            
             
             [_player play];
             

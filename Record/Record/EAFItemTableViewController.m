@@ -39,11 +39,12 @@
     NSMutableArray *paths = [[NSMutableArray alloc] init];
     NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
     
-    NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"mrs",@"frr",@"frs",nil];
+    NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"mrs",@"frr",@"frs",@"ctmref",@"ctfref",@"ctref",nil];
     
     for (NSDictionary *object in items) {
         for (NSString *id in fields) {
             NSString *refPath = [object objectForKey:id];
+            
             if (refPath && refPath.length > 2) { //i.e. not NO
                 refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
                                                              withString:@".mp3"];
