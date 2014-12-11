@@ -31,6 +31,18 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    // _tableView.cancelTouchesInView = NO;
+    
+    for(UIViewController *tab in  self.tabBarController.viewControllers)
+        
+    {
+      //  NSLog(@"EAFWordScoreTableViewController got item %@",tab.tabBarItem);
+        
+        [tab.tabBarItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                [UIFont fontWithName:@"Helvetica" size:16.0], UITextAttributeFont, nil]
+                                      forState:UIControlStateNormal];
+    }
 }
 
 - (void)askServerForJson {

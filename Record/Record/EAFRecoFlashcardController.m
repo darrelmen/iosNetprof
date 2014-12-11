@@ -1563,7 +1563,7 @@ NSString *statusCodeDisplay;
         EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
         
         EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
-        wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong_26h"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         wordReport.language = _language;
         wordReport.chapterName = _chapterTitle;
         wordReport.chapterSelection = _currentChapter;
