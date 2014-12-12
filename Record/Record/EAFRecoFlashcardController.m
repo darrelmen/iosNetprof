@@ -21,13 +21,6 @@
 #import "EAFEventPoster.h"
 #import "MZFormSheetController.h"
 
-@interface EAFRecoFlashcardController ()
-
-@property (nonatomic, strong) UIPopoverController *detailViewPopover;
-//@property (nonatomic, strong) EAFContextPopupViewController *popup;
-
-@end
-
 @implementation UIProgressView (customView)
 - (CGSize)sizeThatFits:(CGSize)size {
     CGSize newSize = CGSizeMake(self.frame.size.width, 9);
@@ -1483,13 +1476,13 @@ NSString *statusCodeDisplay;
 
 #pragma mark - Popover controller delegates
 
-- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
-{
-    // If a popover is dismissed, set the last button tapped to nil.
-   // self.lastTappedButton = nil;
-    
-    NSLog(@"Got dismiss popover");
-}
+//- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+//{
+//    // If a popover is dismissed, set the last button tapped to nil.
+//   // self.lastTappedButton = nil;
+//    
+//    NSLog(@"Got dismiss popover");
+//}
 
 
 #pragma mark - Managing popovers
@@ -1497,10 +1490,8 @@ NSString *statusCodeDisplay;
 - (IBAction)showPopover:(id)sender
 {
     // Set the sender to a UIButton.
-//    UIButton *tappedButton = (UIButton *)sender;
     
     // Present the popover from the button that was tapped in the detail view.
-//    [self.detailViewPopover presentPopoverFromRect:tappedButton.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     [[MZFormSheetController appearance] setCornerRadius:20.0];
    // [[MZFormSheetBackgroundWindow appearance] setBackgroundColor:[UIColor clearColor]];
   //  [[MZFormSheetBackgroundWindow appearance] setBackgroundBlurEffect:YES];
@@ -1542,24 +1533,23 @@ NSString *statusCodeDisplay;
     // Pass the selected object to the new view controller.
     //  NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
     
-    if ([segue.identifier isEqualToString:@"goToPopover"]) {
-      //   NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
-        EAFContextPopupViewController   *popupController = [segue destinationViewController];
-      //  popupController.contextFL.text = @"Bueller!";
-        
-        
-        
-       // NSLog(@"here %@",popupController.contextFL.text);
-      //  [self setModalPresentationStyle:UIModalPresentationCurrentContext];
-        popupController.fl = [[self getCurrentJson] objectForKey:@"ct"];
-        popupController.en = [[self getCurrentJson] objectForKey:@"ctr"];
-        popupController.mref  = [[self getCurrentJson] objectForKey:@"ctmref"];
-        if (popupController.mref == nil) {
-            popupController.mref  = [[self getCurrentJson] objectForKey:@"ctref"];
-        }
-        popupController.fref  = [[self getCurrentJson] objectForKey:@"ctfref"];
-    }
-    else {
+//    if ([segue.identifier isEqualToString:@"goToPopover"]) {
+//      //   NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
+//        EAFContextPopupViewController   *popupController = [segue destinationViewController];
+//      
+//        
+//        
+//       // NSLog(@"here %@",popupController.contextFL.text);
+//      //  [self setModalPresentationStyle:UIModalPresentationCurrentContext];
+//        popupController.fl = [[self getCurrentJson] objectForKey:@"ct"];
+//        popupController.en = [[self getCurrentJson] objectForKey:@"ctr"];
+//        popupController.mref  = [[self getCurrentJson] objectForKey:@"ctmref"];
+//        if (popupController.mref == nil) {
+//            popupController.mref  = [[self getCurrentJson] objectForKey:@"ctref"];
+//        }
+//        popupController.fref  = [[self getCurrentJson] objectForKey:@"ctfref"];
+//    }
+//    else {
         EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
         
         EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
@@ -1567,7 +1557,9 @@ NSString *statusCodeDisplay;
         wordReport.language = _language;
         wordReport.chapterName = _chapterTitle;
         wordReport.chapterSelection = _currentChapter;
-        
+    wordReport.jsonItems = _jsonItems;
+    wordReport.url = _url;
+    
         NSMutableDictionary *exToFL = [[NSMutableDictionary alloc] init];
         NSMutableDictionary *exToEnglish = [[NSMutableDictionary alloc] init];
         
@@ -1590,6 +1582,6 @@ NSString *statusCodeDisplay;
         phoneReport.chapterName = _chapterTitle;
         phoneReport.chapterSelection = _currentChapter;
         phoneReport.url = _url;
-    }
+//  }
 }
 @end

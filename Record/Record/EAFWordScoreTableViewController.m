@@ -9,6 +9,8 @@
 #import "EAFWordScoreTableViewController.h"
 #import "FAImageView.h"
 #import "MyTableViewCell.h"
+#import "EAFAudioPlayer.h"
+//#import "BButton.h"
 #import "SSKeychain.h"
 
 @interface EAFWordScoreTableViewController ()
@@ -20,7 +22,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    _audioPlayer = [[EAFAudioPlayer alloc] init];
+
     //NSLog(@"got word score table view did load");
     
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
@@ -34,11 +37,19 @@
     
     // _tableView.cancelTouchesInView = NO;
     
-    for(UIViewController *tab in  self.tabBarController.viewControllers)
+  //  _playingIcon = [BButton awesomeButtonWithOnlyIcon:FAVolumeUp color:[UIColor blackColor] style:BButtonStyleBootstrapV3];
+    
+//    [_playingIcon initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
+//                          color:[UIColor colorWithWhite:1.0f alpha:0.0f]
+//                          style:BButtonStyleBootstrapV3
+//                           icon:FAVolumeUp
+//                       fontSize:20.0f];
+//    [_playingIcon setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+//    
+    for(UIViewController *tab in self.tabBarController.viewControllers)
         
     {
-      //  NSLog(@"EAFWordScoreTableViewController got item %@",tab.tabBarItem);
-        
+      //  NSLog(@"EAFWordScoreTableViewController got item %@",tab.tabBarItem);        
         [tab.tabBarItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                                 [UIFont fontWithName:@"Helvetica" size:16.0], UITextAttributeFont, nil]
                                       forState:UIControlStateNormal];
@@ -354,6 +365,83 @@ NSString *myCurrentTitle;
                                           otherButtonTitles:nil];
     [alert show];
 }
+
+- (IBAction)gotTapGesture:(UITapGestureRecognizer *) sender {
+    CGPoint p = [sender locationInView:sender.view];
+    //  NSLog(@"Got point %f %f",p.x,p.y);
+    
+    p = [sender locationInView:self.tableView];
+  //    NSLog(@"Got point %f %f",p.x,p.y);
+    
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
+ //     NSLog(@"Got path %@",indexPath);
+    
+    NSInteger row = indexPath.row;
+    NSString *exid = [_exList objectAtIndex:row];
+    
+ //   NSLog(@"exid selection %@",exid);
+    
+    for (NSDictionary *jsonObject in _jsonItems) {
+   //     NSLog(@"comparing to %@",[jsonObject objectForKey:@"id"]);
+        if ([[jsonObject objectForKey:@"id"] isEqualToString:exid]) {
+            NSLog(@"got it %@",jsonObject);
+            NSString *refAudio = [jsonObject objectForKey:@"ref"];
+            NSMutableArray *toPlay = [[NSMutableArray alloc] init];
+            [toPlay addObject:refAudio];
+            
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            
+            for (UIView *subview in [cell.contentView subviews]) {
+                NSLog(@"subview %@",subview);
+                
+                if ([subview isKindOfClass:[UIImage class]]) {
+                            NSLog(@"got it %@",subview);
+
+                    _audioPlayer.playingIcon = subview;
+                    
+                }
+            }
+            
+     //       NSLog(@"playing audio @%",toPlay);
+            _audioPlayer.audioPaths = toPlay;
+            //  _audioPlayer.viewToAddIconTo = _contextFL;
+            _audioPlayer.url = _url;
+            _audioPlayer.language = _language;
+            [_audioPlayer playRefAudio];
+        }
+    }
+
+}
+#pragma mark - Table view delegate
+
+//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+//    
+//    NSInteger row = indexPath.row;
+//    NSString *exid = [_exList objectAtIndex:row];
+//    
+//    NSLog(@"exid selection %@",exid);
+//
+//    for (NSDictionary *jsonObject in _jsonItems) {
+//        if ([[jsonObject objectForKey:@"exid"] isEqualToString:exid]) {
+//            NSLog(@"got it %@",jsonObject);
+//            NSString *refAudio = [jsonObject objectForKey:@"ref"];
+//            NSMutableArray *toPlay = [[NSMutableArray alloc] init];
+//            [toPlay addObject:refAudio];
+//            
+//            
+//            _audioPlayer.audioPaths = toPlay;
+//          //  _audioPlayer.viewToAddIconTo = _contextFL;
+//            _audioPlayer.url = _url;
+//            _audioPlayer.language = _language;
+//          //  _audioPlayer.playingIcon = _playingIcon;
+//            [_audioPlayer playRefAudio];
+//            
+//        }
+//    }
+//    
+//}
 
 #pragma mark - Navigation
 

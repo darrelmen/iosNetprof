@@ -13,8 +13,6 @@
 
 @interface EAFItemTableViewController : UITableViewController<NSURLConnectionDelegate>
 
-//@property NSMutableArray *paths;
-//@property NSMutableArray *rawPaths;
 @property BOOL hasModel;
 
 -(void) setChapter:(NSString *)chapter;

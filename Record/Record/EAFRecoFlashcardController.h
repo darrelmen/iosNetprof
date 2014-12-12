@@ -12,7 +12,7 @@
 #import <SplunkMint-iOS/SplunkMint-iOS.h>
 
 @interface EAFRecoFlashcardController : UIViewController
-        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate,UIPopoverControllerDelegate>
+        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate>
 
 @property (strong, nonatomic) IBOutlet UIView *cardBackground;
 @property (strong, nonatomic) IBOutlet UIView *recordButtonContainer;

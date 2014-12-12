@@ -11,7 +11,6 @@
 
 @interface EAFAudioPlayer : NSObject
 
-@property UIView *viewToAddIconTo;
 @property NSString *language;
 
 @property AVPlayer *player;

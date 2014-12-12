@@ -8,17 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import <SplunkMint-iOS/SplunkMint-iOS.h>
+#import "EAFAudioPlayer.h"
+//#import "BButton.h"
 
 @interface EAFWordScoreTableViewController : UITableViewController<NSURLConnectionDelegate>
 
 @property (strong, nonatomic) NSMutableData *responseData;
-@property NSArray *jsonContentArray;
 
 @property NSString *language;
 
 @property NSString *chapterName;
-//@property NSString *unitName;
-//@property NSString *unitSelection;
 @property NSString *chapterSelection;
 @property NSArray *scores;
 
@@ -28,9 +27,13 @@
 @property NSDictionary *exToScore;
 @property NSDictionary *exToHistory;
 @property NSMutableArray *exList;
+@property NSArray *jsonItems;
 
 @property long user;
 
 -(void)setCurrentTitle;
+@property EAFAudioPlayer *audioPlayer;
+@property NSString *url;
+//@property (strong, nonatomic) IBOutlet UIButton *playingIcon;
 
 @end

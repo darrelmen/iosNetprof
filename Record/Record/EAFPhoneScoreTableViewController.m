@@ -465,9 +465,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return cell;
 }
 
-- (IBAction)gotTapGesture:(UITapGestureRecognizer *) sender {
-    ///  NSLog(@"gotTapGesture %@",sender);
-    
+- (IBAction)gotTapGesture:(UITapGestureRecognizer *) sender {   
     CGPoint p = [sender locationInView:sender.view];
     //  NSLog(@"Got point %f %f",p.x,p.y);
     

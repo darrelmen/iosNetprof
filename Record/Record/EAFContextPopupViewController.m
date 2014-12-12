@@ -57,10 +57,7 @@
             [audioCuts addObject:_fref];
         }
     }
-    _audioPlayer.audioPaths = audioCuts;
-    _audioPlayer.viewToAddIconTo = _contextFL;
-    _audioPlayer.url = _url;
-    _audioPlayer.language = _language;
+
     _maleFemale.enabled = audioCuts.count > 0;
     
     [_playingIcon initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
@@ -70,6 +67,10 @@
                           fontSize:20.0f];
     [_playingIcon setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     
+    _audioPlayer.audioPaths = audioCuts;
+   // _audioPlayer.viewToAddIconTo = _contextFL;
+    _audioPlayer.url = _url;
+    _audioPlayer.language = _language;
     _audioPlayer.playingIcon = _playingIcon;
    // NSLog(@"Audio paths now %@",_audioPlayer.audioPaths);
 }

@@ -25,7 +25,23 @@
         NSLog(@"made UUID %@",UUID);
         retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     }
+    
+    NSLog(@"version - %@",[self appNameAndVersionNumberDisplayString]);
+    
+   // NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    [[NSUserDefaults standardUserDefaults] setObject:[self appNameAndVersionNumberDisplayString] forKey:@"version_preference"];
+    
     return YES;
+}
+
+- (NSString *)appNameAndVersionNumberDisplayString {
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    NSString *appDisplayName = [infoDictionary objectForKey:@"CFBundleDisplayName"];
+    NSString *majorVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+    NSString *minorVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
+    
+    return [NSString stringWithFormat:@"%@, Version %@ (%@)",
+            appDisplayName, majorVersion, minorVersion];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

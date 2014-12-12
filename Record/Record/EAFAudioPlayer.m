@@ -21,10 +21,6 @@
 {
     self = [super init];
     if (self) {
-//        _playingIcon = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
-//        _playingIcon.image = nil;
-//        [_playingIcon setDefaultIconIdentifier:@"fa-volume-up"];
-//        _playingIcon.defaultView.textColor = [UIColor blueColor];
         _currentIndex = 0;
     }
     return self;
@@ -61,7 +57,7 @@
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName];
     if (fileExists) {
         //NSLog(@"playRefAudio Raw URL %@", _rawRefAudioPath);
-        NSLog(@"using local url %@",destFileName);
+        NSLog(@"playRefAudio using local url %@",destFileName);
         url = [[NSURL alloc] initFileURLWithPath: destFileName];
     }
     else {
@@ -87,12 +83,9 @@
 }
 
 - (void)removePlayingAudioIcon {
-    _playingIcon.hidden = true;
-//    for (UIView *v in [_viewToAddIconTo subviews]) {
-//        if (v == _playingIcon) {
-//            [v removeFromSuperview];
-//        }
-//    }
+    if (_playingIcon != nil) {
+        _playingIcon.hidden = true;
+    }
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
@@ -121,8 +114,10 @@
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
             NSLog(@" audio ready so playing...");
-     //       [_viewToAddIconTo addSubview:_playingIcon];
-            _playingIcon.hidden = false;
+            //       [_viewToAddIconTo addSubview:_playingIcon];
+            if (_playingIcon != nil) {
+                _playingIcon.hidden = false;
+            }
 //            _playingIcon.translatesAutoresizingMaskIntoConstraints = NO;
 //
 //          //  NSLayoutConstraint *toRemove = nil;
