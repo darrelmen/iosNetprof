@@ -19,6 +19,10 @@
 
 @property NSString *chapterName;
 @property NSString *chapterSelection;
+
+@property NSString *unitName;
+@property NSString *unitSelection;
+
 @property NSArray *scores;
 
 @property NSDictionary *exToFL;

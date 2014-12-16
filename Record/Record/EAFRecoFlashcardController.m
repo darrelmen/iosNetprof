@@ -647,8 +647,7 @@ NSString *flashcardPlayerStatusContext;
 // we remove the observer, or else we will later get a message when the player discarded
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                         change:(NSDictionary *)change context:(void *)context {
-    NSLog(@" observeValueForKeyPath %@",keyPath);
-  //  NSLog(@" observeValueForKeyPath %@ %@",keyPath,context);
+//    NSLog(@" observeValueForKeyPath %@",keyPath);
     
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
@@ -1051,7 +1050,6 @@ NSString *statusCodeDisplay;
     [toShow setTranslatesAutoresizingMaskIntoConstraints:NO];
     toShow.text =toUse;
     [toShow setFont:[UIFont systemFontOfSize:24.0f]];
-   // toShow.numberOfLines = 0;
     toShow.adjustsFontSizeToFitWidth = YES;
 
     [self addScoreDisplayConstraints:toShow];
@@ -1190,10 +1188,41 @@ NSString *statusCodeDisplay;
     return wordLabel;
 }
 
+BOOL addSpaces = false;
+
+- (NSMutableAttributedString *)getColoredPhones:(NSString *)phoneToShow wend:(NSNumber *)wend wstart:(NSNumber *)wstart phoneAndScore:(NSArray *)phoneAndScore {
+    // now mark the ranges in the string with colors
+    
+    NSMutableAttributedString *coloredPhones = [[NSMutableAttributedString alloc] initWithString:phoneToShow];
+    
+    int pstart = 0;
+    for (NSDictionary *event in phoneAndScore) {
+        NSString *phoneText = [event objectForKey:@"event"];
+        if ([phoneText isEqualToString:@"sil"]) continue;
+        
+        NSNumber *pscore = [event objectForKey:@"score"];
+        NSNumber *start = [event objectForKey:@"start"];
+        NSNumber *end = [event objectForKey:@"end"];
+        
+        if ([start floatValue] >= [wstart floatValue] && [end floatValue] <= [wend floatValue]) {
+            NSRange range = NSMakeRange(pstart, [phoneText length]);
+            pstart += range.length + (addSpaces ? 1 : 0);
+            float score = [pscore floatValue];
+            UIColor *color = [self getColor2:score];
+            //        NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
+            [coloredPhones addAttribute:NSBackgroundColorAttributeName
+                                  value:color
+                                  range:range];
+        }
+    }
+    return coloredPhones;
+}
+
 // worries about RTL languages
 - (void)updateScoreDisplay:(NSDictionary*) json {
     NSArray *wordAndScore  = [json objectForKey:@"WORD_TRANSCRIPT"];
     NSArray *phoneAndScore = [json objectForKey:@"PHONE_TRANSCRIPT"];
+    
     
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
@@ -1211,9 +1240,11 @@ NSString *statusCodeDisplay;
                     @"Farsi",
                     @"Levantine",
                     @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
+    BOOL isRTL = [rtl containsObject:_language];
     
-    if ([rtl containsObject:_language]) {
-        wordAndScore = [self reversedArray:wordAndScore];
+    if (isRTL) {
+        wordAndScore  = [self reversedArray:wordAndScore];
+        phoneAndScore = [self reversedArray:phoneAndScore];
     }
     
     UIView *spacerLeft  = [[UIView alloc] init];
@@ -1332,6 +1363,7 @@ NSString *statusCodeDisplay;
                                     multiplier:1.0
                                     constant:0.0]];
         
+        // left
         [exampleView addConstraint:[NSLayoutConstraint
                                     constraintWithItem:wordLabel
                                     attribute:NSLayoutAttributeLeft
@@ -1341,6 +1373,7 @@ NSString *statusCodeDisplay;
                                     multiplier:1.0
                                     constant:0.0]];
         
+        // right
         [exampleView addConstraint:[NSLayoutConstraint
                                     constraintWithItem:wordLabel
                                     attribute:NSLayoutAttributeRight
@@ -1360,36 +1393,19 @@ NSString *statusCodeDisplay;
             
             if ([start floatValue] >= [wstart floatValue] && [end floatValue] <= [wend floatValue]) {
                 phoneToShow = [phoneToShow stringByAppendingString:phone];
-                phoneToShow = [phoneToShow stringByAppendingString:@" "];
+                if (addSpaces) {
+                    phoneToShow = [phoneToShow stringByAppendingString:@" "];
+                }
             }
         }
         
-        // now mark the ranges in the string with colors
-        
-        NSMutableAttributedString *coloredPhones = [[NSMutableAttributedString alloc] initWithString:phoneToShow];
-        
-        int pstart = 0;
-        for (NSDictionary *event in phoneAndScore) {
-            NSString *phoneText = [event objectForKey:@"event"];
-            if ([phoneText isEqualToString:@"sil"]) continue;
-            
-            NSNumber *pscore = [event objectForKey:@"score"];
-            NSNumber *start = [event objectForKey:@"start"];
-            NSNumber *end = [event objectForKey:@"end"];
-            
-            if ([start floatValue] >= [wstart floatValue] && [end floatValue] <= [wend floatValue]) {
-                NSRange range = NSMakeRange(pstart, [phoneText length]);
-                pstart += range.length+1;
-                float score = [pscore floatValue];
-                UIColor *color = [self getColor2:score];
-                //        NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
-                [coloredPhones addAttribute:NSBackgroundColorAttributeName
-                                      value:color
-                                      range:range];
-            }
-        }
+        NSMutableAttributedString *coloredPhones;
+        coloredPhones = [self getColoredPhones:phoneToShow wend:wend wstart:wstart phoneAndScore:phoneAndScore];
         
         UILabel *phoneLabel = [[UILabel alloc] init];
+        phoneLabel.font = [UIFont systemFontOfSize:24];
+        phoneLabel.adjustsFontSizeToFitWidth=YES;
+
         phoneLabel.attributedText = coloredPhones;
         [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
         
@@ -1474,17 +1490,6 @@ NSString *statusCodeDisplay;
     return [UIColor colorWithRed:red green:green blue:blue alpha:1];
 }
 
-#pragma mark - Popover controller delegates
-
-//- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
-//{
-//    // If a popover is dismissed, set the last button tapped to nil.
-//   // self.lastTappedButton = nil;
-//    
-//    NSLog(@"Got dismiss popover");
-//}
-
-
 #pragma mark - Managing popovers
 
 - (IBAction)showPopover:(id)sender
@@ -1531,57 +1536,47 @@ NSString *statusCodeDisplay;
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    //  NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
+    NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
+    EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
     
-//    if ([segue.identifier isEqualToString:@"goToPopover"]) {
-//      //   NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
-//        EAFContextPopupViewController   *popupController = [segue destinationViewController];
-//      
-//        
-//        
-//       // NSLog(@"here %@",popupController.contextFL.text);
-//      //  [self setModalPresentationStyle:UIModalPresentationCurrentContext];
-//        popupController.fl = [[self getCurrentJson] objectForKey:@"ct"];
-//        popupController.en = [[self getCurrentJson] objectForKey:@"ctr"];
-//        popupController.mref  = [[self getCurrentJson] objectForKey:@"ctmref"];
-//        if (popupController.mref == nil) {
-//            popupController.mref  = [[self getCurrentJson] objectForKey:@"ctref"];
-//        }
-//        popupController.fref  = [[self getCurrentJson] objectForKey:@"ctfref"];
-//    }
-//    else {
-        EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
-        
-        EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
-        wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong_26h"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-        wordReport.language = _language;
-        wordReport.chapterName = _chapterTitle;
-        wordReport.chapterSelection = _currentChapter;
+    EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
+    wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong_26h"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    wordReport.language = _language;
+    
+    wordReport.chapterName = _chapterTitle;
+    wordReport.chapterSelection = _currentChapter;
+    
+    wordReport.unitName = _unitTitle;
+    wordReport.unitSelection = _currentUnit;
+    
     wordReport.jsonItems = _jsonItems;
     wordReport.url = _url;
     
-        NSMutableDictionary *exToFL = [[NSMutableDictionary alloc] init];
-        NSMutableDictionary *exToEnglish = [[NSMutableDictionary alloc] init];
-        
-        for (NSDictionary *jsonObject in _jsonItems) {
-            NSString *id = [jsonObject objectForKey:@"id"];
-            NSString *exercise = [jsonObject objectForKey:@"fl"];
-            NSString *englishPhrases = [jsonObject objectForKey:@"en"];
-            [exToFL setValue:exercise forKey:id];
-            [exToEnglish setValue:englishPhrases forKey:id];
-        }
-        
-        // NSLog(@"setting exToFl to %lu",(unsigned long)exToFL.count);
-        wordReport.exToFL = exToFL;
-        wordReport.exToEnglish = exToEnglish;
-        
-        EAFPhoneScoreTableViewController *phoneReport = [[tabBarController viewControllers] objectAtIndex:1];
-        phoneReport.tabBarItem.image = [[UIImage imageNamed:@"sounds.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-        
-        phoneReport.language = _language;
-        phoneReport.chapterName = _chapterTitle;
-        phoneReport.chapterSelection = _currentChapter;
-        phoneReport.url = _url;
-//  }
+    NSMutableDictionary *exToFL = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *exToEnglish = [[NSMutableDictionary alloc] init];
+    
+    for (NSDictionary *jsonObject in _jsonItems) {
+        NSString *id = [jsonObject objectForKey:@"id"];
+        NSString *exercise = [jsonObject objectForKey:@"fl"];
+        NSString *englishPhrases = [jsonObject objectForKey:@"en"];
+        [exToFL setValue:exercise forKey:id];
+        [exToEnglish setValue:englishPhrases forKey:id];
+    }
+    
+    // NSLog(@"setting exToFl to %lu",(unsigned long)exToFL.count);
+    wordReport.exToFL = exToFL;
+    wordReport.exToEnglish = exToEnglish;
+    
+    EAFPhoneScoreTableViewController *phoneReport = [[tabBarController viewControllers] objectAtIndex:1];
+    phoneReport.tabBarItem.image = [[UIImage imageNamed:@"sounds.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    
+    phoneReport.language = _language;
+    phoneReport.chapterName = _chapterTitle;
+    phoneReport.chapterSelection = _currentChapter;
+    
+    phoneReport.unitName = _unitTitle;
+    phoneReport.unitSelection = _currentUnit;
+    
+    phoneReport.url = _url;
 }
 @end

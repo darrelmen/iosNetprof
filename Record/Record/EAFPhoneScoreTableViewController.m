@@ -56,10 +56,10 @@
 }
 
 - (void)askServerForJson {
-    // NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=phoneReport&user=%ld&%@=%@", _language, _user, _chapterName, _chapterSelection];
+    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
+  //  NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=phoneReport&user=%ld&%@=%@", _language, _user, _chapterName, _chapterSelection];
     
-    //NSLog(@"EAFPhoneScoreTableViewController url %@",baseurl);
+    NSLog(@"EAFPhoneScoreTableViewController url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -152,6 +152,49 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return overallPhoneLabel;
 }
 
+- (void)addWordLabelConstraints:(EAFAudioView *)exampleView wordLabel:(UILabel *)wordLabel
+{
+    // top
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:wordLabel
+                                attribute:NSLayoutAttributeTop
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeTop
+                                multiplier:1.0
+                                constant:0.0]];
+    
+    // left
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:wordLabel
+                                attribute:NSLayoutAttributeLeft
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeLeft
+                                multiplier:1.0
+                                constant:0.0]];
+    
+    // right
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:wordLabel
+                                attribute:NSLayoutAttributeRight
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeRight
+                                multiplier:1.0
+                                constant:0.0]];
+    
+    // height
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:wordLabel
+                                attribute:NSLayoutAttributeHeight
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeHeight
+                                multiplier:0.5
+                                constant:0.0]];
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Configure the cell...
@@ -190,9 +233,17 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UILabel *overallPhoneLabel = [self getOverallPhoneLabel:phone cell:cell];
     
+    
+    NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
+                    @"Egyptian",
+                    @"Farsi",
+                    @"Levantine",
+                    @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
+    
     float totalPhoneScore = 0.0f;
     float totalPhones = 0.0f;
     int count = 0;
+    BOOL addSpaces = false;
     for (NSDictionary *wordEntry in words) {
         // TODO iterate over first N words in example words for phone
         if (count++ > 5) break; // only first five?
@@ -298,64 +349,32 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             
             wordLabel.attributedText = coloredWord;
             //NSLog(@"label word is %@",wordLabel.attributedText);
-            
-            //[wordLabel setTextColor:[UIColor blackColor]];
-            //  [wordLabel setBackgroundColor:[UIColor colorWithHue:32 saturation:100 brightness:63 alpha:1]];
-        //    [wordLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:18.0f]];
+
             [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
             
-
             [exampleView addSubview:wordLabel];
             
-            // top
-            [exampleView addConstraint:[NSLayoutConstraint
-                                        constraintWithItem:wordLabel
-                                        attribute:NSLayoutAttributeTop
-                                        relatedBy:NSLayoutRelationEqual
-                                        toItem:exampleView
-                                        attribute:NSLayoutAttributeTop
-                                        multiplier:1.0
-                                        constant:0.0]];
-            
-            // left
-            [exampleView addConstraint:[NSLayoutConstraint
-                                        constraintWithItem:wordLabel
-                                        attribute:NSLayoutAttributeLeft
-                                        relatedBy:NSLayoutRelationEqual
-                                        toItem:exampleView
-                                        attribute:NSLayoutAttributeLeft
-                                        multiplier:1.0
-                                        constant:0.0]];
-            
-            // right
-            [exampleView addConstraint:[NSLayoutConstraint
-                                        constraintWithItem:wordLabel
-                                        attribute:NSLayoutAttributeRight
-                                        relatedBy:NSLayoutRelationEqual
-                                        toItem:exampleView
-                                        attribute:NSLayoutAttributeRight
-                                        multiplier:1.0
-                                        constant:0.0]];
-            
-            // height
-            [exampleView addConstraint:[NSLayoutConstraint
-                                        constraintWithItem:wordLabel
-                                        attribute:NSLayoutAttributeHeight
-                                        relatedBy:NSLayoutRelationEqual
-                                        toItem:exampleView
-                                        attribute:NSLayoutAttributeHeight
-                                        multiplier:0.5
-                                        constant:0.0]];
+            [self addWordLabelConstraints:exampleView wordLabel:wordLabel];
             
             if ([wordInResult isEqualToString:wordPhoneAppearsIn]) {
                 NSString *phoneToShow = @"";
                 NSArray *phoneArray = [wordResult objectForKey:@"phones"];
+                
+                BOOL isRTL = [rtl containsObject:_language];
+                
+                if (isRTL) {
+                    phoneArray = [self reversedArray:phoneArray];
+                }
+                
                 NSDictionary *lastPhone = phoneArray.count > 0 ? [phoneArray objectAtIndex:phoneArray.count-1] : nil;
                 for (NSDictionary *phoneInfo in phoneArray) {
                     NSString *phoneText =[phoneInfo objectForKey:@"p"];
                     phoneToShow = [phoneToShow stringByAppendingString:phoneText];
-                    if (phoneInfo != lastPhone && ![_language isEqualToString:@"Korean"]) {
-                        phoneToShow = [phoneToShow stringByAppendingString:@" "];
+                    
+                    if (addSpaces) {
+                        if (phoneInfo != lastPhone && ![_language isEqualToString:@"Korean"]) {
+                            phoneToShow = [phoneToShow stringByAppendingString:@" "];
+                        }
                     }
                 }
                 
@@ -365,7 +384,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 for (NSDictionary *phoneInfo in phoneArray) {
                     NSString *phoneText =[phoneInfo objectForKey:@"p"];
                     NSRange range = NSMakeRange(start, [phoneText length]);
-                    if ([_language isEqualToString:@"Korean"])
+                    if ([_language isEqualToString:@"Korean"] || !addSpaces)
                     {
                         start += range.length;
                     }
@@ -463,6 +482,15 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     overallPhoneLabel.attributedText = coloredWord;
     return cell;
+}
+
+- (NSArray *)reversedArray:(NSArray *) toReverse {
+    NSMutableArray *array = [NSMutableArray arrayWithCapacity:[toReverse count]];
+    NSEnumerator *enumerator = [toReverse reverseObjectEnumerator];
+    for (id element in enumerator) {
+        [array addObject:element];
+    }
+    return array;
 }
 
 - (IBAction)gotTapGesture:(UITapGestureRecognizer *) sender {   

@@ -230,7 +230,12 @@ BOOL hasModel;
         NSMutableArray *myArray = [[NSMutableArray alloc] init];
         
         for (NSDictionary *entry in jsonArray) {
-            _chapterName = [entry objectForKey:@"type"]; // a little redundant here.
+            if (_unitTitle == nil) {
+                _unitTitle = [entry objectForKey:@"type"];
+            }
+            else {
+                _chapterName = [entry objectForKey:@"type"]; // a little redundant here.
+            }
             [myArray addObject:[entry objectForKey:@"name"]];
         }
         //sorting
@@ -378,7 +383,8 @@ NSArray *currentItems;
  
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
-    NSLog(@"Chapter table view controller prepareForSegue identifier %@ %@ %@",segue.identifier,_chapterName,tappedItem);
+    NSLog(@"Chapter table view controller prepareForSegue identifier %@ %@ %@ %@ %@",segue.identifier,_chapterName,tappedItem,
+          _unitTitle,_unit);
 
     //[itemController setItemIndex:0];
     [itemController setChapterToItems:chapterInfo];
@@ -387,6 +393,8 @@ NSArray *currentItems;
     [itemController setChapter:_currentChapter];
     [itemController setLanguage:_language];
     [itemController setHasModel:hasModel];
+    itemController.unitTitle = _unitTitle;
+    itemController.unit = _unit;
 }
 
 #pragma mark - Table view delegate
@@ -435,6 +443,8 @@ NSArray *currentItems;
                 [myController setTitle:title];
                 [myController setLanguage:_language];
                 [myController setChapterName:childType];
+                myController.unitTitle = _unitTitle;
+                myController.unit = name;
                 
                 [self.navigationController pushViewController: myController animated:YES];
                 break;

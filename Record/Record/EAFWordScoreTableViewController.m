@@ -51,16 +51,16 @@
     {
       //  NSLog(@"EAFWordScoreTableViewController got item %@",tab.tabBarItem);        
         [tab.tabBarItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                [UIFont fontWithName:@"Helvetica" size:16.0], UITextAttributeFont, nil]
+                                                [UIFont fontWithName:@"Helvetica" size:16.0], NSFontAttributeName, nil]
                                       forState:UIControlStateNormal];
     }
 }
 
 - (void)askServerForJson {
-   // NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@", _language, _user, _chapterName, _chapterSelection];
+    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
+   // NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@", _language, _user, _chapterName, _chapterSelection];
     
- //   NSLog(@"url %@",baseurl);
+    NSLog(@"askServerForJson url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];

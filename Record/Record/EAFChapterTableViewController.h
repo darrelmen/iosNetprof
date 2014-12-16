@@ -13,6 +13,10 @@
 
 @property NSString *chapterName;
 @property NSString *currentChapter;
+
+@property NSString *unitTitle;
+@property NSString *unit;
+
 @property NSArray *chapters;
 @property NSArray *jsonContentArray;
 @property (strong, nonatomic) NSMutableData *responseData;

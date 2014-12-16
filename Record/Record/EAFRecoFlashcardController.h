@@ -42,6 +42,8 @@
 @property BOOL hasModel;
 @property NSString *currentChapter;
 @property NSString *chapterTitle;
+@property NSString *currentUnit;
+@property NSString *unitTitle;
 @property NSString *language;
 
 @property (weak, nonatomic) IBOutlet UIView *scoreDisplayContainer;

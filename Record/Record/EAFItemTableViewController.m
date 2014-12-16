@@ -200,13 +200,16 @@ NSString *chapterTitle = @"Chapter";
     [flashcardController setHasModel:_hasModel];
     flashcardController.chapterTitle = chapterTitle;
     flashcardController.currentChapter = currentChapter;
+    flashcardController.unitTitle = _unitTitle;
+    flashcardController.currentUnit = _unit;
+    
     flashcardController.itemViewController = self;
     _notifyFlashcardController = flashcardController;
 }
 
 - (void)askServerForJson {
-    // NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@", _language, _user, chapterTitle, currentChapter];
+    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitTitle, _unit, chapterTitle, currentChapter];
+    //NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@", _language, _user, chapterTitle, currentChapter];
     
     NSLog(@"askServerForJson url %@",baseurl);
     

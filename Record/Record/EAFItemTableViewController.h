@@ -17,6 +17,10 @@
 
 -(void) setChapter:(NSString *)chapter;
 -(void) setChapterTitle:(NSString *)chapter;
+@property NSString *language;
+@property NSString *unitTitle;
+@property NSString *unit;
+
 @property (strong, nonatomic) NSDictionary *chapterToItems;
 @property (strong, nonatomic) NSArray *jsonItems;
 
@@ -24,7 +28,6 @@
 
 @property (strong, nonatomic) NSMutableData *responseData;
 
-@property NSString *language;
 
 @property NSArray *scores;
 

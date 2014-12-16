@@ -18,6 +18,10 @@
 
 @property NSString *chapterName;
 @property NSString *chapterSelection;
+
+@property NSString *unitName;
+@property NSString *unitSelection;
+
 @property NSDictionary *phoneToWords;
 @property NSDictionary *resultToRef;
 @property NSDictionary *resultToAnswer;
