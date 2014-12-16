@@ -26,8 +26,9 @@
 
     _languages = [NSArray arrayWithObjects: @"Dari", @"English",
                   //@"Egyptian",
-                  @"Farsi", @"Korean",
-                  @"Levantine",
+                  @"Farsi",
+                  @"Korean",
+                //  @"Levantine",
                   @"CM",
                   @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
   

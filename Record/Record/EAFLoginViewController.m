@@ -33,7 +33,7 @@
                   @"Farsi",
                   @"Korean",
            //       @"KoreanTest",
-                  @"Levantine",
+            //      @"Levantine",
                   @"CM",
                   @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
   

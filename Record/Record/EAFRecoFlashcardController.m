@@ -132,8 +132,6 @@
     
     _scoreProgress.hidden = true;
     
-    [self respondToSwipe];
-    
     [_whatToShow setSelectedSegmentIndex:2];
     [_whatToShow setTitle:_language forSegmentAtIndex:1];
     if ([_language isEqualToString:@"English"]) {
@@ -159,6 +157,14 @@
     
     NSString *ct = [[self getCurrentJson] objectForKey:@"ct"];
     _contextButton.hidden = (ct == nil || ct.length == 0);
+    
+    NSString *audioOn = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioOn"];
+    if (audioOn != nil) {
+     //   NSLog(@"checking - audio on %@",audioOn);
+        _audioOnSelector.on = [audioOn isEqualToString:@"Yes"];
+    }
+
+    [self respondToSwipe];
 }
 
 - (IBAction)showScoresClick:(id)sender {
@@ -310,16 +316,29 @@
     NSString *refAudio = [jsonObject objectForKey:@"ref"];
  //   NSLog(@"respondToSwipe - refAudio %@",refAudio);
     
+    NSString *test =  [jsonObject objectForKey:@"msr"];
+    BOOL hasMaleSlow = (test != NULL && ![test isEqualToString:@"NO"]);
+    
+    test =  [jsonObject objectForKey:@"mrr"];
+    BOOL hasMaleReg = (test != NULL && ![test isEqualToString:@"NO"]);
+
+    test =  [jsonObject objectForKey:@"fsr"];
+    BOOL hasFemaleSlow = (test != NULL && ![test isEqualToString:@"NO"]);
+    
+    test =  [jsonObject objectForKey:@"frr"];
+    BOOL hasFemaleReg = (test != NULL && ![test isEqualToString:@"NO"]);
+
+    
     if ([_genderMaleSelector isOn]) {
         if ([_speedSelector isOn]) {
             NSString *test =  [jsonObject objectForKey:@"msr"];
-            if (test != NULL && ![test isEqualToString:@"NO"]) {
+            if (hasMaleSlow) {
                 refAudio = test;
             }
         }
         else {
             NSString *test =  [jsonObject objectForKey:@"mrr"];
-            if (test != NULL && ![test isEqualToString:@"NO"]) {
+            if (hasMaleReg) {
                 refAudio = test;
             }
         }
@@ -327,17 +346,22 @@
     else {
         if ([_speedSelector isOn]) {
             NSString *test =  [jsonObject objectForKey:@"fsr"];
-            if (test != NULL && ![test isEqualToString:@"NO"]) {
+            if (hasFemaleReg) {
                 refAudio = test;
             }
         }
         else {
             NSString *test =  [jsonObject objectForKey:@"frr"];
-            if (test != NULL && ![test isEqualToString:@"NO"]) {
+            if (hasFemaleSlow) {
                 refAudio = test;
             }
         }
     }
+    BOOL hasTwoGenders = (hasMaleReg || hasMaleSlow) && (hasFemaleReg || hasFemaleSlow);
+    _genderMaleSelector.enabled = hasTwoGenders;
+    
+    BOOL hasTwoSpeeds = (hasMaleReg || hasFemaleReg) && (hasMaleSlow || hasFemaleSlow);
+    _speedSelector.enabled = hasTwoSpeeds;
     
     NSLog(@"respondToSwipe after refAudio %@",refAudio);
     NSString *refPath = refAudio;
@@ -487,6 +511,10 @@ BOOL preventPlayAudio = false;
 }
 
 - (IBAction)audioOnSelection:(id)sender {
+    [SSKeychain setPassword:(_audioOnSelector.isOn ? @"Yes":@"No")
+                 forService:@"mitll.proFeedback.device" account:@"audioOn"];
+//    NSString *audioOn = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioOn"];
+
     [self respondToSwipe];
 }
 
@@ -1055,7 +1083,6 @@ NSString *statusCodeDisplay;
     [self addScoreDisplayConstraints:toShow];
 }
 
-
 - (void)setIncorrectMessage:(NSString *) toUse {
     //NSLog(@"display %@",toUse);
     UILabel *toShow = [self getWordLabel:toUse score:0];
@@ -1223,7 +1250,6 @@ BOOL addSpaces = false;
     NSArray *wordAndScore  = [json objectForKey:@"WORD_TRANSCRIPT"];
     NSArray *phoneAndScore = [json objectForKey:@"PHONE_TRANSCRIPT"];
     
-    
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
     }
@@ -1232,7 +1258,7 @@ BOOL addSpaces = false;
     _scoreDisplayContainer.translatesAutoresizingMaskIntoConstraints = NO;
     _scoreDisplayContainer.clipsToBounds = YES;
 
-    UIView *leftView = nil;
+    UIView *leftView  = nil;
     UIView *rightView = nil;
     
     NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
