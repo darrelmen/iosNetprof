@@ -38,7 +38,7 @@
     }
 
     if (![_password.text isEqualToString:_confirmPassword.text]) {
-        _confirmPasswordFeedback.text = @"Please enter the same email as above.";
+        _confirmPasswordFeedback.text = @"Please enter the same password.";
         _confirmPasswordFeedback.textColor = [UIColor redColor];
         valid = false;
     }
@@ -46,9 +46,7 @@
         
         [self forgotUsername:[self MD5:_password.text] language:_language];
     }
-    
 }
-
 
 - (NSString*)MD5:(NSString*)toConvert
 {
