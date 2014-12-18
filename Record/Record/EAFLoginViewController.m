@@ -27,12 +27,11 @@
     
     //not japanese or levantine -- consider levantine?
     // TODO : get list of languages from server call?
-
+    
     _langauges = [NSArray arrayWithObjects: @"Dari", @"English",
                   //@"Egyptian",
                   @"Farsi",
                   @"Korean",
-           //       @"KoreanTest",
             //      @"Levantine",
                   @"CM",
                   @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
@@ -85,6 +84,16 @@
     if (userid != nil) {
         [self performSegueWithIdentifier:@"goToChapter" sender:self];
     }
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES];   //it hides
+}
+
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [self.navigationController setNavigationBarHidden:NO];    // it shows
 }
 
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{

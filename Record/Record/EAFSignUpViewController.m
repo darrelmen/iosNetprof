@@ -127,7 +127,7 @@
     
     BOOL valid = true;
     if (_username.text.length == 0) {
-        _usernameFeedback.text = @"Please enter a username";
+        _usernameFeedback.text = @"Please enter a username.";
         valid = false;
     }
     if (_username.text.length < 4) {
@@ -135,11 +135,11 @@
         valid = false;
     }
     if (_password.text.length == 0) {
-        _passwordFeedback.text = @"Please enter a password";
+        _passwordFeedback.text = @"Please enter a password.";
         valid = false;
     }
     if (_password.text.length < 4) {
-        _passwordFeedback.text = @"Please enter a longer password";
+        _passwordFeedback.text = @"Please enter a longer password.";
         valid = false;
     }
     if (_email.text.length == 0) {

@@ -28,17 +28,27 @@
 }
 @end
 
+@interface EAFRecoFlashcardController ()
+
+@property BButton *playingIcon;
+@property NSString *flashcardPlayerStatusContext;
+
+@property CFAbsoluteTime then2 ;
+@property CFAbsoluteTime now;
+
+@end
+
 @implementation EAFRecoFlashcardController
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
-    playingIcon = [BButton awesomeButtonWithOnlyIcon:FAVolumeUp
+    _playingIcon = [BButton awesomeButtonWithOnlyIcon:FAVolumeUp
                                                   type: BButtonTypeDefault
                                                  style:BButtonStyleBootstrapV3];
-    playingIcon.color = [UIColor colorWithWhite:1.0f alpha:0.0f];
-    [playingIcon setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    _playingIcon.color = [UIColor colorWithWhite:1.0f alpha:0.0f];
+    [_playingIcon setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
    
     [[self view] sendSubviewToBack:_cardBackground];
     
@@ -74,7 +84,6 @@
     // make sure volume is high on iPhones
     
     [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&setOverrideError];
-    
     
     if(setOverrideError){
         NSLog(@"%@", [setOverrideError description]);
@@ -168,6 +177,10 @@
 }
 
 - (IBAction)showScoresClick:(id)sender {
+    NSLog(@"Got showScoresClick");
+    
+    [self stopPlayingAudio];
+    
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
     [poster postEvent:[NSString stringWithFormat:@"showScoresClick"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"showScores" widgetType:@"Button"];
@@ -482,7 +495,7 @@ BOOL preventPlayAudio = false;
 
 - (IBAction)whatToShowSelection:(id)sender {
     long selected = [_whatToShow selectedSegmentIndex];
-       NSLog(@"whatToShowSelection %ld", selected);
+    //   NSLog(@"recoflashcard : whatToShowSelection %ld", selected);
     if (selected == 0) {
         [_foreignLang setHidden:true];
         [_english setHidden:false];
@@ -514,7 +527,9 @@ BOOL preventPlayAudio = false;
     [SSKeychain setPassword:(_audioOnSelector.isOn ? @"Yes":@"No")
                  forService:@"mitll.proFeedback.device" account:@"audioOn"];
 //    NSString *audioOn = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioOn"];
-
+    if (!_audioOnSelector.isOn) {
+        [self stopPlayingAudio];
+    }
     [self respondToSwipe];
 }
 
@@ -536,7 +551,7 @@ BOOL preventPlayAudio = false;
     [self removePlayingAudioIcon];
 }
 
-BButton *playingIcon;
+//BButton *playingIcon;
 // find first subview and remove the icon from it
 // TODO : fix this for spacer case
 - (void)removePlayingAudioIcon {
@@ -548,7 +563,7 @@ BButton *playingIcon;
         //    NSLog(@"instead, removing playing icon from %@",first);
         }
         for (UIView *v in [first subviews]) {
-            if (v == playingIcon) {
+            if (v == _playingIcon) {
                 [v removeFromSuperview];
               //  NSLog(@"Removing playing icon from %@",first);
                 break;
@@ -560,7 +575,7 @@ BButton *playingIcon;
 - (void)audioPlayerDecodeErrorDidOccur:
 (AVAudioPlayer *)player error:(NSError *)error
 {
-    NSLog(@"Decode Error occurred");
+    NSLog(@"Decode Error occurred %@",error);
 }
 
 - (void)audioRecorderDidFinishRecording:
@@ -571,8 +586,8 @@ BButton *playingIcon;
     CMTime time = asset.duration;
     double durationInSeconds = CMTimeGetSeconds(time);
     
-    NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs event       %f diff %f",durationInSeconds, (now-then2), (now-then2)-durationInSeconds );
-    NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs gesture end %f diff %f",durationInSeconds, (gestureEnd-then2), (gestureEnd-then2)-durationInSeconds );
+    NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs event       %f diff %f",durationInSeconds, (_now-_then2), (_now-_then2)-durationInSeconds );
+    NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs gesture end %f diff %f",durationInSeconds, (gestureEnd-_then2), (gestureEnd-_then2)-durationInSeconds );
     
     if (durationInSeconds > 0.3) {
         if (_hasModel) {
@@ -597,7 +612,7 @@ BButton *playingIcon;
 }
 
 - (void)removePlayObserver {
-    NSLog(@" remove observer");
+    //NSLog(@"reco flashcard : remove observer");
     
     @try {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
@@ -608,7 +623,13 @@ BButton *playingIcon;
     }
 }
 
-NSString *flashcardPlayerStatusContext;
+- (void)stopPlayingAudio {
+    if (_player) {
+        [_player pause];
+        [self removePlayObserver];
+        [self removePlayingAudioHighlight];
+    }
+}
 
 // look for local file with mp3 and use it if it's there.
 //
@@ -634,10 +655,7 @@ NSString *flashcardPlayerStatusContext;
         NSLog(@"playRefAudio URL     %@", _refAudioPath);
     }
     
-    if (_player) {
-        [_player pause];
-        [self removePlayObserver];
-    }
+    [self stopPlayingAudio];
     
     UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
     AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
@@ -646,18 +664,22 @@ NSString *flashcardPlayerStatusContext;
     
     _player = [AVPlayer playerWithURL:url];
     
-    [_player addObserver:self forKeyPath:@"status" options:0 context:&flashcardPlayerStatusContext];
+    [_player addObserver:self forKeyPath:@"status" options:0 context:&_flashcardPlayerStatusContext];
     _playRefAudioButton.enabled = NO;
+}
+
+- (void)removePlayingAudioHighlight {
+    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
+    NSRange range= NSMakeRange(0, [result length]);
+    [result removeAttribute:NSBackgroundColorAttributeName range:range];
+    [_foreignLang setAttributedText:result];
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
     NSLog(@" playerItemDidReachEnd");
     _playRefAudioButton.enabled = YES;
     
-    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
-    NSRange range= NSMakeRange(0, [result length]);
-    [result removeAttribute:NSBackgroundColorAttributeName range:range];
-    [_foreignLang setAttributedText:result];
+    [self removePlayingAudioHighlight];
 }
 
 - (void)highlightFLWhilePlaying
@@ -682,7 +704,7 @@ NSString *flashcardPlayerStatusContext;
             NSLog(@"observeValueForKeyPath audio ready so playing...");
             
             [self highlightFLWhilePlaying];
-            NSLog(@"observeValueForKeyPath highlight");
+           // NSLog(@"observeValueForKeyPath highlight");
 
             [_player play];
             
@@ -718,9 +740,6 @@ NSString *flashcardPlayerStatusContext;
     }
 }
 
-CFAbsoluteTime then2 ;
-CFAbsoluteTime now;
-
 - (void)logError:(NSError *)error {
     NSLog(@"Domain:      %@", error.domain);
     NSLog(@"Error Code:  %ld", (long)error.code);
@@ -731,8 +750,8 @@ CFAbsoluteTime now;
 bool debugRecord = false;
 
 - (IBAction)recordAudio:(id)sender {
-    then2 = CFAbsoluteTimeGetCurrent();
-    if (debugRecord) NSLog(@"recordAudio time = %f",then2);
+    _then2 = CFAbsoluteTimeGetCurrent();
+    if (debugRecord) NSLog(@"recordAudio time = %f",_then2);
     
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
@@ -756,7 +775,7 @@ bool debugRecord = false;
         {
             CFAbsoluteTime recordingBegins = CFAbsoluteTimeGetCurrent();
             
-            if (debugRecord) NSLog(@"recordAudio -recording %f vs begin %f diff %f ",then2,recordingBegins,(recordingBegins-then2));
+            if (debugRecord) NSLog(@"recordAudio -recording %f vs begin %f diff %f ",_then2,recordingBegins,(recordingBegins-_then2));
             
         }
         else {
@@ -854,7 +873,7 @@ double gestureEnd;
                 first = [subviews objectAtIndex:2];
                // NSLog(@"instead, adding playing icon to %@",first);
             }
-            [first addSubview:playingIcon];
+            [first addSubview:_playingIcon];
           //  NSLog(@"Adding playing icon to %@",first);
 
         }
@@ -878,9 +897,9 @@ double gestureEnd;
 }
 
 - (IBAction)stopAudio:(id)sender {
-    now = CFAbsoluteTimeGetCurrent();
-    if (debugRecord)  NSLog(@"stopAudio Event duration was %f",(now-then2));
-    if (debugRecord)  NSLog(@"stopAudio now  time =        %f",now);
+    _now = CFAbsoluteTimeGetCurrent();
+    if (debugRecord)  NSLog(@"stopAudio Event duration was %f",(_now-_then2));
+    if (debugRecord)  NSLog(@"stopAudio now  time =        %f",_now);
     
     _recordButton.enabled = YES;
     

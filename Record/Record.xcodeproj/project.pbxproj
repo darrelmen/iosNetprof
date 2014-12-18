@@ -72,6 +72,7 @@
 		B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C461979C8B70036B90C /* MSSimpleGauge.m */; };
 		B695FDDE1A3A521B0064DC83 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B695FDDD1A3A521B0064DC83 /* Settings.bundle */; };
 		B695FDE01A3B697C0064DC83 /* volumeUp_26.png in Resources */ = {isa = PBXBuildFile; fileRef = B695FDDF1A3B697C0064DC83 /* volumeUp_26.png */; };
+		B695FDE21A433CA80064DC83 /* NewProF2_48x48.png in Resources */ = {isa = PBXBuildFile; fileRef = B695FDE11A433CA80064DC83 /* NewProF2_48x48.png */; };
 		B696890319993B910094A297 /* micBiggerCircle.png in Resources */ = {isa = PBXBuildFile; fileRef = B696890219993B910094A297 /* micBiggerCircle.png */; };
 		B69821301A019A7200BB9865 /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = B698212F1A019A7200BB9865 /* SSKeychain.m */; };
 		B69821321A02978500BB9865 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B69821311A02978500BB9865 /* FontAwesome.ttf */; };
@@ -235,6 +236,7 @@
 		B68A5C471979C8B70036B90C /* MSSimpleGaugeSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSSimpleGaugeSubclass.h; sourceTree = "<group>"; };
 		B695FDDD1A3A521B0064DC83 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = Resources/Settings.bundle; sourceTree = "<group>"; };
 		B695FDDF1A3B697C0064DC83 /* volumeUp_26.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = volumeUp_26.png; sourceTree = "<group>"; };
+		B695FDE11A433CA80064DC83 /* NewProF2_48x48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NewProF2_48x48.png; sourceTree = "<group>"; };
 		B696890219993B910094A297 /* micBiggerCircle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = micBiggerCircle.png; sourceTree = "<group>"; };
 		B698212E1A019A7200BB9865 /* SSKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
 		B698212F1A019A7200BB9865 /* SSKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSKeychain.m; sourceTree = "<group>"; };
@@ -357,6 +359,7 @@
 		B66BACBF1970A57B00E28ECC /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B695FDE11A433CA80064DC83 /* NewProF2_48x48.png */,
 				B695FDDF1A3B697C0064DC83 /* volumeUp_26.png */,
 				B60466591A3A1203000B5464 /* rightAndWrong_26h.png */,
 				B60466571A3A119B000B5464 /* rightAndWrong_30h.png */,
@@ -682,6 +685,7 @@
 				B6DF209B1A25171400CA31B1 /* checkAndEar.png in Resources */,
 				B6DF20A11A251C8700CA31B1 /* micBiggerCircleTransparent@2x.png in Resources */,
 				B60466511A38EDB9000B5464 /* female.png in Resources */,
+				B695FDE21A433CA80064DC83 /* NewProF2_48x48.png in Resources */,
 				B66BACC11970A5CD00E28ECC /* play.png in Resources */,
 				B6D001761970ACD3009554D5 /* record.png in Resources */,
 				B66BACC31970A5DC00E28ECC /* pause.png in Resources */,
