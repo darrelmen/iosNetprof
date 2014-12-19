@@ -390,18 +390,18 @@ NSString *myCurrentTitle;
             NSMutableArray *toPlay = [[NSMutableArray alloc] init];
             [toPlay addObject:refAudio];
             
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+//            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
             
-            for (UIView *subview in [cell.contentView subviews]) {
-                NSLog(@"subview %@",subview);
-                
-                if ([subview isKindOfClass:[UIImage class]]) {
-                            NSLog(@"got it %@",subview);
-
-                    _audioPlayer.playingIcon = subview;
-                    
-                }
-            }
+//            for (UIView *subview in [cell.contentView subviews]) {
+//                NSLog(@"subview %@",subview);
+//                
+//                if ([subview isKindOfClass:[UIImage class]]) {
+//                            NSLog(@"got it %@",subview);
+//
+//                    _audioPlayer.playingIcon = subview;
+//                    
+//                }
+//            }
             
      //       NSLog(@"playing audio @%",toPlay);
             _audioPlayer.audioPaths = toPlay;
@@ -413,6 +413,16 @@ NSString *myCurrentTitle;
     }
 
 }
+
+- (void) playStarted {
+    
+}
+
+
+- (void) playStopped {
+    
+}
+
 #pragma mark - Table view delegate
 
 //- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

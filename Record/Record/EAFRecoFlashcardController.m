@@ -20,6 +20,7 @@
 #import "EAFContextPopupViewController.h"
 #import "EAFEventPoster.h"
 #import "MZFormSheetController.h"
+#import "EAFAudioPlayer.h"
 
 @implementation UIProgressView (customView)
 - (CGSize)sizeThatFits:(CGSize)size {
@@ -36,6 +37,9 @@
 @property CFAbsoluteTime then2 ;
 @property CFAbsoluteTime now;
 @property int reqid;
+@property NSMutableArray *audioRefs;
+@property EAFAudioPlayer *myAudioPlayer;
+@property (strong, nonatomic) AVAudioPlayer *audioPlayer;
 
 @end
 
@@ -44,13 +48,20 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     _reqid = 1;
+    
     _playingIcon = [BButton awesomeButtonWithOnlyIcon:FAVolumeUp
                                                   type: BButtonTypeDefault
                                                  style:BButtonStyleBootstrapV3];
     _playingIcon.color = [UIColor colorWithWhite:1.0f alpha:0.0f];
     [_playingIcon setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-   
+
+    _myAudioPlayer = [[EAFAudioPlayer alloc] init];
+    _myAudioPlayer.url = _url;
+    _myAudioPlayer.language = _language;
+    _myAudioPlayer.delegate = self;
+    
     [[self view] sendSubviewToBack:_cardBackground];
     
     _cardBackground.layer.cornerRadius = 15.f;
@@ -171,8 +182,21 @@
     NSString *audioOn = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioOn"];
     if (audioOn != nil) {
      //   NSLog(@"checking - audio on %@",audioOn);
-        _audioOnSelector.on = [audioOn isEqualToString:@"Yes"];
+        _audioOnSelector.selectedSegmentIndex = [audioOn isEqualToString:@"Yes"] ? 0:1;
     }
+    
+    NSString *audioGender = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioGender"];
+    if (audioGender != nil) {
+        //   NSLog(@"checking - audio on %@",audioOn);
+        _genderMaleSelector.selectedSegmentIndex = [audioGender isEqualToString:@"Male"] ? 0:[audioGender isEqualToString:@"Female"]?1:2;
+    }
+
+    NSString *audioSpeed = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioSpeed"];
+    if (audioSpeed != nil) {
+        //   NSLog(@"checking - audio on %@",audioOn);
+        _speedSelector.on = [audioSpeed isEqualToString:@"Slow"];
+    }
+
 
     [self respondToSwipe];
 }
@@ -316,10 +340,24 @@
     return toUse;
 }
 
+//- (IBAction)gotAudioSelection:(id)sender {
+//    [SSKeychain setPassword:(_speedSelector.isOn ? @"Slow":@"Regular")
+//                 forService:@"mitll.proFeedback.device" account:@"audioSpeed"];
+//    
+//    [self respondToSwipe];
+//}
+
+- (IBAction)gotGenderSelection:(id)sender {
+    
+    [SSKeychain setPassword:(_genderMaleSelector.selectedSegmentIndex == 0 ? @"Male":_genderMaleSelector.selectedSegmentIndex == 1 ? @"Female" : @"Both")
+                     forService:@"mitll.proFeedback.device" account:@"audioGender"];
+    [self respondToSwipe];
+}
 
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
     [self removePlayObserver];
+    [_myAudioPlayer stopAudio];
     [_recoFeedbackImage stopAnimating];
 
     [_correctFeedback setHidden:true];
@@ -342,55 +380,86 @@
     test =  [jsonObject objectForKey:@"frr"];
     BOOL hasFemaleReg = (test != NULL && ![test isEqualToString:@"NO"]);
     
-    if ([_genderMaleSelector isOn]) {
-        if ([_speedSelector isOn]) {
-            NSString *test =  [jsonObject objectForKey:@"msr"];
+    long selectedGender = _genderMaleSelector.selectedSegmentIndex;
+    _audioRefs = [[NSMutableArray alloc] init];
+    BOOL isSlow = [_speedSelector isOn];
+    NSLog(@"is slow %@",isSlow ? @"SLOW" :@"REGULAR");
+    if (selectedGender == 0) {
+        if (isSlow) {
             if (hasMaleSlow) {
-                refAudio = test;
+                refAudio = [jsonObject objectForKey:@"msr"];
+                [_audioRefs addObject: refAudio];
             }
         }
         else {
-            NSString *test =  [jsonObject objectForKey:@"mrr"];
             if (hasMaleReg) {
-                refAudio = test;
+                refAudio = [jsonObject objectForKey:@"mrr"];
+                [_audioRefs addObject: refAudio];
+            }
+        }
+    }
+    else if (selectedGender == 1){
+        if (isSlow) {
+            if (hasFemaleSlow) {
+                refAudio = [jsonObject objectForKey:@"fsr"];
+                [_audioRefs addObject: refAudio];
+            }
+        }
+        else {
+            if (hasFemaleReg) {
+                refAudio =  [jsonObject objectForKey:@"frr"];
+                [_audioRefs addObject: refAudio];
             }
         }
     }
     else {
-        if ([_speedSelector isOn]) {
-            NSString *test =  [jsonObject objectForKey:@"fsr"];
-            if (hasFemaleReg) {
-                refAudio = test;
+        if (isSlow) {
+            if (hasMaleSlow) {
+                refAudio = [jsonObject objectForKey:@"msr"];
+                [_audioRefs addObject: refAudio];
+            }
+            if (hasFemaleSlow) {
+                refAudio = [jsonObject objectForKey:@"fsr"];
+                [_audioRefs addObject: refAudio];
             }
         }
         else {
-            NSString *test =  [jsonObject objectForKey:@"frr"];
-            if (hasFemaleSlow) {
-                refAudio = test;
+            if (hasMaleReg) {
+                refAudio = [jsonObject objectForKey:@"mrr"];
+                [_audioRefs addObject: refAudio];
+            }
+            if (hasFemaleReg) {
+                refAudio =  [jsonObject objectForKey:@"frr"];
+                [_audioRefs addObject: refAudio];
             }
         }
     }
     BOOL hasTwoGenders = (hasMaleReg || hasMaleSlow) && (hasFemaleReg || hasFemaleSlow);
     _genderMaleSelector.enabled = hasTwoGenders;
-    
+    [_genderMaleSelector setEnabled:(hasMaleReg || hasMaleSlow) forSegmentAtIndex:0];
+    [_genderMaleSelector setEnabled:(hasFemaleReg || hasFemaleSlow) forSegmentAtIndex:1];
+    [_genderMaleSelector setEnabled:hasTwoGenders forSegmentAtIndex:2];
+
     BOOL hasTwoSpeeds = (hasMaleReg || hasFemaleReg) && (hasMaleSlow || hasFemaleSlow);
     _speedSelector.enabled = hasTwoSpeeds;
     
+    //[_speedSelector setEnabled:NO forSegmentAtIndex:0];
+    
     NSLog(@"respondToSwipe after refAudio %@",refAudio);
-    NSString *refPath = refAudio;
-    if (refPath) {
-        refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
-                                                     withString:@".mp3"];
-        
-        NSMutableString *mu = [NSMutableString stringWithString:refPath];
-        [mu insertString:_url atIndex:0];
-        _refAudioPath = mu;
-        _rawRefAudioPath = refPath;
-    }
-    else {
-        _refAudioPath = @"NO";
-        _rawRefAudioPath = @"NO";
-    }
+//    NSString *refPath = refAudio;
+//    if (refPath) {
+//        refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+//                                                     withString:@".mp3"];
+//        
+//        NSMutableString *mu = [NSMutableString stringWithString:refPath];
+//        [mu insertString:_url atIndex:0];
+//        _refAudioPath = mu;
+//        _rawRefAudioPath = refPath;
+//    }
+//    else {
+//        _refAudioPath = @"NO";
+//        _rawRefAudioPath = @"NO";
+//    }
     
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
@@ -402,15 +471,6 @@
     
     NSString *model =[UIDevice currentDevice].model;
     BOOL isIPhone = [model containsString:@"iPhone"];
-    
-//    if (false) {
-//        if (isIPhone && [flAtIndex length] > 15) {
-//            _foreignLang.font = [UIFont systemFontOfSize:24];
-//        }
-//        else {
-//            _foreignLang.font = [UIFont systemFontOfSize:isIPhone ? 32 :44];
-//        }
-//    }
     
     if (isIPhone && [enAtIndex length] > 15) {
         _english.font = [UIFont systemFontOfSize:24];
@@ -424,12 +484,17 @@
     }
     _scoreProgress.hidden = true;
     
-    if ([_audioOnSelector isOn] && [self hasRefAudio] && !preventPlayAudio && !_foreignLang.hidden) {
-        [self playRefAudio:nil];
+    _myAudioPlayer.audioPaths = _audioRefs;
+    
+    if (_audioOnSelector.selectedSegmentIndex == 0 && [self hasRefAudio] && !preventPlayAudio && !_foreignLang.hidden) {
+        //[self playRefAudio:nil];
+        NSLog(@"playing these audio cuts %@",_audioRefs);
+        _myAudioPlayer.audioPaths = _audioRefs;
+        [_myAudioPlayer playRefAudio];
     }
     else {
         preventPlayAudio = false;
-        NSLog(@"not playing audio at path %@",_refAudioPath);
+   //     NSLog(@"not playing audio at path %@",_refAudioPath);
         //  NSLog(@"audio on %@",[_audioOnSelector isOn]? @"YES" : @"NO");
     }
     
@@ -486,7 +551,8 @@ BOOL preventPlayAudio = false;
     if (
         //[_audioOnSelector isOn] &&
         [self hasRefAudio]) {
-        [self playRefAudio:nil];
+       // [self playRefAudio:nil];
+        [_myAudioPlayer playRefAudio];
     }
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
@@ -515,18 +581,21 @@ BOOL preventPlayAudio = false;
     }
 }
 
-- (IBAction)genderSelection:(id)sender {
-    [self respondToSwipe];
-}
+//- (IBAction)genderSelection:(id)sender {
+//    [self respondToSwipe];
+//}
 
 - (IBAction)speedSelection:(id)sender {
+    [SSKeychain setPassword:(_speedSelector.isOn ? @"Slow":@"Regular")
+                 forService:@"mitll.proFeedback.device" account:@"audioSpeed"];
+    
     [self respondToSwipe];
 }
 
 - (IBAction)audioOnSelection:(id)sender {
-    [SSKeychain setPassword:(_audioOnSelector.isOn ? @"Yes":@"No")
+    [SSKeychain setPassword:(_audioOnSelector.selectedSegmentIndex == 0 ? @"Yes":@"No")
                  forService:@"mitll.proFeedback.device" account:@"audioOn"];
-    if (!_audioOnSelector.isOn) {
+    if (_audioOnSelector.selectedSegmentIndex == 1) {
         [self stopPlayingAudio];
     }
     [self respondToSwipe];
@@ -534,7 +603,8 @@ BOOL preventPlayAudio = false;
 
 - (BOOL) hasRefAudio
 {
-    return _refAudioPath && ![_refAudioPath hasSuffix:@"NO"];
+ //   return _refAudioPath && ![_refAudioPath hasSuffix:@"NO"];
+   return _audioRefs.count > 0;
 }
 
 - (void)didReceiveMemoryWarning
@@ -548,6 +618,17 @@ BOOL preventPlayAudio = false;
 {
     _recordButton.enabled = YES;
     [self removePlayingAudioIcon];
+}
+
+
+- (void) playStarted {
+    // _playingIcon.hidden = false;
+    [self highlightFLWhilePlaying];
+}
+
+- (void) playStopped {
+    //  _playingIcon.hidden = true;
+    [self removePlayingAudioHighlight];
 }
 
 //BButton *playingIcon;
@@ -632,40 +713,40 @@ BOOL preventPlayAudio = false;
 
 // look for local file with mp3 and use it if it's there.
 //
-- (IBAction)playRefAudio:(id)sender {
-    NSURL *url = [NSURL URLWithString:_refAudioPath];
-    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    
-    NSString *audioDir = [NSString stringWithFormat:@"%@_audio",_language];
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
-    
-    NSString *destFileName = [filePath stringByAppendingPathComponent:_rawRefAudioPath];
-    
-    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName];
-    if (fileExists) {
-        NSLog(@"playRefAudio Raw URL %@", _rawRefAudioPath);
-        NSLog(@"using local url %@",destFileName);
-        url = [[NSURL alloc] initFileURLWithPath: destFileName];
-    }
-    else {
-        NSLog(@"can't find local url %@",destFileName);
-        NSLog(@"playRefAudio URL     %@", _refAudioPath);
-    }
-    
-    [self stopPlayingAudio];
-    
-    UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
-    AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
-    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
-    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
-    
-    _player = [AVPlayer playerWithURL:url];
-    
-    [_player addObserver:self forKeyPath:@"status" options:0 context:&_flashcardPlayerStatusContext];
-    _playRefAudioButton.enabled = NO;
-}
+//- (IBAction)playRefAudio:(id)sender {
+//    NSURL *url = [NSURL URLWithString:_refAudioPath];
+//    
+//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+//    NSString *documentsDirectory = [paths objectAtIndex:0];
+//    
+//    NSString *audioDir = [NSString stringWithFormat:@"%@_audio",_language];
+//    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
+//    
+//    NSString *destFileName = [filePath stringByAppendingPathComponent:_rawRefAudioPath];
+//    
+//    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName];
+//    if (fileExists) {
+//        NSLog(@"playRefAudio Raw URL %@", _rawRefAudioPath);
+//        NSLog(@"using local url %@",destFileName);
+//        url = [[NSURL alloc] initFileURLWithPath: destFileName];
+//    }
+//    else {
+//        NSLog(@"can't find local url %@",destFileName);
+//        NSLog(@"playRefAudio URL     %@", _refAudioPath);
+//    }
+//    
+//    [self stopPlayingAudio];
+//    
+//    UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
+//    AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
+//    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+//    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+//    
+//    _player = [AVPlayer playerWithURL:url];
+//    
+//    [_player addObserver:self forKeyPath:@"status" options:0 context:&_flashcardPlayerStatusContext];
+//    _playRefAudioButton.enabled = NO;
+//}
 
 - (void)removePlayingAudioHighlight {
     NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
@@ -674,12 +755,12 @@ BOOL preventPlayAudio = false;
     [_foreignLang setAttributedText:result];
 }
 
-- (void)playerItemDidReachEnd:(NSNotification *)notification {
-    NSLog(@" playerItemDidReachEnd");
-    _playRefAudioButton.enabled = YES;
-    
-    [self removePlayingAudioHighlight];
-}
+//- (void)playerItemDidReachEnd:(NSNotification *)notification {
+//    NSLog(@" playerItemDidReachEnd");
+//    _playRefAudioButton.enabled = YES;
+//    
+//    [self removePlayingAudioHighlight];
+//}
 
 - (void)highlightFLWhilePlaying
 {
@@ -694,50 +775,50 @@ BOOL preventPlayAudio = false;
 
 // So this is more complicated -- we have to wait until the mp3 has arrived from the server before we can play it
 // we remove the observer, or else we will later get a message when the player discarded
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
-                        change:(NSDictionary *)change context:(void *)context {
-//    NSLog(@" observeValueForKeyPath %@",keyPath);
-    
-    if (object == _player && [keyPath isEqualToString:@"status"]) {
-        if (_player.status == AVPlayerStatusReadyToPlay) {
-            NSLog(@"observeValueForKeyPath audio ready so playing...");
-            
-            [self highlightFLWhilePlaying];
-           // NSLog(@"observeValueForKeyPath highlight");
-
-            [_player play];
-            
-            AVPlayerItem *currentItem = [_player currentItem];
-            
-            [[NSNotificationCenter defaultCenter]
-             addObserver:self
-             selector:@selector(playerItemDidReachEnd:)
-             name:AVPlayerItemDidPlayToEndTimeNotification
-             object:currentItem];
-            
-            @try {
-                [_player removeObserver:self forKeyPath:@"status"];
-            }
-            @catch (NSException *exception) {
-                NSLog(@"observeValueForKeyPath : got exception %@",exception.description);
-            }
-            
-        } else if (_player.status == AVPlayerStatusFailed) {
-            // something went wrong. player.error should contain some information
-            
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't play audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [alert show];
-            
-            NSLog(@"player status failed");
-            
-            [_player removeObserver:self forKeyPath:@"status"];
-            _playRefAudioButton.enabled = YES;
-        }
-    }
-    else {
-        NSLog(@"ignoring value... %@",keyPath);
-    }
-}
+//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
+//                        change:(NSDictionary *)change context:(void *)context {
+////    NSLog(@" observeValueForKeyPath %@",keyPath);
+//    
+//    if (object == _player && [keyPath isEqualToString:@"status"]) {
+//        if (_player.status == AVPlayerStatusReadyToPlay) {
+//            NSLog(@"observeValueForKeyPath audio ready so playing...");
+//            
+//            [self highlightFLWhilePlaying];
+//           // NSLog(@"observeValueForKeyPath highlight");
+//
+//            [_player play];
+//            
+//            AVPlayerItem *currentItem = [_player currentItem];
+//            
+//            [[NSNotificationCenter defaultCenter]
+//             addObserver:self
+//             selector:@selector(playerItemDidReachEnd:)
+//             name:AVPlayerItemDidPlayToEndTimeNotification
+//             object:currentItem];
+//            
+//            @try {
+//                [_player removeObserver:self forKeyPath:@"status"];
+//            }
+//            @catch (NSException *exception) {
+//                NSLog(@"observeValueForKeyPath : got exception %@",exception.description);
+//            }
+//            
+//        } else if (_player.status == AVPlayerStatusFailed) {
+//            // something went wrong. player.error should contain some information
+//            
+//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't play audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+//            [alert show];
+//            
+//            NSLog(@"player status failed");
+//            
+//            [_player removeObserver:self forKeyPath:@"status"];
+//            _playRefAudioButton.enabled = YES;
+//        }
+//    }
+//    else {
+//        NSLog(@"ignoring value... %@",keyPath);
+//    }
+//}
 
 - (void)logError:(NSError *)error {
     NSLog(@"Domain:      %@", error.domain);
@@ -797,8 +878,10 @@ bool debugRecord = false;
         }
         [_foreignLang setHidden:!_foreignLang.hidden];
         [_english setHidden:!_english.hidden];
-        if (!_foreignLang.hidden && [_audioOnSelector isOn] && [self hasRefAudio] && !preventPlayAudio) {
-            [self playRefAudio:nil];
+        if (!_foreignLang.hidden && _audioOnSelector.selectedSegmentIndex == 0 && [self hasRefAudio] && !preventPlayAudio) {
+//            [self playRefAudio:nil];
+            [_myAudioPlayer playRefAudio];
+
         }
     }
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
@@ -885,7 +968,7 @@ double gestureEnd;
         {
             NSLog(@"Error: %@", [error localizedDescription]);
         } else {
-            [_audioPlayer setVolume:3];
+            [_audioPlayer setVolume:3];  // TODO Valid???
          //   NSLog(@"volume %f",[_audioPlayer volume]);
             [_audioPlayer play];
         }

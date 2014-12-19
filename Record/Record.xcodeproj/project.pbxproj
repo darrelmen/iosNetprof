@@ -47,6 +47,10 @@
 		B642BAD01A0DD3A500D939F2 /* PhoneTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B642BACF1A0DD3A500D939F2 /* PhoneTableViewCell.m */; };
 		B649198B1A1A59BC0054CA13 /* mitllLogo2.png in Resources */ = {isa = PBXBuildFile; fileRef = B649198A1A1A59BC0054CA13 /* mitllLogo2.png */; };
 		B649198E1A1A5CE00054CA13 /* EAFSignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B649198D1A1A5CE00054CA13 /* EAFSignUpViewController.m */; };
+		B6629E411A440192008EAC75 /* audioOff_smaller.png in Resources */ = {isa = PBXBuildFile; fileRef = B6629E3D1A440192008EAC75 /* audioOff_smaller.png */; };
+		B6629E421A440192008EAC75 /* audioOff.png in Resources */ = {isa = PBXBuildFile; fileRef = B6629E3E1A440192008EAC75 /* audioOff.png */; };
+		B6629E431A440192008EAC75 /* audioOn_smaller.png in Resources */ = {isa = PBXBuildFile; fileRef = B6629E3F1A440192008EAC75 /* audioOn_smaller.png */; };
+		B6629E441A440192008EAC75 /* audioOn.png in Resources */ = {isa = PBXBuildFile; fileRef = B6629E401A440192008EAC75 /* audioOn.png */; };
 		B66461F2196F193900943BC2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66461F1196F193900943BC2 /* AVFoundation.framework */; };
 		B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */; };
 		B66BACB8197094C000E28ECC /* EAFItemTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B66BACB7197094C000E28ECC /* EAFItemTableViewController.m */; };
@@ -200,6 +204,10 @@
 		B649198A1A1A59BC0054CA13 /* mitllLogo2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mitllLogo2.png; sourceTree = "<group>"; };
 		B649198C1A1A5CE00054CA13 /* EAFSignUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFSignUpViewController.h; sourceTree = "<group>"; };
 		B649198D1A1A5CE00054CA13 /* EAFSignUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFSignUpViewController.m; sourceTree = "<group>"; };
+		B6629E3D1A440192008EAC75 /* audioOff_smaller.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = audioOff_smaller.png; sourceTree = "<group>"; };
+		B6629E3E1A440192008EAC75 /* audioOff.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = audioOff.png; sourceTree = "<group>"; };
+		B6629E3F1A440192008EAC75 /* audioOn_smaller.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = audioOn_smaller.png; sourceTree = "<group>"; };
+		B6629E401A440192008EAC75 /* audioOn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = audioOn.png; sourceTree = "<group>"; };
 		B66461F1196F193900943BC2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B66BACAD197055F500E28ECC /* EAFChapterTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFChapterTableViewController.h; sourceTree = "<group>"; };
 		B66BACAE197055F500E28ECC /* EAFChapterTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFChapterTableViewController.m; sourceTree = "<group>"; };
@@ -369,6 +377,10 @@
 		B66BACBF1970A57B00E28ECC /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B6629E3D1A440192008EAC75 /* audioOff_smaller.png */,
+				B6629E3E1A440192008EAC75 /* audioOff.png */,
+				B6629E3F1A440192008EAC75 /* audioOn_smaller.png */,
+				B6629E401A440192008EAC75 /* audioOn.png */,
 				B695FDE91A43F7010064DC83 /* female_better_h32.png */,
 				B695FDEA1A43F7010064DC83 /* male_better_smaller.png */,
 				B695FDE51A43F4D40064DC83 /* female_better.png */,
@@ -709,6 +721,7 @@
 				B68A5C361979B4590036B90C /* mic-4.svg in Resources */,
 				B6A8D97C19770C2100E8F1D5 /* Icon-76@2x.png in Resources */,
 				B6D001781970AD28009554D5 /* record24.png in Resources */,
+				B6629E431A440192008EAC75 /* audioOn_smaller.png in Resources */,
 				B604665A1A3A1203000B5464 /* rightAndWrong_26h.png in Resources */,
 				B6A8D97D19770C2100E8F1D5 /* Icon-Small.png in Resources */,
 				B66BACBE1970A2FE00E28ECC /* NewProF1.png in Resources */,
@@ -718,6 +731,7 @@
 				B61B822B1A16C921009B00D1 /* sounds.png in Resources */,
 				B69821321A02978500BB9865 /* FontAwesome.ttf in Resources */,
 				B649198B1A1A59BC0054CA13 /* mitllLogo2.png in Resources */,
+				B6629E421A440192008EAC75 /* audioOff.png in Resources */,
 				B6A8D97819770C2100E8F1D5 /* Icon-40@2x.png in Resources */,
 				B6DF209F1A25190400CA31B1 /* questionIcon@2x.png in Resources */,
 				B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */,
@@ -730,6 +744,8 @@
 				B696890319993B910094A297 /* micBiggerCircle.png in Resources */,
 				B6A8D97A19770C2100E8F1D5 /* Icon-60@2x.png in Resources */,
 				B68A5C321979AE7E0036B90C /* playBigger2.png in Resources */,
+				B6629E411A440192008EAC75 /* audioOff_smaller.png in Resources */,
+				B6629E441A440192008EAC75 /* audioOn.png in Resources */,
 				B604662B1A38B4E0000B5464 /* LICENSE in Resources */,
 				B695FDEB1A43F7010064DC83 /* female_better_h32.png in Resources */,
 				B68A5C341979B3480036B90C /* mic-icon.png in Resources */,

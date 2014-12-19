@@ -11,7 +11,7 @@
 #import "EAFAudioPlayer.h"
 #import "BButton.h"
 
-@interface EAFContextPopupViewController : UIViewController
+@interface EAFContextPopupViewController : UIViewController<AudioPlayerNotification>
 
 @property (strong, nonatomic) IBOutlet UILabel *contextFL;
 @property (strong, nonatomic) IBOutlet UILabel *contextTranslation;
@@ -27,6 +27,6 @@
 @property NSString *url;
 @property NSString *language;
 
-@property EAFAudioPlayer *audioPlayer;
+//@property EAFAudioPlayer *audioPlayer;
 
 @end

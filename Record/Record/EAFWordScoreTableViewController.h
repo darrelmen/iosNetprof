@@ -11,7 +11,7 @@
 #import "EAFAudioPlayer.h"
 //#import "BButton.h"
 
-@interface EAFWordScoreTableViewController : UITableViewController<NSURLConnectionDelegate>
+@interface EAFWordScoreTableViewController : UITableViewController<NSURLConnectionDelegate,AudioPlayerNotification>
 
 @property (strong, nonatomic) NSMutableData *responseData;
 

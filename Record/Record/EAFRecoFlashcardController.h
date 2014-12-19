@@ -10,15 +10,16 @@
 #import <AVFoundation/AVFoundation.h>
 #import "BButton.h"
 #import <SplunkMint-iOS/SplunkMint-iOS.h>
+#import "EAFAudioPlayer.h"
 
 @interface EAFRecoFlashcardController : UIViewController
-        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate>
+        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate,AudioPlayerNotification>
 
 @property (strong, nonatomic) IBOutlet UIView *cardBackground;
 @property (strong, nonatomic) IBOutlet UIView *recordButtonContainer;
 
 @property (strong, nonatomic) AVAudioRecorder *audioRecorder;
-@property (strong, nonatomic) AVAudioPlayer *audioPlayer;
+//@property (strong, nonatomic) AVAudioPlayer *audioPlayer;
 
 @property (strong, nonatomic) IBOutlet UIButton *playRefAudioButton;
 @property (strong, nonatomic) IBOutlet UIButton *recordButton;
@@ -31,8 +32,8 @@
 @property (strong, nonatomic) IBOutlet UILabel *foreignLang;
 @property (strong, nonatomic) IBOutlet UILabel *english;
 @property (strong, nonatomic) IBOutlet UILabel *shuffle;
-@property (strong, nonatomic) IBOutlet NSString *refAudioPath;
-@property (strong, nonatomic) IBOutlet NSString *rawRefAudioPath;
+//@property (strong, nonatomic) IBOutlet NSString *refAudioPath;
+//@property (strong, nonatomic) IBOutlet NSString *rawRefAudioPath;
 @property unsigned long index;
 
 @property NSMutableArray *randSequence;
@@ -62,10 +63,12 @@
 
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;
 @property (strong, nonatomic) IBOutlet UIImageView *correctFeedback;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *genderMaleSelector;
 
+@property (strong, nonatomic) IBOutlet UISegmentedControl *audioOnSelector;
 @property (strong, nonatomic) IBOutlet UISwitch *shuffleSwitch;
-@property (strong, nonatomic) IBOutlet UISwitch *audioOnSelector;
-@property (strong, nonatomic) IBOutlet UISwitch *genderMaleSelector;
+//@property (strong, nonatomic) IBOutlet UISwitch *audioOnSelector;
+//@property (strong, nonatomic) IBOutlet UISwitch *genderMaleSelector;
 @property (strong, nonatomic) IBOutlet UISwitch *speedSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *whatToShow;
 - (IBAction)whatToShowSelection:(id)sender;

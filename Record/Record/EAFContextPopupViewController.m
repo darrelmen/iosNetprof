@@ -13,6 +13,7 @@
 //#import "FAImageView.h"
 
 @interface EAFContextPopupViewController ()
+@property EAFAudioPlayer *audioPlayer;
 
 @end
 
@@ -71,8 +72,17 @@
    // _audioPlayer.viewToAddIconTo = _contextFL;
     _audioPlayer.url = _url;
     _audioPlayer.language = _language;
-    _audioPlayer.playingIcon = _playingIcon;
+    //  _audioPlayer.playingIcon = _playingIcon;
+      _audioPlayer.delegate = self;
    // NSLog(@"Audio paths now %@",_audioPlayer.audioPaths);
+}
+
+- (void) playStarted {
+    _playingIcon.hidden = false;
+}
+
+- (void) playStopped {
+    _playingIcon.hidden = true;
 }
 
 - (IBAction)tapOnSentence:(id)sender {
@@ -81,7 +91,6 @@
 
 - (IBAction)gotOK:(id)sender {
     // [self dismissViewControllerAnimated:YES completion:nil];
-    
     [self mz_dismissFormSheetControllerAnimated:YES completionHandler:^(MZFormSheetController *formSheetController) {
         
     }];
@@ -92,7 +101,7 @@
 }
 
 - (IBAction)onClick:(id)sender {
-    NSLog(@"Got click %@",sender);
+   // NSLog(@"Got click %@",sender);
     
     NSMutableArray *audioCuts = [[NSMutableArray alloc] init];
     if (_maleFemale.selectedSegmentIndex == 0) {

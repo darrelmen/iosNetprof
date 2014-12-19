@@ -9,11 +9,11 @@
 #import "EAFAudioPlayer.h"
 #import "FAImageView.h"
 
-//@interface EAFAudioPlayer ()
-//
-////@property FAImageView *playingIcon;
-//
-//@end
+@interface EAFAudioPlayer ()
+
+@property AVPlayer *player;
+
+@end
 
 @implementation EAFAudioPlayer
 
@@ -26,8 +26,20 @@
     return self;
 }
 
-// look for local file with mp3 and use it if it's there.
+- (IBAction)stopAudio {
+    if (_player != nil) {
+        [_player pause];
+    }
+}
+
 - (IBAction)playRefAudio {
+    _currentIndex = 0;
+    
+    [self playRefAudioInternal];
+}
+
+// look for local file with mp3 and use it if it's there.
+- (IBAction)playRefAudioInternal {
     if (_audioPaths.count == 0) {
         return;
     }
@@ -82,28 +94,21 @@
     [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
 }
 
-- (void)removePlayingAudioIcon {
-    if (_playingIcon != nil) {
-        _playingIcon.hidden = true;
-    }
-}
-
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
     NSLog(@" playerItemDidReachEnd");
     
-    [self removePlayingAudioIcon];
+    [self.delegate playStopped];
     
     if (_currentIndex < _audioPaths.count-1) {
         _currentIndex++;
-        [self playRefAudio];
+        [self playRefAudioInternal];
     }
 }
 
 - (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
     NSLog(@"Got error %@", error);
-    [self removePlayingAudioIcon];
+    [self.delegate playStopped];
 }
-
 
 // So this is more complicated -- we have to wait until the mp3 has arrived from the server before we can play it
 // we remove the observer, or else we will later get a message when the player discarded
@@ -114,52 +119,8 @@
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
             NSLog(@" audio ready so playing...");
-            //       [_viewToAddIconTo addSubview:_playingIcon];
-            if (_playingIcon != nil) {
-                _playingIcon.hidden = false;
-            }
-//            _playingIcon.translatesAutoresizingMaskIntoConstraints = NO;
-//
-//          //  NSLayoutConstraint *toRemove = nil;
-//            
-//            NSMutableArray *toRemoveList= [[NSMutableArray alloc] init];
-//            
-//            for (NSLayoutConstraint *constraint in _viewToAddIconTo.superview.constraints) {
-//                if (constraint.firstItem == _playingIcon) {
-//                   // toRemove = constraint;
-//                    [toRemoveList addObject:constraint];
-//                    NSLog(@"got it %@",constraint);
-//                }
-//                else {
-//                    NSLog(@"skipping %@",constraint);
-//                }
-//            }
-//            
-//            for (
-//            if (toRemove != nil) {
-//                [_viewToAddIconTo.superview removeConstraint:toRemove];
-//            }
-//            //[cell.contentView removeConstraints:cell.contentView.constraints];
-//
-//            [_viewToAddIconTo.superview addConstraint:[NSLayoutConstraint
-//                                                       constraintWithItem:_playingIcon
-//                                                       attribute:NSLayoutAttributeLeft
-//                                                       relatedBy:NSLayoutRelationEqual
-//                                                       toItem:_viewToAddIconTo
-//                                                       attribute:NSLayoutAttributeLeft
-//                                                       multiplier:1.0
-//                                                       constant:5.0]];
-//            
-//            [_viewToAddIconTo.superview addConstraint:[NSLayoutConstraint
-//                                                       constraintWithItem:_playingIcon
-//                                                       attribute:NSLayoutAttributeTop
-//                                                       relatedBy:NSLayoutRelationEqual
-//                                                       toItem:_viewToAddIconTo
-//                                                       attribute:NSLayoutAttributeTop
-//                                                       multiplier:1.0
-//                                                       constant:5.0]];
-//            
-            
+            [self.delegate playStarted];
+
             [_player play];
             
             AVPlayerItem *currentItem = [_player currentItem];
@@ -179,8 +140,8 @@
             
         } else if (_player.status == AVPlayerStatusFailed) {
             // something went wrong. player.error should contain some information
-            [self removePlayingAudioIcon];
-            
+            [self.delegate playStopped];
+
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't play audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alert show];
             
@@ -205,6 +166,5 @@
         NSLog(@"initial create - got exception %@",exception.description);
     }
 }
-
 
 @end

@@ -244,7 +244,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     float totalPhoneScore = 0.0f;
     float totalPhones = 0.0f;
     int count = 0;
-    BOOL addSpaces = false;
+    BOOL addSpaces = true;
     for (NSDictionary *wordEntry in words) {
         // TODO iterate over first N words in example words for phone
         if (count++ > 5) break; // only first five?

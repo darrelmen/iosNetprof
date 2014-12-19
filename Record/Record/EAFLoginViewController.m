@@ -113,6 +113,7 @@
       //  NSLog( @"Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
         [self onClick:nil];
     }
+    [self gotSingleTap:nil];
 }
 
 - (IBAction)onClick:(id)sender {

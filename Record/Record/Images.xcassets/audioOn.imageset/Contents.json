@@ -3,12 +3,12 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "checkAndEar.png"
+      "filename" : "audioOn_smaller.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "checkAndEar@2x-1.png"
+      "filename" : "audioOn-1.png"
     },
     {
       "idiom" : "iphone",
@@ -17,7 +17,7 @@
     {
       "idiom" : "ipad",
       "scale" : "1x",
-      "filename" : "checkAndEar@2x.png"
+      "filename" : "audioOn.png"
     },
     {
       "idiom" : "ipad",
