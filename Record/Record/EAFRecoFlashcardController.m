@@ -35,6 +35,7 @@
 
 @property CFAbsoluteTime then2 ;
 @property CFAbsoluteTime now;
+@property int reqid;
 
 @end
 
@@ -43,7 +44,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    _reqid = 1;
     _playingIcon = [BButton awesomeButtonWithOnlyIcon:FAVolumeUp
                                                   type: BButtonTypeDefault
                                                  style:BButtonStyleBootstrapV3];
@@ -340,7 +341,6 @@
     
     test =  [jsonObject objectForKey:@"frr"];
     BOOL hasFemaleReg = (test != NULL && ![test isEqualToString:@"NO"]);
-
     
     if ([_genderMaleSelector isOn]) {
         if ([_speedSelector isOn]) {
@@ -403,14 +403,14 @@
     NSString *model =[UIDevice currentDevice].model;
     BOOL isIPhone = [model containsString:@"iPhone"];
     
-    if (false) {
-        if (isIPhone && [flAtIndex length] > 15) {
-            _foreignLang.font = [UIFont systemFontOfSize:24];
-        }
-        else {
-            _foreignLang.font = [UIFont systemFontOfSize:isIPhone ? 32 :44];
-        }
-    }
+//    if (false) {
+//        if (isIPhone && [flAtIndex length] > 15) {
+//            _foreignLang.font = [UIFont systemFontOfSize:24];
+//        }
+//        else {
+//            _foreignLang.font = [UIFont systemFontOfSize:isIPhone ? 32 :44];
+//        }
+//    }
     
     if (isIPhone && [enAtIndex length] > 15) {
         _english.font = [UIFont systemFontOfSize:24];
@@ -526,7 +526,6 @@ BOOL preventPlayAudio = false;
 - (IBAction)audioOnSelection:(id)sender {
     [SSKeychain setPassword:(_audioOnSelector.isOn ? @"Yes":@"No")
                  forService:@"mitll.proFeedback.device" account:@"audioOn"];
-//    NSString *audioOn = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioOn"];
     if (!_audioOnSelector.isOn) {
         [self stopPlayingAudio];
     }
@@ -992,6 +991,12 @@ double gestureEnd;
       forHTTPHeaderField:@"exercise"];
     [urlRequest setValue:@"decode" forHTTPHeaderField:@"request"];
     
+    NSString *req = [NSString stringWithFormat:@"%d",_reqid];
+    
+    NSLog(@"Req id %@ %d",req, _reqid);
+    [urlRequest setValue:req forHTTPHeaderField:@"reqid"];
+    _reqid++;
+    
     // post the audio
     
     [urlRequest setHTTPBody:postData];
@@ -1154,6 +1159,10 @@ NSString *statusCodeDisplay;
     //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *valid = [json objectForKey:@"valid"];
     NSString *exid = [json objectForKey:@"exid"];
+    
+    NSString *reqid = [json objectForKey:@"reqid"];
+
+    NSLog(@"got back %@",reqid);
     NSString *current = [[self getCurrentJson] objectForKey:@"id"];
     if (![exid isEqualToString:current]) {
         NSLog(@"got %@ vs expecting %@",exid,current );

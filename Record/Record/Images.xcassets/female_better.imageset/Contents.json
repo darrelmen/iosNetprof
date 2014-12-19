@@ -3,12 +3,12 @@
     {
       "idiom" : "iphone",
       "scale" : "1x",
-      "filename" : "sounds@2x.png"
+      "filename" : "female_better_h32.png"
     },
     {
       "idiom" : "iphone",
       "scale" : "2x",
-      "filename" : "sounds@2x-1.png"
+      "filename" : "female_better.png"
     },
     {
       "idiom" : "iphone",
@@ -17,7 +17,7 @@
     {
       "idiom" : "ipad",
       "scale" : "1x",
-      "filename" : "sounds@2x-2.png"
+      "filename" : "female_better-1.png"
     },
     {
       "idiom" : "ipad",
