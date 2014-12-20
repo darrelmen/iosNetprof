@@ -22,6 +22,8 @@
 		B60466561A38F2F4000B5464 /* EAFAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B60466551A38F2F4000B5464 /* EAFAudioPlayer.m */; };
 		B60466581A3A119B000B5464 /* rightAndWrong_30h.png in Resources */ = {isa = PBXBuildFile; fileRef = B60466571A3A119B000B5464 /* rightAndWrong_30h.png */; };
 		B604665A1A3A1203000B5464 /* rightAndWrong_26h.png in Resources */ = {isa = PBXBuildFile; fileRef = B60466591A3A1203000B5464 /* rightAndWrong_26h.png */; };
+		B6104B011A44E0AE00D9B3DA /* checkmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6104B001A44E0AE00D9B3DA /* checkmark@2x.png */; };
+		B6104B031A44E0BA00D9B3DA /* redx@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6104B021A44E0BA00D9B3DA /* redx@2x.png */; };
 		B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */ = {isa = PBXBuildFile; fileRef = B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */; };
 		B61B82261A154C36009B00D1 /* EAFAudioView.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B82251A154C36009B00D1 /* EAFAudioView.m */; };
 		B61B82291A16C191009B00D1 /* rightAndWrong.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B82281A16C191009B00D1 /* rightAndWrong.png */; };
@@ -162,6 +164,8 @@
 		B60466551A38F2F4000B5464 /* EAFAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFAudioPlayer.m; sourceTree = "<group>"; };
 		B60466571A3A119B000B5464 /* rightAndWrong_30h.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rightAndWrong_30h.png; sourceTree = "<group>"; };
 		B60466591A3A1203000B5464 /* rightAndWrong_26h.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rightAndWrong_26h.png; sourceTree = "<group>"; };
+		B6104B001A44E0AE00D9B3DA /* checkmark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkmark@2x.png"; sourceTree = "<group>"; };
+		B6104B021A44E0BA00D9B3DA /* redx@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "redx@2x.png"; sourceTree = "<group>"; };
 		B610C00819D2240800CA9D8A /* EAFRecoFlashcardController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFRecoFlashcardController.m; sourceTree = "<group>"; };
 		B610C00919D2240800CA9D8A /* EAFRecoFlashcardController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFRecoFlashcardController.h; sourceTree = "<group>"; };
 		B61B82251A154C36009B00D1 /* EAFAudioView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFAudioView.m; sourceTree = "<group>"; };
@@ -377,6 +381,8 @@
 		B66BACBF1970A57B00E28ECC /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B6104B021A44E0BA00D9B3DA /* redx@2x.png */,
+				B6104B001A44E0AE00D9B3DA /* checkmark@2x.png */,
 				B6629E3D1A440192008EAC75 /* audioOff_smaller.png */,
 				B6629E3E1A440192008EAC75 /* audioOff.png */,
 				B6629E3F1A440192008EAC75 /* audioOn_smaller.png */,
@@ -721,6 +727,7 @@
 				B68A5C361979B4590036B90C /* mic-4.svg in Resources */,
 				B6A8D97C19770C2100E8F1D5 /* Icon-76@2x.png in Resources */,
 				B6D001781970AD28009554D5 /* record24.png in Resources */,
+				B6104B031A44E0BA00D9B3DA /* redx@2x.png in Resources */,
 				B6629E431A440192008EAC75 /* audioOn_smaller.png in Resources */,
 				B604665A1A3A1203000B5464 /* rightAndWrong_26h.png in Resources */,
 				B6A8D97D19770C2100E8F1D5 /* Icon-Small.png in Resources */,
@@ -756,6 +763,7 @@
 				B61B82291A16C191009B00D1 /* rightAndWrong.png in Resources */,
 				B6A8D97919770C2100E8F1D5 /* Icon-60.png in Resources */,
 				F6A5683118ECA98B00B844C6 /* Main.storyboard in Resources */,
+				B6104B011A44E0AE00D9B3DA /* checkmark@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

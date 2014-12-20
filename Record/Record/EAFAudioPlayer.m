@@ -27,8 +27,12 @@
 }
 
 - (IBAction)stopAudio {
+    NSLog(@"stopAudio removing current observer");
+
     if (_player != nil) {
         [_player pause];
+        [self removePlayObserver];
+
     }
 }
 
@@ -80,7 +84,7 @@
     
     if (_player) {
         [_player pause];
-        //        NSLog(@"removing current observer");
+        NSLog(@"removing current observer");
         [self removePlayObserver];
     }
     
@@ -114,7 +118,7 @@
 // we remove the observer, or else we will later get a message when the player discarded
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                         change:(NSDictionary *)change context:(void *)context {
-    //NSLog(@" observeValueForKeyPath %@",keyPath);
+    NSLog(@" observeValueForKeyPath %@",keyPath);
     
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {

@@ -21,18 +21,14 @@
 
 @property NSString *language;
 
-//@property AVPlayer *player;
 @property NSString *url;
 @property NSArray *audioPaths;
 @property int currentIndex;
-//@property (strong, nonatomic) IBOutlet UIView *playingIcon;
 
-- (IBAction)playRefAudio;//:(void (^)(void))callbackBlock;
-- (IBAction)stopAudio;//:(id)sender;
+- (IBAction)playRefAudio;
+- (IBAction)stopAudio;
 
 @property(assign) id<AudioPlayerNotification> delegate;
-
-//- (void)beginTaskWithCallbackBlock:(void (^)(void))callbackBlock;
 
 @end
 

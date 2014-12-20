@@ -16,6 +16,7 @@
 
 @interface EAFPhoneScoreTableViewController ()
 
+@property int rowHeight;
 @end
 
 @implementation EAFPhoneScoreTableViewController
@@ -23,11 +24,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-        
+    
+    _rowHeight = 66;
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
   
-    playingIcon = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, 22.f, 22.f)];
+    playingIcon = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, _rowHeight/2,  _rowHeight/2)];
     playingIcon.image = nil;
     [playingIcon setDefaultIconIdentifier:@"fa-volume-up"];
     playingIcon.defaultView.textColor = [UIColor blueColor];
@@ -57,10 +59,9 @@
 
 - (void)askServerForJson {
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
-  //  NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=phoneReport&user=%ld&%@=%@", _language, _user, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-    NSLog(@"EAFPhoneScoreTableViewController url %@",baseurl);
+//    NSLog(@"EAFPhoneScoreTableViewController url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -80,12 +81,12 @@
 
 - (CGFloat)tableView:(UITableView *)tableView
 estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 44;
+    return  _rowHeight;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView
 heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 44;
+    return  _rowHeight;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -108,7 +109,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     overallPhoneLabel.translatesAutoresizingMaskIntoConstraints = NO;
     
     overallPhoneLabel.text = phone;
-    [overallPhoneLabel setFont:[UIFont systemFontOfSize:24]];
+    [overallPhoneLabel setFont:[UIFont systemFontOfSize:32]];
     
     // top
     
@@ -149,12 +150,13 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                      toItem:nil
                                      attribute:NSLayoutAttributeNotAnAttribute
                                      multiplier:1.0
-                                     constant:40.0]];
+                                     constant:50.0]];
     return overallPhoneLabel;
 }
 
 - (void)addWordLabelConstraints:(EAFAudioView *)exampleView wordLabel:(UILabel *)wordLabel
 {
+ //   exampleView.backgroundColor = [UIColor purpleColor];
     // top
     [exampleView addConstraint:[NSLayoutConstraint
                                 constraintWithItem:wordLabel
@@ -196,6 +198,66 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                 constant:0.0]];
 }
 
+- (NSString *)getPhonesToShow:(NSDictionary *)lastPhone addSpaces:(BOOL)addSpaces phoneArray:(NSArray *)phoneArray
+{
+    NSString *phoneToShow = @"";
+    for (NSDictionary *phoneInfo in phoneArray) {
+        NSString *phoneText =[phoneInfo objectForKey:@"p"];
+        phoneToShow = [phoneToShow stringByAppendingString:phoneText];
+        
+        if (addSpaces) {
+            if (phoneInfo != lastPhone && ![_language isEqualToString:@"Korean"]) {
+                phoneToShow = [phoneToShow stringByAppendingString:@" "];
+            }
+        }
+    }
+    return phoneToShow;
+}
+
+- (void)addPhoneLabelConstrains:(UILabel *)phoneLabel exampleView:(EAFAudioView *)exampleView
+{
+    [phoneLabel setFont:[UIFont systemFontOfSize:24]];
+    
+    [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    
+    
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:phoneLabel
+                                attribute:NSLayoutAttributeHeight
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeHeight
+                                multiplier:0.5
+                                constant:0.0]];
+    
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:phoneLabel
+                                attribute:NSLayoutAttributeLeft
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeLeft
+                                multiplier:1.0
+                                constant:0.0]];
+    
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:phoneLabel
+                                attribute:NSLayoutAttributeRight
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeRight
+                                multiplier:1.0
+                                constant:0.0]];
+    
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:phoneLabel
+                                attribute:NSLayoutAttributeBottom
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeBottom
+                                multiplier:1.0
+                                constant:0.0]];
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Configure the cell...
@@ -234,7 +296,51 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UILabel *overallPhoneLabel = [self getOverallPhoneLabel:phone cell:cell];
     
-    
+   // UIScrollView *scrollView = [[UIScrollView alloc] init];
+//    UIView *scrollView = [[UIView alloc] init];
+//    scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+//
+//    scrollView.backgroundColor = [UIColor purpleColor];
+//    [cell.contentView addSubview:scrollView];
+//    
+//    // top
+//    [cell.contentView addConstraint:[NSLayoutConstraint
+//                                     constraintWithItem:scrollView
+//                                     attribute:NSLayoutAttributeTop
+//                                     relatedBy:NSLayoutRelationEqual
+//                                     toItem:cell.contentView
+//                                     attribute:NSLayoutAttributeTop
+//                                     multiplier:1.0
+//                                     constant:0.0]];
+//    // bottom
+//    [cell.contentView addConstraint:[NSLayoutConstraint
+//                                     constraintWithItem:scrollView
+//                                     attribute:NSLayoutAttributeBottom
+//                                     relatedBy:NSLayoutRelationEqual
+//                                     toItem:cell.contentView
+//                                     attribute:NSLayoutAttributeBottom
+//                                     multiplier:1.0
+//                                     constant:0.0]];
+//    
+//    [cell.contentView addConstraint:[NSLayoutConstraint
+//                                     constraintWithItem:scrollView
+//                                     attribute:NSLayoutAttributeLeft
+//                                     relatedBy:NSLayoutRelationEqual
+//                                     toItem:overallPhoneLabel
+//                                     attribute:NSLayoutAttributeRight
+//                                     multiplier:1.0
+//                                     constant:3.0]];
+//    
+//    [cell.contentView addConstraint:[NSLayoutConstraint
+//                                     constraintWithItem:scrollView
+//                                     attribute:NSLayoutAttributeRight
+//                                     relatedBy:NSLayoutRelationEqual
+//                                     toItem:cell.contentView
+//                                     attribute:NSLayoutAttributeRight
+//                                     multiplier:1.0
+//                                     constant:0.0]];
+//    [scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
+
     NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
                     @"Egyptian",
                     @"Farsi",
@@ -255,6 +361,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         
         exampleView.translatesAutoresizingMaskIntoConstraints = NO;
         [cell.contentView addSubview:exampleView];
+        //    [scrollView addSubview:exampleView];
         
         exampleView.refAudio = [_resultToRef objectForKey:result];
         exampleView.answer =[_resultToAnswer objectForKey:result];
@@ -276,7 +383,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         // top
         
         [cell.contentView addConstraint:[NSLayoutConstraint
-                                         constraintWithItem:exampleView
+                                         constraintWithItem:exampleView //scrollView
                                          attribute:NSLayoutAttributeTop
                                          relatedBy:NSLayoutRelationEqual
                                          toItem:cell.contentView
@@ -287,7 +394,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         // bottom
         
         [cell.contentView addConstraint:[NSLayoutConstraint
-                                         constraintWithItem:exampleView
+                                         constraintWithItem:exampleView//scrollView
                                          attribute:NSLayoutAttributeBottom
                                          relatedBy:NSLayoutRelationEqual
                                          toItem:cell.contentView
@@ -296,11 +403,12 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                          constant:0.0]];
         
         if (leftView == nil) {
+            // left
             NSLayoutConstraint *constraint = [NSLayoutConstraint
              constraintWithItem:exampleView
              attribute:NSLayoutAttributeLeft
              relatedBy:NSLayoutRelationEqual
-             toItem:overallPhoneLabel
+             toItem:overallPhoneLabel//scrollView
              attribute:NSLayoutAttributeRight
              multiplier:1.0
              constant:3.0];
@@ -350,6 +458,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             
             wordLabel.attributedText = coloredWord;
             //NSLog(@"label word is %@",wordLabel.attributedText);
+            [wordLabel setFont:[UIFont systemFontOfSize:24]];
 
             [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
             
@@ -358,7 +467,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             [self addWordLabelConstraints:exampleView wordLabel:wordLabel];
             
             if ([wordInResult isEqualToString:wordPhoneAppearsIn]) {
-                NSString *phoneToShow = @"";
                 NSArray *phoneArray = [wordResult objectForKey:@"phones"];
                 
                 BOOL isRTL = [rtl containsObject:_language];
@@ -366,18 +474,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 if (isRTL) {
                     phoneArray = [self reversedArray:phoneArray];
                 }
-                
                 NSDictionary *lastPhone = phoneArray.count > 0 ? [phoneArray objectAtIndex:phoneArray.count-1] : nil;
-                for (NSDictionary *phoneInfo in phoneArray) {
-                    NSString *phoneText =[phoneInfo objectForKey:@"p"];
-                    phoneToShow = [phoneToShow stringByAppendingString:phoneText];
-                    
-                    if (addSpaces) {
-                        if (phoneInfo != lastPhone && ![_language isEqualToString:@"Korean"]) {
-                            phoneToShow = [phoneToShow stringByAppendingString:@" "];
-                        }
-                    }
-                }
+                NSString *phoneToShow = [self getPhonesToShow:lastPhone addSpaces:addSpaces phoneArray:phoneArray];
                 
                 NSMutableAttributedString *coloredPhones = [[NSMutableAttributedString alloc] initWithString:phoneToShow];
                 
@@ -414,45 +512,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 
                 UILabel *phoneLabel = [[UILabel alloc] init];
                 phoneLabel.attributedText = coloredPhones;
-                [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-                
                 [exampleView addSubview:phoneLabel];
-                
-                [exampleView addConstraint:[NSLayoutConstraint
-                                            constraintWithItem:phoneLabel
-                                            attribute:NSLayoutAttributeHeight
-                                            relatedBy:NSLayoutRelationEqual
-                                            toItem:exampleView
-                                            attribute:NSLayoutAttributeHeight
-                                            multiplier:0.5
-                                            constant:0.0]];
-                
-                [exampleView addConstraint:[NSLayoutConstraint
-                                            constraintWithItem:phoneLabel
-                                            attribute:NSLayoutAttributeLeft
-                                            relatedBy:NSLayoutRelationEqual
-                                            toItem:exampleView
-                                            attribute:NSLayoutAttributeLeft
-                                            multiplier:1.0
-                                            constant:0.0]];
-                
-                [exampleView addConstraint:[NSLayoutConstraint
-                                            constraintWithItem:phoneLabel
-                                            attribute:NSLayoutAttributeRight
-                                            relatedBy:NSLayoutRelationEqual
-                                            toItem:exampleView
-                                            attribute:NSLayoutAttributeRight
-                                            multiplier:1.0
-                                            constant:0.0]];
-                
-                [exampleView addConstraint:[NSLayoutConstraint
-                                            constraintWithItem:phoneLabel
-                                            attribute:NSLayoutAttributeBottom
-                                            relatedBy:NSLayoutRelationEqual
-                                            toItem:exampleView
-                                            attribute:NSLayoutAttributeBottom
-                                            multiplier:1.0
-                                            constant:0.0]];
+                [self addPhoneLabelConstrains:phoneLabel exampleView:exampleView];
             }
         }
         // add a boundary marker
@@ -461,12 +522,21 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         rightBorder.borderColor = [UIColor colorWithWhite:0.8f
                                                     alpha:1.0f].CGColor;
         rightBorder.borderWidth = 1;
-        rightBorder.frame = CGRectMake(-3, -1, 2, 44);
+        rightBorder.frame = CGRectMake(-3, -4, 2, _rowHeight);//exampleView.layer.bounds.size.height);
         
         [exampleView.layer addSublayer:rightBorder];
         
         exampleView.userInteractionEnabled = YES;
     }
+//    
+//    [cell.contentView addConstraint:[NSLayoutConstraint
+//                                     constraintWithItem:scrollView
+//                                     attribute:NSLayoutAttributeRight
+//                                     relatedBy:NSLayoutRelationEqual
+//                                     toItem:leftView
+//                                     attribute:NSLayoutAttributeRight
+//                                     multiplier:1.0
+//                                     constant:0.0]];
     
     NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:overallPhoneLabel.text];
     
