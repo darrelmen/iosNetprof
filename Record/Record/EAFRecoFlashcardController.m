@@ -360,7 +360,7 @@
         [SSKeychain setPassword:@"Both"
                      forService:@"mitll.proFeedback.device" account:@"audioGender"];
     }
-    NSLog(@"gender sel %@",audioGender);
+   // NSLog(@"gender sel %@",audioGender);
     _genderMaleSelector.selectedSegmentIndex = [audioGender isEqualToString:@"Male"] ? 0:[audioGender isEqualToString:@"Female"]?1:2;
     
     NSString *audioSpeed = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioSpeed"];
@@ -388,7 +388,7 @@
     long selectedGender = _genderMaleSelector.selectedSegmentIndex;
     _audioRefs = [[NSMutableArray alloc] init];
     BOOL isSlow = [_speedSelector isOn];
-    NSLog(@"is slow %@",isSlow ? @"SLOW" :@"REGULAR");
+    //NSLog(@"is slow %@",isSlow ? @"SLOW" :@"REGULAR");
     if (selectedGender == 0) {
         if (isSlow) {
             if (hasMaleSlow) {

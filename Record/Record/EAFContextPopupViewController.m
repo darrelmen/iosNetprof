@@ -14,7 +14,7 @@
 
 @interface EAFContextPopupViewController ()
 @property EAFAudioPlayer *audioPlayer;
-
+@property NSString *regex;
 @end
 
 @implementation EAFContextPopupViewController
@@ -22,11 +22,13 @@
 {
     [super viewDidLoad];
     
+    _regex = @"[\\?\\.,-\\/#!$%\\^&\\*;:{}=\\-_`~()]";
+    
     _audioPlayer = [[EAFAudioPlayer alloc] init];
-
-    NSLog(@"view did load %@",_contextFL.text);
-
-    _contextFL.text = _fl;
+    
+    // NSLog(@"view did load %@ %@",_contextFL.text,_fl);
+    
+    _contextFL.attributedText = [self highlightTerm:_fl refSentence:_item];
     _contextTranslation.text = _en;
     _itemFL.text = _item;
     
@@ -34,10 +36,8 @@
     
     BOOL hasMale = false;
     if (_mref == nil || _mref.length == 0 || [_mref isEqualToString:@"NO"]) {
-     //  UIImage * male = [_maleFemale imageForSegmentAtIndex:0];
         [[_maleFemale.subviews objectAtIndex:0] setTintColor:[UIColor grayColor]];
-        
-        NSLog(@"no male audio");
+        //        NSLog(@"no male audio");
         [_maleFemale setEnabled:NO forSegmentAtIndex:0];
     }
     else {
@@ -46,11 +46,8 @@
     }
     
     if (_fref == nil || _fref.length == 0 || [_fref isEqualToString:@"NO"]) {
-        //  UIImage * male = [_maleFemale imageForSegmentAtIndex:0];
         [[_maleFemale.subviews objectAtIndex:1] setTintColor:[UIColor grayColor]];
         [_maleFemale setEnabled:NO forSegmentAtIndex:1];
-
-      //  NSLog(@"no female audio");
     }
     else {
         if (!hasMale) {
@@ -58,23 +55,87 @@
             [audioCuts addObject:_fref];
         }
     }
-
+    
     _maleFemale.enabled = audioCuts.count > 0;
     
     [_playingIcon initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
-                             color:[UIColor colorWithWhite:1.0f alpha:0.0f]
-                             style:BButtonStyleBootstrapV3
-                              icon:FAVolumeUp
-                          fontSize:20.0f];
+                          color:[UIColor colorWithWhite:1.0f alpha:0.0f]
+                          style:BButtonStyleBootstrapV3
+                           icon:FAVolumeUp
+                       fontSize:20.0f];
     [_playingIcon setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     
     _audioPlayer.audioPaths = audioCuts;
-   // _audioPlayer.viewToAddIconTo = _contextFL;
     _audioPlayer.url = _url;
     _audioPlayer.language = _language;
-    //  _audioPlayer.playingIcon = _playingIcon;
-      _audioPlayer.delegate = self;
-   // NSLog(@"Audio paths now %@",_audioPlayer.audioPaths);
+    _audioPlayer.delegate = self;
+}
+
+-(NSAttributedString *) highlightTerm:(NSString *) context refSentence:(NSString *)refSentence  {
+    NSString *trim = [refSentence stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    NSString *toFind = [self removePunct:trim];
+    toFind = [toFind stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    //    NSLog(@"looking for '%@' in %@",toFind,context);
+    NSRange range = [context rangeOfString:toFind];
+    if (range.length > 0) {
+        return [self highlight:context range:range];
+    } else {
+        NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:context];
+        
+        NSArray* tokens = [self getTokens:trim];
+        NSUInteger endToken = 0;
+        for (NSString * token in tokens) {
+         //   NSLog(@"  token  %@",token);
+            
+            NSRange trange = [context rangeOfString:token options:NSCaseInsensitiveSearch range:NSMakeRange(endToken, context.length-endToken)];
+            
+            if (trange.length > 0) {
+                [result addAttribute:NSBackgroundColorAttributeName
+                               value:[UIColor greenColor]
+                               range:trange];
+                endToken = trange.location+trange.length;
+            }
+        }
+        return result;
+    }
+}
+
+- (NSAttributedString *)highlight:(NSString *) toHighlight range:(NSRange) range
+{
+    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:toHighlight];
+    
+    [result addAttribute:NSBackgroundColorAttributeName
+                   value:[UIColor greenColor]
+                   range:range];
+    return result;
+}
+
+-(NSArray *)getTokens:(NSString *)sentence {
+    NSMutableArray * all = [[NSMutableArray alloc] init];
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:_regex options:NSRegularExpressionCaseInsensitive error:&error];
+    sentence = [regex stringByReplacingMatchesInString:sentence options:0 range:NSMakeRange(0, [sentence length]) withTemplate:@" "];
+    
+    for (NSString *untrimedToken in [sentence componentsSeparatedByString:@" "]) { // split on spaces
+        NSString *token = [untrimedToken stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        
+        if (token.length > 0) {
+            [all addObject:token];
+        }
+    }
+    //  NSLog(@"tokens %@", all);
+    
+    return all;
+}
+
+-(NSString *)removePunct:(NSString *) t{
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:_regex options:NSRegularExpressionCaseInsensitive error:&error];
+    NSString *modifiedString = [regex stringByReplacingMatchesInString:t options:0 range:NSMakeRange(0, [t length]) withTemplate:@""];
+    // NSLog(@"removePunct %@", modifiedString);
+    return modifiedString;
 }
 
 - (void) playStarted {
@@ -90,9 +151,7 @@
 }
 
 - (IBAction)gotOK:(id)sender {
-    // [self dismissViewControllerAnimated:YES completion:nil];
     [self mz_dismissFormSheetControllerAnimated:YES completionHandler:^(MZFormSheetController *formSheetController) {
-        
     }];
 }
 
@@ -101,8 +160,6 @@
 }
 
 - (IBAction)onClick:(id)sender {
-   // NSLog(@"Got click %@",sender);
-    
     NSMutableArray *audioCuts = [[NSMutableArray alloc] init];
     if (_maleFemale.selectedSegmentIndex == 0) {
         [audioCuts addObject:_mref];
@@ -111,7 +168,7 @@
         [audioCuts addObject:_fref];
     }
     _audioPlayer.audioPaths = audioCuts;
-
+    
     [_audioPlayer playRefAudio];
 }
 

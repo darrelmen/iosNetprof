@@ -175,7 +175,7 @@
                                         </connections>
                                     </view>
                                     <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="900" restorationIdentifier="foreignLang" text="foreign language" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="j6L-63-Jyx">
-                                        <rect key="frame" x="8" y="132" width="549" height="53"/>
+                                        <rect key="frame" x="8" y="132" width="549" height="52.5"/>
                                         <gestureRecognizers/>
                                         <fontDescription key="fontDescription" type="system" pointSize="44"/>
                                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -213,7 +213,7 @@
                                         </constraints>
                                     </activityIndicatorView>
                                     <label opaque="NO" clipsSubviews="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="900" restorationIdentifier="english" text="really long text " textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.20000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="wAh-a0-3Cd">
-                                        <rect key="frame" x="8" y="77" width="549" height="53"/>
+                                        <rect key="frame" x="8" y="78" width="549" height="52.5"/>
                                         <gestureRecognizers/>
                                         <fontDescription key="fontDescription" type="system" pointSize="44"/>
                                         <nil key="highlightedColor"/>
@@ -261,12 +261,14 @@
                                     <constraint firstAttribute="centerY" secondItem="cmF-9c-VKI" secondAttribute="centerY" id="6co-eg-htr"/>
                                     <constraint firstAttribute="trailing" secondItem="LDy-Lh-sWf" secondAttribute="trailing" constant="4" id="7o1-X4-LwW"/>
                                     <constraint firstItem="vmx-bc-B8p" firstAttribute="leading" secondItem="ZN1-US-MJW" secondAttribute="trailing" constant="17" id="8gh-ha-MdV"/>
+                                    <constraint firstItem="t3S-bB-IN2" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="wAh-a0-3Cd" secondAttribute="trailing" id="8kO-Yc-nRi"/>
                                     <constraint firstAttribute="centerX" secondItem="j6L-63-Jyx" secondAttribute="centerX" id="9dh-Ob-gh0"/>
                                     <constraint firstAttribute="centerY" secondItem="j6L-63-Jyx" secondAttribute="centerY" priority="500" constant="42" id="An0-4a-7dP">
                                         <variation key="heightClass=regular-widthClass=regular" constant="0.0"/>
                                     </constraint>
                                     <constraint firstItem="vlT-Ea-UA6" firstAttribute="leading" secondItem="j6L-63-Jyx" secondAttribute="leading" id="D53-0v-dUE"/>
                                     <constraint firstItem="D19-P2-ZOH" firstAttribute="centerY" secondItem="ZN1-US-MJW" secondAttribute="centerY" id="EKB-QW-P4I"/>
+                                    <constraint firstItem="t3S-bB-IN2" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="wAh-a0-3Cd" secondAttribute="trailing" constant="-39" id="J9Z-MF-4gN"/>
                                     <constraint firstAttribute="bottom" secondItem="LDy-Lh-sWf" secondAttribute="bottom" constant="4" id="OB0-8b-0lA"/>
                                     <constraint firstItem="t3S-bB-IN2" firstAttribute="top" secondItem="D0k-He-nFx" secondAttribute="top" constant="7" id="V41-cJ-Qcd">
                                         <variation key="heightClass=regular-widthClass=regular" constant="15"/>
@@ -290,10 +292,13 @@
                                         <variation key="heightClass=regular-widthClass=regular" constant="15"/>
                                     </constraint>
                                     <constraint firstItem="vlT-Ea-UA6" firstAttribute="trailing" secondItem="j6L-63-Jyx" secondAttribute="trailing" id="ymI-cK-BAK"/>
-                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="wAh-a0-3Cd" secondAttribute="trailing" constant="2" id="zo9-sy-Mns"/>
+                                    <constraint firstItem="wAh-a0-3Cd" firstAttribute="top" relation="greaterThanOrEqual" secondItem="t3S-bB-IN2" secondAttribute="bottom" constant="1" id="zMd-lp-64S"/>
                                 </constraints>
                                 <variation key="default">
                                     <mask key="constraints">
+                                        <exclude reference="zMd-lp-64S"/>
+                                        <exclude reference="8kO-Yc-nRi"/>
+                                        <exclude reference="J9Z-MF-4gN"/>
                                         <exclude reference="6co-eg-htr"/>
                                     </mask>
                                 </variation>
@@ -322,7 +327,7 @@
                                 </connections>
                             </switch>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Slow" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RZc-pP-7lZ">
-                                <rect key="frame" x="494" y="568" width="38" height="21"/>
+                                <rect key="frame" x="494" y="568" width="38" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -677,7 +682,7 @@
                                     <action selector="gotOK:" destination="cnG-EW-Rbx" eventType="touchUpInside" id="HXa-ni-8y3"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="itemFL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nWq-wJ-mdV">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="itemFL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="nWq-wJ-mdV">
                                 <rect key="frame" x="234" y="30" width="132" height="53"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="44"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
