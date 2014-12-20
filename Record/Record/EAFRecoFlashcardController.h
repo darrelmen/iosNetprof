@@ -32,8 +32,6 @@
 @property (strong, nonatomic) IBOutlet UILabel *foreignLang;
 @property (strong, nonatomic) IBOutlet UILabel *english;
 @property (strong, nonatomic) IBOutlet UILabel *shuffle;
-//@property (strong, nonatomic) IBOutlet NSString *refAudioPath;
-//@property (strong, nonatomic) IBOutlet NSString *rawRefAudioPath;
 @property unsigned long index;
 
 @property NSMutableArray *randSequence;
@@ -67,12 +65,12 @@
 
 @property (strong, nonatomic) IBOutlet UISegmentedControl *audioOnSelector;
 @property (strong, nonatomic) IBOutlet UISwitch *shuffleSwitch;
-//@property (strong, nonatomic) IBOutlet UISwitch *audioOnSelector;
-//@property (strong, nonatomic) IBOutlet UISwitch *genderMaleSelector;
+
+
 @property (strong, nonatomic) IBOutlet UISwitch *speedSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *whatToShow;
 - (IBAction)whatToShowSelection:(id)sender;
-- (IBAction)genderSelection:(id)sender;
+//- (IBAction)genderSelection:(id)sender;
 - (IBAction)speedSelection:(id)sender;
 - (IBAction)audioOnSelection:(id)sender;
 - (void)respondToSwipe;

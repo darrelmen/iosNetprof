@@ -28,12 +28,12 @@
 
 - (IBAction)stopAudio {
     NSLog(@"stopAudio removing current observer");
-
+    _currentIndex = _audioPaths.count;
     if (_player != nil) {
         [_player pause];
         [self removePlayObserver];
-
     }
+    [self.delegate playStopped];
 }
 
 - (IBAction)playRefAudio {

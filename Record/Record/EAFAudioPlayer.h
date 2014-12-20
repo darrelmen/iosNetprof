@@ -23,7 +23,7 @@
 
 @property NSString *url;
 @property NSArray *audioPaths;
-@property int currentIndex;
+@property unsigned long currentIndex;
 
 - (IBAction)playRefAudio;
 - (IBAction)stopAudio;
