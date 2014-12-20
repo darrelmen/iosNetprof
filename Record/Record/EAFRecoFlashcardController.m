@@ -181,7 +181,6 @@
     
     NSString *audioOn = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioOn"];
     if (audioOn != nil) {
-     //   NSLog(@"checking - audio on %@",audioOn);
         _audioOnSelector.selectedSegmentIndex = [audioOn isEqualToString:@"Yes"] ? 0:1;
     }
 
@@ -373,7 +372,6 @@
     NSDictionary *jsonObject =[self getCurrentJson] ;
     
     NSString *refAudio = [jsonObject objectForKey:@"ref"];
- //   NSLog(@"respondToSwipe - refAudio %@",refAudio);
     
     NSString *test =  [jsonObject objectForKey:@"msr"];
     BOOL hasMaleSlow = (test != NULL && ![test isEqualToString:@"NO"]);
@@ -450,7 +448,10 @@
     BOOL hasTwoSpeeds = (hasMaleReg || hasFemaleReg) && (hasMaleSlow || hasFemaleSlow);
     _speedSelector.enabled = hasTwoSpeeds;
     
-    NSLog(@"respondToSwipe after refAudio %@",refAudio);
+    if (refAudio != nil && ![refAudio isEqualToString:@"NO"] && _audioRefs.count == 0) {
+        [_audioRefs addObject:refAudio];
+    }
+  //  NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
     
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
@@ -474,13 +475,10 @@
         [v removeFromSuperview];
     }
     _scoreProgress.hidden = true;
-    
     _myAudioPlayer.audioPaths = _audioRefs;
-    
     
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     NSString *showedID = [NSString stringWithFormat:@"showedIntro_%@",userid];
-    
     NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
     
     if (_audioOnSelector.selectedSegmentIndex == 0 && [self hasRefAudio] && !preventPlayAudio && !_foreignLang.hidden && showedIntro != nil) {
@@ -489,6 +487,7 @@
         [_myAudioPlayer playRefAudio];
     }
     else {
+    //    NSLog(@"not playing audio - ?");
         preventPlayAudio = false;
     }
 }
@@ -497,7 +496,7 @@
     _index--;
     if (_index == -1) _index = _jsonItems.count  -1UL;
     _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
-    NSLog(@"swipeRightDetected progress is %f", _progressThroughItems.progress);
+  //  NSLog(@"swipeRightDetected progress is %f", _progressThroughItems.progress);
 
     [self whatToShowSelection:nil];
     
@@ -729,6 +728,7 @@ bool debugRecord = false;
     _then2 = CFAbsoluteTimeGetCurrent();
     if (debugRecord) NSLog(@"recordAudio time = %f",_then2);
     
+    [_myAudioPlayer stopAudio];
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
     [poster postEvent:[NSString stringWithFormat:@"record audio start"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"record audio" widgetType:@"Button"];
@@ -970,7 +970,7 @@ double gestureEnd;
     
     NSString *req = [NSString stringWithFormat:@"%d",_reqid];
     
-    NSLog(@"Req id %@ %d",req, _reqid);
+ //   NSLog(@"Req id %@ %d",req, _reqid);
     [urlRequest setValue:req forHTTPHeaderField:@"reqid"];
     _reqid++;
     
@@ -1139,7 +1139,11 @@ NSString *statusCodeDisplay;
     
     NSString *reqid = [json objectForKey:@"reqid"];
 
-    NSLog(@"got back %@",reqid);
+//    NSLog(@"got back %@",reqid);
+    if ([reqid intValue] < _reqid-1) {
+        NSLog(@"discarding old response - got back %@ latest %d",reqid ,_reqid);
+        return;
+    }
     NSString *current = [[self getCurrentJson] objectForKey:@"id"];
     if (![exid isEqualToString:current]) {
         NSLog(@"got %@ vs expecting %@",exid,current );
