@@ -27,10 +27,12 @@
 }
 
 - (IBAction)stopAudio {
-    NSLog(@"stopAudio removing current observer");
+    NSLog(@"stopAudio ---- %@",self);
     _currentIndex = _audioPaths.count;
     if (_player != nil) {
         [_player pause];
+        NSLog(@"stopAudio removing current observer");
+
         [self removePlayObserver];
     }
     [self.delegate playStopped];
@@ -44,6 +46,8 @@
 
 // look for local file with mp3 and use it if it's there.
 - (IBAction)playRefAudioInternal {
+    NSLog(@"playRefAudioInternal using paths %@",_audioPaths);
+
     if (_audioPaths.count == 0) {
         return;
     }
@@ -84,7 +88,7 @@
     
     if (_player) {
         [_player pause];
-        NSLog(@"removing current observer");
+        NSLog(@" playRefAudioInternal : removing current observer");
         [self removePlayObserver];
     }
     
@@ -99,11 +103,15 @@
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
-    NSLog(@" playerItemDidReachEnd");
+    NSLog(@" playerItemDidReachEnd for this %@",self);
     
     [self.delegate playStopped];
     
+    NSLog(@" - playerItemDidReachEnd called self delegate - play stopped");
+
     if (_currentIndex < _audioPaths.count-1) {
+        NSLog(@" - playerItemDidReachEnd playing next audio...");
+
         _currentIndex++;
         [self playRefAudioInternal];
     }
@@ -167,7 +175,7 @@
         [_player removeObserver:self forKeyPath:@"status"];
     }
     @catch (NSException *exception) {
-        NSLog(@"initial create - got exception %@",exception.description);
+        NSLog(@"removePlayObserver - got exception %@",exception.description);
     }
 }
 

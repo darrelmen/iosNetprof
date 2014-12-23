@@ -694,6 +694,7 @@ BOOL preventPlayAudio = false;
         [self removePlayObserver];
         [self removePlayingAudioHighlight];
     }
+    [_myAudioPlayer stopAudio];
 }
 
 - (void)removePlayingAudioHighlight {
@@ -1535,7 +1536,8 @@ BOOL addSpaces = false;
 - (IBAction)showPopover:(id)sender
 {
     // Set the sender to a UIButton.
-    
+    [_myAudioPlayer stopAudio];
+
     // Present the popover from the button that was tapped in the detail view.
     [[MZFormSheetController appearance] setCornerRadius:20.0];
    // [[MZFormSheetBackgroundWindow appearance] setBackgroundColor:[UIColor clearColor]];
@@ -1556,7 +1558,8 @@ BOOL addSpaces = false;
     BOOL isIPhone = [[UIDevice currentDevice].model containsString:@"iPhone"];
     
     MZFormSheetController *formSheet = isIPhone ?
-        [[MZFormSheetController alloc] initWithViewController:popupController] :
+//        [[MZFormSheetController alloc] initWithViewController:popupController] :
+    [[MZFormSheetController alloc] initWithSize:CGSizeMake(300, 350) viewController:popupController] :
         [[MZFormSheetController alloc] initWithSize:CGSizeMake(500, 500) viewController:popupController];
     
     formSheet.transitionStyle = MZFormSheetTransitionStyleSlideFromTop;

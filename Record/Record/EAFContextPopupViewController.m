@@ -71,6 +71,11 @@
     _audioPlayer.delegate = self;
 }
 
+-(void) viewWillDisappear:(BOOL)animated {
+    NSLog(@"view will disappear.");
+   [_audioPlayer stopAudio];
+}
+
 -(NSAttributedString *) highlightTerm:(NSString *) context refSentence:(NSString *)refSentence  {
     NSString *trim = [refSentence stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     

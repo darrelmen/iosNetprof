@@ -13,6 +13,7 @@
 
 @interface EAFItemTableViewController ()
 
+@property BOOL requestPending;
 @end
 
 @implementation EAFItemTableViewController
@@ -63,7 +64,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    _requestPending = true;
+    NSLog(@"viewDidLoad - item table controller");
+
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
     [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,chapterTitle,currentChapter]];
@@ -104,7 +107,7 @@ NSString *chapterTitle = @"Chapter";
 {
     // Return the number of rows in the section.
     //NSLog(@"found rows %d",self.items.count);
-    return [_jsonItems count];
+    return _requestPending ? 0:[_jsonItems count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -251,7 +254,7 @@ NSString *chapterTitle = @"Chapter";
                           JSONObjectWithData:_responseData
                           options:NSJSONReadingAllowFragments
                           error:&error];
-    
+    _requestPending = false;
     if (error) {
         NSLog(@"useJsonChapterData error %@",error.description);
         return false;
@@ -293,6 +296,8 @@ NSString *chapterTitle = @"Chapter";
                 _notifyFlashcardController.jsonItems = _jsonItems;
                 [_notifyFlashcardController respondToSwipe ];
             }
+             NSLog(@"reload table ----------- ");
+
             [[self tableView] reloadData];
             [self cacheAudio:_jsonItems];
         }
@@ -327,7 +332,7 @@ NSString *chapterTitle = @"Chapter";
     // The request has failed for some reason!
     // Check the error var
     NSLog(@"Download content failed with %@",error);
-    
+    _requestPending = false;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 

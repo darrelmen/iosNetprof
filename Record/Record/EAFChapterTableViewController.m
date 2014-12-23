@@ -386,7 +386,7 @@ NSArray *currentItems;
     NSLog(@"Chapter table view controller prepareForSegue identifier %@ %@ %@ %@ %@",segue.identifier,_chapterName,tappedItem,
           _unitTitle,_unit);
 
-    //[itemController setItemIndex:0];
+    NSLog(@"Got prepare -- %@",itemController);
     [itemController setChapterToItems:chapterInfo];
     [itemController setJsonItems:currentItems];
     [itemController setChapterTitle:_chapterName];
@@ -437,7 +437,7 @@ NSArray *currentItems;
                 }];
                 
                 NSString *title = [[self title] stringByAppendingFormat:@" %@ %@",[entry objectForKey:@"type"],name];
-                NSLog(@"tableView %@ child %@",title, childType);
+             //   NSLog(@"tableView %@ child %@",title, childType);
 
                 [myController setChapters:myArray];
                 [myController setTitle:title];
@@ -451,7 +451,7 @@ NSArray *currentItems;
             }
             else {
 //                NSLog(@"items is %@",items);
-                
+                NSLog(@"Got click to segue to items");
                 
                 // TODO : ask for history here!
                 // when returns, go ahead and do segue
@@ -466,8 +466,8 @@ NSArray *currentItems;
     }
 }
 
-- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
-{
-    NSLog(@"got call to accessory action");
-}
+//- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
+//{
+//    NSLog(@"got call to accessory action");
+//}
 @end

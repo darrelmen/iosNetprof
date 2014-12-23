@@ -27,6 +27,4 @@
 @property NSString *url;
 @property NSString *language;
 
-//@property EAFAudioPlayer *audioPlayer;
-
 @end
