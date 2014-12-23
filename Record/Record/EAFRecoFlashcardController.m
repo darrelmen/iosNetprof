@@ -461,8 +461,7 @@
     [_foreignLang setText:flAtIndex];
     [_english setText:enAtIndex];
     
-    NSString *model =[UIDevice currentDevice].model;
-    BOOL isIPhone = [model containsString:@"iPhone"];
+    BOOL isIPhone = [[UIDevice currentDevice].model containsString:@"iPhone"];
     
     if (isIPhone && [enAtIndex length] > 15) {
         _english.font = [UIFont systemFontOfSize:24];
@@ -1212,8 +1211,7 @@ NSString *statusCodeDisplay;
     wordLabel.attributedText = coloredWord;
     wordLabel.font = _foreignLang.font; // font sizes should match
     
-    NSString *model =[UIDevice currentDevice].model;
-    BOOL isIPhone = [model containsString:@"iPhone"];
+    BOOL isIPhone = [[UIDevice currentDevice].model containsString:@"iPhone"];
     
     if (isIPhone && [_foreignLang.text length] > 15) {
         wordLabel.font  = [UIFont systemFontOfSize:24];
@@ -1555,8 +1553,12 @@ BOOL addSpaces = false;
         popupController.mref  = [[self getCurrentJson] objectForKey:@"ctref"];
     }
     popupController.fref  = [[self getCurrentJson] objectForKey:@"ctfref"];
+    BOOL isIPhone = [[UIDevice currentDevice].model containsString:@"iPhone"];
     
-    MZFormSheetController *formSheet = [[MZFormSheetController alloc] initWithViewController:popupController];
+    MZFormSheetController *formSheet = isIPhone ?
+        [[MZFormSheetController alloc] initWithViewController:popupController] :
+        [[MZFormSheetController alloc] initWithSize:CGSizeMake(500, 500) viewController:popupController];
+    
     formSheet.transitionStyle = MZFormSheetTransitionStyleSlideFromTop;
     formSheet.shouldDismissOnBackgroundViewTap = YES;
     

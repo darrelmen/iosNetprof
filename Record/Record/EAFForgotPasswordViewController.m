@@ -11,6 +11,7 @@
 #import "SSKeychain.h"
 
 @interface EAFForgotPasswordViewController ()
+@property (nonatomic, assign) id currentResponder;
 
 @end
 
@@ -45,7 +46,36 @@
     if (valid) {
         [self forgotUsername:_email.text language:_language];
     }
+}
+
+
+- (IBAction)gotSingleTap:(id)sender {
+    NSLog(@"dismiss keyboard! %@",_currentResponder);
+    [_currentResponder resignFirstResponder];
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    //   NSLog(@"got text field start on %@",textField);
+    _currentResponder = textField;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    NSLog(@"Got return!");
+    // done button was pressed - dismiss keyboard
+    [textField resignFirstResponder];
     
+    if (_username.text.length > 0) {
+        _usernameFeedback.text = @"";
+    }
+    if (_email.text.length > 0) {
+        _emailFeedback.text = @"";
+    }
+    
+    if ([self validateEmail:_email.text]) {
+        _emailFeedback.text = @"";
+    }
+    
+    return YES;
 }
 
 - (BOOL) validateEmail: (NSString *) candidate {

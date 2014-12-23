@@ -40,7 +40,7 @@
 
 -(void)handleGesture:(UITapGestureRecognizer *)gestureRecognizer
 {
-    CGPoint p = [gestureRecognizer locationInView:self];
+   // CGPoint p = [gestureRecognizer locationInView:self];
     
    
    // NSLog(@"got gesture at %@",p);

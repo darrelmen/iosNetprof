@@ -112,6 +112,8 @@
     return result;
 }
 
+
+
 -(NSArray *)getTokens:(NSString *)sentence {
     NSMutableArray * all = [[NSMutableArray alloc] init];
     NSError *error = nil;
@@ -140,10 +142,30 @@
 
 - (void) playStarted {
     _playingIcon.hidden = false;
+   // [self highlightFLWhilePlaying];
 }
 
 - (void) playStopped {
     _playingIcon.hidden = true;
+ //   [self removePlayingAudioHighlight];
+}
+
+- (void)highlightFLWhilePlaying
+{
+    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_contextFL text]];
+    
+    NSRange range= NSMakeRange(0, [result length]);
+    [result addAttribute:NSBackgroundColorAttributeName
+                   value:[UIColor yellowColor]
+                   range:range];
+    [_contextFL setAttributedText:result];
+}
+
+- (void)removePlayingAudioHighlight {
+    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_contextFL text]];
+    NSRange range= NSMakeRange(0, [result length]);
+    [result removeAttribute:NSBackgroundColorAttributeName range:range];
+    [_contextFL setAttributedText:result];
 }
 
 - (IBAction)tapOnSentence:(id)sender {

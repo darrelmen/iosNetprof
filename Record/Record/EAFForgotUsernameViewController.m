@@ -12,6 +12,8 @@
 
 @interface EAFForgotUsernameViewController ()
 
+@property (nonatomic, assign) id currentResponder;
+
 @end
 
 @implementation EAFForgotUsernameViewController
@@ -56,6 +58,24 @@
     
     return [emailTest evaluateWithObject:candidate];
 }
+
+- (IBAction)gotSingleTap:(id)sender {
+    NSLog(@"dismiss keyboard! %@",_currentResponder);
+    [_currentResponder resignFirstResponder];
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    //   NSLog(@"got text field start on %@",textField);
+    _currentResponder = textField;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+  //  NSLog(@"Got return!");
+    // done button was pressed - dismiss keyboard
+    [textField resignFirstResponder];
+    return YES;
+}
+
 
 #pragma mark NSURLConnection Delegate Methods
 

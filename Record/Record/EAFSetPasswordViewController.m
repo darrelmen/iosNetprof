@@ -48,6 +48,21 @@
     }
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    NSLog(@"Got return!");
+    // done button was pressed - dismiss keyboard
+    [textField resignFirstResponder];
+    
+    if (_password.text.length > 0) {
+        _passwordFeedback.text = @"";
+    }
+    
+    if (_confirmPassword.text.length > 0) {
+        _confirmPasswordFeedback.text = @"";
+    }
+    
+    return YES;
+}
 - (NSString*)MD5:(NSString*)toConvert
 {
     // Create pointer to the string as UTF8
