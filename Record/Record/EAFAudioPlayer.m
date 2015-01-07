@@ -107,7 +107,7 @@
     
     [self.delegate playStopped];
     
-    NSLog(@" - playerItemDidReachEnd called self delegate - play stopped");
+   // NSLog(@" - playerItemDidReachEnd called self delegate - play stopped");
 
     if (_currentIndex < _audioPaths.count-1) {
         NSLog(@" - playerItemDidReachEnd playing next audio...");

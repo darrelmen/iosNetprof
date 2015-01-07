@@ -57,13 +57,13 @@
     }
     
     _maleFemale.enabled = audioCuts.count > 0;
-    
-    [_playingIcon initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
-                          color:[UIColor colorWithWhite:1.0f alpha:0.0f]
-                          style:BButtonStyleBootstrapV3
-                           icon:FAVolumeUp
-                       fontSize:20.0f];
-    [_playingIcon setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+//    
+//    [_playingIcon initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
+//                          color:[UIColor colorWithWhite:1.0f alpha:0.0f]
+//                          style:BButtonStyleBootstrapV3
+//                           icon:FAVolumeUp
+//                       fontSize:20.0f];
+//    [_playingIcon setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     
     _audioPlayer.audioPaths = audioCuts;
     _audioPlayer.url = _url;
@@ -146,31 +146,20 @@
 }
 
 - (void) playStarted {
-    _playingIcon.hidden = false;
-   // [self highlightFLWhilePlaying];
+    [self highlightFLWhilePlaying];
 }
 
 - (void) playStopped {
-    _playingIcon.hidden = true;
- //   [self removePlayingAudioHighlight];
+    [self removePlayingAudioHighlight];
 }
 
 - (void)highlightFLWhilePlaying
 {
-    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_contextFL text]];
-    
-    NSRange range= NSMakeRange(0, [result length]);
-    [result addAttribute:NSBackgroundColorAttributeName
-                   value:[UIColor yellowColor]
-                   range:range];
-    [_contextFL setAttributedText:result];
+    _contextFL.textColor = [UIColor blueColor];
 }
 
 - (void)removePlayingAudioHighlight {
-    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_contextFL text]];
-    NSRange range= NSMakeRange(0, [result length]);
-    [result removeAttribute:NSBackgroundColorAttributeName range:range];
-    [_contextFL setAttributedText:result];
+    _contextFL.textColor = [UIColor blackColor];
 }
 
 - (IBAction)tapOnSentence:(id)sender {

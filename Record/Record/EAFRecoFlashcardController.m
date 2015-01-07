@@ -605,18 +605,14 @@ BOOL preventPlayAudio = false;
     [self removePlayingAudioIcon];
 }
 
-
 - (void) playStarted {
-    // _playingIcon.hidden = false;
     [self highlightFLWhilePlaying];
 }
 
 - (void) playStopped {
-    //  _playingIcon.hidden = true;
     [self removePlayingAudioHighlight];
 }
 
-//BButton *playingIcon;
 // find first subview and remove the icon from it
 // TODO : fix this for spacer case
 - (void)removePlayingAudioIcon {
@@ -698,21 +694,24 @@ BOOL preventPlayAudio = false;
 }
 
 - (void)removePlayingAudioHighlight {
-    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
-    NSRange range= NSMakeRange(0, [result length]);
-    [result removeAttribute:NSBackgroundColorAttributeName range:range];
-    [_foreignLang setAttributedText:result];
+//    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
+//    NSRange range= NSMakeRange(0, [result length]);
+//    [result removeAttribute:NSBackgroundColorAttributeName range:range];
+//    [_foreignLang setAttributedText:result];
+//    
+    _foreignLang.textColor = [UIColor blackColor];
 }
 
 - (void)highlightFLWhilePlaying
 {
-    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
+    //NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
     
-    NSRange range= NSMakeRange(0, [result length]);
-    [result addAttribute:NSBackgroundColorAttributeName
-                   value:[UIColor yellowColor]
-                   range:range];
-    [_foreignLang setAttributedText:result];
+//    NSRange range= NSMakeRange(0, [result length]);
+//    [result addAttribute:NStextc
+//                   value:[UIColor yellowColor]
+//                   range:range];
+//    [_foreignLang setAttributedText:result];
+    _foreignLang.textColor = [UIColor blueColor];
 }
 
 - (void)logError:(NSError *)error {
@@ -850,6 +849,7 @@ double gestureEnd;
                // NSLog(@"instead, adding playing icon to %@",first);
             }
             [first addSubview:_playingIcon];
+            
           //  NSLog(@"Adding playing icon to %@",first);
 
         }
