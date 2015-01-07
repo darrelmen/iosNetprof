@@ -600,7 +600,11 @@
                         <action selector="tapOnForeignDetected:" destination="vXZ-lx-hvc" id="oV2-w0-AaD"/>
                     </connections>
                 </tapGestureRecognizer>
-                <tapGestureRecognizer id="Wli-rm-Tip"/>
+                <tapGestureRecognizer id="Wli-rm-Tip">
+                    <connections>
+                        <action selector="tapOnEnglish:" destination="vXZ-lx-hvc" id="0l3-XF-U79"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="3627" y="-114"/>
         </scene>

@@ -40,6 +40,7 @@
 @property NSMutableArray *audioRefs;
 @property EAFAudioPlayer *myAudioPlayer;
 @property (strong, nonatomic) AVAudioPlayer *audioPlayer;
+@property (nonatomic, strong) AVSpeechSynthesizer *synthesizer;
 
 @end
 
@@ -50,7 +51,10 @@
     [super viewDidLoad];
     
     _reqid = 1;
-    
+    if (!self.synthesizer) {
+        self.synthesizer = [[AVSpeechSynthesizer alloc] init];
+        _synthesizer.delegate = self;
+    }
     _playingIcon = [BButton awesomeButtonWithOnlyIcon:FAVolumeUp
                                                   type: BButtonTypeDefault
                                                  style:BButtonStyleBootstrapV3];
@@ -101,17 +105,17 @@
         NSLog(@"%@", [setOverrideError description]);
     }
     
-    [session setCategory:AVAudioSessionCategoryRecord error:&error];
-    
-    if (error)
-    {
-        NSLog(@"error: %@", [error localizedDescription]);
-    } else {
-        [session requestRecordPermission:^(BOOL granted) {
-            //NSLog(@"record permission is %d", granted);
-        } ];
-    }
-    
+//    [session setCategory:AVAudioSessionCategoryRecord error:&error];
+//    
+//    if (error)
+//    {
+//        NSLog(@"error: %@", [error localizedDescription]);
+//    } else {
+//        [session requestRecordPermission:^(BOOL granted) {
+//            //NSLog(@"record permission is %d", granted);
+//        } ];
+//    }
+//    
     // Define the recorder setting
     NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
     
@@ -350,6 +354,7 @@
 - (void)respondToSwipe {
     [self removePlayObserver];
     [_myAudioPlayer stopAudio];
+    [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     [_recoFeedbackImage stopAnimating];
 
     [_correctFeedback setHidden:true];
@@ -481,12 +486,10 @@
     NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
     
     if (_audioOnSelector.selectedSegmentIndex == 0 && [self hasRefAudio] && !preventPlayAudio && !_foreignLang.hidden && showedIntro != nil) {
-//        NSLog(@"playing these audio cuts %@",_audioRefs);
         _myAudioPlayer.audioPaths = _audioRefs;
         [_myAudioPlayer playRefAudio];
     }
     else {
-    //    NSLog(@"not playing audio - ?");
         preventPlayAudio = false;
     }
 }
@@ -535,14 +538,55 @@ BOOL preventPlayAudio = false;
         [self respondToSwipe];
     }
 }
+- (IBAction)tapOnEnglish:(id)sender {
+    [self stopPlayingAudio];
+  //  NSLog(@"recoflashcard : tapOnEnglish--- paused %@",_synthesizer.isPaused ? @"YES":@"NO");
+ //   NSLog(@"recoflashcard : tapOnEnglish--- speaking %@",_synthesizer.isSpeaking ? @"YES":@"NO");
+    AVAudioSession *session = [AVAudioSession sharedInstance];
+    [session setCategory:AVAudioSessionCategoryPlayback error:nil];
 
+    AVSpeechUtterance *utterance = [AVSpeechUtterance speechUtteranceWithString:_english.text];
+    [utterance setRate:0.2f];
+    utterance.volume = 0.7;
+    [_synthesizer speakUtterance:utterance];
+}
+
+- (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didPauseSpeechUtterance:(AVSpeechUtterance *)utterance {
+  //  NSLog(@"recoflashcard : didPauseSpeechUtterance---");
+    _english.textColor = [UIColor blackColor];
+}
+- (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didContinueSpeechUtterance:(AVSpeechUtterance *)utterance {
+  //  NSLog(@"recoflashcard : didContinueSpeechUtterance---");
+}
+- (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didCancelSpeechUtterance:(AVSpeechUtterance *)utterance {
+  //  NSLog(@"recoflashcard : didCancelSpeechUtterance---");
+    _english.textColor = [UIColor blackColor];
+}
+
+- (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didStartSpeechUtterance:(AVSpeechUtterance *)utterance
+
+//- (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer willSpeakRangeOfSpeechString:(NSRange)characterRange utterance:(AVSpeechUtterance *)utterance
+{
+    NSLog(@"recoflashcard : didStartSpeechUtterance---");
+
+    _english.textColor = [UIColor blueColor];
+}
+- (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didFinishSpeechUtterance:(AVSpeechUtterance *)utterance
+{
+    
+    NSLog(@"recoflashcard : didFinishSpeechUtterance---");
+
+    _english.textColor = [UIColor blackColor];
+
+}
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender{
     if (
         //[_audioOnSelector isOn] &&
         [self hasRefAudio]) {
-       // [self playRefAudio:nil];
         [_myAudioPlayer playRefAudio];
     }
+    [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
     [poster postEvent:[NSString stringWithFormat:@"playAudioTouch"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"flText" widgetType:@"UILabel"];
@@ -615,6 +659,7 @@ BOOL preventPlayAudio = false;
 
 // find first subview and remove the icon from it
 // TODO : fix this for spacer case
+// TODO : don't do floating icon - change foreground text color instead
 - (void)removePlayingAudioIcon {
     NSArray *subviews = [_scoreDisplayContainer subviews];
     if (subviews.count > 0) {
@@ -694,23 +739,11 @@ BOOL preventPlayAudio = false;
 }
 
 - (void)removePlayingAudioHighlight {
-//    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
-//    NSRange range= NSMakeRange(0, [result length]);
-//    [result removeAttribute:NSBackgroundColorAttributeName range:range];
-//    [_foreignLang setAttributedText:result];
-//    
     _foreignLang.textColor = [UIColor blackColor];
 }
 
 - (void)highlightFLWhilePlaying
 {
-    //NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[_foreignLang text]];
-    
-//    NSRange range= NSMakeRange(0, [result length]);
-//    [result addAttribute:NStextc
-//                   value:[UIColor yellowColor]
-//                   range:range];
-//    [_foreignLang setAttributedText:result];
     _foreignLang.textColor = [UIColor blueColor];
 }
 
@@ -735,7 +768,8 @@ bool debugRecord = false;
     if (!_audioRecorder.recording)
     {
         if (debugRecord) NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
-        
+        _english.textColor = [UIColor blackColor];
+   
         for (UIView *v in [_scoreDisplayContainer subviews]) {
             [v removeFromSuperview];
         }
@@ -827,11 +861,14 @@ double gestureEnd;
     if (!_audioRecorder.recording)
     {
         NSLog(@"playAudio %@",_audioRecorder.url);
+        [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+        [self stopPlayingAudio];
         
         NSError *error;
         AVAudioSession *session = [AVAudioSession sharedInstance];
         
         [session setCategory:AVAudioSessionCategoryPlayback error:nil];
+        // what does this do?
         [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
         
         _audioPlayer = [[AVAudioPlayer alloc]

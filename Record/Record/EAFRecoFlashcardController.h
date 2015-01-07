@@ -13,7 +13,7 @@
 #import "EAFAudioPlayer.h"
 
 @interface EAFRecoFlashcardController : UIViewController
-        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate,AudioPlayerNotification>
+        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate,AudioPlayerNotification,AVSpeechSynthesizerDelegate>
 
 @property (strong, nonatomic) IBOutlet UIView *cardBackground;
 @property (strong, nonatomic) IBOutlet UIView *recordButtonContainer;
