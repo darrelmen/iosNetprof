@@ -560,6 +560,7 @@
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="yKq-0v-RGo" appends="YES" id="QTl-Uw-vWR"/>
                             <outletCollection property="gestureRecognizers" destination="HVB-hW-ZzX" appends="YES" id="AbS-8O-gQs"/>
+                            <outletCollection property="gestureRecognizers" destination="NBw-x3-H2K" appends="YES" id="Kfy-cU-Ut3"/>
                         </connections>
                     </view>
                     <toolbarItems/>
@@ -623,6 +624,11 @@
                 <tapGestureRecognizer id="Wli-rm-Tip">
                     <connections>
                         <action selector="tapOnEnglish:" destination="vXZ-lx-hvc" id="0l3-XF-U79"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="NBw-x3-H2K">
+                    <connections>
+                        <action selector="gotTapInSuperview:" destination="vXZ-lx-hvc" id="bqW-mt-WGE"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

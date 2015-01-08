@@ -221,7 +221,8 @@ NSString *chapterTitle = @"Chapter";
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-    
+    [urlRequest setTimeoutInterval:5];
+
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
@@ -333,6 +334,8 @@ NSString *chapterTitle = @"Chapter";
     // Check the error var
     NSLog(@"Download content failed with %@",error);
     _requestPending = false;
+    [[self tableView] reloadData];
+
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 
