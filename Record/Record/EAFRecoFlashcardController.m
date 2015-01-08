@@ -204,6 +204,12 @@
     }
 }
 
+-(void) viewWillDisappear:(BOOL)animated {
+    _autoPlaySwitch.on = false;
+    [self stopPlayingAudio];
+    [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+}
+
 - (IBAction)showScoresClick:(id)sender {
     NSLog(@"Got showScoresClick");
     
@@ -350,6 +356,16 @@
     [self respondToSwipe];
 }
 
+- (void)setGenderSelector {
+    NSString *audioGender = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioGender"];
+    if (audioGender == nil) {
+        [SSKeychain setPassword:@"Both"
+                     forService:@"mitll.proFeedback.device" account:@"audioGender"];
+    }
+    NSLog(@"\n\nrespondToSwipe gender sel %@",audioGender);
+    _genderMaleSelector.selectedSegmentIndex = [audioGender isEqualToString:@"Male"] ? 0:[audioGender isEqualToString:@"Female"]?1:2;
+}
+
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
     [self removePlayObserver];
@@ -360,13 +376,7 @@
     [_correctFeedback setHidden:true];
     [_scoreProgress     setProgress:0 ];
     
-    NSString *audioGender = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioGender"];
-    if (audioGender == nil) {
-        [SSKeychain setPassword:@"Both"
-                     forService:@"mitll.proFeedback.device" account:@"audioGender"];
-    }
-   // NSLog(@"gender sel %@",audioGender);
-    _genderMaleSelector.selectedSegmentIndex = [audioGender isEqualToString:@"Male"] ? 0:[audioGender isEqualToString:@"Female"]?1:2;
+    [self setGenderSelector];
     
     NSString *audioSpeed = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioSpeed"];
     if (audioSpeed != nil) {
@@ -456,6 +466,10 @@
     if (refAudio != nil && ![refAudio isEqualToString:@"NO"] && _audioRefs.count == 0) {
         [_audioRefs addObject:refAudio];
     }
+    
+    if (_autoPlaySwitch.isOn && _audioRefs.count > 1) {
+        [_audioRefs removeLastObject];
+    }
   //  NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
     
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
@@ -466,6 +480,7 @@
     [_foreignLang setText:flAtIndex];
     [_english setText:enAtIndex];
     
+    // todo : remove font foolishness here
     BOOL isIPhone = [[UIDevice currentDevice].model containsString:@"iPhone"];
     
     if (isIPhone && [enAtIndex length] > 15) {
@@ -484,8 +499,9 @@
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     NSString *showedID = [NSString stringWithFormat:@"showedIntro_%@",userid];
     NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
-    
-    if (_audioOnSelector.selectedSegmentIndex == 0 && [self hasRefAudio] && !preventPlayAudio && !_foreignLang.hidden && showedIntro != nil) {
+ 
+    // complicated...
+    if (_audioOnSelector.selectedSegmentIndex == 0 && [self hasRefAudio] && !preventPlayAudio && (!_foreignLang.hidden || _autoPlaySwitch.isOn) && showedIntro != nil) {
         _myAudioPlayer.audioPaths = _audioRefs;
         [_myAudioPlayer playRefAudio];
     }
@@ -538,17 +554,44 @@ BOOL preventPlayAudio = false;
         [self respondToSwipe];
     }
 }
-- (IBAction)tapOnEnglish:(id)sender {
-    [self stopPlayingAudio];
-  //  NSLog(@"recoflashcard : tapOnEnglish--- paused %@",_synthesizer.isPaused ? @"YES":@"NO");
- //   NSLog(@"recoflashcard : tapOnEnglish--- speaking %@",_synthesizer.isSpeaking ? @"YES":@"NO");
-    AVAudioSession *session = [AVAudioSession sharedInstance];
-    [session setCategory:AVAudioSessionCategoryPlayback error:nil];
 
+- (IBAction)autoPlaySelected:(id)sender {
+    NSLog(@"Got autoplay");
+   // UISwitch *switchy = (UISwitch *) sender;
+    if (_autoPlaySwitch.isOn) {
+        NSError *activationError = nil;
+        BOOL success = [[AVAudioSession sharedInstance] setActive:YES error:&activationError];
+        if (!success) { /* handle the error condition */ }
+    
+            
+        // do autoplay
+        [self stopPlayingAudio];
+        [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+
+        if (_audioRefs.count > 1) {
+            [_audioRefs removeLastObject];
+        }
+        [self playRefAudioIfAvailable];
+    }
+    else {
+        // stop autoplay
+    }
+}
+
+- (void)speakEnglish {
+    NSLog(@"Speak english- -- ");
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+    
     AVSpeechUtterance *utterance = [AVSpeechUtterance speechUtteranceWithString:_english.text];
     [utterance setRate:0.2f];
     utterance.volume = 0.7;
     [_synthesizer speakUtterance:utterance];
+}
+
+- (IBAction)tapOnEnglish:(id)sender {
+    [self stopPlayingAudio];
+
+    [self speakEnglish];
 }
 
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didPauseSpeechUtterance:(AVSpeechUtterance *)utterance {
@@ -564,28 +607,40 @@ BOOL preventPlayAudio = false;
 }
 
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didStartSpeechUtterance:(AVSpeechUtterance *)utterance
-
-//- (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer willSpeakRangeOfSpeechString:(NSRange)characterRange utterance:(AVSpeechUtterance *)utterance
 {
     NSLog(@"recoflashcard : didStartSpeechUtterance---");
-
     _english.textColor = [UIColor blueColor];
 }
+
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didFinishSpeechUtterance:(AVSpeechUtterance *)utterance
 {
-    
-    NSLog(@"recoflashcard : didFinishSpeechUtterance---");
-
+   // NSLog(@"recoflashcard : didFinishSpeechUtterance---");
     _english.textColor = [UIColor blackColor];
-
+    if (_autoPlaySwitch.isOn) {
+        _index++;
+        NSLog(@"-----> didFinishSpeechUtterance : %@ is done playing, so advancing to %lu\n\n",utterance,_index);
+        BOOL onLast = _index == _jsonItems.count;
+        if (onLast) {
+            _index = 0;
+            // TODO : get the sorted list and resort the items in incorrect first order
+        }
+        _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
+        
+        [self respondToSwipe];
+    }
 }
-- (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender{
+
+- (void)playRefAudioIfAvailable {
     if (
         //[_audioOnSelector isOn] &&
         [self hasRefAudio]) {
         [_myAudioPlayer playRefAudio];
     }
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+}
+
+- (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender{
+    [self playRefAudioIfAvailable];
 
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
@@ -717,9 +772,7 @@ BOOL preventPlayAudio = false;
     [alert show];
 }
 
-- (void)removePlayObserver {
-    //NSLog(@"reco flashcard : remove observer");
-    
+- (void)removePlayObserver {   
     @try {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
         [_player removeObserver:self forKeyPath:@"status"];
@@ -738,8 +791,16 @@ BOOL preventPlayAudio = false;
     [_myAudioPlayer stopAudio];
 }
 
+// OK, ref audio has finished playing, what next?
 - (void)removePlayingAudioHighlight {
-    _foreignLang.textColor = [UIColor blackColor];
+    if (_foreignLang.textColor == [UIColor blueColor]) {
+        _foreignLang.textColor = [UIColor blackColor];
+        
+        if (_autoPlaySwitch.isOn) {
+            // doing autoplay!
+            [self speakEnglish];
+        }
+    }
 }
 
 - (void)highlightFLWhilePlaying
@@ -818,9 +879,6 @@ bool debugRecord = false;
 
 - (IBAction)swipeDown:(id)sender {
     [self swipeUp:sender ];
-//    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
-//    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-//    [poster postEvent:[NSString stringWithFormat:@"swipeDown"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"card" widgetType:@"card"];
 }
 
 double gestureStart;

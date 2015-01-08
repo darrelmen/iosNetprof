@@ -19,7 +19,6 @@
 @property (strong, nonatomic) IBOutlet UIView *recordButtonContainer;
 
 @property (strong, nonatomic) AVAudioRecorder *audioRecorder;
-//@property (strong, nonatomic) AVAudioPlayer *audioPlayer;
 
 @property (strong, nonatomic) IBOutlet UIButton *playRefAudioButton;
 @property (strong, nonatomic) IBOutlet UIButton *recordButton;
@@ -65,12 +64,13 @@
 
 @property (strong, nonatomic) IBOutlet UISegmentedControl *audioOnSelector;
 @property (strong, nonatomic) IBOutlet UISwitch *shuffleSwitch;
+@property (strong, nonatomic) IBOutlet UISwitch *autoPlaySwitch;
 
 
 @property (strong, nonatomic) IBOutlet UISwitch *speedSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *whatToShow;
 - (IBAction)whatToShowSelection:(id)sender;
-//- (IBAction)genderSelection:(id)sender;
+
 - (IBAction)speedSelection:(id)sender;
 - (IBAction)audioOnSelection:(id)sender;
 - (void)respondToSwipe;

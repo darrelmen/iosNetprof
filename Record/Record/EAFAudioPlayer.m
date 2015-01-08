@@ -7,12 +7,12 @@
 //
 
 #import "EAFAudioPlayer.h"
-#import "FAImageView.h"
+//#import "FAImageView.h"
 
 @interface EAFAudioPlayer ()
 
 @property AVPlayer *player;
-
+//@property BOOL isPaused;
 @end
 
 @implementation EAFAudioPlayer
@@ -22,21 +22,26 @@
     self = [super init];
     if (self) {
         _currentIndex = 0;
+     //   _isPaused = false;
     }
     return self;
 }
 
 - (IBAction)stopAudio {
     NSLog(@"stopAudio ---- %@",self);
+  //  BOOL wasPlaying = !_isPaused;
+  //  _isPaused = true;
+
     _currentIndex = _audioPaths.count;
     if (_player != nil) {
         [_player pause];
-        NSLog(@"stopAudio removing current observer");
-
+       // NSLog(@"stopAudio removing current observer");
         [self removePlayObserver];
     }
+    //if (wasPlaying) {
     [self.delegate playStopped];
-}
+   // }
+    }
 
 - (IBAction)playRefAudio {
     _currentIndex = 0;
@@ -103,7 +108,7 @@
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
-    NSLog(@" playerItemDidReachEnd for this %@",self);
+    NSLog(@" playerItemDidReachEnd for this %@ for %@",self,_audioPaths);
     
     [self.delegate playStopped];
     
@@ -126,7 +131,7 @@
 // we remove the observer, or else we will later get a message when the player discarded
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                         change:(NSDictionary *)change context:(void *)context {
-    NSLog(@" observeValueForKeyPath %@",keyPath);
+   // NSLog(@" observeValueForKeyPath %@",keyPath);
     
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
@@ -168,14 +173,16 @@
 }
 
 - (void)removePlayObserver {
-    NSLog(@" remove observer");
+    NSLog(@"paths were %@, remove observer %@",_audioPaths,self);
     
     @try {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
         [_player removeObserver:self forKeyPath:@"status"];
     }
     @catch (NSException *exception) {
-        NSLog(@"removePlayObserver - got exception %@",exception.description);
+        if (![exception.description containsString:@"registered"]) {
+            NSLog(@"removePlayObserver - got exception %@",exception.description);
+        }
     }
 }
 
