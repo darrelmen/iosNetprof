@@ -41,7 +41,8 @@
 @property EAFAudioPlayer *myAudioPlayer;
 @property (strong, nonatomic) AVAudioPlayer *audioPlayer;
 @property (nonatomic, strong) AVSpeechSynthesizer *synthesizer;
-
+@property NSTimer *autoAdvanceTimer;
+@property NSTimeInterval autoAdvanceInterval;
 @end
 
 @implementation EAFRecoFlashcardController
@@ -65,7 +66,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    // TODO: make this a parameter?
+    _autoAdvanceInterval = 1;
     _reqid = 1;
     if (!self.synthesizer) {
         self.synthesizer = [[AVSpeechSynthesizer alloc] init];
@@ -199,6 +201,9 @@
 }
 
 -(void) viewWillDisappear:(BOOL)animated {
+    if (_autoAdvanceTimer != nil) {
+        [_autoAdvanceTimer invalidate];
+    }
     _autoPlaySwitch.on = false;
     [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
 
@@ -597,8 +602,8 @@ BOOL preventPlayAudio = false;
 }
 
 - (void) speakEnglish {
-    NSLog(@"Speak english- -- ");
-    NSString *say = _english.text;
+//    NSLog(@"Speak english- -- ");
+  //  NSString *say = _english.text;
     //if (say)
     [self speak:_english.text];
 }
@@ -608,7 +613,6 @@ BOOL preventPlayAudio = false;
     
     AVSpeechUtterance *utterance = [AVSpeechUtterance speechUtteranceWithString:toSpeak];
     if ([toSpeak isEqualToString:_foreignLang.text]) {
-     //   NSLog(@"avail %@",[AVSpeechSynthesisVoice speechVoices]);
         if ([_language isEqualToString:@"MSA"] ||
             [_language isEqualToString:@"Egyptian"]||
             [_language isEqualToString:@"Levantine"]||
@@ -682,6 +686,7 @@ BOOL preventPlayAudio = false;
     }
 }
 
+// when autoplay is active, automatically go to next item...
 - (void)doAutoAdvance
 {
     _index++;
@@ -704,8 +709,8 @@ BOOL preventPlayAudio = false;
 
     if (_autoPlaySwitch.isOn) {
         if (isEnglish) {
-        NSLog(@"-----> didFinishSpeechUtterance : %@ is done playing, so advancing to %lu\n\n",utterance.speechString,_index);
-        [self doAutoAdvance];
+            NSLog(@"-----> didFinishSpeechUtterance : %@ is done playing, so advancing to %lu\n\n",utterance.speechString,_index);
+            _autoAdvanceTimer = [NSTimer scheduledTimerWithTimeInterval:_autoAdvanceInterval target:self selector:@selector(doAutoAdvance) userInfo:nil repeats:NO];
         } else {
             [self speakEnglish];
 
@@ -1754,7 +1759,8 @@ BOOL addSpaces = false;
 {
     // Set the sender to a UIButton.
     [_myAudioPlayer stopAudio];
-
+    [self viewWillDisappear:true];
+    
     // Present the popover from the button that was tapped in the detail view.
     [[MZFormSheetController appearance] setCornerRadius:20.0];
    // [[MZFormSheetBackgroundWindow appearance] setBackgroundColor:[UIColor clearColor]];

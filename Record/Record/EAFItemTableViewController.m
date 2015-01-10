@@ -332,7 +332,7 @@ NSString *chapterTitle = @"Chapter";
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     // The request has failed for some reason!
     // Check the error var
-    NSLog(@"Download content failed with %@",error);
+    NSLog(@"ItemTableViewController - Download content failed with %@",error);
     _requestPending = false;
     [[self tableView] reloadData];
 

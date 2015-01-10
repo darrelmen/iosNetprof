@@ -13,6 +13,8 @@
 
 @interface EAFChapterTableViewController ()
 
+@property BOOL isRefresh;
+
 @end
 
 @implementation EAFChapterTableViewController
@@ -68,7 +70,9 @@
 int reqCount = 0;;
 int receivedCount = 0;;
 
-- (void)askServerForJson {
+- (void)askServerForJson:(BOOL) isRefresh {
+    _isRefresh = isRefresh;
+    
     reqCount++;
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?nestedChapters", _language];
     
@@ -101,7 +105,7 @@ UIAlertView *loadingContentAlert;
         BOOL dataIsValid = [self useJsonChapterData];
         if (!dataIsValid) {
             NSLog(@"loadInitialData : asking server for json!");
-            [self askServerForJson];
+            [self askServerForJson:false];
         }
         else {
             [self refreshCache];
@@ -112,7 +116,7 @@ UIAlertView *loadingContentAlert;
         loadingContentAlert = [[UIAlertView alloc] initWithTitle:@"Fetching course word list\nPlease Wait..." message:nil delegate:self cancelButtonTitle:nil otherButtonTitles: nil];
         [loadingContentAlert show];
         
-        [self askServerForJson];
+        [self askServerForJson:false];
     }
 }
 
@@ -156,7 +160,7 @@ UIAlertView *loadingContentAlert;
             CFAbsoluteTime diff = now-fileDate;
             if (diff > 24*60*60) {
                 NSLog(@"refreshCache file is stale - time = %f vs %f - diff %f",CFAbsoluteTimeGetCurrent(),  [date timeIntervalSinceReferenceDate], diff);
-                [self askServerForJson];
+                [self askServerForJson:true];
             }
             else {
                 NSLog(@"refreshCache cache *not* stale time = %f vs %f - diff %f",CFAbsoluteTimeGetCurrent(),  [date timeIntervalSinceReferenceDate], diff);
@@ -284,18 +288,20 @@ BOOL hasModel;
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     // The request has failed for some reason!
     // Check the error var
-    NSLog(@"Download content failed with %@",error);
+    NSLog(@"ChapterTable Download content failed with %@",error);
     [loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
 
     receivedCount++;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 
+    if (!_isRefresh) {
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
-                                                    message: @"Couldn't connect to server."
+                                                    message: @"I need an internet connection to get course content."
                                                    delegate: nil
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil];
     [alert show];
+    }
 }
 
 
@@ -450,8 +456,8 @@ NSArray *currentItems;
                 break;
             }
             else {
-//                NSLog(@"items is %@",items);
-                NSLog(@"Got click to segue to items");
+         //       NSLog(@"items is %@",items);
+         //       NSLog(@"Got click to segue to items");
                 
                 // TODO : ask for history here!
                 // when returns, go ahead and do segue
