@@ -43,6 +43,9 @@
 @property (nonatomic, strong) AVSpeechSynthesizer *synthesizer;
 @property NSTimer *autoAdvanceTimer;
 @property NSTimeInterval autoAdvanceInterval;
+
+@property CFAbsoluteTime startPost ;
+
 @end
 
 @implementation EAFRecoFlashcardController
@@ -67,7 +70,7 @@
 {
     [super viewDidLoad];
     // TODO: make this a parameter?
-    _autoAdvanceInterval = 1;
+    _autoAdvanceInterval = 0.5;
     _reqid = 1;
     if (!self.synthesizer) {
         self.synthesizer = [[AVSpeechSynthesizer alloc] init];
@@ -211,14 +214,16 @@
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
 }
 
-- (IBAction)showScoresClick:(id)sender {
-    NSLog(@"Got showScoresClick");
-    
-    [self stopPlayingAudio];
-    
+- (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-    [poster postEvent:[NSString stringWithFormat:@"showScoresClick"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"showScores" widgetType:@"Button"];
+    [poster postEvent:message exid:[jsonObject objectForKey:@"id"] lang:_language widget:widget widgetType:type];
+}
+
+- (IBAction)showScoresClick:(id)sender {
+    [self stopPlayingAudio];
+    
+    [self postEvent:@"showScoresClick" widget:@"showScores" type:@"Button"];
     
     [self performSegueWithIdentifier:@"goToReport" sender:self];
 }
@@ -575,14 +580,11 @@ BOOL preventPlayAudio = false;
 }
 
 - (IBAction)autoPlaySelected:(id)sender {
-    NSLog(@"Got autoplay");
-   // UISwitch *switchy = (UISwitch *) sender;
     if (_autoPlaySwitch.isOn) {
         NSError *activationError = nil;
         BOOL success = [[AVAudioSession sharedInstance] setActive:YES error:&activationError];
         if (!success) { /* handle the error condition */ }
-    
-            
+        
         // do autoplay
         [self stopPlayingAudio];
         [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
@@ -601,44 +603,45 @@ BOOL preventPlayAudio = false;
     }
 }
 
-- (void) speakEnglish {
-//    NSLog(@"Speak english- -- ");
-  //  NSString *say = _english.text;
-    //if (say)
-    [self speak:_english.text];
+- (void) speakEnglish:(BOOL) volumeOn {
+    [self speak:_english.text volumeOn:volumeOn];
 }
 
-- (void)speak:(NSString *) toSpeak {
+// for now, don't speak foreign language items
+- (void)speak:(NSString *) toSpeak volumeOn:(BOOL)volumnOn {
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
     
     AVSpeechUtterance *utterance = [AVSpeechUtterance speechUtteranceWithString:toSpeak];
-    if ([toSpeak isEqualToString:_foreignLang.text]) {
-        if ([_language isEqualToString:@"MSA"] ||
-            [_language isEqualToString:@"Egyptian"]||
-            [_language isEqualToString:@"Levantine"]||
-            [_language isEqualToString:@"Sudanese"]) {
-            utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"ar-SA"];
-        }
-        else if ([_language isEqualToString:@"CM"] || [_language isEqualToString:@"Mandarin"]) {
-            utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@ "zh-CN"];
-        }
-        else if ([_language isEqualToString:@"Korean"]) {
-            utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@ "ko-KR"];
-        }
-        else if ([_language isEqualToString:@"Japanese"]) {
-            utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@ "ja-JP"];
-        }
-        else if ([_language isEqualToString:@"Russian"]) {
-            utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@ "ru-RU"];
-        }
-        else if ([_language isEqualToString:@"Spanish"]) {
-            utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@ "es-ES"];
-        }
-        [utterance setRate:0.1f];
-    }
-    else {
+//    if ([toSpeak isEqualToString:_foreignLang.text]) {
+//        if ([_language isEqualToString:@"MSA"] ||
+//            [_language isEqualToString:@"Egyptian"]||
+//            [_language isEqualToString:@"Levantine"]||
+//            [_language isEqualToString:@"Sudanese"]) {
+//            utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"ar-SA"];
+//        }
+//        else if ([_language isEqualToString:@"CM"] || [_language isEqualToString:@"Mandarin"]) {
+//            utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@ "zh-CN"];
+//        }
+//        else if ([_language isEqualToString:@"Korean"]) {
+//            utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@ "ko-KR"];
+//        }
+//        else if ([_language isEqualToString:@"Japanese"]) {
+//            utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@ "ja-JP"];
+//        }
+//        else if ([_language isEqualToString:@"Russian"]) {
+//            utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@ "ru-RU"];
+//        }
+//        else if ([_language isEqualToString:@"Spanish"]) {
+//            utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@ "es-ES"];
+//        }
+//        [utterance setRate:0.1f];
+//    }
+//    else {
         utterance.volume = 0.8;
         [utterance setRate:0.2f];
+//    }
+    if (_audioOnSelector.selectedSegmentIndex == 1 && !volumnOn) {
+        utterance.volume = 0;
     }
     [_synthesizer speakUtterance:utterance];
 }
@@ -646,17 +649,15 @@ BOOL preventPlayAudio = false;
 - (IBAction)tapOnEnglish:(id)sender {
     [self stopPlayingAudio];
 
-    [self speakEnglish];
+    [self speakEnglish:true];
 }
 
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didPauseSpeechUtterance:(AVSpeechUtterance *)utterance {
-    NSLog(@"recoflashcard : didPauseSpeechUtterance---");
+ //   NSLog(@"recoflashcard : didPauseSpeechUtterance---");
     [self showSpeechEnded:[utterance.speechString isEqualToString:_english.text]];
 }
 
 - (void)showSpeechEnded:(BOOL) isEnglish {
-    //_english.textColor = [UIColor blackColor];
-   
     if (isEnglish) {
         _english.textColor = [UIColor blackColor];
     }
@@ -668,6 +669,7 @@ BOOL preventPlayAudio = false;
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didContinueSpeechUtterance:(AVSpeechUtterance *)utterance {
     NSLog(@"recoflashcard : didContinueSpeechUtterance---");
 }
+
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didCancelSpeechUtterance:(AVSpeechUtterance *)utterance {
     NSLog(@"recoflashcard : didCancelSpeechUtterance---");
     [self showSpeechEnded:[utterance.speechString isEqualToString:_english.text]];
@@ -676,7 +678,6 @@ BOOL preventPlayAudio = false;
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didStartSpeechUtterance:(AVSpeechUtterance *)utterance
 {
     NSLog(@"recoflashcard : didStartSpeechUtterance--- %@",utterance.speechString);
- //   _english.textColor = [UIColor blueColor];
     
     if ([utterance.speechString isEqualToString:_english.text]) {
         _english.textColor = [UIColor blueColor];
@@ -693,7 +694,6 @@ BOOL preventPlayAudio = false;
     BOOL onLast = _index == _jsonItems.count;
     if (onLast) {
         _index = 0;
-        // TODO : get the sorted list and resort the items in incorrect first order
     }
     _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
     
@@ -712,7 +712,7 @@ BOOL preventPlayAudio = false;
             NSLog(@"-----> didFinishSpeechUtterance : %@ is done playing, so advancing to %lu\n\n",utterance.speechString,_index);
             _autoAdvanceTimer = [NSTimer scheduledTimerWithTimeInterval:_autoAdvanceInterval target:self selector:@selector(doAutoAdvance) userInfo:nil repeats:NO];
         } else {
-            [self speakEnglish];
+            [self speakEnglish:false];
 
         }
     }
@@ -726,24 +726,25 @@ BOOL preventPlayAudio = false;
         [_myAudioPlayer playRefAudio];
     }
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
-    if (![self hasRefAudio] && [self canSpeak]) {
-        
-        [self speak:_foreignLang.text];
-    }
+  
+//    if (![self hasRefAudio] && [self canSpeak]) {
+//        [self speak:_foreignLang.text];
+//    }
 }
 
-- (BOOL) canSpeak {
-    return [_language isEqualToString:@"MSA"] ||
-    [_language isEqualToString:@"Egyptian"]||
-    [_language isEqualToString:@"Levantine"]||
-    [_language isEqualToString:@"Sudanese"]||
-    [_language isEqualToString:@"CM"] ||
-    [_language isEqualToString:@"Mandarin"]||
-    [_language isEqualToString:@"Korean"]  ||
-    [_language isEqualToString:@"Japanese"]||
-    [_language isEqualToString:@"Russian"]||
-    [_language isEqualToString:@"Spanish"];
-}
+// for now, we don't try to speak the missing audio
+//- (BOOL) canSpeak {
+//    return [_language isEqualToString:@"MSA"] ||
+//    [_language isEqualToString:@"Egyptian"]||
+//    [_language isEqualToString:@"Levantine"]||
+//    [_language isEqualToString:@"Sudanese"]||
+//    [_language isEqualToString:@"CM"] ||
+//    [_language isEqualToString:@"Mandarin"]||
+//    [_language isEqualToString:@"Korean"]  ||
+//    [_language isEqualToString:@"Japanese"]||
+//    [_language isEqualToString:@"Russian"]||
+//    [_language isEqualToString:@"Spanish"];
+//}
 
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender{
     [self playRefAudioIfAvailable];
@@ -786,11 +787,17 @@ BOOL preventPlayAudio = false;
 - (IBAction)audioOnSelection:(id)sender {
     [SSKeychain setPassword:(_audioOnSelector.selectedSegmentIndex == 0 ? @"Yes":@"No")
                  forService:@"mitll.proFeedback.device" account:@"audioOn"];
-    [self viewWillDisappear:true];
+   
+    // [self viewWillDisappear:true];
+    
     if (_audioOnSelector.selectedSegmentIndex == 1) {
         [self stopPlayingAudio];
     }
-    [self respondToSwipe];
+    _myAudioPlayer.volume = _audioOnSelector.selectedSegmentIndex == 0 ? 1: 0;
+    
+    if (!_autoPlaySwitch.isOn) {
+        [self respondToSwipe];
+    }
 }
 
 - (BOOL) hasRefAudio
@@ -891,6 +898,10 @@ BOOL preventPlayAudio = false;
 
 - (IBAction)gotTapInSuperview:(id)sender {
     [self viewWillDisappear:true];
+    long selected = [_whatToShow selectedSegmentIndex];
+    if (selected == 0 || selected == 1) {
+        [self flipCard];
+    }
 }
 
 - (void)stopPlayingAudio {
@@ -913,7 +924,7 @@ BOOL preventPlayAudio = false;
                 [self doAutoAdvance];
             }
             else {
-                [self speakEnglish];
+                [self speakEnglish:false];
             }
         }
     }
@@ -981,23 +992,38 @@ bool debugRecord = false;
     }
 }
 
+- (void)flipCard {
+    if (_pageControl.currentPage == 0) {
+        _pageControl.currentPage = 1;
+    }
+    else {
+        _pageControl.currentPage = 0;
+    }
+    [_foreignLang setHidden:!_foreignLang.hidden];
+    [_english setHidden:!_english.hidden];
+    long sel = _audioOnSelector.selectedSegmentIndex; // i.e. audio is ON
+    if (sel == 0) {
+        if (!preventPlayAudio) {
+            if (!_foreignLang.hidden) {
+                [self playRefAudioIfAvailable];
+            }
+            else if (!_english.hidden) {
+                [self speakEnglish:false];
+            }
+        }
+        
+    }
+}
+
 - (IBAction)swipeUp:(id)sender {
     [self viewWillDisappear:true];
 
     long selected = [_whatToShow selectedSegmentIndex];
     if (selected == 0 || selected == 1) {
-        if (_pageControl.currentPage == 0) {
-            _pageControl.currentPage = 1;
-        }
-        else {
-            _pageControl.currentPage = 0;
-        }
-        [_foreignLang setHidden:!_foreignLang.hidden];
-        [_english setHidden:!_english.hidden];
-        if (!_foreignLang.hidden && _audioOnSelector.selectedSegmentIndex == 0 && !preventPlayAudio) {
-            //[_myAudioPlayer playRefAudio];
-            [self playRefAudioIfAvailable];
-        }
+        [self flipCard];
+    }
+    else {
+        [self swipeLeftDetected:sender];
     }
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
@@ -1005,7 +1031,12 @@ bool debugRecord = false;
 }
 
 - (IBAction)swipeDown:(id)sender {
-    [self swipeUp:sender ];
+    if ([_whatToShow selectedSegmentIndex] == 2) {
+        [self swipeRightDetected:sender];
+    }
+    else {
+        [self swipeUp:sender ];
+    }
 }
 
 double gestureStart;
@@ -1198,11 +1229,13 @@ double gestureEnd;
     
     // post the audio
     
+    
     [urlRequest setHTTPBody:postData];
     
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [connection start];
     
+    _startPost = CFAbsoluteTimeGetCurrent();
     NSLog(@"posting to %@",_url);
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
 }
@@ -1322,6 +1355,16 @@ NSString *statusCodeDisplay;
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
     // You can parse the stuff in your instance variable now
+    
+    CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
+    CFAbsoluteTime diff = (now-_startPost);
+    
+    NSLog(@"round trip time was %f",diff);
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
+    double durationInSeconds = CMTimeGetSeconds(asset.duration);
+    
+    [self postEvent:[NSString stringWithFormat:@"round trip was %.2f seconds for file of dur %.2f",diff,durationInSeconds] widget:@"recordButton" type:@"Button"];
+    
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
     [_recoFeedbackImage stopAnimating];
@@ -1727,7 +1770,7 @@ BOOL addSpaces = false;
     [_recoFeedbackImage stopAnimating];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
-   // NSLog(@"got %@",error);
+    NSLog(@"got %@",error);
     if ([[error localizedDescription] containsString:@"timed"]) {
         [self setDisplayMessage:@"Network connection problem, please try again."];
     }

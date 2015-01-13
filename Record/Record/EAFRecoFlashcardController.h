@@ -74,6 +74,7 @@
 - (IBAction)speedSelection:(id)sender;
 - (IBAction)audioOnSelection:(id)sender;
 - (void)respondToSwipe;
+- (void)doAutoAdvance;
 @property (strong, nonatomic) IBOutlet BButton *contextButton;
 
 @property UITableViewController *itemViewController;

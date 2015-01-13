@@ -7,12 +7,10 @@
 //
 
 #import "EAFAudioPlayer.h"
-//#import "FAImageView.h"
 
 @interface EAFAudioPlayer ()
 
 @property AVPlayer *player;
-//@property BOOL isPaused;
 @end
 
 @implementation EAFAudioPlayer
@@ -22,30 +20,24 @@
     self = [super init];
     if (self) {
         _currentIndex = 0;
-     //   _isPaused = false;
+        _volume = 1;
     }
     return self;
 }
 
 - (IBAction)stopAudio {
     NSLog(@"stopAudio ---- %@",self);
-  //  BOOL wasPlaying = !_isPaused;
-  //  _isPaused = true;
-
     _currentIndex = _audioPaths.count;
     if (_player != nil) {
         [_player pause];
-       // NSLog(@"stopAudio removing current observer");
         [self removePlayObserver];
     }
-    //if (wasPlaying) {
     [self.delegate playStopped];
-   // }
     }
 
 - (IBAction)playRefAudio {
     _currentIndex = 0;
-    
+   
     [self playRefAudioInternal];
 }
 
@@ -103,7 +95,7 @@
     AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
     
     _player = [AVPlayer playerWithURL:url];
-    
+     _player.volume = _volume;
     [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
 }
 

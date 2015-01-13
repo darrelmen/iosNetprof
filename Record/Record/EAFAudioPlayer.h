@@ -27,6 +27,7 @@
 
 - (IBAction)playRefAudio;
 - (IBAction)stopAudio;
+@property float volume;
 
 @property(assign) id<AudioPlayerNotification> delegate;
 
