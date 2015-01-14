@@ -79,5 +79,5 @@
 
 @property UITableViewController *itemViewController;
 @property (strong, nonatomic) IBOutlet UIPageControl *pageControl;
-
+- (void) viewBecameActive;
 @end

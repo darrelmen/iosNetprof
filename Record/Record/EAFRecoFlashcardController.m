@@ -21,6 +21,7 @@
 #import "EAFEventPoster.h"
 #import "MZFormSheetController.h"
 #import "EAFAudioPlayer.h"
+#import "EAFAppDelegate.h"
 
 @implementation UIProgressView (customView)
 - (CGSize)sizeThatFits:(CGSize)size {
@@ -45,7 +46,8 @@
 @property NSTimeInterval autoAdvanceInterval;
 
 @property CFAbsoluteTime startPost ;
-
+@property BOOL cancelAudio;
+@property UIBackgroundTaskIdentifier backgroundUpdateTask;
 @end
 
 @implementation EAFRecoFlashcardController
@@ -66,8 +68,19 @@
     }
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    NSLog(@"viewWillAppear --->");
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    NSLog(@"viewDidAppear --->");
+}
+
 - (void)viewDidLoad
 {
+    NSLog(@"viewDidLoad --->");
+
     [super viewDidLoad];
     // TODO: make this a parameter?
     _autoAdvanceInterval = 0.5;
@@ -181,7 +194,7 @@
     
     _pageControl.transform = CGAffineTransformMakeRotation(M_PI_2);
     
-    _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
+  //  _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
 
     [_contextButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
                     //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
@@ -203,16 +216,62 @@
     [self checkAndShowIntro];
 }
 
--(void) viewWillDisappear:(BOOL)animated {
+- (void)stopTimer {
     if (_autoAdvanceTimer != nil) {
         [_autoAdvanceTimer invalidate];
+        [self endBackgroundUpdateTask];
     }
+}
+
+-(void) viewWillDisappear:(BOOL)animated {
+    [self stopTimer];
     _autoPlaySwitch.on = false;
     [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
 
     [self stopPlayingAudio];
-    [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+   // [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
 }
+
+- (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
+    NSLog(@"remoteControlReceivedWithEvent ---> %@ %ld",receivedEvent,receivedEvent.subtype);
+
+    if (receivedEvent.type == UIEventTypeRemoteControl) {
+        switch (receivedEvent.subtype) {
+            case UIEventSubtypeRemoteControlPause:
+                [self stopTimer];
+                _autoPlaySwitch.on = false;
+                break;
+            case UIEventSubtypeRemoteControlPlay:
+                _autoPlaySwitch.on = true;
+                [self respondToSwipe];
+                break;
+            case UIEventSubtypeRemoteControlTogglePlayPause:
+                NSLog(@"Got play/pause track --->");
+                break;
+                
+            case UIEventSubtypeRemoteControlPreviousTrack:
+              //  NSLog(@"Got prev track --->");
+                _cancelAudio=true;
+                [self stopPlayingAudio];
+                _index--;
+                if (_index == -1) _index = _jsonItems.count  -1UL;
+                [self respondToSwipe];
+                
+                break;
+                
+            case UIEventSubtypeRemoteControlNextTrack:
+                //NSLog(@"Got next track --->");
+                _cancelAudio=true;
+                [self stopPlayingAudio];
+                [self doAutoAdvance];
+                break;
+                
+            default:
+                break;
+        }
+    }
+}
+
 
 - (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
@@ -374,6 +433,8 @@
 
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
+    _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
+
     [self removePlayObserver];
    
     if ([self hasRefAudio]) {
@@ -512,22 +573,17 @@
  
     // complicated...
     if (_audioOnSelector.selectedSegmentIndex == 0 &&
-        //[self hasRefAudio] &&
         !preventPlayAudio &&
         (!_foreignLang.hidden || _autoPlaySwitch.isOn) && showedIntro != nil) {
         _myAudioPlayer.audioPaths = _audioRefs;
-//        [_myAudioPlayer playRefAudio];
         [self playRefAudioIfAvailable];
-
     }
     else {
         preventPlayAudio = false;
-        if (_autoPlaySwitch.isOn //&& ![self hasRefAudio]
-            ) {
+        if (_autoPlaySwitch.isOn) {
            // [self doAutoAdvance];
             [self playRefAudioIfAvailable];
         }
-        
     }
 }
 
@@ -535,7 +591,7 @@
     [self viewWillDisappear:true];
     _index--;
     if (_index == -1) _index = _jsonItems.count  -1UL;
-    _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
+   // _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
   //  NSLog(@"swipeRightDetected progress is %f", _progressThroughItems.progress);
 
     [self whatToShowSelection:nil];
@@ -557,7 +613,7 @@ BOOL preventPlayAudio = false;
         _index = 0;
         // TODO : get the sorted list and resort the items in incorrect first order
     }
-    _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
+  //  _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
     NSLog(@"swipeLeftDetected progress is %f", _progressThroughItems.progress);
 
     [self whatToShowSelection:nil];
@@ -587,15 +643,17 @@ BOOL preventPlayAudio = false;
         
         // do autoplay
         [self stopPlayingAudio];
-        [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
-
+        //  [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+        
         if (_audioRefs.count > 1) {
             [_audioRefs removeLastObject];
         }
         [self playRefAudioIfAvailable];
         // Turn on remote control event delivery
         [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+        EAFAppDelegate *myDelegate = [UIApplication sharedApplication].delegate;
         
+        myDelegate.recoController = self;
     }
     else {
         // stop autoplay
@@ -603,7 +661,13 @@ BOOL preventPlayAudio = false;
     }
 }
 
+// TODO make sure have right ui state when we return
+- (void) viewBecameActive {
+    NSLog(@"view became active ----\n");
+}
+
 - (void) speakEnglish:(BOOL) volumeOn {
+    NSLog(@"Speak english");
     [self speak:_english.text volumeOn:volumeOn];
 }
 
@@ -690,42 +754,58 @@ BOOL preventPlayAudio = false;
 // when autoplay is active, automatically go to next item...
 - (void)doAutoAdvance
 {
+        [self endBackgroundUpdateTask];
+
     _index++;
     BOOL onLast = _index == _jsonItems.count;
     if (onLast) {
         _index = 0;
     }
-    _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
+  //  _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
     
     [self respondToSwipe];
 }
 
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didFinishSpeechUtterance:(AVSpeechUtterance *)utterance
 {
-   // NSLog(@"recoflashcard : didFinishSpeechUtterance---");
-    //_english.textColor = [UIColor blackColor];
-     BOOL isEnglish = [utterance.speechString isEqualToString:_english.text];
+    NSLog(@"recoflashcard : didFinishSpeechUtterance---");
+    BOOL isEnglish = [utterance.speechString isEqualToString:_english.text];
     [self showSpeechEnded:isEnglish];
 
     if (_autoPlaySwitch.isOn) {
         if (isEnglish) {
             NSLog(@"-----> didFinishSpeechUtterance : %@ is done playing, so advancing to %lu\n\n",utterance.speechString,_index);
-            _autoAdvanceTimer = [NSTimer scheduledTimerWithTimeInterval:_autoAdvanceInterval target:self selector:@selector(doAutoAdvance) userInfo:nil repeats:NO];
-        } else {
-            [self speakEnglish:false];
+            [self beginBackgroundUpdateTask];
 
+            _autoAdvanceTimer = [NSTimer scheduledTimerWithTimeInterval:_autoAdvanceInterval target:self selector:@selector(doAutoAdvance) userInfo:nil repeats:NO];
         }
+//        else {
+//            [self speakEnglish:false];
+//        }
+    }
+}
+- (void) beginBackgroundUpdateTask
+{
+    self.backgroundUpdateTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        [self endBackgroundUpdateTask];
+    }];
+}
+
+- (void) endBackgroundUpdateTask
+{
+    if (self.backgroundUpdateTask) {
+        [[UIApplication sharedApplication] endBackgroundTask: self.backgroundUpdateTask];
+        self.backgroundUpdateTask = UIBackgroundTaskInvalid;
     }
 }
 
 // deals with missing audio...?
 - (void)playRefAudioIfAvailable {
-    if (
-        //[_audioOnSelector isOn] &&
-        [self hasRefAudio]) {
+    _cancelAudio=false;
+    [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+    if ([self hasRefAudio]) {
         [_myAudioPlayer playRefAudio];
     }
-    [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
   
 //    if (![self hasRefAudio] && [self canSpeak]) {
 //        [self speak:_foreignLang.text];
@@ -754,6 +834,7 @@ BOOL preventPlayAudio = false;
     [poster postEvent:[NSString stringWithFormat:@"playAudioTouch"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"flText" widgetType:@"UILabel"];
 }
 
+// control showing english, fl phrase, or both
 - (IBAction)whatToShowSelection:(id)sender {
     long selected = [_whatToShow selectedSegmentIndex];
     //   NSLog(@"recoflashcard : whatToShowSelection %ld", selected);
@@ -911,6 +992,7 @@ BOOL preventPlayAudio = false;
         [self removePlayingAudioHighlight];
     }
     [_myAudioPlayer stopAudio];
+    [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
 }
 
 // OK, ref audio has finished playing, what next?
@@ -920,18 +1002,26 @@ BOOL preventPlayAudio = false;
         
         if (_autoPlaySwitch.isOn) {
             // doing autoplay!
+            // skip english if lang is english
             if ([_english.text isEqualToString:_foreignLang.text]) {
                 [self doAutoAdvance];
             }
             else {
-                [self speakEnglish:false];
+                // OK move on to english part of card, automatically
+                if (!_cancelAudio) {
+                    NSLog(@"remove playing highlight - speak english");
+                    [self speakEnglish:false];
+                }
             }
         }
     }
-    else if (![self hasRefAudio]){
-        if (_autoPlaySwitch.isOn) {
-            // doing autoplay!
-            [self doAutoAdvance];
+    else {
+        NSLog(@"IGNORING stop message");
+        if (![self hasRefAudio]){
+            if (_autoPlaySwitch.isOn) {
+                // doing autoplay!
+                [self doAutoAdvance];
+            }
         }
     }
 }
@@ -978,15 +1068,13 @@ bool debugRecord = false;
         
         if (_audioRecorder.recording)
         {
-            CFAbsoluteTime recordingBegins = CFAbsoluteTimeGetCurrent();
-            
-            if (debugRecord) NSLog(@"recordAudio -recording %f vs begin %f diff %f ",_then2,recordingBegins,(recordingBegins-_then2));
-            
+            if (debugRecord) {
+                CFAbsoluteTime recordingBegins = CFAbsoluteTimeGetCurrent();
+                NSLog(@"recordAudio -recording %f vs begin %f diff %f ",_then2,recordingBegins,(recordingBegins-_then2));
+            }
         }
         else {
-           // _recordButtonContainer.backgroundColor =[UIColor whiteColor];
             NSLog(@"recordAudio -DUDE NOT recording");
-            
             [self logError:error];
         }
     }
@@ -1011,10 +1099,10 @@ bool debugRecord = false;
                 [self speakEnglish:false];
             }
         }
-        
     }
 }
 
+// TODO : maybe only flip card on tap?
 - (IBAction)swipeUp:(id)sender {
     [self viewWillDisappear:true];
 
@@ -1025,9 +1113,7 @@ bool debugRecord = false;
     else {
         [self swipeLeftDetected:sender];
     }
-    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
-    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-    [poster postEvent:[NSString stringWithFormat:@"swipeUp"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"card" widgetType:@"card"];
+    [self postEvent:@"swipeUp" widget:@"card" type:@"card"];
 }
 
 - (IBAction)swipeDown:(id)sender {
@@ -1077,7 +1163,7 @@ double gestureEnd;
     if (!_audioRecorder.recording)
     {
         NSLog(@"playAudio %@",_audioRecorder.url);
-        [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+      //  [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
         [self stopPlayingAudio];
         
         NSError *error;
@@ -1154,8 +1240,6 @@ double gestureEnd;
 }
 
 - (IBAction)shuffleChange:(id)sender {
-   // NSLog(@"got shuffleChange");
-    
     BOOL value = [_shuffleSwitch isOn];
     if (value) {
         [self doShuffle];
@@ -1183,7 +1267,7 @@ double gestureEnd;
     }
     
     _index = 0;
-    _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
+   // _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
 }
 
 // Posts audio with current fl field

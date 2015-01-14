@@ -8,9 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import <SplunkMint-iOS/SplunkMint-iOS.h>
+#import "EAFRecoFlashcardController.h"
 
 @interface EAFAppDelegate : UIResponder <UIApplicationDelegate>
 
+// required!
 @property (strong, nonatomic) UIWindow *window;
-
+@property (strong, nonatomic) EAFRecoFlashcardController *recoController;
 @end
