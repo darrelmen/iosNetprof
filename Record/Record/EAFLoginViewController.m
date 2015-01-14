@@ -28,13 +28,15 @@
     //not japanese or levantine -- consider levantine?
     // TODO : get list of languages from server call?
     
-    _langauges = [NSArray arrayWithObjects: @"Dari", @"English",
+    _languages = [NSArray arrayWithObjects: @"Dari", @"English",
                   //@"Egyptian",
                   @"Farsi",
                   @"Korean",
             //      @"Levantine",
                   @"CM",
-                  @"MSA", @"Pashto1", @"Pashto2", @"Pashto3", @"Russian", @"Spanish", @"Sudanese",  @"Urdu",  nil];
+                  @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",
+                  //@"Russian", @"Spanish",
+                  @"Sudanese",  @"Urdu",  nil];
   
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
     
@@ -128,7 +130,7 @@
         valid = false;
     }
     
-    NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+    NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
     
     NSLog(@"language %@",chosenLanguage);
     
@@ -170,13 +172,13 @@
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
     //set number of rows
-    return _langauges.count;
+    return _languages.count;
 }
 
 -(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
     //set item per row
-    NSString *lang = [_langauges objectAtIndex:row];
+    NSString *lang = [_languages objectAtIndex:row];
     if ([lang isEqualToString:@"CM"]) {
         return @"Mandarin";
     }
@@ -284,7 +286,7 @@ NSString *statusCodeDisplay;
         NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
         if (rememberedEmail != nil && existing == nil) {
 //            NSLog(@"useJsonChapterData OK, let's sign up!");
-            NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+            NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
             [self addUser:chosenLanguage username:_username.text password: _password.text email:rememberedEmail];
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
             [_activityIndicator startAnimating];
@@ -304,7 +306,7 @@ NSString *statusCodeDisplay;
         [SSKeychain setPassword:converted forService:@"mitll.proFeedback.device" account:@"userid"];
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
-        NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         NSLog(@"chosenLanguage %@",chosenLanguage);
 
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
@@ -401,13 +403,13 @@ NSString *statusCodeDisplay;
     if ([segue.identifier isEqualToString:@"goToForgotUsername"]) {
         EAFForgotUsernameViewController *forgotUserName = [segue destinationViewController];
         
-        NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [forgotUserName setLanguage:chosenLanguage];
     }
     else if ([segue.identifier isEqualToString:@"goToForgotPassword"]) {
         EAFForgotPasswordViewController *forgotUserName = [segue destinationViewController];
         
-        NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [forgotUserName setLanguage:chosenLanguage];
         NSLog(@"username %@",_username.text);
         forgotUserName.userFromLogin = _username.text;
@@ -417,14 +419,14 @@ NSString *statusCodeDisplay;
         _password.text = @"";
         EAFSetPasswordViewController *forgotUserName = [segue destinationViewController];
         
-        NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [forgotUserName setLanguage:chosenLanguage];
         forgotUserName.token  = _token;
     }
     else if ([segue.identifier isEqualToString:@"goToChapter"]) {
         EAFChapterTableViewController *chapterController = [segue destinationViewController];
         
-        NSString *chosenLanguage = [_langauges objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [chapterController setLanguage:chosenLanguage];
         
         NSString *toShow = chosenLanguage;
@@ -438,7 +440,7 @@ NSString *statusCodeDisplay;
         
         long selection = [_languagePicker selectedRowInComponent:0];
         
-        NSString *chosenLanguage = [_langauges objectAtIndex:selection];
+        NSString *chosenLanguage = [_languages objectAtIndex:selection];
         //[signUp.languagePicker selectRow:selection inComponent:0 animated:false];
         
         NSLog(@"language %@ %@ %@",chosenLanguage,_username.text,_password.text);

@@ -11,38 +11,15 @@
 
 - (void)touchesBegan:(NSSet *)touches
            withEvent:(UIEvent *)event {
-    NSLog(@"got touch event %@",event);
+//    NSLog(@"got touch event %@",event);
 }
 
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-//{
-//    // 1 second holding triggers touchAndHOld
-//    NSLog(@"PhoneTableViewCell got touch %@",event);
-//
-//
-//    for (UIView *subview in [self subviews]) {
-//        UITouchesEvent *touch = (UITouchesEvent *) event;
-//        CGPoint convertedPoint = [subview convertPoint:[touch locationInView:self] fromView:self];
-//        UIView *hitTestView = [subview hitTest:convertedPoint withEvent:event];
-//        if (hitTestView) {
-//            NSLog(@"got hit at %@",hitTestView);
-//            //return hitTestView;
-//        }
-//    }
-//
-//    [super touchesBegan:touches withEvent:event];
-//}
-
-
 - (IBAction)gotClick:(id)sender {
-    NSLog(@"gotClick %@",sender);
+  //  NSLog(@"gotClick %@",sender);
 }
 
 -(void)handleGesture:(UITapGestureRecognizer *)gestureRecognizer
 {
-   // CGPoint p = [gestureRecognizer locationInView:self];
-    
-   
    // NSLog(@"got gesture at %@",p);
 }
 

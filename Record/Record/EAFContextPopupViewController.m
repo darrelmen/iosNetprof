@@ -10,7 +10,6 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "MZFormSheetController.h"
-//#import "FAImageView.h"
 
 @interface EAFContextPopupViewController ()
 @property EAFAudioPlayer *audioPlayer;
@@ -25,8 +24,6 @@
     _regex = @"[\\?\\.,-\\/#!$%\\^&\\*;:{}=\\-_`~()]";
     
     _audioPlayer = [[EAFAudioPlayer alloc] init];
-    
-    // NSLog(@"view did load %@ %@",_contextFL.text,_fl);
     
     _contextFL.attributedText = [self highlightTerm:_fl refSentence:_item];
     _contextTranslation.text = _en;

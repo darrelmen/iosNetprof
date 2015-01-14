@@ -96,6 +96,8 @@
     
     _player = [AVPlayer playerWithURL:url];
      _player.volume = _volume;
+    
+   // NSLog(@"Playing at volume %@ %f",_player,_player.volume);
     [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
 }
 
@@ -104,6 +106,7 @@
     NSLog(@" playerItemDidReachEnd for this %@ ",self);
     
     [self.delegate playStopped];
+    [self.delegate playGotToEnd];
     
    // NSLog(@" - playerItemDidReachEnd called self delegate - play stopped");
 
@@ -127,7 +130,7 @@
     
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
-            NSLog(@" audio ready so playing...");
+          //  NSLog(@" audio ready so playing...");
             [self.delegate playStarted];
 
             [_player play];

@@ -19,7 +19,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *passwordFeedback;
 @property (strong, nonatomic) IBOutlet UILabel *signUpFeedback;
 @property (strong, nonatomic) IBOutlet UIPickerView *languagePicker;
-@property (strong, nonatomic) NSArray *langauges;
+@property (strong, nonatomic) NSArray *languages;
 @property (strong, nonatomic) NSMutableData *responseData;
 @property (nonatomic, assign) id currentResponder;
 @property (strong, nonatomic) IBOutlet BButton *forgotUsername;

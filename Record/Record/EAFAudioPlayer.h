@@ -10,11 +10,16 @@
 #import <AVFoundation/AVFoundation.h>
 
 @protocol AudioPlayerNotification <NSObject>
+
 @optional
 - (void) playStarted;
 
 @optional
 - (void) playStopped;
+
+@optional
+- (void) playGotToEnd;
+
 @end
 
 @interface EAFAudioPlayer : NSObject
