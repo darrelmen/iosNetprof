@@ -213,14 +213,23 @@
                              icon:FARandom
                          fontSize:20.0f];
     
+    [_audioOnButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
+     //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
+                            color:[UIColor whiteColor]
+                            style:BButtonStyleBootstrapV3
+                             icon:FAVolumeUp
+                         fontSize:20.0f];
+    
     NSString *ct = [[self getCurrentJson] objectForKey:@"ct"];
     _contextButton.hidden = (ct == nil || ct.length == 0);
     
     NSString *audioOn = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioOn"];
     if (audioOn != nil) {
-        _audioOnSelector.selectedSegmentIndex = [audioOn isEqualToString:@"Yes"] ? 0:1;
+        _audioOnButton.selected = [audioOn isEqualToString:@"Yes"] ? 0:1;
+        _audioOnButton.color = _audioOnButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
     }
-    _myAudioPlayer.volume = _audioOnSelector.selectedSegmentIndex == 0 ? 1: 0;
+    
+    _myAudioPlayer.volume = _audioOnButton.selected ? 1: 0;
 
     [self respondToSwipe];
     
@@ -589,7 +598,7 @@
     
     // complicated...
     _myAudioPlayer.audioPaths = _audioRefs;
-    if (_audioOnSelector.selectedSegmentIndex == 0 &&   // volume on
+    if (_audioOnButton.selected &&   // volume on
         !preventPlayAudio &&
         showedIntro != nil) {
      
@@ -695,7 +704,7 @@ BOOL preventPlayAudio = false;
     utterance.volume = 0.8;
     [utterance setRate:0.2f];
 
-    if (_audioOnSelector.selectedSegmentIndex == 1 && !volumnOn) {
+    if (!_audioOnButton.selected && !volumnOn) {
         utterance.volume = 0;
         NSLog(@"volume %f",utterance.volume);
     }
@@ -838,13 +847,15 @@ BOOL preventPlayAudio = false;
 }
 
 - (IBAction)audioOnSelection:(id)sender {
-    [SSKeychain setPassword:(_audioOnSelector.selectedSegmentIndex == 0 ? @"Yes":@"No")
+    [SSKeychain setPassword:(_audioOnButton.selected ? @"Yes":@"No")
                  forService:@"mitll.proFeedback.device" account:@"audioOn"];
-    
-    _myAudioPlayer.volume = _audioOnSelector.selectedSegmentIndex == 0 ? 1: 0;
+    _audioOnButton.selected = !_audioOnButton.selected;
+    _audioOnButton.color = _audioOnButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+
+    _myAudioPlayer.volume = _audioOnButton.selected ? 1: 0;
     
     if (!_autoPlaySwitch.isOn) {
-        if (_audioOnSelector.selectedSegmentIndex == 1) {
+        if (!_audioOnButton.selected) {
             [self stopPlayingAudio];
         }
         [self respondToSwipe];
@@ -1000,9 +1011,8 @@ BOOL preventPlayAudio = false;
 - (void)highlightFLWhilePlaying
 {
     _foreignLang.hidden = false;
-    _pageControl.currentPage = 1;
-
     _foreignLang.textColor = [UIColor blueColor];
+    _pageControl.currentPage = 1;
 }
 
 - (void)logError:(NSError *)error {
@@ -1058,8 +1068,8 @@ bool debugRecord = false;
     _pageControl.currentPage = _pageControl.currentPage == 0 ? 1 : 0;
     [_foreignLang setHidden:!_foreignLang.hidden];
     [_english setHidden:!_english.hidden];
-    long sel = _audioOnSelector.selectedSegmentIndex; // i.e. audio is ON
-    if (sel == 0) {
+//    long sel = _audioOnButton.selected; // i.e. audio is ON
+    if (_audioOnButton.selected) {
         if (!preventPlayAudio) {
             if (!_foreignLang.hidden) {
                 [self playRefAudioIfAvailable];
@@ -1195,12 +1205,13 @@ double gestureEnd;
         }
     }
 }
-- (IBAction)gotValueChange:(id)sender {
-    BOOL value =
-    //[_shuffleSwitch isOn];
-    _shuffleButton.selected;  NSLog(@"gotValueChange Got shuffle event %@",value ? @"SELECTED" :@"NOT SELECTED");
 
-}
+//- (IBAction)gotValueChange:(id)sender {
+//    BOOL value =
+//    //[_shuffleSwitch isOn];
+//    _shuffleButton.selected;
+//    NSLog(@"gotValueChange Got shuffle event %@",value ? @"SELECTED" :@"NOT SELECTED");
+//}
 
 - (IBAction)stopRecordingWithDelay:sender {
     [NSTimer scheduledTimerWithTimeInterval:0.33
@@ -1216,12 +1227,13 @@ double gestureEnd;
 //        _shuffleButton.selected;
     
     _shuffleButton.selected = !_shuffleButton.selected;
-    NSLog(@"Got shuffle event %@",_shuffleButton.selected ? @"SELECTED" :@"NOT SELECTED");
+    _shuffleButton.color = _shuffleButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+
+    //  NSLog(@"Got shuffle event %@",_shuffleButton.selected ? @"SELECTED" :@"NOT SELECTED");
     
     if (_shuffleButton.selected) {
         [self doShuffle];
     }
-    _shuffleButton.color = _shuffleButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
     [self respondToSwipe];
     
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];

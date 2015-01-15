@@ -26,7 +26,7 @@
 }
 
 - (IBAction)stopAudio {
-    NSLog(@"stopAudio ---- %@",self);
+ //   NSLog(@"stopAudio ---- %@",self);
     _currentIndex = _audioPaths.count;
     if (_player != nil) {
         [_player pause];

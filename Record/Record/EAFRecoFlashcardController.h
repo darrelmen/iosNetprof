@@ -62,7 +62,8 @@
 @property (strong, nonatomic) IBOutlet UIImageView *correctFeedback;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *genderMaleSelector;
 
-@property (strong, nonatomic) IBOutlet UISegmentedControl *audioOnSelector;
+//@property (strong, nonatomic) IBOutlet UISegmentedControl *audioOnSelector;
+@property (strong, nonatomic) IBOutlet BButton *audioOnButton;
 //@property (strong, nonatomic) IBOutlet UISwitch *shuffleSwitch;
 @property (strong, nonatomic) IBOutlet BButton *shuffleButton;
 @property (strong, nonatomic) IBOutlet UISwitch *autoPlaySwitch;
