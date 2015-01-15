@@ -72,6 +72,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     NSLog(@"viewDidAppear --->");
 }
 
@@ -80,6 +81,12 @@
     NSLog(@"viewDidLoad --->");
 
     [super viewDidLoad];
+    
+    // Turn on remote control event delivery
+    EAFAppDelegate *myDelegate = [UIApplication sharedApplication].delegate;
+    
+    myDelegate.recoController = self;
+    
     // TODO: make this a parameter?
     _autoAdvanceInterval = 0.5;
     _reqid = 1;
@@ -199,6 +206,13 @@
                               icon:FAQuoteLeft
                           fontSize:20.0f];
     
+    [_shuffleButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
+     //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
+                            color:[UIColor whiteColor]
+                            style:BButtonStyleBootstrapV3
+                             icon:FARandom
+                         fontSize:20.0f];
+    
     NSString *ct = [[self getCurrentJson] objectForKey:@"ct"];
     _contextButton.hidden = (ct == nil || ct.length == 0);
     
@@ -213,6 +227,7 @@
     [self checkAndShowIntro];
 }
 
+// there's a timer that governs the pause between items -- if it's active, invalidate it
 - (void)stopTimer {
     if (_autoAdvanceTimer != nil) {
         [_autoAdvanceTimer invalidate];
@@ -221,12 +236,15 @@
 }
 
 -(void) viewWillDisappear:(BOOL)animated {
+   // [super viewWillDisappear:animated];
+
     NSLog(@"Stop auto play.");
 
-    [self stopTimer];
     _autoPlaySwitch.on = false;
-    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+    [self stopTimer];
     [self stopPlayingAudio];
+
+   // [[UIApplication sharedApplication] endReceivingRemoteControlEvents];    
 }
 
 - (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
@@ -248,17 +266,14 @@
                 
             case UIEventSubtypeRemoteControlPreviousTrack:
                 NSLog(@"Got prev track --->");
-               // _cancelAudio=true;
                 [self stopPlayingAudio];
                 _index--;
                 if (_index == -1) _index = _jsonItems.count  -1UL;
                 [self respondToSwipe];
-                
                 break;
                 
             case UIEventSubtypeRemoteControlNextTrack:
                 NSLog(@"Got next track --->");
-               // _cancelAudio=true;
                 [self stopPlayingAudio];
                 [self doAutoAdvance];
                 break;
@@ -400,7 +415,10 @@
 
 - (unsigned long)getItemIndex {
     unsigned long toUse = _index;
-    if ([_shuffleSwitch isOn]) {
+    if (
+        //[_shuffleSwitch isOn]
+        _shuffleButton.selected
+        ) {
         //   NSLog(@"current %lu",_index);
         toUse = [[_randSequence objectAtIndex:_index] integerValue];
         //   NSLog(@"output %lu",toUse);
@@ -424,7 +442,7 @@
         [SSKeychain setPassword:@"Both"
                      forService:@"mitll.proFeedback.device" account:@"audioGender"];
     }
-    NSLog(@"respondToSwipe gender sel %@",audioGender);
+//    NSLog(@"respondToSwipe gender sel %@",audioGender);
     _genderMaleSelector.selectedSegmentIndex = [audioGender isEqualToString:@"Male"] ? 0:[audioGender isEqualToString:@"Female"]?1:2;
 }
 
@@ -647,9 +665,6 @@ BOOL preventPlayAudio = false;
         [self playRefAudioIfAvailable];
         // Turn on remote control event delivery
         [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-        EAFAppDelegate *myDelegate = [UIApplication sharedApplication].delegate;
-        
-        myDelegate.recoController = self;
     }
     else {
         // stop autoplay
@@ -660,6 +675,10 @@ BOOL preventPlayAudio = false;
 // TODO make sure have right ui state when we return
 - (void) viewBecameActive {
     NSLog(@"view became active ----\n");
+}
+
+-(void) applicationWillResignActive {
+    NSLog(@"applicationWillResignActive ----\n");
 }
 
 - (void) speakEnglish:(BOOL) volumeOn {
@@ -717,7 +736,7 @@ BOOL preventPlayAudio = false;
 
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didStartSpeechUtterance:(AVSpeechUtterance *)utterance
 {
-    NSLog(@"recoflashcard : didStartSpeechUtterance--- '%@'",utterance.speechString);
+    NSLog(@"recoflashcard : didStartSpeechUtterance --- '%@'",utterance.speechString);
     
     _english.hidden = false;
     _pageControl.currentPage = 0;
@@ -740,7 +759,7 @@ BOOL preventPlayAudio = false;
 
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didFinishSpeechUtterance:(AVSpeechUtterance *)utterance
 {
-    NSLog(@"recoflashcard : didFinishSpeechUtterance--- : '%@'",utterance.speechString);
+    NSLog(@"recoflashcard : didFinishSpeechUtterance--- '%@'",utterance.speechString);
     BOOL isEnglish = true;//![utterance.speechString isEqualToString:_foreignLang.text];
     [self showSpeechEnded:isEnglish];
     
@@ -790,7 +809,7 @@ BOOL preventPlayAudio = false;
 // control showing english, fl phrase, or both
 - (IBAction)whatToShowSelection:(id)sender {
     long selected = [_whatToShow selectedSegmentIndex];
-    NSLog(@"recoflashcard : whatToShowSelection %ld", selected);
+  //  NSLog(@"recoflashcard : whatToShowSelection %ld", selected);
     if (selected == 0) {
         [_foreignLang setHidden:true];
         [_english setHidden:false];
@@ -974,7 +993,7 @@ BOOL preventPlayAudio = false;
 - (void)removePlayingAudioHighlight {
     if (_foreignLang.textColor == [UIColor blueColor]) {
         _foreignLang.textColor = [UIColor blackColor];
-        NSLog(@" removePlayingAudioHighlight");
+       // NSLog(@" removePlayingAudioHighlight");
     }
 }
 
@@ -1054,8 +1073,6 @@ bool debugRecord = false;
 
 // TODO : maybe only flip card on tap?
 - (IBAction)swipeUp:(id)sender {
-    [self viewWillDisappear:true];
-    NSLog(@"Got swipe up");
     long selected = [_whatToShow selectedSegmentIndex];
     if (selected == 0 || selected == 1) {
         [self flipCard];
@@ -1154,10 +1171,9 @@ double gestureEnd;
          //   NSLog(@"volume %f",[_audioPlayer volume]);
             [_audioPlayer play];
         }
-        EAFEventPoster *poster = [[EAFEventPoster alloc] init];
-        NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-        [poster postEvent:[NSString stringWithFormat:@"playUserAudio"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"userScoreDisplay" widgetType:@"UIView"];
-    }
+
+        [self postEvent:@"playUserAudio" widget:@"userScoreDisplay" type:@"UIView"];
+   }
 }
 
 - (IBAction)stopAudio:(id)sender {
@@ -1179,6 +1195,12 @@ double gestureEnd;
         }
     }
 }
+- (IBAction)gotValueChange:(id)sender {
+    BOOL value =
+    //[_shuffleSwitch isOn];
+    _shuffleButton.selected;  NSLog(@"gotValueChange Got shuffle event %@",value ? @"SELECTED" :@"NOT SELECTED");
+
+}
 
 - (IBAction)stopRecordingWithDelay:sender {
     [NSTimer scheduledTimerWithTimeInterval:0.33
@@ -1189,15 +1211,23 @@ double gestureEnd;
 }
 
 - (IBAction)shuffleChange:(id)sender {
-    BOOL value = [_shuffleSwitch isOn];
-    if (value) {
+//    BOOL value =
+//    //[_shuffleSwitch isOn];
+//        _shuffleButton.selected;
+    
+    _shuffleButton.selected = !_shuffleButton.selected;
+    NSLog(@"Got shuffle event %@",_shuffleButton.selected ? @"SELECTED" :@"NOT SELECTED");
+    
+    if (_shuffleButton.selected) {
         [self doShuffle];
     }
+    _shuffleButton.color = _shuffleButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
     [self respondToSwipe];
     
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
     [poster postEvent:[NSString stringWithFormat:@"shuffle"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"shuffle" widgetType:@"UIRadio"];
+    
 }
 
 - (void)doShuffle {
@@ -1394,7 +1424,7 @@ NSString *statusCodeDisplay;
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
     double durationInSeconds = CMTimeGetSeconds(asset.duration);
     
-    [self postEvent:[NSString stringWithFormat:@"round trip was %.2f seconds for file of dur %.2f",diff,durationInSeconds] widget:@"recordButton" type:@"Button"];
+    [self postEvent:[NSString stringWithFormat:@"round trip was %.2f sec for file of dur %.2f sec",diff,durationInSeconds] widget:[NSString stringWithFormat:@"rt %.2f",diff]  type:[NSString stringWithFormat:@"file %.2f",durationInSeconds] ];
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     

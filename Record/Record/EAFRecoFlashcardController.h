@@ -63,7 +63,8 @@
 @property (strong, nonatomic) IBOutlet UISegmentedControl *genderMaleSelector;
 
 @property (strong, nonatomic) IBOutlet UISegmentedControl *audioOnSelector;
-@property (strong, nonatomic) IBOutlet UISwitch *shuffleSwitch;
+//@property (strong, nonatomic) IBOutlet UISwitch *shuffleSwitch;
+@property (strong, nonatomic) IBOutlet BButton *shuffleButton;
 @property (strong, nonatomic) IBOutlet UISwitch *autoPlaySwitch;
 
 
@@ -80,4 +81,5 @@
 @property UITableViewController *itemViewController;
 @property (strong, nonatomic) IBOutlet UIPageControl *pageControl;
 - (void) viewBecameActive;
+- (void) applicationWillResignActive;
 @end

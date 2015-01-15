@@ -60,6 +60,10 @@
 		B66BACC11970A5CD00E28ECC /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACC01970A5CD00E28ECC /* play.png */; };
 		B66BACC31970A5DC00E28ECC /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = B66BACC21970A5DC00E28ECC /* pause.png */; };
 		B67666A519F0798800ECA678 /* micBiggerCircleTransparent.png in Resources */ = {isa = PBXBuildFile; fileRef = B67666A419F0798800ECA678 /* micBiggerCircleTransparent.png */; };
+		B67B84C21A6703F80064AB83 /* random_32.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B84C01A6703F80064AB83 /* random_32.png */; };
+		B67B84C31A6703F80064AB83 /* random_48.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B84C11A6703F80064AB83 /* random_48.png */; };
+		B67B84C61A67061E0064AB83 /* random_32_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B84C41A67061E0064AB83 /* random_32_selected.png */; };
+		B67B84C71A67061E0064AB83 /* random_48_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B84C51A67061E0064AB83 /* random_48_selected.png */; };
 		B67E1BB6197EC25D00F42143 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B67E1BB5197EC25D00F42143 /* libz.dylib */; };
 		B67E1BC4197EFC0500F42143 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BBA197EFC0500F42143 /* ioapi.c */; };
 		B67E1BC5197EFC0500F42143 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BBC197EFC0500F42143 /* mztools.c */; };
@@ -223,6 +227,10 @@
 		B66BACC01970A5CD00E28ECC /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
 		B66BACC21970A5DC00E28ECC /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause.png; sourceTree = "<group>"; };
 		B67666A419F0798800ECA678 /* micBiggerCircleTransparent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = micBiggerCircleTransparent.png; sourceTree = "<group>"; };
+		B67B84C01A6703F80064AB83 /* random_32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = random_32.png; sourceTree = "<group>"; };
+		B67B84C11A6703F80064AB83 /* random_48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = random_48.png; sourceTree = "<group>"; };
+		B67B84C41A67061E0064AB83 /* random_32_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = random_32_selected.png; sourceTree = "<group>"; };
+		B67B84C51A67061E0064AB83 /* random_48_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = random_48_selected.png; sourceTree = "<group>"; };
 		B67E1BB5197EC25D00F42143 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		B67E1BB9197EFC0500F42143 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
 		B67E1BBA197EFC0500F42143 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
@@ -385,6 +393,10 @@
 		B66BACBF1970A57B00E28ECC /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B67B84C41A67061E0064AB83 /* random_32_selected.png */,
+				B67B84C51A67061E0064AB83 /* random_48_selected.png */,
+				B67B84C01A6703F80064AB83 /* random_32.png */,
+				B67B84C11A6703F80064AB83 /* random_48.png */,
 				B6DABE3D1A5CCC4700E7540E /* play2.png */,
 				B6DABE3B1A5CCC1300E7540E /* playBigger.png */,
 				B6104B021A44E0BA00D9B3DA /* redx@2x.png */,
@@ -722,6 +734,7 @@
 				B6DF209D1A2518FB00CA31B1 /* checkAndEar@2x.png in Resources */,
 				B6A8D97E19770C2100E8F1D5 /* Icon-Small@2x.png in Resources */,
 				B6AB39BD19FACF4D00B250C1 /* redx32.png in Resources */,
+				B67B84C61A67061E0064AB83 /* random_32_selected.png in Resources */,
 				B6A8D96D1976F27C00E8F1D5 /* media-record-3_32x32.png in Resources */,
 				B6DF209B1A25171400CA31B1 /* checkAndEar.png in Resources */,
 				B6DF20A11A251C8700CA31B1 /* micBiggerCircleTransparent@2x.png in Resources */,
@@ -732,6 +745,7 @@
 				B66BACC31970A5DC00E28ECC /* pause.png in Resources */,
 				B68A5C361979B4590036B90C /* mic-4.svg in Resources */,
 				B6A8D97C19770C2100E8F1D5 /* Icon-76@2x.png in Resources */,
+				B67B84C21A6703F80064AB83 /* random_32.png in Resources */,
 				B6D001781970AD28009554D5 /* record24.png in Resources */,
 				B6104B031A44E0BA00D9B3DA /* redx@2x.png in Resources */,
 				B6DABE3C1A5CCC1300E7540E /* playBigger.png in Resources */,
@@ -749,9 +763,11 @@
 				B6A8D97819770C2100E8F1D5 /* Icon-40@2x.png in Resources */,
 				B6DF209F1A25190400CA31B1 /* questionIcon@2x.png in Resources */,
 				B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */,
+				B67B84C31A6703F80064AB83 /* random_48.png in Resources */,
 				B695FDDE1A3A521B0064DC83 /* Settings.bundle in Resources */,
 				B60466581A3A119B000B5464 /* rightAndWrong_30h.png in Resources */,
 				B61B822D1A16CF99009B00D1 /* dliIcon.png in Resources */,
+				B67B84C71A67061E0064AB83 /* random_48_selected.png in Resources */,
 				B60466531A38EE43000B5464 /* male.png in Resources */,
 				B6AB39BB19FACF4300B250C1 /* checkmark32.png in Resources */,
 				B68A5C381979B4AE0036B90C /* micBigger.png in Resources */,

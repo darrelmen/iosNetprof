@@ -10,10 +10,12 @@
 #import "EAFSignUpViewController.h"
 #import "EAFItemTableViewController.h"
 #import "SSKeychain.h"
+#import "EAFEventPoster.h"
 
 @interface EAFChapterTableViewController ()
 
 @property BOOL isRefresh;
+@property CFAbsoluteTime startPost;
 
 @end
 
@@ -38,9 +40,7 @@
     
     _language = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
 
-   // NSString *newTitle = [NSString stringWithFormat:@"%@ %@",_language];
     [self setTitle:_language];
-   // NSLog(@"EAFChapterTableViewController viewDidLoad lang %@ %@ back = '%@'", _language, [self title], self.navigationItem.backBarButtonItem.title);
     
     if (_jsonContentArray == nil) {
         [self loadInitialData];
@@ -89,6 +89,8 @@ int receivedCount = 0;;
     
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+
+    _startPost = CFAbsoluteTimeGetCurrent();
 
     [connection start];
 }
@@ -189,16 +191,24 @@ UIAlertView *loadingContentAlert;
 
 #pragma mark NSURLConnection Delegate Methods
 
+//long long expected;
+
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
     // A response has been received, this is where we initialize the instance var you created
     // so that we can append data to it in the didReceiveData method
     // Furthermore, this method is called each time there is a redirect so reinitializing it
     // also serves to clear it
+ //   NSLog(@"didReceiveResponse... %@ %lld",response, response.expectedContentLength);
+//    expected = response.expectedContentLength;
     _responseData = [[NSMutableData alloc] init];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
     // Append the new data to the instance variable you declared
+  //  float progress = ((float) [_responseData length] / (float) expected);
+  //  NSLog(@"didReceiveData... %f",progress);
+   // NSLog(@"didReceiveData...");
+
     [_responseData appendData:data];
 }
 
@@ -267,10 +277,22 @@ BOOL hasModel;
     return true;
 }
 
+
+- (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
+    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+    [poster postEvent:message exid:@"N/A" lang:_language widget:widget widgetType:type];
+}
+
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
     NSLog(@"connectionDidFinishLoading : chapters");
 
+    CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
+    CFAbsoluteTime diff = (now-_startPost);
+    
+    NSLog(@"course content round trip time was %f",diff);
+    [self postEvent:[NSString stringWithFormat:@"Roundtrip to download content for %.2f",diff] widget:@"download content" type:[NSString stringWithFormat:@"%.2f",diff]];
+    
     [loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
     
     BOOL dataIsValid = [self useJsonChapterData];
@@ -290,17 +312,17 @@ BOOL hasModel;
     // Check the error var
     NSLog(@"ChapterTable Download content failed with %@",error);
     [loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
-
+    
     receivedCount++;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-
+    
     if (!_isRefresh) {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
-                                                    message: @"I need an internet connection to get course content."
-                                                   delegate: nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
+                                                        message: @"I need an internet connection to get course content."
+                                                       delegate: nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+        [alert show];
     }
 }
 
@@ -392,7 +414,7 @@ NSArray *currentItems;
     NSLog(@"Chapter table view controller prepareForSegue identifier %@ %@ %@ %@ %@",segue.identifier,_chapterName,tappedItem,
           _unitTitle,_unit);
 
-    NSLog(@"Got prepare -- %@",itemController);
+ //   NSLog(@"Got prepare -- %@",itemController);
     [itemController setChapterToItems:chapterInfo];
     [itemController setJsonItems:currentItems];
     [itemController setChapterTitle:_chapterName];
@@ -409,10 +431,6 @@ NSArray *currentItems;
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
-
-    //NSLog(@"got selection at %@",tappedItem);
-   // NSString *controllerToJumpTo;
-    
     NSArray *children;
     
     for (NSDictionary *entry in _jsonContentArray) {
@@ -471,9 +489,4 @@ NSArray *currentItems;
         }
     }
 }
-
-//- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
-//{
-//    NSLog(@"got call to accessory action");
-//}
 @end
