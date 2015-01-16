@@ -398,15 +398,6 @@
                                     <action selector="gotGenderSelection:" destination="vXZ-lx-hvc" eventType="valueChanged" id="1GR-tL-FUu"/>
                                 </connections>
                             </segmentedControl>
-                            <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" image="play" translatesAutoresizingMaskIntoConstraints="NO" id="rga-bZ-XYg">
-                                <rect key="frame" x="19" y="486" width="24" height="24"/>
-                            </imageView>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="w8w-dk-tAN">
-                                <rect key="frame" x="51" y="483" width="51" height="31"/>
-                                <connections>
-                                    <action selector="autoPlaySelected:" destination="vXZ-lx-hvc" eventType="valueChanged" id="ZbU-GU-fCw"/>
-                                </connections>
-                            </switch>
                             <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ag3-Sw-3Gm">
                                 <rect key="frame" x="490" y="478" width="94" height="32"/>
                                 <constraints>
@@ -462,6 +453,30 @@
                                     <action selector="shuffleChange:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="tLU-15-yYs"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="autoPlayButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bwf-nS-Gun" customClass="BButton">
+                                <rect key="frame" x="112" y="559" width="40" height="40"/>
+                                <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="7Gx-Ks-3qc">
+                                        <variation key="heightClass=regular-widthClass=regular" constant="52"/>
+                                    </constraint>
+                                    <constraint firstAttribute="height" constant="40" id="EHp-3G-zYQ">
+                                        <variation key="heightClass=regular-widthClass=regular" constant="52"/>
+                                    </constraint>
+                                </constraints>
+                                <state key="normal">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="EHp-3G-zYQ"/>
+                                        <exclude reference="7Gx-Ks-3qc"/>
+                                    </mask>
+                                </variation>
+                                <connections>
+                                    <action selector="autoPlaySelected:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="NWL-tX-SRi"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
@@ -472,11 +487,13 @@
                             </constraint>
                             <constraint firstAttribute="trailingMargin" secondItem="XFG-NF-cL4" secondAttribute="trailing" constant="1" id="1JV-HX-fBJ"/>
                             <constraint firstAttribute="trailingMargin" secondItem="R8D-Mr-8CW" secondAttribute="trailing" constant="2" id="1ak-lN-QdJ"/>
+                            <constraint firstItem="bwf-nS-Gun" firstAttribute="leading" secondItem="Sgx-DX-Sju" secondAttribute="trailing" constant="8" id="3cy-nK-5pC"/>
                             <constraint firstItem="D0k-He-nFx" firstAttribute="top" secondItem="mrf-3p-FpD" secondAttribute="bottom" constant="8" id="4Ex-ib-4jZ"/>
                             <constraint firstItem="XeL-3Z-RcL" firstAttribute="height" secondItem="Sgx-DX-Sju" secondAttribute="height" id="5mP-JO-OUP"/>
                             <constraint firstAttribute="centerX" secondItem="Ag3-Sw-3Gm" secondAttribute="centerX" constant="-335" id="9d8-f4-iJ7">
                                 <variation key="heightClass=regular-widthClass=regular" constant="0.0"/>
                             </constraint>
+                            <constraint firstItem="Sgx-DX-Sju" firstAttribute="height" secondItem="bwf-nS-Gun" secondAttribute="height" id="CGC-iG-kWd"/>
                             <constraint firstItem="A7I-P6-hq3" firstAttribute="centerY" secondItem="R8D-Mr-8CW" secondAttribute="centerY" id="DPy-Wg-gRO"/>
                             <constraint firstItem="Ag3-Sw-3Gm" firstAttribute="trailing" secondItem="XFG-NF-cL4" secondAttribute="trailing" constant="1" id="Gg3-IV-0Et"/>
                             <constraint firstItem="R8D-Mr-8CW" firstAttribute="top" secondItem="XFG-NF-cL4" secondAttribute="bottom" constant="17" id="Jjw-kC-TZe"/>
@@ -486,13 +503,13 @@
                             <constraint firstItem="RZc-pP-7lZ" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="A7I-P6-hq3" secondAttribute="trailing" constant="4" id="Lq9-DX-kn9"/>
                             <constraint firstItem="XFG-NF-cL4" firstAttribute="centerY" secondItem="Sgx-DX-Sju" secondAttribute="centerY" id="O4A-JL-wAh"/>
                             <constraint firstItem="XeL-3Z-RcL" firstAttribute="centerY" secondItem="Sgx-DX-Sju" secondAttribute="centerY" id="PZ0-KF-x3j"/>
+                            <constraint firstItem="Sgx-DX-Sju" firstAttribute="centerY" secondItem="bwf-nS-Gun" secondAttribute="centerY" id="QIi-1r-fYq"/>
                             <constraint firstItem="Ag3-Sw-3Gm" firstAttribute="top" secondItem="D0k-He-nFx" secondAttribute="bottom" constant="1" id="St1-oj-UUR">
                                 <variation key="heightClass=regular-widthClass=regular" constant="1"/>
                             </constraint>
-                            <constraint firstItem="rga-bZ-XYg" firstAttribute="centerY" secondItem="Ag3-Sw-3Gm" secondAttribute="centerY" id="SvZ-6e-h46"/>
                             <constraint firstItem="D0k-He-nFx" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="3" id="TQH-Gw-Pzg"/>
+                            <constraint firstItem="Sgx-DX-Sju" firstAttribute="width" secondItem="bwf-nS-Gun" secondAttribute="width" id="VGZ-Pd-j1N"/>
                             <constraint firstItem="D0k-He-nFx" firstAttribute="top" secondItem="f4N-q5-bJc" secondAttribute="bottom" constant="2" id="VGf-5V-KjO"/>
-                            <constraint firstItem="w8w-dk-tAN" firstAttribute="leading" secondItem="rga-bZ-XYg" secondAttribute="trailing" constant="8" id="Wi6-x0-OEg"/>
                             <constraint firstItem="D0k-He-nFx" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="YWH-78-0wH"/>
                             <constraint firstItem="R8D-Mr-8CW" firstAttribute="centerY" secondItem="A7I-P6-hq3" secondAttribute="centerY" id="ZTB-LR-uA8"/>
                             <constraint firstItem="Ag3-Sw-3Gm" firstAttribute="top" relation="greaterThanOrEqual" secondItem="D0k-He-nFx" secondAttribute="bottom" constant="1" id="c8o-1G-bdx"/>
@@ -510,19 +527,17 @@
                                 <variation key="heightClass=compact-widthClass=compact" constant="8" symbolic="YES"/>
                             </constraint>
                             <constraint firstItem="Sgx-DX-Sju" firstAttribute="leading" secondItem="XeL-3Z-RcL" secondAttribute="trailing" constant="8" id="t37-Lh-FPz"/>
-                            <constraint firstItem="w8w-dk-tAN" firstAttribute="leading" secondItem="rga-bZ-XYg" secondAttribute="trailing" constant="8" id="tsx-O7-L2j"/>
                             <constraint firstItem="XeL-3Z-RcL" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="wBz-PO-6wb"/>
                             <constraint firstItem="erT-Le-XmI" firstAttribute="top" secondItem="XeL-3Z-RcL" secondAttribute="bottom" constant="1" id="wek-Fy-SwP"/>
                             <constraint firstAttribute="centerX" secondItem="Ag3-Sw-3Gm" secondAttribute="centerX" id="xSJ-W0-wiq"/>
                             <constraint firstAttribute="centerX" secondItem="A7I-P6-hq3" secondAttribute="centerX" id="xVh-xb-u9U"/>
-                            <constraint firstItem="rga-bZ-XYg" firstAttribute="centerY" secondItem="w8w-dk-tAN" secondAttribute="centerY" id="zrI-av-MO7"/>
+                            <constraint firstItem="A7I-P6-hq3" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="bwf-nS-Gun" secondAttribute="trailing" constant="1" id="yin-hG-cgn"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
                                 <exclude reference="0hM-VF-Bsy"/>
                                 <exclude reference="gUe-VZ-UED"/>
-                                <exclude reference="Wi6-x0-OEg"/>
-                                <exclude reference="tsx-O7-L2j"/>
+                                <exclude reference="p60-81-1y4"/>
                                 <exclude reference="0wi-kO-68m"/>
                                 <exclude reference="O4A-JL-wAh"/>
                                 <exclude reference="9d8-f4-iJ7"/>
@@ -559,7 +574,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="audioOnButton" destination="XeL-3Z-RcL" id="hMG-jO-mWc"/>
-                        <outlet property="autoPlaySwitch" destination="w8w-dk-tAN" id="Xla-DO-Emc"/>
+                        <outlet property="autoPlayButton" destination="bwf-nS-Gun" id="prr-qh-S6y"/>
                         <outlet property="cardBackground" destination="D0k-He-nFx" id="NE1-6A-VBh"/>
                         <outlet property="contextButton" destination="t3S-bB-IN2" id="eYt-tj-hr5"/>
                         <outlet property="correctFeedback" destination="ZN1-US-MJW" id="EHe-yX-4pU"/>
@@ -2345,7 +2360,6 @@
         <image name="male_better" width="32" height="32"/>
         <image name="micBiggerCircleTransparent" width="60" height="60"/>
         <image name="mitllLogo2.png" width="39" height="39"/>
-        <image name="play" width="32" height="32"/>
         <image name="sounds" width="48" height="48"/>
         <image name="sounds.png" width="36" height="36"/>
         <image name="volumeUp_26.png" width="26" height="26"/>

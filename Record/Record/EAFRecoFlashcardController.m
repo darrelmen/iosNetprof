@@ -201,7 +201,7 @@
     
     [_contextButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
                     //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
-                            color:[UIColor blueColor]
+                            color:[UIColor whiteColor]
                              style:BButtonStyleBootstrapV3
                               icon:FAQuoteLeft
                           fontSize:20.0f];
@@ -218,6 +218,13 @@
                             color:[UIColor whiteColor]
                             style:BButtonStyleBootstrapV3
                              icon:FAVolumeUp
+                         fontSize:20.0f];
+    
+    [_autoPlayButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
+     //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
+                            color:[UIColor whiteColor]
+                            style:BButtonStyleBootstrapV3
+                             icon:FAPlay
                          fontSize:20.0f];
     
     NSString *ct = [[self getCurrentJson] objectForKey:@"ct"];
@@ -249,7 +256,7 @@
 
     NSLog(@"Stop auto play.");
 
-    _autoPlaySwitch.on = false;
+    _autoPlayButton.selected = false;
     [self stopTimer];
     [self stopPlayingAudio];
 
@@ -263,10 +270,10 @@
         switch (receivedEvent.subtype) {
             case UIEventSubtypeRemoteControlPause:
                 [self stopTimer];
-                _autoPlaySwitch.on = false;
+                _autoPlayButton.selected = false;
                 break;
             case UIEventSubtypeRemoteControlPlay:
-                _autoPlaySwitch.on = true;
+                _autoPlayButton.selected = true;
                 [self respondToSwipe];
                 break;
             case UIEventSubtypeRemoteControlTogglePlayPause:
@@ -563,7 +570,7 @@
         [_audioRefs addObject:refAudio];
     }
     
-    if (_autoPlaySwitch.isOn && _audioRefs.count > 1) {
+    if (_autoPlayButton.selected && _audioRefs.count > 1) {
         [_audioRefs removeLastObject];
     }
   //  NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
@@ -611,7 +618,7 @@
     }
     else {
         preventPlayAudio = false;
-        if (_autoPlaySwitch.isOn) {
+        if (_autoPlayButton.selected) {
             if (_whatToShow.selectedSegmentIndex == 0) {
                 [self speakEnglish:false];
             }
@@ -660,7 +667,10 @@ BOOL preventPlayAudio = false;
 }
 
 - (IBAction)autoPlaySelected:(id)sender {
-    if (_autoPlaySwitch.isOn) {
+    _autoPlayButton.selected = !_autoPlayButton.selected;
+    _autoPlayButton.color = _autoPlayButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+
+    if (_autoPlayButton.selected) {
         NSError *activationError = nil;
         BOOL success = [[AVAudioSession sharedInstance] setActive:YES error:&activationError];
         if (!success) { /* handle the error condition */ }
@@ -677,7 +687,7 @@ BOOL preventPlayAudio = false;
     }
     else {
         // stop autoplay
-        [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+        //[[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     }
 }
 
@@ -772,7 +782,7 @@ BOOL preventPlayAudio = false;
     BOOL isEnglish = true;//![utterance.speechString isEqualToString:_foreignLang.text];
     [self showSpeechEnded:isEnglish];
     
-    if (_autoPlaySwitch.isOn) {
+    if (_autoPlayButton.selected) {
         NSLog(@"-----> didFinishSpeechUtterance : '%@' is done playing, so advancing to %lu\n\n",utterance.speechString,_index);
         [self beginBackgroundUpdateTask];
         
@@ -841,7 +851,7 @@ BOOL preventPlayAudio = false;
 - (IBAction)speedSelection:(id)sender {
     [SSKeychain setPassword:(_speedSelector.isOn ? @"Slow":@"Regular")
                  forService:@"mitll.proFeedback.device" account:@"audioSpeed"];
-    if (!_autoPlaySwitch.isOn) {
+    if (!_autoPlayButton.selected) {
         [self respondToSwipe];
     }
 }
@@ -854,7 +864,7 @@ BOOL preventPlayAudio = false;
 
     _myAudioPlayer.volume = _audioOnButton.selected ? 1: 0;
     
-    if (!_autoPlaySwitch.isOn) {
+    if (!_autoPlayButton.selected) {
         if (!_audioOnButton.selected) {
             [self stopPlayingAudio];
         }
@@ -889,7 +899,7 @@ BOOL preventPlayAudio = false;
 }
 
 - (void) playGotToEnd {
-    if (_autoPlaySwitch.isOn) {
+    if (_autoPlayButton.selected) {
         // doing autoplay!
         // skip english if lang is english
         if ([_english.text isEqualToString:_foreignLang.text]) {
