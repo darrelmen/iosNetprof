@@ -70,7 +70,8 @@
 @property (strong, nonatomic) IBOutlet BButton *autoPlayButton;
 
 
-@property (strong, nonatomic) IBOutlet UISwitch *speedSelector;
+//@property (strong, nonatomic) IBOutlet UISwitch *speedSelector;
+@property (strong, nonatomic) IBOutlet UIButton *speedButton;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *whatToShow;
 - (IBAction)whatToShowSelection:(id)sender;
 

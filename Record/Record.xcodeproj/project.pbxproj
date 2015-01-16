@@ -118,6 +118,10 @@
 		B6DF209F1A25190400CA31B1 /* questionIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF209E1A25190400CA31B1 /* questionIcon@2x.png */; };
 		B6DF20A11A251C8700CA31B1 /* micBiggerCircleTransparent@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF20A01A251C8700CA31B1 /* micBiggerCircleTransparent@2x.png */; };
 		B6DF20A41A2679FC00CA31B1 /* EAFEventPoster.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DF20A31A2679FC00CA31B1 /* EAFEventPoster.m */; };
+		B6EEB9011A689593000793F0 /* turtle.png in Resources */ = {isa = PBXBuildFile; fileRef = B6EEB9001A689593000793F0 /* turtle.png */; };
+		B6EEB9031A6895E0000793F0 /* turtle_32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6EEB9021A6895E0000793F0 /* turtle_32.png */; };
+		B6EEB9061A6959CC000793F0 /* turtle_32_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = B6EEB9041A6959CC000793F0 /* turtle_32_selected.png */; };
+		B6EEB9071A6959CC000793F0 /* turtle_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = B6EEB9051A6959CC000793F0 /* turtle_selected.png */; };
 		F6A5681E18ECA98A00B844C6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5681D18ECA98A00B844C6 /* Foundation.framework */; };
 		F6A5682018ECA98A00B844C6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5681F18ECA98A00B844C6 /* CoreGraphics.framework */; };
 		F6A5682218ECA98A00B844C6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6A5682118ECA98A00B844C6 /* UIKit.framework */; };
@@ -306,6 +310,10 @@
 		B6DF20A01A251C8700CA31B1 /* micBiggerCircleTransparent@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "micBiggerCircleTransparent@2x.png"; sourceTree = "<group>"; };
 		B6DF20A21A2679FC00CA31B1 /* EAFEventPoster.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFEventPoster.h; sourceTree = "<group>"; };
 		B6DF20A31A2679FC00CA31B1 /* EAFEventPoster.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFEventPoster.m; sourceTree = "<group>"; };
+		B6EEB9001A689593000793F0 /* turtle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = turtle.png; sourceTree = "<group>"; };
+		B6EEB9021A6895E0000793F0 /* turtle_32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = turtle_32.png; sourceTree = "<group>"; };
+		B6EEB9041A6959CC000793F0 /* turtle_32_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = turtle_32_selected.png; sourceTree = "<group>"; };
+		B6EEB9051A6959CC000793F0 /* turtle_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = turtle_selected.png; sourceTree = "<group>"; };
 		F6A5681A18ECA98A00B844C6 /* Record.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Record.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6A5681D18ECA98A00B844C6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F6A5681F18ECA98A00B844C6 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -393,6 +401,10 @@
 		B66BACBF1970A57B00E28ECC /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B6EEB9041A6959CC000793F0 /* turtle_32_selected.png */,
+				B6EEB9051A6959CC000793F0 /* turtle_selected.png */,
+				B6EEB9021A6895E0000793F0 /* turtle_32.png */,
+				B6EEB9001A689593000793F0 /* turtle.png */,
 				B67B84C41A67061E0064AB83 /* random_32_selected.png */,
 				B67B84C51A67061E0064AB83 /* random_48_selected.png */,
 				B67B84C01A6703F80064AB83 /* random_32.png */,
@@ -749,6 +761,7 @@
 				B6D001781970AD28009554D5 /* record24.png in Resources */,
 				B6104B031A44E0BA00D9B3DA /* redx@2x.png in Resources */,
 				B6DABE3C1A5CCC1300E7540E /* playBigger.png in Resources */,
+				B6EEB9011A689593000793F0 /* turtle.png in Resources */,
 				B6629E431A440192008EAC75 /* audioOn_smaller.png in Resources */,
 				B604665A1A3A1203000B5464 /* rightAndWrong_26h.png in Resources */,
 				B6A8D97D19770C2100E8F1D5 /* Icon-Small.png in Resources */,
@@ -761,6 +774,7 @@
 				B649198B1A1A59BC0054CA13 /* mitllLogo2.png in Resources */,
 				B6629E421A440192008EAC75 /* audioOff.png in Resources */,
 				B6A8D97819770C2100E8F1D5 /* Icon-40@2x.png in Resources */,
+				B6EEB9031A6895E0000793F0 /* turtle_32.png in Resources */,
 				B6DF209F1A25190400CA31B1 /* questionIcon@2x.png in Resources */,
 				B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */,
 				B67B84C31A6703F80064AB83 /* random_48.png in Resources */,
@@ -773,8 +787,10 @@
 				B68A5C381979B4AE0036B90C /* micBigger.png in Resources */,
 				B696890319993B910094A297 /* micBiggerCircle.png in Resources */,
 				B6DABE3E1A5CCC4700E7540E /* play2.png in Resources */,
+				B6EEB9061A6959CC000793F0 /* turtle_32_selected.png in Resources */,
 				B6A8D97A19770C2100E8F1D5 /* Icon-60@2x.png in Resources */,
 				B68A5C321979AE7E0036B90C /* playBigger2.png in Resources */,
+				B6EEB9071A6959CC000793F0 /* turtle_selected.png in Resources */,
 				B6629E411A440192008EAC75 /* audioOff_smaller.png in Resources */,
 				B6629E441A440192008EAC75 /* audioOn.png in Resources */,
 				B604662B1A38B4E0000B5464 /* LICENSE in Resources */,

@@ -227,6 +227,11 @@
                              icon:FAPlay
                          fontSize:20.0f];
     
+    
+    _speedButton.layer.cornerRadius = 3.f;
+    _speedButton.layer.borderColor = [UIColor grayColor].CGColor;
+    _speedButton.layer.borderWidth = 1.0f;
+    
     NSString *ct = [[self getCurrentJson] objectForKey:@"ct"];
     _contextButton.hidden = (ct == nil || ct.length == 0);
     
@@ -251,14 +256,24 @@
     }
 }
 
+- (void)unselectAutoPlay {
+    _autoPlayButton.selected = false;
+    _autoPlayButton.color = _autoPlayButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+    [self stopTimer];
+}
+
+- (void)stopAutoPlay {
+    [self unselectAutoPlay];
+    [self stopPlayingAudio];
+    [self whatToShowSelection:nil];
+}
+
 -(void) viewWillDisappear:(BOOL)animated {
    // [super viewWillDisappear:animated];
 
-    NSLog(@"Stop auto play.");
+    NSLog(@"- viewWillDisappear - Stop auto play.");
 
-    _autoPlayButton.selected = false;
-    [self stopTimer];
-    [self stopPlayingAudio];
+    [self stopAutoPlay];
 
    // [[UIApplication sharedApplication] endReceivingRemoteControlEvents];    
 }
@@ -270,10 +285,12 @@
         switch (receivedEvent.subtype) {
             case UIEventSubtypeRemoteControlPause:
                 [self stopTimer];
-                _autoPlayButton.selected = false;
+                [self unselectAutoPlay];
                 break;
             case UIEventSubtypeRemoteControlPlay:
                 _autoPlayButton.selected = true;
+                _autoPlayButton.color = _autoPlayButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+
                 [self respondToSwipe];
                 break;
             case UIEventSubtypeRemoteControlTogglePlayPause:
@@ -484,7 +501,8 @@
     NSString *audioSpeed = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioSpeed"];
     if (audioSpeed != nil) {
         //   NSLog(@"checking - audio on %@",audioOn);
-        _speedSelector.on = [audioSpeed isEqualToString:@"Slow"];
+        _speedButton.selected = [audioSpeed isEqualToString:@"Slow"];
+        _speedButton.backgroundColor = _speedButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
     }
     
     NSDictionary *jsonObject =[self getCurrentJson] ;
@@ -505,7 +523,7 @@
     
     long selectedGender = _genderMaleSelector.selectedSegmentIndex;
     _audioRefs = [[NSMutableArray alloc] init];
-    BOOL isSlow = [_speedSelector isOn];
+    BOOL isSlow = _speedButton.selected;
     //NSLog(@"is slow %@",isSlow ? @"SLOW" :@"REGULAR");
     if (selectedGender == 0) {
         if (isSlow) {
@@ -564,7 +582,7 @@
     [_genderMaleSelector setEnabled:hasTwoGenders forSegmentAtIndex:2];
 
     BOOL hasTwoSpeeds = (hasMaleReg || hasFemaleReg) && (hasMaleSlow || hasFemaleSlow);
-    _speedSelector.enabled = hasTwoSpeeds;
+    _speedButton.enabled = hasTwoSpeeds;
     
     if (refAudio != nil && ![refAudio isEqualToString:@"NO"] && _audioRefs.count == 0) {
         [_audioRefs addObject:refAudio];
@@ -632,6 +650,7 @@
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
     [self viewWillDisappear:true];
+   
     _index--;
     if (_index == -1) _index = _jsonItems.count  -1UL;
 
@@ -641,6 +660,8 @@
 
 BOOL preventPlayAudio = false;
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender {
+    NSLog(@"swipeLeftDetected progress is %f", _progressThroughItems.progress);
+
     [self viewWillDisappear:true];
     
     _index++;
@@ -649,7 +670,6 @@ BOOL preventPlayAudio = false;
         _index = 0;
         // TODO : get the sorted list and resort the items in incorrect first order
     }
-    NSLog(@"swipeLeftDetected progress is %f", _progressThroughItems.progress);
    
     if (onLast) {
         preventPlayAudio = TRUE;
@@ -683,6 +703,9 @@ BOOL preventPlayAudio = false;
         }
         [self playRefAudioIfAvailable];
         // Turn on remote control event delivery
+        
+        NSLog(@"beginReceivingRemoteControlEvents ----\n");
+
         [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     }
     else {
@@ -828,18 +851,22 @@ BOOL preventPlayAudio = false;
 // control showing english, fl phrase, or both
 - (IBAction)whatToShowSelection:(id)sender {
     long selected = [_whatToShow selectedSegmentIndex];
-  //  NSLog(@"recoflashcard : whatToShowSelection %ld", selected);
-    if (selected == 0) {
+    NSLog(@"recoflashcard : whatToShowSelection %ld", selected);
+    if (selected == 0) { // english
         [_foreignLang setHidden:true];
         [_english setHidden:false];
         _pageControl.hidden = false;
         _pageControl.currentPage = 0;
+        
+        [_myAudioPlayer stopAudio];
     }
-    else if (selected == 1) {
+    else if (selected == 1) {  // fl
         [_foreignLang setHidden:false];
         [_english setHidden:true];
         _pageControl.hidden = false;
         _pageControl.currentPage = 1;
+        
+        [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     }
     else {
         [_foreignLang setHidden:false];
@@ -849,8 +876,13 @@ BOOL preventPlayAudio = false;
 }
 
 - (IBAction)speedSelection:(id)sender {
-    [SSKeychain setPassword:(_speedSelector.isOn ? @"Slow":@"Regular")
+//    NSLog(@"\n\n\nGot speed selection...");
+    _speedButton.selected = !_speedButton.selected;
+    [SSKeychain setPassword:(_speedButton.selected ? @"Slow":@"Regular")
                  forService:@"mitll.proFeedback.device" account:@"audioSpeed"];
+
+  //  _speedButton.imageView = _speedButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+    _speedButton.backgroundColor = _speedButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
     if (!_autoPlayButton.selected) {
         [self respondToSwipe];
     }
@@ -1075,10 +1107,12 @@ bool debugRecord = false;
 }
 
 - (void)flipCard {
+    NSLog(@"flipCard");
+    [self stopAutoPlay];
+    
     _pageControl.currentPage = _pageControl.currentPage == 0 ? 1 : 0;
     [_foreignLang setHidden:!_foreignLang.hidden];
     [_english setHidden:!_english.hidden];
-//    long sel = _audioOnButton.selected; // i.e. audio is ON
     if (_audioOnButton.selected) {
         if (!preventPlayAudio) {
             if (!_foreignLang.hidden) {
@@ -1092,7 +1126,8 @@ bool debugRecord = false;
 }
 
 // TODO : maybe only flip card on tap?
-- (IBAction)swipeUp:(id)sender {
+- (IBAction)swipeUp:(UISwipeGestureRecognizer *)sender {
+    NSLog(@"Got swipe up from %@",sender);
     long selected = [_whatToShow selectedSegmentIndex];
     if (selected == 0 || selected == 1) {
         [self flipCard];
