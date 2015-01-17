@@ -54,14 +54,7 @@
     }
     
     _maleFemale.enabled = audioCuts.count > 0;
-//    
-//    [_playingIcon initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
-//                          color:[UIColor colorWithWhite:1.0f alpha:0.0f]
-//                          style:BButtonStyleBootstrapV3
-//                           icon:FAVolumeUp
-//                       fontSize:20.0f];
-//    [_playingIcon setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-    
+
     _audioPlayer.audioPaths = audioCuts;
     _audioPlayer.url = _url;
     _audioPlayer.language = _language;
@@ -69,7 +62,7 @@
 }
 
 -(void) viewWillDisappear:(BOOL)animated {
-    NSLog(@"view will disappear.");
+//    NSLog(@"view will disappear.");
    [_audioPlayer stopAudio];
 }
 
@@ -148,6 +141,10 @@
 
 - (void) playStopped {
     [self removePlayingAudioHighlight];
+}
+
+- (void) playGotToEnd {
+   NSLog(@"playGotToEnd");
 }
 
 - (void)highlightFLWhilePlaying

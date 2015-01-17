@@ -229,7 +229,7 @@
     
     
     _speedButton.layer.cornerRadius = 3.f;
-    _speedButton.layer.borderColor = [UIColor grayColor].CGColor;
+    _speedButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
     _speedButton.layer.borderWidth = 1.0f;
     
     NSString *ct = [[self getCurrentJson] objectForKey:@"ct"];
@@ -265,7 +265,7 @@
 - (void)stopAutoPlay {
     [self unselectAutoPlay];
     [self stopPlayingAudio];
-    [self whatToShowSelection:nil];
+  //  [self whatToShowSelection:nil];
 }
 
 -(void) viewWillDisappear:(BOOL)animated {
@@ -274,7 +274,6 @@
     NSLog(@"- viewWillDisappear - Stop auto play.");
 
     [self stopAutoPlay];
-
    // [[UIApplication sharedApplication] endReceivingRemoteControlEvents];    
 }
 
@@ -482,7 +481,7 @@
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
     _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
-    [self whatToShowSelection:nil];
+    [self hideAndShowText];
 
     [self removePlayObserver];
    
@@ -848,12 +847,11 @@ BOOL preventPlayAudio = false;
     [poster postEvent:[NSString stringWithFormat:@"playAudioTouch"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"flText" widgetType:@"UILabel"];
 }
 
-// control showing english, fl phrase, or both
-- (IBAction)whatToShowSelection:(id)sender {
+- (void)hideAndShowText {
     long selected = [_whatToShow selectedSegmentIndex];
-    NSLog(@"recoflashcard : whatToShowSelection %ld", selected);
+  //  NSLog(@"recoflashcard : whatToShowSelection %ld", selected);
     if (selected == 0) { // english
-        [_foreignLang setHidden:true];
+        _foreignLang.hidden = true;
         [_english setHidden:false];
         _pageControl.hidden = false;
         _pageControl.currentPage = 0;
@@ -861,7 +859,7 @@ BOOL preventPlayAudio = false;
         [_myAudioPlayer stopAudio];
     }
     else if (selected == 1) {  // fl
-        [_foreignLang setHidden:false];
+        _foreignLang.hidden = false;
         [_english setHidden:true];
         _pageControl.hidden = false;
         _pageControl.currentPage = 1;
@@ -872,6 +870,14 @@ BOOL preventPlayAudio = false;
         [_foreignLang setHidden:false];
         [_english setHidden:false];
         _pageControl.hidden = true;
+    }
+}
+
+// control showing english, fl phrase, or both
+- (IBAction)whatToShowSelection:(id)sender {
+    [self hideAndShowText];
+    if (_autoPlayButton.selected) {
+        [self doAutoAdvance];
     }
 }
 
@@ -949,7 +955,7 @@ BOOL preventPlayAudio = false;
         }
     }
     else {
-        NSLog(@"playGotToEnd - no op");
+      //  NSLog(@"playGotToEnd - no op");
     }
 }
 
@@ -1023,6 +1029,8 @@ BOOL preventPlayAudio = false;
 }
 
 - (IBAction)gotTapInSuperview:(id)sender {
+    NSLog(@" gotTapInSuperview");
+
     [self viewWillDisappear:true];
     long selected = [_whatToShow selectedSegmentIndex];
     if (selected == 0 || selected == 1) {
@@ -1052,6 +1060,8 @@ BOOL preventPlayAudio = false;
 
 - (void)highlightFLWhilePlaying
 {
+    NSLog(@" highlightFLWhilePlaying - show fl \n\n\n");
+
     _foreignLang.hidden = false;
     _foreignLang.textColor = [UIColor blueColor];
     _pageControl.currentPage = 1;
@@ -1108,17 +1118,22 @@ bool debugRecord = false;
 
 - (void)flipCard {
     NSLog(@"flipCard");
-    [self stopAutoPlay];
+   [self unselectAutoPlay];
+   [self stopPlayingAudio];
     
     _pageControl.currentPage = _pageControl.currentPage == 0 ? 1 : 0;
-    [_foreignLang setHidden:!_foreignLang.hidden];
-    [_english setHidden:!_english.hidden];
+    
+    _foreignLang.hidden = !_foreignLang.hidden;
+    _english.hidden = !_english.hidden;
+    
+    NSLog(@"flipCard fl hidden %@", _foreignLang.hidden  ? @"YES" :@"NO");
+
     if (_audioOnButton.selected) {
         if (!preventPlayAudio) {
             if (!_foreignLang.hidden) {
                 [self playRefAudioIfAvailable];
             }
-            else if (!_english.hidden) {
+            else if (_autoPlayButton.selected && !_english.hidden) {
                 [self speakEnglish:false];
             }
         }
