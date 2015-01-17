@@ -82,10 +82,18 @@
      gestureRecognizer.delegate = self;
     [self.languagePicker addGestureRecognizer:gestureRecognizer];
     
+    NSString *languageRemembered = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
+    if (languageRemembered != nil) {
+        int toChoose = [_languages indexOfObject:languageRemembered];
+        [_languagePicker selectRow:toChoose inComponent:0 animated:false];
+    }
+    
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     if (userid != nil) {
         [self performSegueWithIdentifier:@"goToChapter" sender:self];
     }
+    
+
 }
 
 -(void)viewWillAppear:(BOOL)animated{

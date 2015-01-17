@@ -283,10 +283,13 @@
     if (receivedEvent.type == UIEventTypeRemoteControl) {
         switch (receivedEvent.subtype) {
             case UIEventSubtypeRemoteControlPause:
+                NSLog(@"Got paused  --->");
+
                 [self stopTimer];
                 [self unselectAutoPlay];
                 break;
             case UIEventSubtypeRemoteControlPlay:
+                NSLog(@"Got play  --->");
                 _autoPlayButton.selected = true;
                 _autoPlayButton.color = _autoPlayButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
 
@@ -620,14 +623,22 @@
     NSString *showedID = [NSString stringWithFormat:@"showedIntro_%@",userid];
     NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
     
+    BOOL showEnglish = _whatToShow.selectedSegmentIndex == 0;
     // complicated...
     _myAudioPlayer.audioPaths = _audioRefs;
     if (_audioOnButton.selected &&   // volume on
         !preventPlayAudio &&
         showedIntro != nil) {
      
-        if (_whatToShow.selectedSegmentIndex == 0) {
+         NSLog(@"respondToSwipe first");
+
+        
+        if (showEnglish) {
+            NSLog(@"respondToSwipe first - %d", _whatToShow.selectedSegmentIndex);
+            if (_autoPlayButton.selected) {
+
             [self speakEnglish:false];
+            }
         }
         else {
             [self playRefAudioIfAvailable];
@@ -636,7 +647,9 @@
     else {
         preventPlayAudio = false;
         if (_autoPlayButton.selected) {
-            if (_whatToShow.selectedSegmentIndex == 0) {
+            if (showEnglish) {
+                NSLog(@"respondToSwipe sec");
+
                 [self speakEnglish:false];
             }
             else {
@@ -723,7 +736,8 @@ BOOL preventPlayAudio = false;
 }
 
 - (void) speakEnglish:(BOOL) volumeOn {
-  //  NSLog(@"Speak english");
+     NSLog(@"Speak english");
+    _english.hidden = false;
     [self speak:_english.text volumeOn:volumeOn];
 }
 
@@ -779,7 +793,7 @@ BOOL preventPlayAudio = false;
 {
     NSLog(@"recoflashcard : didStartSpeechUtterance --- '%@'",utterance.speechString);
     
-    _english.hidden = false;
+ //   _english.hidden = false;
     _pageControl.currentPage = 0;
     _english.textColor = [UIColor blueColor];
 }
@@ -805,10 +819,11 @@ BOOL preventPlayAudio = false;
     [self showSpeechEnded:isEnglish];
     
     if (_autoPlayButton.selected) {
-        NSLog(@"-----> didFinishSpeechUtterance : '%@' is done playing, so advancing to %lu\n\n",utterance.speechString,_index);
+        NSLog(@"-----> didFinishSpeechUtterance : '%@' is done playing, so advancing to %lu",utterance.speechString,_index);
         [self beginBackgroundUpdateTask];
         
         if (_whatToShow.selectedSegmentIndex == 0) { // english first, so play fl
+            _foreignLang.hidden = false;
             [self playRefAudioIfAvailable];
         }
         else { // played fl, then english, which is done, so go to next item
@@ -849,10 +864,11 @@ BOOL preventPlayAudio = false;
 
 - (void)hideAndShowText {
     long selected = [_whatToShow selectedSegmentIndex];
-  //  NSLog(@"recoflashcard : whatToShowSelection %ld", selected);
+    NSLog(@"recoflashcard : hideAndShowText %ld", selected);
     if (selected == 0) { // english
         _foreignLang.hidden = true;
-        [_english setHidden:false];
+        _english.hidden = false;
+
         _pageControl.hidden = false;
         _pageControl.currentPage = 0;
         
@@ -860,15 +876,16 @@ BOOL preventPlayAudio = false;
     }
     else if (selected == 1) {  // fl
         _foreignLang.hidden = false;
-        [_english setHidden:true];
+        _english.hidden = true;
+
         _pageControl.hidden = false;
         _pageControl.currentPage = 1;
         
         [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     }
     else {
-        [_foreignLang setHidden:false];
-        [_english setHidden:false];
+        _foreignLang.hidden = false;
+        _english.hidden = false;
         _pageControl.hidden = true;
     }
 }
@@ -1060,9 +1077,9 @@ BOOL preventPlayAudio = false;
 
 - (void)highlightFLWhilePlaying
 {
-    NSLog(@" highlightFLWhilePlaying - show fl \n\n\n");
+    NSLog(@" highlightFLWhilePlaying - show fl");
 
-    _foreignLang.hidden = false;
+//    _foreignLang.hidden = false;
     _foreignLang.textColor = [UIColor blueColor];
     _pageControl.currentPage = 1;
 }
@@ -1118,8 +1135,8 @@ bool debugRecord = false;
 
 - (void)flipCard {
     NSLog(@"flipCard");
-   [self unselectAutoPlay];
-   [self stopPlayingAudio];
+    [self unselectAutoPlay];
+    [self stopPlayingAudio];
     
     _pageControl.currentPage = _pageControl.currentPage == 0 ? 1 : 0;
     
@@ -1127,7 +1144,20 @@ bool debugRecord = false;
     _english.hidden = !_english.hidden;
     
     NSLog(@"flipCard fl hidden %@", _foreignLang.hidden  ? @"YES" :@"NO");
-
+    NSLog(@"flipCard en hidden %@", _english.hidden  ? @"YES" :@"NO");
+    
+    if (_foreignLang.hidden && _english.hidden) {
+        if (_whatToShow.selectedSegmentIndex == 0) {
+            _english.hidden = false;
+        }
+        else if (_whatToShow.selectedSegmentIndex == 1) {
+            _foreignLang.hidden = false;
+        }
+        else {
+            _english.hidden = false;
+            _foreignLang.hidden = false;
+        }
+    }
     if (_audioOnButton.selected) {
         if (!preventPlayAudio) {
             if (!_foreignLang.hidden) {
@@ -1143,14 +1173,34 @@ bool debugRecord = false;
 // TODO : maybe only flip card on tap?
 - (IBAction)swipeUp:(UISwipeGestureRecognizer *)sender {
     NSLog(@"Got swipe up from %@",sender);
-    long selected = [_whatToShow selectedSegmentIndex];
-    if (selected == 0 || selected == 1) {
-        [self flipCard];
+    
+    CGPoint pt = [sender locationOfTouch:0 inView:self.view];
+    NSLog(@"Got swipe up locationOfTouch %f, %f",pt.x, pt.y);
+    
+    CGPoint pt2 = [sender locationInView:self.view];
+    
+    NSLog(@"Got swipe up location in view %f, %f",pt2.x, pt2.y);
+    
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGFloat screenWidth = screenRect.size.width;
+    CGFloat screenHeight = screenRect.size.height;
+    
+    NSLog(@"Got swipe   %f, %f",screenWidth,screenHeight);
+    
+    if (screenHeight - pt2.y < 10) {
+        NSLog(@"Got swipe IGNORING SWIPE, since control center swipe %f, %f",screenWidth,screenHeight);
     }
     else {
-        [self swipeLeftDetected:sender];
+        
+        long selected = [_whatToShow selectedSegmentIndex];
+        if (selected == 0 || selected == 1) {
+            [self flipCard];
+        }
+        else {
+            [self swipeLeftDetected:sender];
+        }
+        [self postEvent:@"swipeUp" widget:@"card" type:@"card"];
     }
-    [self postEvent:@"swipeUp" widget:@"card" type:@"card"];
 }
 
 - (IBAction)swipeDown:(id)sender {
