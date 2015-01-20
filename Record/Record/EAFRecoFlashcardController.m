@@ -857,9 +857,7 @@ BOOL preventPlayAudio = false;
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender{
     [self playRefAudioIfAvailable];
 
-    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
-    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-    [poster postEvent:[NSString stringWithFormat:@"playAudioTouch"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"flText" widgetType:@"UILabel"];
+    [self postEvent:@"playAudioTouch" widget:_foreignLang.text type:@"UILabel"];
 }
 
 - (void)hideAndShowText {
@@ -1100,10 +1098,8 @@ bool debugRecord = false;
     if (debugRecord) NSLog(@"recordAudio time = %f",_then2);
     
     [_myAudioPlayer stopAudio];
-    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
-    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-    [poster postEvent:[NSString stringWithFormat:@"record audio start"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"record audio" widgetType:@"Button"];
-    
+
+    [self postEvent:@"record audio start" widget:@"record audio" type:@"Button"];
     if (!_audioRecorder.recording)
     {
         if (debugRecord) NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
@@ -1332,24 +1328,15 @@ double gestureEnd;
 }
 
 - (IBAction)shuffleChange:(id)sender {
-//    BOOL value =
-//    //[_shuffleSwitch isOn];
-//        _shuffleButton.selected;
-    
     _shuffleButton.selected = !_shuffleButton.selected;
     _shuffleButton.color = _shuffleButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
 
-    //  NSLog(@"Got shuffle event %@",_shuffleButton.selected ? @"SELECTED" :@"NOT SELECTED");
-    
     if (_shuffleButton.selected) {
         [self doShuffle];
     }
     [self respondToSwipe];
     
-    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
-    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-    [poster postEvent:[NSString stringWithFormat:@"shuffle"] exid:[jsonObject objectForKey:@"id"] lang:_language widget:@"shuffle" widgetType:@"UIRadio"];
-    
+    [self postEvent:@"shuffle" widget:@"shuffle" type:@"UIButton"];
 }
 
 - (void)doShuffle {
@@ -1559,7 +1546,7 @@ NSString *statusCodeDisplay;
         return;
     }
     else if (httpStatusCode >= 400 && httpStatusCode < 500) {
-        [self setDisplayMessage:[NSString stringWithFormat:@"Network connection problem, please try again (%ld).",httpStatusCode]];
+        [self setDisplayMessage:[NSString stringWithFormat:@"Network connection problem, please try again (%ld).",(long)httpStatusCode]];
         return;
     }
     else if (httpStatusCode >= 500) {
