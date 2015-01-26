@@ -17,6 +17,8 @@
 @interface EAFPhoneScoreTableViewController ()
 
 @property int rowHeight;
+@property BOOL showPhonesLTRAlways;  // constant
+
 @end
 
 @implementation EAFPhoneScoreTableViewController
@@ -25,6 +27,8 @@
 {
     [super viewDidLoad];
     
+    _showPhonesLTRAlways = true;
+
     _rowHeight = 66;
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
@@ -271,7 +275,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     NSString *phone = [_phonesInOrder objectAtIndex:indexPath.row];
     
-    //   NSLog(@"tableView phone is %@",phone);
+ //   NSLog(@"tableView phone is %@",phone);
     
     for (UIView *v in [cell.contentView subviews]) {
         [v removeFromSuperview];
@@ -351,8 +355,16 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     float totalPhones = 0.0f;
     int count = 0;
     BOOL addSpaces = true;
+
+    // try to worry about the same word appearing multiple times...
+    NSMutableSet *shownSoFar = [[NSMutableSet alloc] init];
     for (NSDictionary *wordEntry in words) {
         // TODO iterate over first N words in example words for phone
+        NSString *word = [wordEntry objectForKey:@"w"];
+        
+        if ([shownSoFar containsObject:word]) continue;
+        else [shownSoFar addObject:word];
+        
         if (count++ > 5) break; // only first five?
         NSString *result = [wordEntry objectForKey:@"result"];
         NSArray *resultWords = [_resultToWords objectForKey:result];
@@ -432,7 +444,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         
         leftView = exampleView;
         
-        NSString *word = [wordEntry objectForKey:@"w"];
+        
         for (NSDictionary *wordResult in resultWords) {
             NSString *wordPhoneAppearsIn = [wordEntry objectForKey:@"wid"];
             NSString *wordInResult = [wordResult objectForKey:@"id"];
@@ -441,7 +453,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             if ([_language isEqualToString:@"English"]) {
                 word = [word lowercaseString];
             }
-            
+     //       NSLog(@"Word is %@",word);
             NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
            
             NSRange range = NSMakeRange(0, [coloredWord length]);
@@ -471,7 +483,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 
                 BOOL isRTL = [rtl containsObject:_language];
                 
-                if (isRTL) {
+                if (isRTL && !_showPhonesLTRAlways) {
                     phoneArray = [self reversedArray:phoneArray];
                 }
                 NSDictionary *lastPhone = phoneArray.count > 0 ? [phoneArray objectAtIndex:phoneArray.count-1] : nil;

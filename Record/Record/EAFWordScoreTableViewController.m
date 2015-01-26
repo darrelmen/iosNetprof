@@ -10,11 +10,11 @@
 #import "FAImageView.h"
 #import "MyTableViewCell.h"
 #import "EAFAudioPlayer.h"
-//#import "BButton.h"
 #import "SSKeychain.h"
 
 @interface EAFWordScoreTableViewController ()
-
+@property int rowHeight;
+@property UILabel *current;
 @end
 
 @implementation EAFWordScoreTableViewController
@@ -22,9 +22,13 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _audioPlayer = [[EAFAudioPlayer alloc] init];
+    
+    _rowHeight = 60;
 
-    //NSLog(@"got word score table view did load");
+    _audioPlayer = [[EAFAudioPlayer alloc] init];
+    _audioPlayer.url = _url;
+    _audioPlayer.language = _language;
+    _audioPlayer.delegate = self;
     
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
@@ -35,19 +39,7 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
-    // _tableView.cancelTouchesInView = NO;
-    
-  //  _playingIcon = [BButton awesomeButtonWithOnlyIcon:FAVolumeUp color:[UIColor blackColor] style:BButtonStyleBootstrapV3];
-    
-//    [_playingIcon initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
-//                          color:[UIColor colorWithWhite:1.0f alpha:0.0f]
-//                          style:BButtonStyleBootstrapV3
-//                           icon:FAVolumeUp
-//                       fontSize:20.0f];
-//    [_playingIcon setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-//    
     for(UIViewController *tab in self.tabBarController.viewControllers)
-        
     {
       //  NSLog(@"EAFWordScoreTableViewController got item %@",tab.tabBarItem);        
         [tab.tabBarItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -92,12 +84,12 @@
 
 - (CGFloat)tableView:(UITableView *)tableView
 estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 44;
+    return _rowHeight;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView
 heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 44;
+    return _rowHeight;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -389,25 +381,26 @@ NSString *myCurrentTitle;
             NSString *refAudio = [jsonObject objectForKey:@"ref"];
             NSMutableArray *toPlay = [[NSMutableArray alloc] init];
             [toPlay addObject:refAudio];
+            NSString *fl = [_exToFL objectForKey:exid];
+
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
             
-//            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            for (UIView *subview in [cell.contentView subviews]) {
+               // NSLog(@"subview %@",subview);
+
+                if ([subview isKindOfClass:[UILabel class]]) {
+                    NSLog(@"found label %@, %@", subview, ((UILabel *) subview).text);
+                    if ([ fl isEqualToString:((UILabel *) subview).text]) {
+                        if (_current) {
+                            _current.textColor = [UIColor blackColor];
+                        }
+                        _current = ((UILabel *) subview);
+                        _current.textColor = [UIColor blueColor];
+                    }
+                }
+            }
             
-//            for (UIView *subview in [cell.contentView subviews]) {
-//                NSLog(@"subview %@",subview);
-//                
-//                if ([subview isKindOfClass:[UIImage class]]) {
-//                            NSLog(@"got it %@",subview);
-//
-//                    _audioPlayer.playingIcon = subview;
-//                    
-//                }
-//            }
-            
-     //       NSLog(@"playing audio @%",toPlay);
             _audioPlayer.audioPaths = toPlay;
-            //  _audioPlayer.viewToAddIconTo = _contextFL;
-            _audioPlayer.url = _url;
-            _audioPlayer.language = _language;
             [_audioPlayer playRefAudio];
         }
     }
@@ -415,44 +408,22 @@ NSString *myCurrentTitle;
 }
 
 - (void) playStarted {
-    
+//    NSLog(@"got play started...");
 }
 
 
 - (void) playStopped {
-    
+//    NSLog(@"got play stopped...");
+    _current.textColor = [UIColor blackColor];
+}
+
+- (void) playGotToEnd {
+//    NSLog(@"got to end...");
+    _current.textColor = [UIColor blackColor];
+
 }
 
 #pragma mark - Table view delegate
-
-//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    [tableView deselectRowAtIndexPath:indexPath animated:NO];
-//    
-//    NSInteger row = indexPath.row;
-//    NSString *exid = [_exList objectAtIndex:row];
-//    
-//    NSLog(@"exid selection %@",exid);
-//
-//    for (NSDictionary *jsonObject in _jsonItems) {
-//        if ([[jsonObject objectForKey:@"exid"] isEqualToString:exid]) {
-//            NSLog(@"got it %@",jsonObject);
-//            NSString *refAudio = [jsonObject objectForKey:@"ref"];
-//            NSMutableArray *toPlay = [[NSMutableArray alloc] init];
-//            [toPlay addObject:refAudio];
-//            
-//            
-//            _audioPlayer.audioPaths = toPlay;
-//          //  _audioPlayer.viewToAddIconTo = _contextFL;
-//            _audioPlayer.url = _url;
-//            _audioPlayer.language = _language;
-//          //  _audioPlayer.playingIcon = _playingIcon;
-//            [_audioPlayer playRefAudio];
-//            
-//        }
-//    }
-//    
-//}
 
 #pragma mark - Navigation
 

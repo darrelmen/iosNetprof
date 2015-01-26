@@ -47,6 +47,7 @@
 
 @property CFAbsoluteTime startPost ;
 @property UIBackgroundTaskIdentifier backgroundUpdateTask;
+@property BOOL showPhonesLTRAlways;  // constant
 @end
 
 @implementation EAFRecoFlashcardController
@@ -76,12 +77,19 @@
     NSLog(@"viewDidAppear --->");
 }
 
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    [self playRefAudioIfAvailable];
+};
+
+
 - (void)viewDidLoad
 {
     NSLog(@"viewDidLoad --->");
 
     [super viewDidLoad];
     
+    _showPhonesLTRAlways = true;
+
     // Turn on remote control event delivery
     EAFAppDelegate *myDelegate = [UIApplication sharedApplication].delegate;
     
@@ -200,12 +208,17 @@
     _pageControl.transform = CGAffineTransformMakeRotation(M_PI_2);
     
     [_contextButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
-                    //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
+     //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
                             color:[UIColor whiteColor]
-                             style:BButtonStyleBootstrapV3
-                              icon:FAQuoteLeft
-                          fontSize:20.0f];
-    
+                            style:BButtonStyleBootstrapV3
+                             icon:FAQuoteLeft
+                         fontSize:20.0f];
+    NSLog(@"%@",[UIDevice currentDevice].model);
+    BOOL isiPad =  [[UIDevice currentDevice].model containsString:@"Pad"];
+    if (isiPad) {
+        _contextButton.titleLabel.text = @"sentence";
+        [_contextButton addAwesomeIcon:FAQuoteLeft beforeTitle:true];
+    }
     [_shuffleButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
      //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
                             color:[UIColor whiteColor]
@@ -1713,7 +1726,9 @@ BOOL addSpaces = false;
     
     if (isRTL) {
         wordAndScore  = [self reversedArray:wordAndScore];
-        phoneAndScore = [self reversedArray:phoneAndScore];
+        if (!_showPhonesLTRAlways) {
+            phoneAndScore = [self reversedArray:phoneAndScore];
+        }
     }
     
     UIView *spacerLeft  = [[UIView alloc] init];
@@ -1943,10 +1958,12 @@ BOOL addSpaces = false;
     NSLog(@"got %@",error);
     if ([[error localizedDescription] containsString:@"timed"]) {
         [self setDisplayMessage:@"Network connection problem, please try again."];
+        [self postEvent:[error localizedDescription] widget:@"Scoring post timed out." type:@""];
     }
     else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't connect to server." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
+        [self postEvent:[error localizedDescription] widget:@"Connection problem" type:@""];
     }
 }
 

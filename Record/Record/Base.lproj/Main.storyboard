@@ -150,8 +150,7 @@
                                                         <exclude reference="vBj-MO-Xqf"/>
                                                     </mask>
                                                 </variation>
-                                                <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                                    <rect key="frame" x="249" y="5" width="60" height="120"/>
+                                                <variation key="heightClass=regular-widthClass=regular">
                                                     <mask key="constraints">
                                                         <exclude reference="Qy5-BL-vGJ"/>
                                                         <exclude reference="dqM-VA-aXL"/>
@@ -170,16 +169,15 @@
                                                         <variation key="heightClass=regular-widthClass=regular" constant="50"/>
                                                     </constraint>
                                                 </constraints>
-                                                <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                                    <rect key="frame" x="191" y="40" width="50" height="50"/>
-                                                </variation>
                                             </activityIndicatorView>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstAttribute="height" secondItem="85Q-3i-7cz" secondAttribute="height" multiplier="1.2" constant="1" id="7jP-Zp-tfr"/>
-                                            <constraint firstAttribute="centerX" secondItem="85Q-3i-7cz" secondAttribute="centerX" id="8zE-dV-XEk"/>
+                                            <constraint firstAttribute="centerX" secondItem="85Q-3i-7cz" secondAttribute="centerX" id="8zE-dV-XEk">
+                                                <variation key="heightClass=regular-widthClass=regular" constant="0.0"/>
+                                            </constraint>
                                             <constraint firstItem="85Q-3i-7cz" firstAttribute="centerY" secondItem="D19-P2-ZOH" secondAttribute="centerY" id="PuG-8M-ani"/>
                                             <constraint firstAttribute="height" constant="70" id="XEj-7u-9Z8">
                                                 <variation key="heightClass=regular-widthClass=regular" constant="130"/>
@@ -194,9 +192,6 @@
                                                 <exclude reference="7jP-Zp-tfr"/>
                                             </mask>
                                         </variation>
-                                        <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                            <rect key="frame" x="4" y="319" width="557" height="130"/>
-                                        </variation>
                                         <connections>
                                             <outletCollection property="gestureRecognizers" destination="0JG-qf-3We" appends="YES" id="S8Q-Jb-7b0"/>
                                         </connections>
@@ -207,9 +202,6 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="44"/>
                                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <nil key="highlightedColor"/>
-                                        <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                            <rect key="frame" x="8" y="200" width="549" height="53"/>
-                                        </variation>
                                         <connections>
                                             <outletCollection property="gestureRecognizers" destination="cKC-E7-J88" appends="YES" id="76e-st-qGa"/>
                                         </connections>
@@ -224,31 +216,24 @@
                                                 <exclude reference="nMQ-q0-cCJ"/>
                                             </mask>
                                         </variation>
-                                        <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                            <rect key="frame" x="8" y="255" width="549" height="50"/>
-                                        </variation>
                                     </view>
                                     <pageControl hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="2" translatesAutoresizingMaskIntoConstraints="NO" id="cmF-9c-VKI">
                                         <rect key="frame" x="542" y="178" width="23" height="37"/>
                                         <color key="pageIndicatorTintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="currentPageIndicatorTintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                        <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                            <rect key="frame" x="542" y="208" width="23" height="37"/>
-                                        </variation>
                                     </pageControl>
                                     <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="contextButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t3S-bB-IN2" customClass="BButton">
                                         <rect key="frame" x="518" y="7" width="40" height="40"/>
                                         <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="40" id="EEa-2q-no8"/>
+                                            <constraint firstAttribute="width" constant="40" id="EEa-2q-no8">
+                                                <variation key="heightClass=regular-widthClass=regular" constant="148"/>
+                                            </constraint>
                                             <constraint firstAttribute="height" constant="40" id="HXc-a0-glG"/>
                                         </constraints>
-                                        <state key="normal">
+                                        <state key="normal" title="Sentence">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
-                                        <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                            <rect key="frame" x="510" y="15" width="40" height="40"/>
-                                        </variation>
                                         <connections>
                                             <action selector="showPopover:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Vp5-ws-qIw"/>
                                         </connections>
@@ -258,8 +243,7 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="32" id="X52-iz-Og2"/>
                                         </constraints>
-                                        <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                            <rect key="frame" x="20" y="308" width="32" height="32"/>
+                                        <variation key="heightClass=regular-widthClass=regular">
                                             <mask key="constraints">
                                                 <exclude reference="X52-iz-Og2"/>
                                             </mask>
@@ -271,18 +255,12 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="24" id="eGw-2Z-N2T"/>
                                         </constraints>
-                                        <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                            <rect key="frame" x="60" y="312" width="486" height="24"/>
-                                        </variation>
                                     </view>
                                     <label opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="900" restorationIdentifier="english" text="english text" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="7" translatesAutoresizingMaskIntoConstraints="NO" id="wAh-a0-3Cd">
                                         <rect key="frame" x="47" y="115" width="471" height="53"/>
                                         <gestureRecognizers/>
                                         <fontDescription key="fontDescription" type="system" pointSize="44"/>
                                         <nil key="highlightedColor"/>
-                                        <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                            <rect key="frame" x="47" y="145" width="471" height="53"/>
-                                        </variation>
                                         <connections>
                                             <outletCollection property="gestureRecognizers" destination="Wli-rm-Tip" appends="YES" id="ThR-VD-0ij"/>
                                         </connections>
@@ -325,7 +303,9 @@
                                     <constraint firstAttribute="centerX" secondItem="vlT-Ea-UA6" secondAttribute="centerX" id="Xna-Ex-NgX"/>
                                     <constraint firstItem="ZN1-US-MJW" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="20" symbolic="YES" id="Y2Q-2W-kkN"/>
                                     <constraint firstAttribute="centerX" secondItem="wAh-a0-3Cd" secondAttribute="centerX" id="YVf-NC-0yu"/>
-                                    <constraint firstItem="j6L-63-Jyx" firstAttribute="top" secondItem="wAh-a0-3Cd" secondAttribute="bottom" constant="2" id="cLZ-At-LKM"/>
+                                    <constraint firstItem="j6L-63-Jyx" firstAttribute="top" secondItem="wAh-a0-3Cd" secondAttribute="bottom" constant="2" id="cLZ-At-LKM">
+                                        <variation key="heightClass=regular-widthClass=regular" constant="8" symbolic="YES"/>
+                                    </constraint>
                                     <constraint firstItem="vlT-Ea-UA6" firstAttribute="top" secondItem="j6L-63-Jyx" secondAttribute="bottom" priority="750" constant="2" id="cdA-2M-MAD"/>
                                     <constraint firstItem="wAh-a0-3Cd" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="8" id="cwy-vs-jeX"/>
                                     <constraint firstItem="LDy-Lh-sWf" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="4" id="dTm-qP-y6K"/>
@@ -382,9 +362,6 @@
                                         <include reference="ywT-dS-taV"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                    <rect key="frame" x="19" y="28" width="565" height="453"/>
-                                </variation>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="4yT-zW-3g3" appends="YES" id="6Mv-Hx-C71"/>
                                     <outletCollection property="gestureRecognizers" destination="kGC-iZ-IiF" appends="YES" id="fcn-PG-UxC"/>
@@ -407,9 +384,6 @@
                                         <exclude reference="3zh-Ju-JNK"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                    <rect key="frame" x="16" y="485" width="176" height="53"/>
-                                </variation>
                                 <connections>
                                     <action selector="whatToShowSelection:" destination="vXZ-lx-hvc" eventType="valueChanged" id="wN1-rC-D4P"/>
                                 </connections>
@@ -424,7 +398,7 @@
                                     <rect key="frame" x="125" y="21" width="150" height="5"/>
                                 </variation>
                                 <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                    <rect key="frame" x="325" y="65" width="150" height="5"/>
+                                    <rect key="frame" x="325" y="21" width="150" height="5"/>
                                 </variation>
                             </progressView>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="2" translatesAutoresizingMaskIntoConstraints="NO" id="A7I-P6-hq3">
@@ -446,8 +420,7 @@
                                         <exclude reference="fFO-No-DIg"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                    <rect key="frame" x="384" y="545" width="140" height="53"/>
+                                <variation key="heightClass=regular-widthClass=regular">
                                     <mask key="constraints">
                                         <include reference="1n4-LE-Z68"/>
                                         <exclude reference="fFO-No-DIg"/>
@@ -463,9 +436,6 @@
                                 <state key="normal">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
-                                <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                    <rect key="frame" x="16" y="545" width="52" height="52"/>
-                                </variation>
                                 <connections>
                                     <action selector="audioOnSelection:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="V9V-XZ-2Bn"/>
                                 </connections>
@@ -484,9 +454,6 @@
                                 <state key="normal">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
-                                <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                    <rect key="frame" x="76" y="545" width="52" height="52"/>
-                                </variation>
                                 <connections>
                                     <action selector="shuffleChange:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="tLU-15-yYs"/>
                                 </connections>
@@ -511,9 +478,6 @@
                                         <exclude reference="EHp-3G-zYQ"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                    <rect key="frame" x="136" y="545" width="52" height="52"/>
-                                </variation>
                                 <connections>
                                     <action selector="autoPlaySelected:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="NWL-tX-SRi"/>
                                 </connections>
@@ -535,8 +499,7 @@
                                         <exclude reference="pDm-Ab-g7m"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                    <rect key="frame" x="434" y="479" width="150" height="64"/>
+                                <variation key="heightClass=regular-widthClass=regular">
                                     <mask key="constraints">
                                         <include reference="hyY-43-n5K"/>
                                         <include reference="pDm-Ab-g7m"/>
@@ -569,9 +532,6 @@
                                         <exclude reference="ZSl-BB-9Tk"/>
                                         <include reference="acU-6q-uZg"/>
                                     </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
-                                    <rect key="frame" x="532" y="545" width="52" height="52"/>
                                 </variation>
                                 <connections>
                                     <action selector="speedSelection:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="YH9-cu-UeH"/>
@@ -980,15 +940,15 @@
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" contentMode="center" tableViewCell="Wj8-y9-8dS" id="7LV-P0-1Yw">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" placeholderIntrinsicWidth="104" placeholderIntrinsicHeight="21" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="DnT-8e-R2n">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" placeholderIntrinsicWidth="104" placeholderIntrinsicHeight="21" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.30000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="DnT-8e-R2n">
                                             <rect key="frame" x="8" y="9" width="104" height="12"/>
-                                            <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="13"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="IsE-pd-wsQ">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.30000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="IsE-pd-wsQ">
                                             <rect key="frame" x="8" y="22" width="26" height="12"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
