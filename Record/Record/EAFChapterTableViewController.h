@@ -19,7 +19,7 @@
 
 @property NSArray *chapters;
 @property NSArray *jsonContentArray;
-@property (strong, nonatomic) NSMutableData *responseData;
+@property (strong, nonatomic) NSData *responseData;
 @property NSString *language;
 @property BOOL hasModel;
 

@@ -24,9 +24,8 @@
 @property (strong, nonatomic) NSDictionary *chapterToItems;
 @property (strong, nonatomic) NSArray *jsonItems;
 
-@property EAFAudioCache *audioCache;
 
-@property (strong, nonatomic) NSMutableData *responseData;
+@property (strong, nonatomic) NSData *responseData;
 
 
 @property NSArray *scores;

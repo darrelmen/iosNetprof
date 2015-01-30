@@ -41,6 +41,14 @@
     [self playRefAudioInternal];
 }
 
+- (void)makePlayerGivenURL:(NSURL *)url {
+    _player = [AVPlayer playerWithURL:url];
+    NSString *PlayerStatusContext;
+    [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
+    _player.volume = _volume;
+ //   NSLog(@"Playing at volume %@ %f",_player,_player.volume);
+}
+
 // look for local file with mp3 and use it if it's there.
 - (IBAction)playRefAudioInternal {
    // NSLog(@"playRefAudioInternal using paths %@",_audioPaths);
@@ -81,7 +89,6 @@
         NSLog(@"playRefAudio can't find local url %@",destFileName);
         NSLog(@"playRefAudio URL     %@", url);
     }
-    NSString *PlayerStatusContext;
     
     if (_player) {
         [_player pause];
@@ -94,16 +101,14 @@
     UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
     AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
     
-    _player = [AVPlayer playerWithURL:url];
-     _player.volume = _volume;
-    
-   // NSLog(@"Playing at volume %@ %f",_player,_player.volume);
-    [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
+    [self makePlayerGivenURL:url];
+   
+//    [self performSelectorInBackground:@selector(makePlayerGivenURL:) withObject:url];
+
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {
-  //  NSLog(@" playerItemDidReachEnd for this %@ for %@",self,_audioPaths);
-    NSLog(@" playerItemDidReachEnd for this %@ ",self);
+    //NSLog(@" playerItemDidReachEnd for this %@ ",self);
     
     [self.delegate playStopped];
     [self.delegate playGotToEnd];

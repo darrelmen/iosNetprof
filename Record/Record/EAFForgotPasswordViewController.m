@@ -95,7 +95,7 @@
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+  //  [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
@@ -165,11 +165,16 @@
 
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
+    NSString *message = @"Couldn't connect to server.";
+    if (error.code == NSURLErrorNotConnectedToInternet) {
+        message = @"NetProF needs a wifi or cellular internet connection.";
+    }
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
-                                                    message: @"Couldn't connect to server."
+                                                    message: message
                                                    delegate: nil
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil];
+
     [alert show];
 }
 

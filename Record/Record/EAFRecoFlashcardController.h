@@ -13,7 +13,7 @@
 #import "EAFAudioPlayer.h"
 
 @interface EAFRecoFlashcardController : UIViewController
-        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate,AudioPlayerNotification,AVSpeechSynthesizerDelegate>
+        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,NSURLConnectionDelegate,UIGestureRecognizerDelegate,AudioPlayerNotification,AVSpeechSynthesizerDelegate,UIPopoverControllerDelegate>
 
 @property (strong, nonatomic) IBOutlet UIView *cardBackground;
 @property (strong, nonatomic) IBOutlet UIView *recordButtonContainer;
@@ -26,7 +26,7 @@
 - (IBAction)recordAudio:(id)sender;
 - (IBAction)playAudio:(id)sender;
 - (IBAction)stopAudio:(id)sender;
-@property (strong, nonatomic) NSMutableData *responseData;
+@property (strong, nonatomic) NSData *responseData;
 
 @property (strong, nonatomic) IBOutlet UILabel *foreignLang;
 @property (strong, nonatomic) IBOutlet UILabel *english;
@@ -80,4 +80,5 @@
 @property (strong, nonatomic) IBOutlet UIPageControl *pageControl;
 - (void) viewBecameActive;
 - (void) applicationWillResignActive;
+
 @end

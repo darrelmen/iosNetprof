@@ -78,7 +78,7 @@ int receivedCount = 0;;
     
     NSURL *url = [NSURL URLWithString:baseurl];
     
-    NSLog(@"askServerForJson %@",url);
+    NSLog(@"ChapterTableViewController - askServerForJson %@",url);
 
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
@@ -87,12 +87,26 @@ int receivedCount = 0;;
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     
-    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+//    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
 
     _startPost = CFAbsoluteTimeGetCurrent();
 
-    [connection start];
+  //  [connection start];
+    
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+     {
+         NSLog(@"ChapterTableViewController - Got response %@",error);
+         
+         if (error != nil) {
+             NSLog(@"ChapterTableViewController Got error %@",error);
+             [self connection:nil didFailWithError:error];
+         }
+         else {
+             _responseData = data;
+             [self connectionDidFinishLoading:nil];
+         }
+     }];
 }
 
 UIAlertView *loadingContentAlert;
@@ -209,7 +223,7 @@ UIAlertView *loadingContentAlert;
   //  NSLog(@"didReceiveData... %f",progress);
    // NSLog(@"didReceiveData...");
 
-    [_responseData appendData:data];
+ //   [_responseData appendData:data];
 }
 
 - (NSCachedURLResponse *)connection:(NSURLConnection *)connection
@@ -317,12 +331,16 @@ BOOL hasModel;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
     if (!_isRefresh) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
-                                                        message: @"I need an internet connection to get course content."
+        NSString *message = @"Couldn't connect to server.";
+        if (error.code == NSURLErrorNotConnectedToInternet) {
+            message = @"NetProF needs a wifi or cellular internet connection.";
+        }
+       
+        [[[UIAlertView alloc] initWithTitle: @"Connection problem"
+                                                        message: message
                                                        delegate: nil
                                               cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        [alert show];
+                                              otherButtonTitles:nil] show];
     }
 }
 

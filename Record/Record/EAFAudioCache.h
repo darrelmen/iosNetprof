@@ -10,13 +10,14 @@
 
 @interface EAFAudioCache : NSObject<NSURLConnectionDelegate>
 
-@property NSArray *paths;
-@property NSArray *rawPaths;
+//@property NSArray *paths;
+//@property NSArray *rawPaths;
 @property NSString *language;
 
-@property NSMutableData *mp3Audio;
-@property int itemIndex;
+@property NSData *mp3Audio;
+//@property int itemIndex;
 
 - (void) goGetAudio:(NSArray *)rawPaths paths:(NSArray *)ppaths language:(NSString *)lang;
+- (void) cancelAllOperations;
 
 @end

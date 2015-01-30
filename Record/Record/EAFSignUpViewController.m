@@ -107,7 +107,7 @@
     //NSLog(@"url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+ //   [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
     
     [urlRequest setHTTPMethod: @"POST"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
@@ -340,11 +340,16 @@
     // Check the error var
     NSLog(@"Download content failed with %@",error);
     _signUp.enabled = true;
+    [_activityIndicator stopAnimating];
 
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
+    NSString *message = @"Couldn't connect to server.";
+    if (error.code == NSURLErrorNotConnectedToInternet) {
+        message = @"NetProF needs a wifi or cellular internet connection.";
+    }
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
-                                                    message: @"Couldn't connect to server."
+                                                    message: message
                                                    delegate: nil
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil];

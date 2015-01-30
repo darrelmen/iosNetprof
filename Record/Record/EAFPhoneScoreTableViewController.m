@@ -18,6 +18,7 @@
 
 @property int rowHeight;
 @property BOOL showPhonesLTRAlways;  // constant
+@property EAFAudioCache *audioCache;
 
 @end
 
@@ -26,7 +27,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    _audioCache = [[EAFAudioCache alloc] init];
+
     _showPhonesLTRAlways = true;
 
     _rowHeight = 66;
@@ -46,6 +48,10 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     // _tableView.cancelTouchesInView = NO;    
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [_audioCache cancelAllOperations];
 }
 
 -(void)setCurrentTitle {
@@ -69,7 +75,7 @@
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+   // [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
@@ -873,8 +879,6 @@ bool playingRef = TRUE;
         [_phoneToWords setValue:wordsPhoneAppearsIn forKey:phone];
     }
     
-    EAFAudioCache *audioCache = [[EAFAudioCache alloc] init];
-
     NSMutableArray *paths = [[NSMutableArray alloc] init];
     NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
     
@@ -897,7 +901,7 @@ bool playingRef = TRUE;
         }
     }
     
-    [audioCache goGetAudio:rawPaths paths:paths language:_language];
+    [_audioCache goGetAudio:rawPaths paths:paths language:_language];
     
     UIViewController  *parent = [self parentViewController];
     parent.navigationItem.title = @"Touch to compare audio";
@@ -932,12 +936,16 @@ bool playingRef = TRUE;
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
-                                                    message: @"Couldn't connect to server."
-                                                   delegate: nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
+    NSString *message = @"Couldn't connect to server.";
+    if (error.code == NSURLErrorNotConnectedToInternet) {
+        message = @"NetProF needs a wifi or cellular internet connection.";
+    }
+    
+    [[[UIAlertView alloc] initWithTitle: @"Connection problem"
+                                message: message
+                               delegate: nil
+                      cancelButtonTitle:@"OK"
+                      otherButtonTitles:nil] show];
 }
 
 #pragma mark - Navigation

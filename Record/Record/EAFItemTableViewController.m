@@ -14,6 +14,8 @@
 @interface EAFItemTableViewController ()
 
 @property BOOL requestPending;
+@property EAFAudioCache *audioCache;
+
 @end
 
 @implementation EAFItemTableViewController
@@ -25,6 +27,7 @@
     if (self) {
         // Custom initialization
     }
+
     return self;
 }
 
@@ -35,18 +38,18 @@
 
 - (void)cacheAudio:(NSArray *)items
 {
-    _audioCache = [[EAFAudioCache alloc] init];
-    
     NSMutableArray *paths = [[NSMutableArray alloc] init];
     NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
     
-    NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"mrs",@"frr",@"frs",@"ctmref",@"ctfref",@"ctref",nil];
+    NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"msr",@"frr",@"fsr",@"ctmref",@"ctfref",@"ctref",nil];
     
     for (NSDictionary *object in items) {
         for (NSString *id in fields) {
             NSString *refPath = [object objectForKey:id];
             
             if (refPath && refPath.length > 2) { //i.e. not NO
+                //NSLog(@"adding %@ %@",id,refPath);
+
                 refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
                                                              withString:@".mp3"];
                 
@@ -55,15 +58,27 @@
                 [paths addObject:mu];
                 [rawPaths addObject:refPath];
             }
+            else {
+                //NSLog(@"skipping %@ %@",id,refPath);
+            }
         }
     }
     
+    NSLog(@"Got get audio -- %@ ",_audioCache);
+    
     [_audioCache goGetAudio:rawPaths paths:paths language:_language];
+
+    NSLog(@"Got get audio -- after ");
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    _audioCache = [[EAFAudioCache alloc] init];
+    
+    //NSLog(@"\n\n\nmade audio cache...");
+    
     _requestPending = true;
     NSLog(@"viewDidLoad - item table controller");
 
@@ -80,6 +95,16 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    NSLog(@"ItemViewController : viewWillDisappear -- cancelling %@",_audioCache);
+    [_audioCache cancelAllOperations];
+}
+
+- (void) viewDidDisappear:(BOOL)animated {
+//    NSLog(@"ItemViewController : viewDidDisappear -- cancelling %@",_audioCache);
+ //   [_audioCache cancelAllOperations];
 }
 
 NSString *currentChapter;
@@ -220,17 +245,31 @@ NSString *chapterTitle = @"Chapter";
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+   // [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
     [urlRequest setTimeoutInterval:5];
 
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     
-    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+  //  NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
-    [connection start];
+  //  [connection start];
+    
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+     {
+         NSLog(@"ItemTableViewController - Got response %@",error);
+         
+         if (error != nil) {
+             NSLog(@"ItemTableViewController Got error %@",error);
+             [self connection:nil didFailWithError:error];
+         }
+         else {
+             _responseData = data;
+             [self connectionDidFinishLoading:nil];
+         }
+     }];
 }
 
 #pragma mark NSURLConnection Delegate Methods
@@ -246,10 +285,12 @@ NSString *chapterTitle = @"Chapter";
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
     // Append the new data to the instance variable you declared
-    [_responseData appendData:data];
+   // [_responseData appendData:data];
 }
 
 - (BOOL)useJsonChapterData {
+    NSLog(@"useJsonChapterData --- ");
+
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_responseData
@@ -297,10 +338,10 @@ NSString *chapterTitle = @"Chapter";
                 _notifyFlashcardController.jsonItems = _jsonItems;
                 [_notifyFlashcardController respondToSwipe ];
             }
-             NSLog(@"reload table ----------- ");
-
+            NSLog(@"item table view : reload table ----------- ");
+            
             [[self tableView] reloadData];
-            [self cacheAudio:_jsonItems];
+            
         }
     }
     else {
@@ -311,6 +352,19 @@ NSString *chapterTitle = @"Chapter";
     }
     
     return true;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if([indexPath row] == ((NSIndexPath*)[[tableView indexPathsForVisibleRows] lastObject]).row){
+        //end of loading
+        //for example [activityIndicator stopAnimating];
+        NSLog(@"finished loading table --- ");
+        
+        NSLog(@"item table view : cacheAudio ----------- ");
+        
+        [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
+        //[self cacheAudio:_jsonItems];
+    }
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {

@@ -17,6 +17,7 @@
     // Override point for customization after application launch.
     // [SSKeychain deletePasswordForService:@"mitll.proFeedback.device" account:@"userid"];
     [[Mint sharedInstance] initAndStartSession:@"1cad0755"];
+    [[Mint sharedInstance] addURLToBlackList:@"np.ll.mit.edu"];
     
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     if (retrieveuuid == NULL) {

@@ -57,7 +57,7 @@
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+   // [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
@@ -351,12 +351,16 @@ NSString *myCurrentTitle;
 
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
-                                                    message: @"Couldn't connect to server."
-                                                   delegate: nil
-                                          cancelButtonTitle:@"OK"
-                                          otherButtonTitles:nil];
-    [alert show];
+    NSString *message = @"Couldn't connect to server.";
+    if (error.code == NSURLErrorNotConnectedToInternet) {
+        message = @"NetProF needs a wifi or cellular internet connection.";
+    }
+    
+    [[[UIAlertView alloc] initWithTitle: @"Connection problem"
+                                message: message
+                               delegate: nil
+                      cancelButtonTitle:@"OK"
+                      otherButtonTitles:nil] show];
 }
 
 - (IBAction)gotTapGesture:(UITapGestureRecognizer *) sender {

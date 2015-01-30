@@ -18,6 +18,8 @@
 
 @interface EAFLoginViewController ()
 
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
+
 @end
 
 @implementation EAFLoginViewController
@@ -152,17 +154,29 @@
         NSLog(@"url %@",url);
 
         NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-        [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+    //    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
         
         [urlRequest setHTTPMethod: @"GET"];
         [urlRequest setValue:@"application/x-www-form-urlencoded"
           forHTTPHeaderField:@"Content-Type"];
         [urlRequest setTimeoutInterval:15];
 
-        NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
         
-        [connection start];
+        [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+         {
+            // NSLog(@"\n\n\n1 Got response %@",error);
+             
+             if (error != nil) {
+                 NSLog(@"\n\n\n\t1 Got error %@",error);
+                 [self connection:nil didFailWithError:error];
+             }
+             else {
+                 _responseData = data;
+                 [self connectionDidFinishLoading:nil];
+             }
+         }];
+        
         [_activityIndicator startAnimating];
         _logIn.enabled = false;
         
@@ -252,7 +266,7 @@ NSString *statusCodeDisplay;
     // NSLog(@"didReceiveData ----- ");
     
     // Append the new data to the instance variable you declared
-    [_responseData appendData:data];
+  //  [_responseData appendData:data];
 }
 
 - (NSCachedURLResponse *)connection:(NSURLConnection *)connection
@@ -269,6 +283,7 @@ NSString *statusCodeDisplay;
                           error:&error];
     
     if (error) {
+        NSLog(@"got error %@",error);
         NSLog(@"useJsonChapterData error %@",error.description);
         return false;
     }
@@ -334,7 +349,7 @@ NSString *statusCodeDisplay;
     //NSLog(@"url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+ //   [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
     
     [urlRequest setHTTPMethod: @"POST"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
@@ -348,7 +363,25 @@ NSString *statusCodeDisplay;
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     
     [urlRequest setValue:@"addUser"    forHTTPHeaderField:@"request"];
-    [[NSURLConnection connectionWithRequest:urlRequest delegate:self] start];
+    
+    [urlRequest setTimeoutInterval:10];
+
+   // [[NSURLConnection connectionWithRequest:urlRequest delegate:self] start];
+    NSLog(@"send async request");
+
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+     {
+         NSLog(@"\n\n\nGot response %@",error);
+
+         if (error != nil) {
+             NSLog(@"\n\n\n\tGot error %@",error);
+             [self connection:nil didFailWithError:error];
+         }
+         else {
+             _responseData = data;
+             [self connectionDidFinishLoading:nil];
+         }
+     }];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
@@ -368,8 +401,12 @@ NSString *statusCodeDisplay;
 
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
+    NSString *message = @"Couldn't connect to server.";
+    if (error.code == NSURLErrorNotConnectedToInternet) {
+        message = @"NetProF needs a wifi or cellular internet connection.";
+    }
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
-                                                    message: @"Couldn't connect to server."
+                                                    message: message
                                                    delegate: nil
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil];

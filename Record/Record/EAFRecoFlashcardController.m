@@ -22,6 +22,7 @@
 #import "MZFormSheetController.h"
 #import "EAFAudioPlayer.h"
 #import "EAFAppDelegate.h"
+#import "EAFPopoverViewController.h"
 
 @implementation UIProgressView (customView)
 - (CGSize)sizeThatFits:(CGSize)size {
@@ -48,6 +49,11 @@
 @property CFAbsoluteTime startPost ;
 @property UIBackgroundTaskIdentifier backgroundUpdateTask;
 @property BOOL showPhonesLTRAlways;  // constant
+@property UIPopoverController *popover;
+@property EAFAudioCache *audioCache;
+
+- (void)postAudio;
+
 @end
 
 @implementation EAFRecoFlashcardController
@@ -65,7 +71,43 @@
         [SSKeychain setPassword:@"Yes"
                      forService:@"mitll.proFeedback.device" account:showedID];
     }
+    else {
+//        [self checkAndShowPopover];
+    }
 }
+
+//- (void) checkAndShowPopover
+//{
+//    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
+//    NSString *showedID = [NSString stringWithFormat:@"showedRecordPopover_%@",userid];
+//    NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
+//    
+//    UIDevice* thisDevice = [UIDevice currentDevice];
+//    
+//    if ((showedIntro == nil || true) && thisDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+//        
+//        //EAFPopoverViewController *newViewController = [[EAFPopoverViewController alloc] initWithNibName:@"popupController" bundle:nil];
+//        EAFPopoverViewController *newViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"popupController"];
+//        //  newViewController.frame.size = CGSizeMake(80.0, 50.0);
+//        
+//        _popover = [[UIPopoverController alloc] initWithContentViewController:newViewController];
+//        
+//        _popover.popoverContentSize = CGSizeMake(200.0, 30.0);
+//        
+//        //NSMutableArray *passthrough = [[NSMutableArray alloc]init];
+//        //[passthrough addObject:_recordButtonContainer];
+//        //[passthrough addObject:self.view];
+//        //_popover.passthroughViews = passthrough;
+//        //   [_popover presentPopoverFromRect:[_recordButtonContainer frame]  inView:_recordButtonContainer permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
+//        [_popover presentPopoverFromRect:CGRectMake(_recordButtonContainer.center.x+80, 0, 1, 1)
+//                                  inView:_recordButtonContainer
+//                permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
+//        _popover.delegate = self;
+//        
+//        [SSKeychain setPassword:@"Yes"
+//                     forService:@"mitll.proFeedback.device" account:showedID];
+//    }
+//}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -79,14 +121,39 @@
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     [self playRefAudioIfAvailable];
+  //  [self checkAndShowPopover];
 };
 
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
+    NSLog(@"popoverControllerDidDismissPopover --->");
+
+}
+
+- (void)configureWhatToShow
+{
+    [_whatToShow setSelectedSegmentIndex:2];
+    [_whatToShow setTitle:_language forSegmentAtIndex:1];
+    if ([_language isEqualToString:@"English"]) {
+        [_whatToShow setTitle:@"Def." forSegmentAtIndex:0];
+    }
+    else if ([_language isEqualToString:@"Sudanese"]) {
+        [_whatToShow setTitle:@"Sudan" forSegmentAtIndex:1];
+    }
+    else if ([_language isEqualToString:@"CM"]) {
+        [_whatToShow setTitle:@"Mandarin" forSegmentAtIndex:1];
+    }
+    else if ([_language isEqualToString:@"Pashto1"] || [_language isEqualToString:@"Pashto2"] || [_language isEqualToString:@"Pashto3"]) {
+        [_whatToShow setTitle:@"Pashto" forSegmentAtIndex:1];
+    }
+}
 
 - (void)viewDidLoad
 {
     NSLog(@"viewDidLoad --->");
 
     [super viewDidLoad];
+    _audioCache = [[EAFAudioCache alloc] init];
+    [self cacheAudio:_jsonItems];
     
     _showPhonesLTRAlways = true;
 
@@ -121,7 +188,8 @@
     
     _recordButtonContainer.layer.cornerRadius = 15.f;
     _recordButtonContainer.layer.borderWidth = 2.0f;
-    
+    _recordButtonContainer.layer.borderColor = [UIColor colorWithRed:0 green:0.5 blue:1 alpha:1].CGColor;
+
     // Set the audio file
     NSArray *pathComponents = [NSArray arrayWithObjects:
                                [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
@@ -193,17 +261,7 @@
     
     _scoreProgress.hidden = true;
     
-    [_whatToShow setSelectedSegmentIndex:2];
-    [_whatToShow setTitle:_language forSegmentAtIndex:1];
-    if ([_language isEqualToString:@"English"]) {
-        [_whatToShow setTitle:@"Def." forSegmentAtIndex:0];
-    }
-    else if ([_language isEqualToString:@"Sudanese"]) {
-        [_whatToShow setTitle:@"Sudan" forSegmentAtIndex:1];
-    }
-    else if ([_language isEqualToString:@"CM"]) {
-        [_whatToShow setTitle:@"Mandarin" forSegmentAtIndex:1];
-    }
+    [self configureWhatToShow];
     
     _pageControl.transform = CGAffineTransformMakeRotation(M_PI_2);
     
@@ -213,7 +271,7 @@
                             style:BButtonStyleBootstrapV3
                              icon:FAQuoteLeft
                          fontSize:20.0f];
-    NSLog(@"%@",[UIDevice currentDevice].model);
+  //  NSLog(@"%@",[UIDevice currentDevice].model);
     BOOL isiPad =  [[UIDevice currentDevice].model containsString:@"Pad"];
     if (isiPad) {
         _contextButton.titleLabel.text = @"sentence";
@@ -288,6 +346,13 @@
 
     [self stopAutoPlay];
    // [[UIApplication sharedApplication] endReceivingRemoteControlEvents];    
+}
+
+-(void) viewDidDisappear:(BOOL)animated {
+    NSLog(@"- viewDidDisappear - cancelling audio cache queue operations.");
+
+    [_audioCache cancelAllOperations];
+    
 }
 
 - (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
@@ -647,7 +712,7 @@
 
         
         if (showEnglish) {
-            NSLog(@"respondToSwipe first - %d", _whatToShow.selectedSegmentIndex);
+            NSLog(@"respondToSwipe first - %ld", (long)_whatToShow.selectedSegmentIndex);
             if (_autoPlayButton.selected) {
 
             [self speakEnglish:false];
@@ -861,9 +926,15 @@ BOOL preventPlayAudio = false;
 
 // deals with missing audio...?
 - (void)playRefAudioIfAvailable {
+   // NSLog(@"play ref if avail");
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     if ([self hasRefAudio]) {
+     //   NSLog(@"\tplay ref if avail");
+
         [_myAudioPlayer playRefAudio];
+    }
+    else {
+        NSLog(@"HUH? no ref audio");
     }
 }
 
@@ -875,7 +946,7 @@ BOOL preventPlayAudio = false;
 
 - (void)hideAndShowText {
     long selected = [_whatToShow selectedSegmentIndex];
-    NSLog(@"recoflashcard : hideAndShowText %ld", selected);
+   // NSLog(@"recoflashcard : hideAndShowText %ld", selected);
     if (selected == 0) { // english
         _foreignLang.hidden = true;
         _english.hidden = false;
@@ -1078,19 +1149,16 @@ BOOL preventPlayAudio = false;
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
 }
 
-// OK, ref audio has finished playing, what next?
 - (void)removePlayingAudioHighlight {
     if (_foreignLang.textColor == [UIColor blueColor]) {
         _foreignLang.textColor = [UIColor blackColor];
-       // NSLog(@" removePlayingAudioHighlight");
     }
 }
 
 - (void)highlightFLWhilePlaying
 {
-    NSLog(@" highlightFLWhilePlaying - show fl");
+//    NSLog(@" highlightFLWhilePlaying - show fl");
 
-//    _foreignLang.hidden = false;
     _foreignLang.textColor = [UIColor blueColor];
     _pageControl.currentPage = 1;
 }
@@ -1143,7 +1211,7 @@ bool debugRecord = false;
 }
 
 - (void)flipCard {
-    NSLog(@"flipCard");
+ //   NSLog(@"flipCard");
     [self unselectAutoPlay];
     [self stopPlayingAudio];
     
@@ -1180,21 +1248,22 @@ bool debugRecord = false;
 }
 
 // TODO : maybe only flip card on tap?
+// TODO : swipe up to show control center also registers as a swipe up on the card, pausing the auto play playback
 - (IBAction)swipeUp:(UISwipeGestureRecognizer *)sender {
-    NSLog(@"Got swipe up from %@",sender);
+//    NSLog(@"Got swipe up from %@",sender);
     
-    CGPoint pt = [sender locationOfTouch:0 inView:self.view];
-    NSLog(@"Got swipe up locationOfTouch %f, %f",pt.x, pt.y);
+//    CGPoint pt = [sender locationOfTouch:0 inView:self.view];
+ //   NSLog(@"Got swipe up locationOfTouch %f, %f",pt.x, pt.y);
     
     CGPoint pt2 = [sender locationInView:self.view];
     
-    NSLog(@"Got swipe up location in view %f, %f",pt2.x, pt2.y);
+//    NSLog(@"Got swipe up location in view %f, %f",pt2.x, pt2.y);
     
     CGRect screenRect = [[UIScreen mainScreen] bounds];
     CGFloat screenWidth = screenRect.size.width;
     CGFloat screenHeight = screenRect.size.height;
     
-    NSLog(@"Got swipe   %f, %f",screenWidth,screenHeight);
+//    NSLog(@"Got swipe   %f, %f",screenWidth,screenHeight);
     
     if (screenHeight - pt2.y < 10) {
         NSLog(@"Got swipe IGNORING SWIPE, since control center swipe %f, %f",screenWidth,screenHeight);
@@ -1229,6 +1298,7 @@ double gestureEnd;
         
         _recordButtonContainer.backgroundColor =[UIColor greenColor];
         _recordButton.enabled = NO;
+
         [_correctFeedback setHidden:true];
         _scoreProgress.hidden = true;
 
@@ -1325,13 +1395,6 @@ double gestureEnd;
     }
 }
 
-//- (IBAction)gotValueChange:(id)sender {
-//    BOOL value =
-//    //[_shuffleSwitch isOn];
-//    _shuffleButton.selected;
-//    NSLog(@"gotValueChange Got shuffle event %@",value ? @"SELECTED" :@"NOT SELECTED");
-//}
-
 - (IBAction)stopRecordingWithDelay:sender {
     [NSTimer scheduledTimerWithTimeInterval:0.33
                                      target:self
@@ -1390,7 +1453,8 @@ double gestureEnd;
     [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
-    [urlRequest setTimeoutInterval:15];
+//    [urlRequest setTimeoutInterval:12];
+    [urlRequest setTimeoutInterval:2];
 
     // add request parameters
     [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
@@ -1413,11 +1477,31 @@ double gestureEnd;
     
     // post the audio
     
-    
     [urlRequest setHTTPBody:postData];
     
-    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
-    [connection start];
+  //  NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+    //[connection start];
+    
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+     {
+         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+         [_recoFeedbackImage stopAnimating];
+         
+         if (error != nil) {
+             NSLog(@"postAudio : Got error %@",error);
+             if (error.code == NSURLErrorNotConnectedToInternet) {
+                 [self setDisplayMessage:@"Make sure your wifi or cellular connection is on."];
+             }
+             else {
+                 [self setDisplayMessage:@"Network connection problem, please try again."];
+             }
+         }
+         else {
+             _responseData = data;
+             [self connectionDidFinishLoading:nil];
+         }
+     }];
+    
     
     _startPost = CFAbsoluteTimeGetCurrent();
     NSLog(@"posting to %@",_url);
@@ -1433,7 +1517,8 @@ NSString *statusCodeDisplay;
     // so that we can append data to it in the didReceiveData method
     // Furthermore, this method is called each time there is a redirect so reinitializing it
     // also serves to clear it
-   
+    NSLog(@"didReceiveResponse ");
+
     if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
         NSHTTPURLResponse *resp = (NSHTTPURLResponse *)response;
         httpStatusCode = resp.statusCode;
@@ -1447,8 +1532,8 @@ NSString *statusCodeDisplay;
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
     // Append the new data to the instance variable you declared
- //   NSLog(@"didReceiveData ");
-    [_responseData appendData:data];
+    NSLog(@"didReceiveData ");
+ //   [_responseData appendData:data];
 }
 
 - (NSCachedURLResponse *)connection:(NSURLConnection *)connection
@@ -1538,7 +1623,8 @@ NSString *statusCodeDisplay;
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
     // You can parse the stuff in your instance variable now
-    
+    NSLog(@"connectionDidFinishLoading ");
+
     CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
     CFAbsoluteTime diff = (now-_startPost);
     
@@ -1548,11 +1634,10 @@ NSString *statusCodeDisplay;
     
     [self postEvent:[NSString stringWithFormat:@"round trip was %.2f sec for file of dur %.2f sec",diff,durationInSeconds] widget:[NSString stringWithFormat:@"rt %.2f",diff]  type:[NSString stringWithFormat:@"file %.2f",durationInSeconds] ];
     
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-    
-    [_recoFeedbackImage stopAnimating];
+  //  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+  //  [_recoFeedbackImage stopAnimating];
   
-    if (httpStatusCode != 200) {NSLog(@"got code %ld %@",(long)httpStatusCode, statusCodeDisplay);}
+   // if (httpStatusCode != 200) {NSLog(@"connectionDidFinishLoading : got code %ld %@",(long)httpStatusCode, statusCodeDisplay);}
  
     if (httpStatusCode == 408) {
         [self setDisplayMessage:@"Please try again."];
@@ -1981,6 +2066,41 @@ BOOL addSpaces = false;
     blue /= 255;
     
     return [UIColor colorWithRed:red green:green blue:blue alpha:1];
+}
+
+- (void)cacheAudio:(NSArray *)items
+{
+    NSMutableArray *paths = [[NSMutableArray alloc] init];
+    NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
+    
+    NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"msr",@"frr",@"fsr",@"ctmref",@"ctfref",@"ctref",nil];
+    
+    for (NSDictionary *object in items) {
+        for (NSString *id in fields) {
+            NSString *refPath = [object objectForKey:id];
+            
+            if (refPath && refPath.length > 2) { //i.e. not NO
+                //NSLog(@"adding %@ %@",id,refPath);
+                
+                refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+                                                             withString:@".mp3"];
+                
+                NSMutableString *mu = [NSMutableString stringWithString:refPath];
+                [mu insertString:_url atIndex:0];
+                [paths addObject:mu];
+                [rawPaths addObject:refPath];
+            }
+            else {
+                //NSLog(@"skipping %@ %@",id,refPath);
+            }
+        }
+    }
+    
+    NSLog(@"Got get audio -- %@ ",_audioCache);
+    
+    [_audioCache goGetAudio:rawPaths paths:paths language:_language];
+    
+    NSLog(@"Got get audio -- after ");
 }
 
 #pragma mark - Managing popovers
