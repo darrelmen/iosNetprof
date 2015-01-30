@@ -252,10 +252,7 @@ NSString *chapterTitle = @"Chapter";
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     
-  //  NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-    
-  //  [connection start];
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {

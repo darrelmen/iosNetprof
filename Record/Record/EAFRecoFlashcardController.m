@@ -1453,8 +1453,8 @@ double gestureEnd;
     [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
-//    [urlRequest setTimeoutInterval:12];
-    [urlRequest setTimeoutInterval:2];
+    [urlRequest setTimeoutInterval:12];
+//    [urlRequest setTimeoutInterval:2];
 
     // add request parameters
     [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
@@ -1478,9 +1478,6 @@ double gestureEnd;
     // post the audio
     
     [urlRequest setHTTPBody:postData];
-    
-  //  NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
-    //[connection start];
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {

@@ -25,6 +25,7 @@
         _operationQueue = [[NSOperationQueue alloc] init];
         _operationQueue.maxConcurrentOperationCount = 2;
     }
+    _reachable = true;
     [self setupReachability];
     return self;
 }
@@ -99,7 +100,7 @@
                 if (false) {
                     [NSURLConnection sendAsynchronousRequest:request queue:_operationQueue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
                      {
-                         //     NSLog(@"Got response %@",error);
+                               NSLog(@"Got response %@ = %@",weakRef,error);
                          
                          if (error != nil) {
                              NSLog(@"\t goGetAudio Got error %@",error);

@@ -81,10 +81,26 @@
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     
-    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+   // NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
-    [connection start];
+   // [connection start];
+    
+    
+    
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+     {
+         NSLog(@"PhoneScoreTableViewController - Got response %@",error);
+         
+         if (error != nil) {
+             NSLog(@"PhoneScoreTableViewController Got error %@",error);
+             [self connection:nil didFailWithError:error];
+         }
+         else {
+             _responseData = data;
+             [self connectionDidFinishLoading:nil];
+         }
+     }];
 }
 
 #pragma mark - Table view data source
@@ -371,7 +387,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         if ([shownSoFar containsObject:word]) continue;
         else [shownSoFar addObject:word];
         
-        if (count++ > 5) break; // only first five?
+    //    if (count++ > 5) break; // only first five?
         NSString *result = [wordEntry objectForKey:@"result"];
         NSArray *resultWords = [_resultToWords objectForKey:result];
         
@@ -848,7 +864,7 @@ bool playingRef = TRUE;
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
     // Append the new data to the instance variable you declared
-    [_responseData appendData:data];
+  //  [_responseData appendData:data];
 }
 
 - (BOOL)useJsonChapterData {

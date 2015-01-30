@@ -87,12 +87,9 @@ int receivedCount = 0;;
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     
-//    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
 
     _startPost = CFAbsoluteTimeGetCurrent();
-
-  //  [connection start];
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
