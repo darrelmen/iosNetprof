@@ -44,14 +44,14 @@
         // on the main thread, like this:
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"REACHABLE!");
+         //   NSLog(@"REACHABLE!");
             _reachable = true;
         });
     };
     
     reach.unreachableBlock = ^(Reachability*reach)
     {
-        NSLog(@"UNREACHABLE!");
+       // NSLog(@"UNREACHABLE!");
         _reachable = false;
     };
     
@@ -86,7 +86,7 @@
                 _completed++;
                 if (rawPaths.count == _completed) {
                     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-                    NSLog(@"\t goGetAudio turning off network indicator");
+                   // NSLog(@"\t goGetAudio turning off network indicator");
                 }
             }
             else {
@@ -145,7 +145,7 @@
                                 
                                 if (rawPaths.count == _completed) {
                                     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-                                    NSLog(@"\t goGetAudio turning off network indicator");
+                     //               NSLog(@"\t goGetAudio turning off network indicator");
                                 }
                                 NSString *destFileName = [self getFileInCache:weakRef];
                                 //         NSLog(@"operation destFileName %@", destFileName);

@@ -111,12 +111,12 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    NSLog(@"viewWillAppear --->");
+ //   NSLog(@"viewWillAppear --->");
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    NSLog(@"viewDidAppear --->");
+ //   NSLog(@"viewDidAppear --->");
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
@@ -580,7 +580,7 @@
     
     NSString *audioSpeed = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioSpeed"];
     if (audioSpeed != nil) {
-        //   NSLog(@"checking - audio on %@",audioOn);
+     //   NSLog(@"checking - audio on %@",audioSpeed);
         _speedButton.selected = [audioSpeed isEqualToString:@"Slow"];
         _speedButton.backgroundColor = _speedButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
     }
@@ -604,58 +604,65 @@
     long selectedGender = _genderMaleSelector.selectedSegmentIndex;
     _audioRefs = [[NSMutableArray alloc] init];
     BOOL isSlow = _speedButton.selected;
-    //NSLog(@"is slow %@",isSlow ? @"SLOW" :@"REGULAR");
-    if (selectedGender == 0) {
-        if (isSlow) {
-            if (hasMaleSlow) {
-                refAudio = [jsonObject objectForKey:@"msr"];
-                [_audioRefs addObject: refAudio];
-            }
-        }
-        else {
-            if (hasMaleReg) {
-                refAudio = [jsonObject objectForKey:@"mrr"];
-                [_audioRefs addObject: refAudio];
-            }
-        }
-    }
-    else if (selectedGender == 1){
-        if (isSlow) {
-            if (hasFemaleSlow) {
-                refAudio = [jsonObject objectForKey:@"fsr"];
-                [_audioRefs addObject: refAudio];
-            }
-        }
-        else {
-            if (hasFemaleReg) {
-                refAudio =  [jsonObject objectForKey:@"frr"];
-                [_audioRefs addObject: refAudio];
-            }
-        }
-    }
-    else {
-        if (isSlow) {
-            if (hasMaleSlow) {
-                refAudio = [jsonObject objectForKey:@"msr"];
-                [_audioRefs addObject: refAudio];
-            }
-            if (hasFemaleSlow) {
-                refAudio = [jsonObject objectForKey:@"fsr"];
-                [_audioRefs addObject: refAudio];
-            }
-        }
-        else {
-            if (hasMaleReg) {
-                refAudio = [jsonObject objectForKey:@"mrr"];
-                [_audioRefs addObject: refAudio];
-            }
-            if (hasFemaleReg) {
-                refAudio =  [jsonObject objectForKey:@"frr"];
-                [_audioRefs addObject: refAudio];
-            }
-        }
-    }
+    
+//    NSLog(@"is slow %@",isSlow ? @"SLOW" :@"REGULAR");
+//    NSLog(@"male slow %@",hasMaleSlow ? @"YES" :@"NO");
+//    NSLog(@"male reg %@",hasMaleReg ? @"YES" :@"NO");
+//    NSLog(@"selected %ld",selectedGender);
+//    NSLog(@"dict  %@",jsonObject);
     BOOL hasTwoGenders = (hasMaleReg || hasMaleSlow) && (hasFemaleReg || hasFemaleSlow);
+    
+    if (hasTwoGenders) {
+        if (selectedGender == 0) {
+            if (isSlow) {
+                if (hasMaleSlow) {
+                    refAudio = [jsonObject objectForKey:@"msr"];
+                    [_audioRefs addObject: refAudio];
+                }
+            }
+            else {
+                if (hasMaleReg) {
+                    refAudio = [jsonObject objectForKey:@"mrr"];
+                    [_audioRefs addObject: refAudio];
+                }
+            }
+        }
+        else if (selectedGender == 1){
+            if (isSlow) {
+                if (hasFemaleSlow) {
+                    refAudio = [jsonObject objectForKey:@"fsr"];
+                    [_audioRefs addObject: refAudio];
+                }
+            }
+            else {
+                if (hasFemaleReg) {
+                    refAudio =  [jsonObject objectForKey:@"frr"];
+                    [_audioRefs addObject: refAudio];
+                }
+            }
+        }
+    } else {
+        if (isSlow) {
+            if (hasMaleSlow) {
+                refAudio = [jsonObject objectForKey:@"msr"];
+                [_audioRefs addObject: refAudio];
+            }
+            if (hasFemaleSlow) {
+                refAudio = [jsonObject objectForKey:@"fsr"];
+                [_audioRefs addObject: refAudio];
+            }
+        }
+        else {
+            if (hasMaleReg) {
+                refAudio = [jsonObject objectForKey:@"mrr"];
+                [_audioRefs addObject: refAudio];
+            }
+            if (hasFemaleReg) {
+                refAudio =  [jsonObject objectForKey:@"frr"];
+                [_audioRefs addObject: refAudio];
+            }
+        }
+    }
     _genderMaleSelector.enabled = hasTwoGenders;
     [_genderMaleSelector setEnabled:(hasMaleReg || hasMaleSlow) forSegmentAtIndex:0];
     [_genderMaleSelector setEnabled:(hasFemaleReg || hasFemaleSlow) forSegmentAtIndex:1];
@@ -665,13 +672,14 @@
     _speedButton.enabled = hasTwoSpeeds;
     
     if (refAudio != nil && ![refAudio isEqualToString:@"NO"] && _audioRefs.count == 0) {
+      //  NSLog(@"respondToSwipe addig refAudio %@",refAudio);
         [_audioRefs addObject:refAudio];
     }
     
     if (_autoPlayButton.selected && _audioRefs.count > 1) {
         [_audioRefs removeLastObject];
     }
-  //  NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
+ //   NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
     
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
@@ -708,11 +716,9 @@
         !preventPlayAudio &&
         showedIntro != nil) {
      
-         NSLog(@"respondToSwipe first");
-
-        
+//         NSLog(@"respondToSwipe first");
         if (showEnglish) {
-            NSLog(@"respondToSwipe first - %ld", (long)_whatToShow.selectedSegmentIndex);
+         //   NSLog(@"respondToSwipe first - %ld", (long)_whatToShow.selectedSegmentIndex);
             if (_autoPlayButton.selected) {
 
             [self speakEnglish:false];
@@ -726,8 +732,6 @@
         preventPlayAudio = false;
         if (_autoPlayButton.selected) {
             if (showEnglish) {
-                NSLog(@"respondToSwipe sec");
-
                 [self speakEnglish:false];
             }
             else {
@@ -981,7 +985,7 @@ BOOL preventPlayAudio = false;
 }
 
 - (IBAction)speedSelection:(id)sender {
-//    NSLog(@"\n\n\nGot speed selection...");
+ //   NSLog(@"Got speed selection...");
     _speedButton.selected = !_speedButton.selected;
     [SSKeychain setPassword:(_speedButton.selected ? @"Slow":@"Regular")
                  forService:@"mitll.proFeedback.device" account:@"audioSpeed"];
@@ -1128,7 +1132,7 @@ BOOL preventPlayAudio = false;
 }
 
 - (IBAction)gotTapInSuperview:(id)sender {
-    NSLog(@" gotTapInSuperview");
+   // NSLog(@" gotTapInSuperview");
 
     [self viewWillDisappear:true];
     long selected = [_whatToShow selectedSegmentIndex];
@@ -1970,7 +1974,7 @@ BOOL addSpaces = false;
         coloredPhones = [self getColoredPhones:phoneToShow wend:wend wstart:wstart phoneAndScore:phoneAndScore];
         
         UILabel *phoneLabel = [[UILabel alloc] init];
-        phoneLabel.font = [UIFont systemFontOfSize:24];
+        phoneLabel.font = [UIFont systemFontOfSize:28];
         phoneLabel.adjustsFontSizeToFitWidth=YES;
 
         phoneLabel.textAlignment = isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
@@ -2153,7 +2157,7 @@ BOOL addSpaces = false;
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
+ //   NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
     EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
     
     EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];

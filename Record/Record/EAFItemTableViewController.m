@@ -64,11 +64,11 @@
         }
     }
     
-    NSLog(@"Got get audio -- %@ ",_audioCache);
+    NSLog(@"ItemTableViewController.cacheAudio Got get audio -- %@ ",_audioCache);
     
     [_audioCache goGetAudio:rawPaths paths:paths language:_language];
 
-    NSLog(@"Got get audio -- after ");
+    NSLog(@"cacheAudio Got get audio -- after ");
 }
 
 - (void)viewDidLoad
@@ -98,7 +98,7 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    NSLog(@"ItemViewController : viewWillDisappear -- cancelling %@",_audioCache);
+  //  NSLog(@"ItemViewController : viewWillDisappear -- cancelling %@",_audioCache);
     [_audioCache cancelAllOperations];
 }
 

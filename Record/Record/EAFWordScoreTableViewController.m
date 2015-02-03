@@ -262,7 +262,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     UIViewController  *parent = [self parentViewController];
     NSString *wordReport;
     wordReport = [NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt];
-    NSLog(@"setting correct title %@",wordReport);
+ //   NSLog(@"setting correct title %@",wordReport);
     parent.navigationItem.title = wordReport;
     myCurrentTitle = wordReport;
 }
@@ -381,7 +381,7 @@ NSString *myCurrentTitle;
     for (NSDictionary *jsonObject in _jsonItems) {
    //     NSLog(@"comparing to %@",[jsonObject objectForKey:@"id"]);
         if ([[jsonObject objectForKey:@"id"] isEqualToString:exid]) {
-            NSLog(@"got it %@",jsonObject);
+         //   NSLog(@"got it %@",jsonObject);
             NSString *refAudio = [jsonObject objectForKey:@"ref"];
             NSMutableArray *toPlay = [[NSMutableArray alloc] init];
             [toPlay addObject:refAudio];
@@ -393,7 +393,7 @@ NSString *myCurrentTitle;
                // NSLog(@"subview %@",subview);
 
                 if ([subview isKindOfClass:[UILabel class]]) {
-                    NSLog(@"found label %@, %@", subview, ((UILabel *) subview).text);
+                 //   NSLog(@"found label %@, %@", subview, ((UILabel *) subview).text);
                     if ([ fl isEqualToString:((UILabel *) subview).text]) {
                         if (_current) {
                             _current.textColor = [UIColor blackColor];
