@@ -81,12 +81,7 @@
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     
-   // NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-    
-   // [connection start];
-    
-    
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
@@ -94,11 +89,18 @@
          
          if (error != nil) {
              NSLog(@"PhoneScoreTableViewController Got error %@",error);
-             [self connection:nil didFailWithError:error];
+             //[self connection:nil didFailWithError:error];
+             
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 [self connection:nil didFailWithError:error];
+             });
          }
          else {
              _responseData = data;
-             [self connectionDidFinishLoading:nil];
+         //    [self connectionDidFinishLoading:nil];
+             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+                                    withObject:nil
+                                 waitUntilDone:YES];
          }
      }];
 }
@@ -375,7 +377,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     float totalPhoneScore = 0.0f;
     float totalPhones = 0.0f;
-    int count = 0;
+   // int count = 0;
     BOOL addSpaces = true;
 
     // try to worry about the same word appearing multiple times...
@@ -621,7 +623,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             
             if(CGRectContainsPoint(subview.bounds, loc))
             {
-                NSLog(@"-XXXX-----> In View for %@",subview);
+           //     NSLog(@"-XXXX-----> In View for %@",subview);
                 
                 if ([subview isKindOfClass:[EAFAudioView class]]) {
                     playingRef = TRUE;

@@ -169,11 +169,17 @@
              
              if (error != nil) {
                  NSLog(@"\n\n\n\t1 Got error %@",error);
-                 [self connection:nil didFailWithError:error];
+                 //[self connection:nil didFailWithError:error];
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     [self connection:nil didFailWithError:error];
+                 });
              }
              else {
                  _responseData = data;
-                 [self connectionDidFinishLoading:nil];
+              //   [self connectionDidFinishLoading:nil];
+                 [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+                                        withObject:nil
+                                     waitUntilDone:YES];
              }
          }];
         
@@ -375,11 +381,17 @@ NSString *statusCodeDisplay;
 
          if (error != nil) {
              NSLog(@"\n\n\n\tGot error %@",error);
-             [self connection:nil didFailWithError:error];
+             //[self connection:nil didFailWithError:error];
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 [self connection:nil didFailWithError:error];
+             });
          }
          else {
              _responseData = data;
-             [self connectionDidFinishLoading:nil];
+ //            [self connectionDidFinishLoading:nil];
+             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+                                    withObject:nil
+                                 waitUntilDone:YES];
          }
      }];
 }

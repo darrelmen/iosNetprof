@@ -237,7 +237,6 @@ NSString *chapterTitle = @"Chapter";
 
 - (void)askServerForJson {
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitTitle, _unit, chapterTitle, currentChapter];
-    //NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@", _language, _user, chapterTitle, currentChapter];
     
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
@@ -245,7 +244,6 @@ NSString *chapterTitle = @"Chapter";
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-   // [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
     [urlRequest setTimeoutInterval:5];
 
     [urlRequest setHTTPMethod: @"GET"];
@@ -254,17 +252,24 @@ NSString *chapterTitle = @"Chapter";
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
+    [[Mint sharedInstance] leaveBreadcrumb:@"sendingAsyncItemController"];
+    
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          NSLog(@"ItemTableViewController - Got response %@",error);
          
          if (error != nil) {
              NSLog(@"ItemTableViewController Got error %@",error);
-             [self connection:nil didFailWithError:error];
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 [self connection:nil didFailWithError:error];
+             });
          }
          else {
              _responseData = data;
-             [self connectionDidFinishLoading:nil];
+             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+                                    withObject:nil
+                                 waitUntilDone:YES];
+           //  [self connectionDidFinishLoading:nil];
          }
      }];
 }

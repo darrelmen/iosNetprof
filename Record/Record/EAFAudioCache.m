@@ -14,6 +14,9 @@
 @property (strong) NSOperationQueue *operationQueue;
 @property int completed;
 @property BOOL reachable;
+@property NSArray *paths;
+@property NSArray *rawPaths;
+
 @end
 
 
@@ -31,7 +34,7 @@
 }
 
 - (void) setupReachability {
-    NSLog(@"-----> setupReachability %@",self);
+ //   NSLog(@"-----> setupReachability %@",self);
 
     // Allocate a reachability object
     Reachability* reach = [Reachability reachabilityForInternetConnection];
@@ -43,10 +46,10 @@
         // and if you are updating the UI it needs to happen
         // on the main thread, like this:
         
-        dispatch_async(dispatch_get_main_queue(), ^{
+      //  dispatch_async(dispatch_get_main_queue(), ^{
          //   NSLog(@"REACHABLE!");
             _reachable = true;
-        });
+      //  });
     };
     
     reach.unreachableBlock = ^(Reachability*reach)
@@ -66,17 +69,19 @@
 }
 
 // called from EAFItemTableViewController
-- (void) goGetAudio:(NSArray *)rawPaths paths:(NSArray *)ppaths language:(NSString *)lang {
-    _language = lang;
+- (void) goGetAudio:(NSArray *)rawPaths2 paths:(NSArray *)ppaths2 language:(NSString *)lang {
+    _language = [lang copy];
     _completed = 0;
+    _rawPaths = [rawPaths2 copy];
+    _paths = [ppaths2 copy];
     
-    NSLog(@"go get audio for %lu",(unsigned long)rawPaths.count);
+    NSLog(@"go get audio for %lu",(unsigned long)_rawPaths.count);
     
     if (true) {
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:TRUE];
-        for (int index = 0; index < rawPaths.count; index++) {
-            NSString *rawPath = [rawPaths objectAtIndex:index];
-            NSString *path = [ppaths objectAtIndex:index];
+        for (int index = 0; index < _rawPaths.count; index++) {
+            NSString *rawPath = [_rawPaths objectAtIndex:index];
+            NSString *path = [_paths objectAtIndex:index];
             __weak NSString *weakRef = rawPath;
             __weak NSString *weakPathRef = path;
             
@@ -84,44 +89,13 @@
             
             if ([[NSFileManager defaultManager] fileExistsAtPath:destFileName] || [destFileName hasSuffix:@"NO"]) {
                 _completed++;
-                if (rawPaths.count == _completed) {
+                if (_rawPaths.count == _completed) {
                     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
                    // NSLog(@"\t goGetAudio turning off network indicator");
                 }
             }
             else {
                 NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:weakPathRef]];
-                
-                //                  NSLog(@"operation request %@", request);
-                
-                // Create url connection and fire request
-                // NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-                
-                if (false) {
-                    [NSURLConnection sendAsynchronousRequest:request queue:_operationQueue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-                     {
-                               NSLog(@"Got response %@ = %@",weakRef,error);
-                         
-                         if (error != nil) {
-                             NSLog(@"\t goGetAudio Got error %@",error);
-                             [self connection:nil didFailWithError:error];
-                         }
-                         else {
-                             //      _mp3Audio = data;
-                             _completed++;
-                             if (_completed % 10 == 0) NSLog(@"%@ completed %d",self,_completed);
-                             
-                             if (rawPaths.count == _completed) {
-                                 [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-                                 NSLog(@"\t goGetAudio turning off network indicator");
-                             }
-                             NSString *destFileName = [self getFileInCache:weakRef];
-                             //         NSLog(@"operation destFileName %@", destFileName);
-                             [self writeMP3DataToCacheAt:destFileName mp3AudioData:data];
-                         }
-                     }];
-                }
-                
                 NSBlockOperation *operation = [[NSBlockOperation alloc] init];
                 __weak NSBlockOperation *weakOperation = operation;
                 [operation addExecutionBlock:^{
@@ -143,8 +117,10 @@
                                 _completed++;
                                 if (_completed % 10 == 0) NSLog(@"%@ completed %d",self,_completed);
                                 
-                                if (rawPaths.count == _completed) {
-                                    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+                                if (_rawPaths.count == _completed) {
+                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+                                    });
                      //               NSLog(@"\t goGetAudio turning off network indicator");
                                 }
                                 NSString *destFileName = [self getFileInCache:weakRef];
@@ -152,22 +128,13 @@
                                 [self writeMP3DataToCacheAt:destFileName mp3AudioData:data];
                             }
                         }
-                        
                     }
                     else {
                         NSLog(@"operation cancelled...");
                     }
                 }];
                 [_operationQueue addOperation:operation];
-                
             }
-            //     }];
-            
-        }
-    }
-    else {
-        if ([rawPaths count] > 0) {
-            // [self getAudioForCurrentItem];
         }
     }
     

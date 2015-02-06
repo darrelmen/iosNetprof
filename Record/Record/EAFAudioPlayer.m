@@ -102,9 +102,6 @@
     AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
     
     [self makePlayerGivenURL:url];
-   
-//    [self performSelectorInBackground:@selector(makePlayerGivenURL:) withObject:url];
-
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {

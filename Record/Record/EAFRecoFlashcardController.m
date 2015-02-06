@@ -529,16 +529,10 @@
 - (unsigned long)getItemIndex {
     unsigned long toUse = _index;
     if (
-        //[_shuffleSwitch isOn]
         _shuffleButton.selected
         ) {
-        //   NSLog(@"current %lu",_index);
         toUse = [[_randSequence objectAtIndex:_index] integerValue];
-        //   NSLog(@"output %lu",toUse);
     }
-    //else {
-        //  NSLog(@"current %lu",_index);
-   // }
     return toUse;
 }
 
@@ -635,6 +629,27 @@
                 }
             }
             else {
+                if (hasFemaleReg) {
+                    refAudio =  [jsonObject objectForKey:@"frr"];
+                    [_audioRefs addObject: refAudio];
+                }
+            }
+        } else {
+            if (isSlow) {
+                if (hasMaleSlow) {
+                    refAudio = [jsonObject objectForKey:@"msr"];
+                    [_audioRefs addObject: refAudio];
+                }
+                if (hasFemaleSlow) {
+                    refAudio = [jsonObject objectForKey:@"fsr"];
+                    [_audioRefs addObject: refAudio];
+                }
+            }
+            else {
+                if (hasMaleReg) {
+                    refAudio = [jsonObject objectForKey:@"mrr"];
+                    [_audioRefs addObject: refAudio];
+                }
                 if (hasFemaleReg) {
                     refAudio =  [jsonObject objectForKey:@"frr"];
                     [_audioRefs addObject: refAudio];
@@ -1482,24 +1497,34 @@ double gestureEnd;
     // post the audio
     
     [urlRequest setHTTPBody:postData];
-    
-    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
-         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-         [_recoFeedbackImage stopAnimating];
+         dispatch_async(dispatch_get_main_queue(), ^{
+             //    [self connection:nil didFailWithError:error];
+             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+             [_recoFeedbackImage stopAnimating];
+         });
          
          if (error != nil) {
              NSLog(@"postAudio : Got error %@",error);
-             if (error.code == NSURLErrorNotConnectedToInternet) {
-                 [self setDisplayMessage:@"Make sure your wifi or cellular connection is on."];
-             }
-             else {
-                 [self setDisplayMessage:@"Network connection problem, please try again."];
-             }
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 
+                 if (error.code == NSURLErrorNotConnectedToInternet) {
+                     [self setDisplayMessage:@"Make sure your wifi or cellular connection is on."];
+                 }
+                 else {
+                     [self setDisplayMessage:@"Network connection problem, please try again."];
+                 }
+             });
          }
          else {
              _responseData = data;
-             [self connectionDidFinishLoading:nil];
+             //             [self connectionDidFinishLoading:nil];
+             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+                                    withObject:nil
+                                 waitUntilDone:YES];
          }
      }];
     
@@ -1974,7 +1999,7 @@ BOOL addSpaces = false;
         coloredPhones = [self getColoredPhones:phoneToShow wend:wend wstart:wstart phoneAndScore:phoneAndScore];
         
         UILabel *phoneLabel = [[UILabel alloc] init];
-        phoneLabel.font = [UIFont systemFontOfSize:28];
+        phoneLabel.font = [UIFont systemFontOfSize:32];
         phoneLabel.adjustsFontSizeToFitWidth=YES;
 
         phoneLabel.textAlignment = isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;

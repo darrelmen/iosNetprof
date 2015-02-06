@@ -97,11 +97,18 @@ int receivedCount = 0;;
          
          if (error != nil) {
              NSLog(@"ChapterTableViewController Got error %@",error);
-             [self connection:nil didFailWithError:error];
+//             [self connection:nil didFailWithError:error];
+            
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 [self connection:nil didFailWithError:error];
+             });
          }
          else {
              _responseData = data;
-             [self connectionDidFinishLoading:nil];
+             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+                                    withObject:nil
+                                 waitUntilDone:YES];
+            // [self connectionDidFinishLoading:nil];
          }
      }];
 }

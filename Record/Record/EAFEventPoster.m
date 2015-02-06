@@ -40,8 +40,20 @@
     
     // post the audio
     
-    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
-    [connection start];
+  //  NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+  //  [connection start];
+    
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+     {
+        
+         if (error != nil) {
+             NSLog(@"postAudio : Got error %@",error);
+         }
+         else {
+         }
+     }];
 }
 
 - (NSString *)getURL:(NSString *) lang
@@ -55,13 +67,10 @@
     // so that we can append data to it in the didReceiveData method
     // Furthermore, this method is called each time there is a redirect so reinitializing it
     // also serves to clear it
-    
-   // _mp3Audio = [[NSMutableData alloc] init];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
     // Append the new data to the instance variable you declared
-   // [_mp3Audio appendData:data];
 }
 
 - (NSCachedURLResponse *)connection:(NSURLConnection *)connection
