@@ -51,7 +51,7 @@
 @property BOOL showPhonesLTRAlways;  // constant
 @property UIPopoverController *popover;
 @property EAFAudioCache *audioCache;
-
+@property NSMutableDictionary *exToScore;
 - (void)postAudio;
 
 @end
@@ -156,7 +156,8 @@
     [self cacheAudio:_jsonItems];
     
     _showPhonesLTRAlways = true;
-
+    _exToScore = [[NSMutableDictionary alloc] init];
+    
     // Turn on remote control event delivery
     EAFAppDelegate *myDelegate = [UIApplication sharedApplication].delegate;
     
@@ -352,11 +353,10 @@
     NSLog(@"- viewDidDisappear - cancelling audio cache queue operations.");
 
     [_audioCache cancelAllOperations];
-    
 }
 
 - (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
-    NSLog(@"remoteControlReceivedWithEvent ---> %@ %ld",receivedEvent,receivedEvent.subtype);
+   // NSLog(@"remoteControlReceivedWithEvent ---> %@ %ld",receivedEvent,receivedEvent.subtype);
 
     if (receivedEvent.type == UIEventTypeRemoteControl) {
         switch (receivedEvent.subtype) {
@@ -1649,20 +1649,17 @@ NSString *statusCodeDisplay;
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
     // You can parse the stuff in your instance variable now
-    NSLog(@"connectionDidFinishLoading ");
+   // NSLog(@"connectionDidFinishLoading ");
 
     CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
     CFAbsoluteTime diff = (now-_startPost);
     
-    NSLog(@"round trip time was %f",diff);
+    NSLog(@"connectionDidFinishLoading - round trip time was %f",diff);
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
     double durationInSeconds = CMTimeGetSeconds(asset.duration);
     
     [self postEvent:[NSString stringWithFormat:@"round trip was %.2f sec for file of dur %.2f sec",diff,durationInSeconds] widget:[NSString stringWithFormat:@"rt %.2f",diff]  type:[NSString stringWithFormat:@"file %.2f",durationInSeconds] ];
-    
-  //  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-  //  [_recoFeedbackImage stopAnimating];
-  
+
    // if (httpStatusCode != 200) {NSLog(@"connectionDidFinishLoading : got code %ld %@",(long)httpStatusCode, statusCodeDisplay);}
  
     if (httpStatusCode == 408) {
@@ -1695,6 +1692,9 @@ NSString *statusCodeDisplay;
     //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *valid = [json objectForKey:@"valid"];
     NSString *exid = [json objectForKey:@"exid"];
+    
+    NSNumber *previousScore = [_exToScore objectForKey:exid];
+    [_exToScore setValue:overallScore forKey:exid];
     
     NSString *reqid = [json objectForKey:@"reqid"];
 
@@ -1736,8 +1736,22 @@ NSString *statusCodeDisplay;
     [_scoreProgress setProgress:[overallScore floatValue]];
     [_scoreProgress setProgressTintColor:[self getColor2:[overallScore floatValue]]];
     
+    if (previousScore != nil) {
+        [_scoreProgress setProgress:[previousScore floatValue]];
+        [_scoreProgress setProgressTintColor:[self getColor2:[previousScore floatValue]]];
+        [self performSelector:@selector(showProgressAnimated:) withObject:overallScore afterDelay:0.5];
+    }
+    else {
+        [_scoreProgress setProgress:[overallScore floatValue]];
+        [_scoreProgress setProgressTintColor:[self getColor2:[overallScore floatValue]]];
+    }
     [_correctFeedback setImage:[UIImage imageNamed:correct ? @"checkmark32" : @"redx32"]];
     [_correctFeedback setHidden:false];
+}
+
+- (void) showProgressAnimated:(NSNumber *)overallScore {
+    [_scoreProgress setProgressTintColor:[self getColor2:[overallScore floatValue]]];
+    [_scoreProgress setProgress:[overallScore floatValue] animated:true];//:[overallScore floatValue]];
 }
 
 - (NSArray *)reversedArray:(NSArray *) toReverse {
