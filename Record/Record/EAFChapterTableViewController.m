@@ -81,7 +81,7 @@ int receivedCount = 0;;
     NSLog(@"ChapterTableViewController - askServerForJson %@",url);
 
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
+    //[urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
@@ -97,18 +97,17 @@ int receivedCount = 0;;
          
          if (error != nil) {
              NSLog(@"ChapterTableViewController Got error %@",error);
-//             [self connection:nil didFailWithError:error];
-            
              dispatch_async(dispatch_get_main_queue(), ^{
                  [self connection:nil didFailWithError:error];
              });
          }
          else {
+             NSLog(@"ChapterTableViewController Got data %lu",(unsigned long)data.length);
+
              _responseData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:YES];
-            // [self connectionDidFinishLoading:nil];
          }
      }];
 }
@@ -147,7 +146,7 @@ UIAlertView *loadingContentAlert;
     NSString *fileName = [NSString stringWithFormat:@"%@_chapters.json",_language];
     NSString *appFile = [documentsDirectory stringByAppendingPathComponent:fileName];
     
-    NSLog(@"Writing json data to file %@",appFile);
+    NSLog(@"Writing json data to file %@ %lu bytes",appFile,(unsigned long)toWrite.length);
     [toWrite writeToFile:appFile atomically:YES];
 }
 
@@ -303,12 +302,12 @@ BOOL hasModel;
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
-    NSLog(@"connectionDidFinishLoading : chapters");
+   // NSLog(@"connectionDidFinishLoading : chapters");
 
     CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
     CFAbsoluteTime diff = (now-_startPost);
     
-    NSLog(@"course content round trip time was %f",diff);
+    NSLog(@"connectionDidFinishLoading course content round trip time was %f",diff);
     [self postEvent:[NSString stringWithFormat:@"Roundtrip to download content for %.2f",diff] widget:@"download content" type:[NSString stringWithFormat:@"%.2f",diff]];
     
     [loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];

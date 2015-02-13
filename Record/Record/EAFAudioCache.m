@@ -27,8 +27,8 @@
     {
         _operationQueue = [[NSOperationQueue alloc] init];
         _operationQueue.maxConcurrentOperationCount = 2;
+        _reachable = true;
     }
-    _reachable = true;
     [self setupReachability];
     return self;
 }

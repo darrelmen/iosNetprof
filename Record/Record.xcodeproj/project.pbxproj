@@ -70,16 +70,11 @@
 		B67E1BC6197EFC0500F42143 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BBE197EFC0500F42143 /* unzip.c */; };
 		B67E1BC7197EFC0500F42143 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BC0197EFC0500F42143 /* zip.c */; };
 		B67E1BC8197EFC0500F42143 /* SSZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = B67E1BC3197EFC0500F42143 /* SSZipArchive.m */; };
+		B68311D81A8DD11A00A9E3FD /* CMPopTipView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68311D71A8DD11A00A9E3FD /* CMPopTipView.m */; };
 		B68A5C321979AE7E0036B90C /* playBigger2.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C311979AE7E0036B90C /* playBigger2.png */; };
 		B68A5C341979B3480036B90C /* mic-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C331979B3480036B90C /* mic-icon.png */; };
 		B68A5C361979B4590036B90C /* mic-4.svg in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C351979B4590036B90C /* mic-4.svg */; };
 		B68A5C381979B4AE0036B90C /* micBigger.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C371979B4AE0036B90C /* micBigger.png */; };
-		B68A5C481979C8B70036B90C /* MSAnnotatedGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C3B1979C8B70036B90C /* MSAnnotatedGauge.m */; };
-		B68A5C491979C8B70036B90C /* MSArcLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C3D1979C8B70036B90C /* MSArcLayer.m */; };
-		B68A5C4A1979C8B70036B90C /* MSGradientArcLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C401979C8B70036B90C /* MSGradientArcLayer.m */; };
-		B68A5C4B1979C8B70036B90C /* MSNeedleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C421979C8B70036B90C /* MSNeedleView.m */; };
-		B68A5C4C1979C8B70036B90C /* MSRangeGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C441979C8B70036B90C /* MSRangeGauge.m */; };
-		B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */ = {isa = PBXBuildFile; fileRef = B68A5C461979C8B70036B90C /* MSSimpleGauge.m */; };
 		B695FDDE1A3A521B0064DC83 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B695FDDD1A3A521B0064DC83 /* Settings.bundle */; };
 		B695FDE01A3B697C0064DC83 /* volumeUp_26.png in Resources */ = {isa = PBXBuildFile; fileRef = B695FDDF1A3B697C0064DC83 /* volumeUp_26.png */; };
 		B695FDE21A433CA80064DC83 /* NewProF2_48x48.png in Resources */ = {isa = PBXBuildFile; fileRef = B695FDE11A433CA80064DC83 /* NewProF2_48x48.png */; };
@@ -250,24 +245,12 @@
 		B67E1BC1197EFC0500F42143 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		B67E1BC2197EFC0500F42143 /* SSZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSZipArchive.h; sourceTree = "<group>"; };
 		B67E1BC3197EFC0500F42143 /* SSZipArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSZipArchive.m; sourceTree = "<group>"; };
+		B68311D61A8DD11A00A9E3FD /* CMPopTipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMPopTipView.h; sourceTree = "<group>"; };
+		B68311D71A8DD11A00A9E3FD /* CMPopTipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMPopTipView.m; sourceTree = "<group>"; };
 		B68A5C311979AE7E0036B90C /* playBigger2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = playBigger2.png; sourceTree = "<group>"; };
 		B68A5C331979B3480036B90C /* mic-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mic-icon.png"; sourceTree = "<group>"; };
 		B68A5C351979B4590036B90C /* mic-4.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "mic-4.svg"; sourceTree = "<group>"; };
 		B68A5C371979B4AE0036B90C /* micBigger.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = micBigger.png; sourceTree = "<group>"; };
-		B68A5C3A1979C8B70036B90C /* MSAnnotatedGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSAnnotatedGauge.h; sourceTree = "<group>"; };
-		B68A5C3B1979C8B70036B90C /* MSAnnotatedGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSAnnotatedGauge.m; sourceTree = "<group>"; };
-		B68A5C3C1979C8B70036B90C /* MSArcLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSArcLayer.h; sourceTree = "<group>"; };
-		B68A5C3D1979C8B70036B90C /* MSArcLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSArcLayer.m; sourceTree = "<group>"; };
-		B68A5C3E1979C8B70036B90C /* MSArcLayerSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSArcLayerSubclass.h; sourceTree = "<group>"; };
-		B68A5C3F1979C8B70036B90C /* MSGradientArcLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSGradientArcLayer.h; sourceTree = "<group>"; };
-		B68A5C401979C8B70036B90C /* MSGradientArcLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSGradientArcLayer.m; sourceTree = "<group>"; };
-		B68A5C411979C8B70036B90C /* MSNeedleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSNeedleView.h; sourceTree = "<group>"; };
-		B68A5C421979C8B70036B90C /* MSNeedleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSNeedleView.m; sourceTree = "<group>"; };
-		B68A5C431979C8B70036B90C /* MSRangeGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSRangeGauge.h; sourceTree = "<group>"; };
-		B68A5C441979C8B70036B90C /* MSRangeGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSRangeGauge.m; sourceTree = "<group>"; };
-		B68A5C451979C8B70036B90C /* MSSimpleGauge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSSimpleGauge.h; sourceTree = "<group>"; };
-		B68A5C461979C8B70036B90C /* MSSimpleGauge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSSimpleGauge.m; sourceTree = "<group>"; };
-		B68A5C471979C8B70036B90C /* MSSimpleGaugeSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSSimpleGaugeSubclass.h; sourceTree = "<group>"; };
 		B695FDDD1A3A521B0064DC83 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = Resources/Settings.bundle; sourceTree = "<group>"; };
 		B695FDDF1A3B697C0064DC83 /* volumeUp_26.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = volumeUp_26.png; sourceTree = "<group>"; };
 		B695FDE11A433CA80064DC83 /* NewProF2_48x48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NewProF2_48x48.png; sourceTree = "<group>"; };
@@ -491,26 +474,14 @@
 			path = minizip;
 			sourceTree = "<group>";
 		};
-		B68A5C391979C8B70036B90C /* Gauges */ = {
+		B68311D51A8DD11A00A9E3FD /* CMPopTipView */ = {
 			isa = PBXGroup;
 			children = (
-				B68A5C3A1979C8B70036B90C /* MSAnnotatedGauge.h */,
-				B68A5C3B1979C8B70036B90C /* MSAnnotatedGauge.m */,
-				B68A5C3C1979C8B70036B90C /* MSArcLayer.h */,
-				B68A5C3D1979C8B70036B90C /* MSArcLayer.m */,
-				B68A5C3E1979C8B70036B90C /* MSArcLayerSubclass.h */,
-				B68A5C3F1979C8B70036B90C /* MSGradientArcLayer.h */,
-				B68A5C401979C8B70036B90C /* MSGradientArcLayer.m */,
-				B68A5C411979C8B70036B90C /* MSNeedleView.h */,
-				B68A5C421979C8B70036B90C /* MSNeedleView.m */,
-				B68A5C431979C8B70036B90C /* MSRangeGauge.h */,
-				B68A5C441979C8B70036B90C /* MSRangeGauge.m */,
-				B68A5C451979C8B70036B90C /* MSSimpleGauge.h */,
-				B68A5C461979C8B70036B90C /* MSSimpleGauge.m */,
-				B68A5C471979C8B70036B90C /* MSSimpleGaugeSubclass.h */,
+				B68311D61A8DD11A00A9E3FD /* CMPopTipView.h */,
+				B68311D71A8DD11A00A9E3FD /* CMPopTipView.m */,
 			);
-			name = Gauges;
-			path = Record/Gauges;
+			name = CMPopTipView;
+			path = Record/CMPopTipView;
 			sourceTree = "<group>";
 		};
 		B6A8D96E19770C1000E8F1D5 /* icons */ = {
@@ -542,6 +513,7 @@
 		F6A5681118ECA98A00B844C6 = {
 			isa = PBXGroup;
 			children = (
+				B68311D51A8DD11A00A9E3FD /* CMPopTipView */,
 				B6B94F141A7C1289004AFFE8 /* Reachability */,
 				B695FDDD1A3A521B0064DC83 /* Settings.bundle */,
 				B60466331A38B540000B5464 /* MZFormSheetController */,
@@ -553,7 +525,6 @@
 				F6A5681C18ECA98A00B844C6 /* Frameworks */,
 				F6A5681B18ECA98A00B844C6 /* Products */,
 				B67E1BB7197EFC0500F42143 /* SSZipArchive */,
-				B68A5C391979C8B70036B90C /* Gauges */,
 			);
 			sourceTree = "<group>";
 		};
@@ -844,7 +815,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B68A5C4C1979C8B70036B90C /* MSRangeGauge.m in Sources */,
 				B66BACB8197094C000E28ECC /* EAFItemTableViewController.m in Sources */,
 				B60466481A38B540000B5464 /* UIImage+Additional.m in Sources */,
 				B60466451A38B540000B5464 /* MZFormSheetController.m in Sources */,
@@ -856,7 +826,6 @@
 				B67E1BC7197EFC0500F42143 /* zip.c in Sources */,
 				B698213E1A029C9A00BB9865 /* BButton.m in Sources */,
 				B67E1BC8197EFC0500F42143 /* SSZipArchive.m in Sources */,
-				B68A5C4B1979C8B70036B90C /* MSNeedleView.m in Sources */,
 				B636FFCB1A098D4100C3B62E /* FAImageView.m in Sources */,
 				B61B82321A16D223009B00D1 /* EAFLoginViewController.m in Sources */,
 				B636FFD41A098FD200C3B62E /* UIFont+FontAwesome2.m in Sources */,
@@ -870,8 +839,6 @@
 				B6D0017D1970B091009554D5 /* EAFExercise.m in Sources */,
 				B60466431A38B540000B5464 /* MZFormSheetBackgroundWindow.m in Sources */,
 				B642BAD01A0DD3A500D939F2 /* PhoneTableViewCell.m in Sources */,
-				B68A5C491979C8B70036B90C /* MSArcLayer.m in Sources */,
-				B68A5C4A1979C8B70036B90C /* MSGradientArcLayer.m in Sources */,
 				B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */,
 				B636FFD11A098FC700C3B62E /* NSString+FontAwesome2.m in Sources */,
 				B649198E1A1A5CE00054CA13 /* EAFSignUpViewController.m in Sources */,
@@ -879,13 +846,11 @@
 				B636FFC71A09549E00C3B62E /* EAFScoreReportTabBarController.m in Sources */,
 				B69821411A029CA500BB9865 /* UIColor+BButton.m in Sources */,
 				B67E1BC6197EFC0500F42143 /* unzip.c in Sources */,
-				B68A5C4D1979C8B70036B90C /* MSSimpleGauge.m in Sources */,
 				B60466461A38B540000B5464 /* MZFormSheetSegue.m in Sources */,
 				B60466491A38B540000B5464 /* UIViewController+TargetViewController.m in Sources */,
 				B6D999C91A7AD4E0007045C2 /* EAFPopoverViewController.m in Sources */,
 				B60466441A38B540000B5464 /* MZFormSheetBackgroundWindowViewController.m in Sources */,
 				B69821441A029F6400BB9865 /* NSString+FontAwesome.m in Sources */,
-				B68A5C481979C8B70036B90C /* MSAnnotatedGauge.m in Sources */,
 				B604664E1A38B559000B5464 /* MZAppearance.m in Sources */,
 				B6DF20A41A2679FC00CA31B1 /* EAFEventPoster.m in Sources */,
 				F6A5682E18ECA98A00B844C6 /* EAFAppDelegate.m in Sources */,
@@ -894,6 +859,7 @@
 				B62624671A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m in Sources */,
 				B60466561A38F2F4000B5464 /* EAFAudioPlayer.m in Sources */,
 				B636FFD71A0993A100C3B62E /* MyTableViewCell.m in Sources */,
+				B68311D81A8DD11A00A9E3FD /* CMPopTipView.m in Sources */,
 				B604664F1A38B559000B5464 /* NSInvocation+Copy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

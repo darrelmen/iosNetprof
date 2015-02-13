@@ -40,14 +40,10 @@
     
     // post the audio
     
-  //  NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
-  //  [connection start];
-    
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
-        
          if (error != nil) {
              NSLog(@"postAudio : Got error %@",error);
          }

@@ -65,7 +65,7 @@
     NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
     
     if (showedIntro == nil) {
-        UIAlertView *info = [[UIAlertView alloc] initWithTitle:@"Swipe left/right/up/down to advance, tap to flip.\n\nPress and hold to record.\n\nTouch a word to hear audio.\n\nTouch Scores to see answers and sounds to work on." message:nil delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+        UIAlertView *info = [[UIAlertView alloc] initWithTitle:@"Swipe left/right/up/down to advance, tap to flip.\n\nPress and hold to record.\n\nTouch a word to hear audio or yourself.\n\nTouch Scores to see answers and sounds to work on." message:nil delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
         [info show];
         
         [SSKeychain setPassword:@"Yes"
@@ -109,15 +109,15 @@
 //    }
 //}
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
- //   NSLog(@"viewWillAppear --->");
-}
+//- (void)viewWillAppear:(BOOL)animated {
+//    [super viewWillAppear:animated];
+// //   NSLog(@"viewWillAppear --->");
+//}
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
- //   NSLog(@"viewDidAppear --->");
-}
+//- (void)viewDidAppear:(BOOL)animated {
+//    [super viewDidAppear:animated];
+// //   NSLog(@"viewDidAppear --->");
+//}
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     [self playRefAudioIfAvailable];
@@ -126,7 +126,6 @@
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
     NSLog(@"popoverControllerDidDismissPopover --->");
-
 }
 
 - (void)configureWhatToShow
@@ -341,15 +340,18 @@
 }
 
 -(void) viewWillDisappear:(BOOL)animated {
-   // [super viewWillDisappear:animated];
+   [super viewWillDisappear:animated];
 
     NSLog(@"- viewWillDisappear - Stop auto play.");
 
     [self stopAutoPlay];
-   // [[UIApplication sharedApplication] endReceivingRemoteControlEvents];    
+   // [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+    
 }
 
 -(void) viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+
     NSLog(@"- viewDidDisappear - cancelling audio cache queue operations.");
 
     [_audioCache cancelAllOperations];
@@ -758,8 +760,8 @@
 }
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
-    [self viewWillDisappear:true];
-   
+    [self stopAutoPlay];
+
     _index--;
     if (_index == -1) _index = _jsonItems.count  -1UL;
 
@@ -769,10 +771,10 @@
 
 BOOL preventPlayAudio = false;
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender {
-    NSLog(@"swipeLeftDetected progress is %f", _progressThroughItems.progress);
+//    NSLog(@"swipeLeftDetected progress is %f", _progressThroughItems.progress);
 
-    [self viewWillDisappear:true];
-    
+    [self stopAutoPlay];
+
     _index++;
     BOOL onLast = _index == _jsonItems.count;
     if (onLast) {
@@ -851,9 +853,9 @@ BOOL preventPlayAudio = false;
         utterance.volume = 0;
         NSLog(@"volume %f",utterance.volume);
     }
-    else {
+    //else {
         //NSLog(@"normal volume %f",utterance.volume);
-    }
+    //}
     [_synthesizer speakUtterance:utterance];
 }
 
@@ -958,9 +960,11 @@ BOOL preventPlayAudio = false;
 }
 
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender{
+    _myAudioPlayer.volume = 1;
+
     [self playRefAudioIfAvailable];
 
-    [self postEvent:@"playAudioTouch" widget:_foreignLang.text type:@"UILabel"];
+    [self postEvent:@"playAudioTouch" widget:_english.text type:@"UILabel"];
 }
 
 - (void)hideAndShowText {
@@ -1148,8 +1152,8 @@ BOOL preventPlayAudio = false;
 
 - (IBAction)gotTapInSuperview:(id)sender {
    // NSLog(@" gotTapInSuperview");
+    [self stopAutoPlay];
 
-    [self viewWillDisappear:true];
     long selected = [_whatToShow selectedSegmentIndex];
     if (selected == 0 || selected == 1) {
         [self flipCard];
@@ -1157,7 +1161,7 @@ BOOL preventPlayAudio = false;
 }
 
 - (void)stopPlayingAudio {
-    NSLog(@" stopPlayingAudio");
+  //  NSLog(@" stopPlayingAudio");
 
     if (_player) {
         [_player pause];
@@ -1192,7 +1196,7 @@ BOOL preventPlayAudio = false;
 bool debugRecord = false;
 
 - (IBAction)recordAudio:(id)sender {
-    [self viewWillDisappear:true];
+    [self stopAutoPlay];
 
     _then2 = CFAbsoluteTimeGetCurrent();
     if (debugRecord) NSLog(@"recordAudio time = %f",_then2);
@@ -1521,7 +1525,6 @@ double gestureEnd;
          }
          else {
              _responseData = data;
-             //             [self connectionDidFinishLoading:nil];
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:YES];
@@ -1659,8 +1662,6 @@ NSString *statusCodeDisplay;
     double durationInSeconds = CMTimeGetSeconds(asset.duration);
     
     [self postEvent:[NSString stringWithFormat:@"round trip was %.2f sec for file of dur %.2f sec",diff,durationInSeconds] widget:[NSString stringWithFormat:@"rt %.2f",diff]  type:[NSString stringWithFormat:@"file %.2f",durationInSeconds] ];
-
-   // if (httpStatusCode != 200) {NSLog(@"connectionDidFinishLoading : got code %ld %@",(long)httpStatusCode, statusCodeDisplay);}
  
     if (httpStatusCode == 408) {
         [self setDisplayMessage:@"Please try again."];
@@ -1692,9 +1693,11 @@ NSString *statusCodeDisplay;
     //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *valid = [json objectForKey:@"valid"];
     NSString *exid = [json objectForKey:@"exid"];
-    
-    NSNumber *previousScore = [_exToScore objectForKey:exid];
-    [_exToScore setValue:overallScore forKey:exid];
+    NSNumber *previousScore;
+    if (exid != nil) {
+         previousScore = [_exToScore objectForKey:exid];
+        [_exToScore setValue:overallScore forKey:exid];
+    }
     
     NSString *reqid = [json objectForKey:@"reqid"];
 
@@ -2149,7 +2152,7 @@ BOOL addSpaces = false;
 {
     // Set the sender to a UIButton.
     [_myAudioPlayer stopAudio];
-    [self viewWillDisappear:true];
+    [self stopAutoPlay];
     
     // Present the popover from the button that was tapped in the detail view.
     [[MZFormSheetController appearance] setCornerRadius:20.0];

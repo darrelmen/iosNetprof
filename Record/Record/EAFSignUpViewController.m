@@ -23,12 +23,12 @@
     
     //not japanese or egyptian?
     // TODO : get list of languages from server call?
-
+    // TODO : don't duplicate this with login page
     _languages = [NSArray arrayWithObjects: @"Dari", @"English",
-                  //@"Egyptian",
+                  @"Egyptian",
                   @"Farsi",
                   @"Korean",
-                //  @"Levantine",
+                  //  @"Levantine",
                   @"CM",
                   @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",
                   //@"Russian", @"Spanish",
@@ -107,8 +107,6 @@
     //NSLog(@"url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
- //   [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-    
     [urlRequest setHTTPMethod: @"POST"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
@@ -198,16 +196,12 @@
 }
 
 - (void) textFieldText:(id)notification {
-    _usernameFeedback.text = @"";
-    _passwordFeedback.text = @"";
-    _emailFeedback.text = @"";
-
+    [self emailChanged:nil];
 }
 
 - (void) passwordChanged:(id)notification {
-    _usernameFeedback.text = @"";
-    _passwordFeedback.text = @"";
-    _emailFeedback.text = @"";}
+    [self emailChanged:nil];
+}
 
 - (void) emailChanged:(id)notification {
     _usernameFeedback.text = @"";
@@ -216,8 +210,7 @@
 }
 
 - (IBAction)gotSingleTap:(id)sender {
-    NSLog(@"dismiss keyboard! %@",_currentResponder);
-    
+//    NSLog(@"dismiss keyboard! %@",_currentResponder);
     [_currentResponder resignFirstResponder];
 }
 
@@ -316,11 +309,10 @@
         NSLog(@"userid %@",userIDExisting);
         NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];
         [SSKeychain setPassword:converted forService:@"mitll.proFeedback.device" account:@"userid"];
-        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
-        
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
         [SSKeychain setPassword:_email.text forService:@"mitll.proFeedback.device" account:@"chosenEmail"];
+        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
         
         [self performSegueWithIdentifier:@"goToChapterFromSignUp" sender:self];
@@ -355,7 +347,6 @@
                                           otherButtonTitles:nil];
     [alert show];
 }
-
 
 #pragma mark - Navigation
 

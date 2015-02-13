@@ -31,7 +31,7 @@
     // TODO : get list of languages from server call?
     
     _languages = [NSArray arrayWithObjects: @"Dari", @"English",
-                  //@"Egyptian",
+                  @"Egyptian",
                   @"Farsi",
                   @"Korean",
             //      @"Levantine",
@@ -147,14 +147,13 @@
     if (valid) {
         // make sure multiple events don't occur
         _languagePicker.userInteractionEnabled = false;
-        NSLog(@"password '%@'",_password.text);
+        //NSLog(@"password '%@'",_password.text);
         NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?hasUser=%@&p=%@", chosenLanguage,_username.text,[[self MD5:_password.text] uppercaseString]];
         NSURL *url = [NSURL URLWithString:baseurl];
         
         NSLog(@"url %@",url);
 
         NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    //    [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
         
         [urlRequest setHTTPMethod: @"GET"];
         [urlRequest setValue:@"application/x-www-form-urlencoded"
@@ -166,7 +165,6 @@
         [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
          {
             // NSLog(@"\n\n\n1 Got response %@",error);
-             
              if (error != nil) {
                  NSLog(@"\n\n\n\t1 Got error %@",error);
                  //[self connection:nil didFailWithError:error];
@@ -336,8 +334,7 @@ NSString *statusCodeDisplay;
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
         NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
-        NSLog(@"chosenLanguage %@",chosenLanguage);
-
+        //NSLog(@"chosenLanguage %@",chosenLanguage);
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
         [self performSegueWithIdentifier:@"goToChapter" sender:self];
    } else {

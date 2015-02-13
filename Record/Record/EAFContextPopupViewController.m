@@ -64,6 +64,7 @@
 -(void) viewWillDisappear:(BOOL)animated {
 //    NSLog(@"view will disappear.");
    [_audioPlayer stopAudio];
+    [super viewWillDisappear:animated];
 }
 
 -(NSAttributedString *) highlightTerm:(NSString *) context refSentence:(NSString *)refSentence  {

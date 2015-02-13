@@ -362,10 +362,10 @@ NSString *myCurrentTitle;
 }
 
 - (IBAction)gotTapGesture:(UITapGestureRecognizer *) sender {
-    CGPoint p = [sender locationInView:sender.view];
+  //  CGPoint p = [sender locationInView:sender.view];
     //  NSLog(@"Got point %f %f",p.x,p.y);
     
-    p = [sender locationInView:self.tableView];
+    CGPoint p = [sender locationInView:self.tableView];
   //    NSLog(@"Got point %f %f",p.x,p.y);
     
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];

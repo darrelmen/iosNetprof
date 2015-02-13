@@ -20,16 +20,16 @@
 
 @implementation EAFItemTableViewController
 
-
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-
-    return self;
-}
+//
+//- (id)initWithStyle:(UITableViewStyle)style
+//{
+//    self = [super initWithStyle:style];
+//    if (self) {
+//        // Custom initialization
+//    }
+//
+//    return self;
+//}
 
 - (NSString *)getURL
 {
@@ -49,7 +49,6 @@
             
             if (refPath && refPath.length > 2) { //i.e. not NO
                 //NSLog(@"adding %@ %@",id,refPath);
-
                 refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
                                                              withString:@".mp3"];
                 
@@ -100,19 +99,21 @@
 - (void)viewWillDisappear:(BOOL)animated {
   //  NSLog(@"ItemViewController : viewWillDisappear -- cancelling %@",_audioCache);
     [_audioCache cancelAllOperations];
+    [super viewWillDisappear:animated];
 }
 
-- (void) viewDidDisappear:(BOOL)animated {
-//    NSLog(@"ItemViewController : viewDidDisappear -- cancelling %@",_audioCache);
- //   [_audioCache cancelAllOperations];
-}
+//- (void) viewDidDisappear:(BOOL)animated {
+////    NSLog(@"ItemViewController : viewDidDisappear -- cancelling %@",_audioCache);
+// //   [_audioCache cancelAllOperations];
+//    [super viewWillDisappear:<#animated#>];
+//
+//}
 
 NSString *currentChapter;
 NSString *chapterTitle = @"Chapter";
 
 - (void)setChapter:(NSString *) chapter {
     currentChapter = chapter;
-    
     NSLog(@"ItemTableViewController - current chapter %@",currentChapter);
 }
 
@@ -269,7 +270,6 @@ NSString *chapterTitle = @"Chapter";
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:YES];
-           //  [self connectionDidFinishLoading:nil];
          }
      }];
 }
@@ -343,7 +343,6 @@ NSString *chapterTitle = @"Chapter";
             NSLog(@"item table view : reload table ----------- ");
             
             [[self tableView] reloadData];
-            
         }
     }
     else {
@@ -360,12 +359,10 @@ NSString *chapterTitle = @"Chapter";
     if([indexPath row] == ((NSIndexPath*)[[tableView indexPathsForVisibleRows] lastObject]).row){
         //end of loading
         //for example [activityIndicator stopAnimating];
-        NSLog(@"finished loading table --- ");
-        
+//        NSLog(@"finished loading table --- ");
         NSLog(@"item table view : cacheAudio ----------- ");
         
         [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
-        //[self cacheAudio:_jsonItems];
     }
 }
 
