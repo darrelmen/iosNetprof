@@ -601,10 +601,10 @@
     _audioRefs = [[NSMutableArray alloc] init];
     BOOL isSlow = _speedButton.selected;
     
-//    NSLog(@"is slow %@",isSlow ? @"SLOW" :@"REGULAR");
+//    NSLog(@"speed is %@",isSlow ? @"SLOW" :@"REGULAR");
 //    NSLog(@"male slow %@",hasMaleSlow ? @"YES" :@"NO");
-//    NSLog(@"male reg %@",hasMaleReg ? @"YES" :@"NO");
-//    NSLog(@"selected %ld",selectedGender);
+//    NSLog(@"male reg  %@",hasMaleReg ? @"YES" :@"NO");
+//    NSLog(@"selected gender is %ld",selectedGender);
 //    NSLog(@"dict  %@",jsonObject);
     BOOL hasTwoGenders = (hasMaleReg || hasMaleSlow) && (hasFemaleReg || hasFemaleSlow);
     
@@ -629,11 +629,17 @@
                     refAudio = [jsonObject objectForKey:@"fsr"];
                     [_audioRefs addObject: refAudio];
                 }
+                else if (hasMaleSlow && refAudio == nil) { // fall back
+                    refAudio = [jsonObject objectForKey:@"msr"];
+                }
             }
             else {
                 if (hasFemaleReg) {
                     refAudio =  [jsonObject objectForKey:@"frr"];
                     [_audioRefs addObject: refAudio];
+                }
+                else if (hasMaleReg && refAudio == nil) { // fall back
+                    refAudio = [jsonObject objectForKey:@"mrr"];
                 }
             }
         } else {
@@ -668,6 +674,14 @@
                 refAudio = [jsonObject objectForKey:@"fsr"];
                 [_audioRefs addObject: refAudio];
             }
+            if (!hasMaleSlow && !hasFemaleSlow) {
+                if (hasMaleReg && refAudio == nil) {
+                    refAudio = [jsonObject objectForKey:@"mrr"];
+                }
+                else if (hasFemaleReg && refAudio == nil) {
+                    refAudio = [jsonObject objectForKey:@"frr"];
+                }
+            }
         }
         else {
             if (hasMaleReg) {
@@ -677,6 +691,14 @@
             if (hasFemaleReg) {
                 refAudio =  [jsonObject objectForKey:@"frr"];
                 [_audioRefs addObject: refAudio];
+            }
+            if (!hasMaleReg && !hasFemaleReg) {
+                if (hasMaleSlow && refAudio == nil) {
+                    refAudio = [jsonObject objectForKey:@"msr"];
+                }
+                else if (hasFemaleSlow && refAudio == nil) {
+                    refAudio = [jsonObject objectForKey:@"fsr"];
+                }
             }
         }
     }
@@ -689,14 +711,14 @@
     _speedButton.enabled = hasTwoSpeeds;
     
     if (refAudio != nil && ![refAudio isEqualToString:@"NO"] && _audioRefs.count == 0) {
-      //  NSLog(@"respondToSwipe addig refAudio %@",refAudio);
+//        NSLog(@"respondToSwipe adding refAudio %@",refAudio);
         [_audioRefs addObject:refAudio];
     }
     
     if (_autoPlayButton.selected && _audioRefs.count > 1) {
         [_audioRefs removeLastObject];
     }
- //   NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
+  //  NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
     
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
@@ -861,13 +883,12 @@ BOOL preventPlayAudio = false;
 
 - (IBAction)tapOnEnglish:(id)sender {
     [self stopPlayingAudio];
-
     [self speakEnglish:true];
 }
 
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didPauseSpeechUtterance:(AVSpeechUtterance *)utterance {
     NSLog(@"recoflashcard : didPauseSpeechUtterance---");
-    [self showSpeechEnded:true];//[utterance.speechString isEqualToString:_english.text]];
+    [self showSpeechEnded:true];
 }
 
 - (void)showSpeechEnded:(BOOL) isEnglish {
@@ -885,7 +906,7 @@ BOOL preventPlayAudio = false;
 
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didCancelSpeechUtterance:(AVSpeechUtterance *)utterance {
     NSLog(@"recoflashcard : didCancelSpeechUtterance---");
-    [self showSpeechEnded:true];//[utterance.speechString isEqualToString:_english.text]];
+    [self showSpeechEnded:true];
 }
 
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didStartSpeechUtterance:(AVSpeechUtterance *)utterance
@@ -955,7 +976,9 @@ BOOL preventPlayAudio = false;
         [_myAudioPlayer playRefAudio];
     }
     else {
-        NSLog(@"HUH? no ref audio");
+        NSString *current = [[self getCurrentJson] objectForKey:@"id"];
+
+        NSLog(@"HUH? no ref audio exid %@",current);
     }
 }
 
@@ -1685,12 +1708,12 @@ NSString *statusCodeDisplay;
         NSLog(@"connectionDidFinishLoading - got error %@",error);
     }
     
-    NSNumber *overallScore = [json objectForKey:@"score"];
-    BOOL correct = [[json objectForKey:@"isCorrect"] boolValue];
     BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
+    NSNumber *overallScore = saidWord ? [json objectForKey:@"score"] : 0;
+    BOOL correct = [[json objectForKey:@"isCorrect"] boolValue];
     //  NSLog(@"score was %@",overallScore);
-    //  NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
-    //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
+      NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
+      NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *valid = [json objectForKey:@"valid"];
     NSString *exid = [json objectForKey:@"exid"];
     NSNumber *previousScore;
@@ -1716,12 +1739,12 @@ NSString *statusCodeDisplay;
     }
     
     if ([valid containsString:@"OK"]) {
-        if (saidWord) {
+        //if (saidWord) {
             [self updateScoreDisplay:json];
-        }
-        else {
-            [self setIncorrectMessage:_foreignLang.text];
-        }
+       // }
+        //else {
+        //    [self setIncorrectMessage:_foreignLang.text];
+       // }
     }
     else {
         if ([valid containsString:@"MIC"] || [valid containsString:@"TOO_QUIET"]) {
@@ -1833,7 +1856,8 @@ BOOL addSpaces = false;
 - (void)updateScoreDisplay:(NSDictionary*) json {
     NSArray *wordAndScore  = [json objectForKey:@"WORD_TRANSCRIPT"];
     NSArray *phoneAndScore = [json objectForKey:@"PHONE_TRANSCRIPT"];
-    
+    BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
+
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
     }
@@ -1846,7 +1870,7 @@ BOOL addSpaces = false;
     UIView *rightView = nil;
     
     NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
-                  @"Egyptian",
+                    @"Egyptian",
                     @"Farsi",
                     @"Levantine",
                     @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
@@ -1900,8 +1924,8 @@ BOOL addSpaces = false;
     
     for (NSDictionary *event in wordAndScore) {
         NSString *word = [event objectForKey:@"event"];
-        if ([word isEqualToString:@"sil"]) continue;
-        NSNumber *score = [event objectForKey:@"score"];
+        if ([word isEqualToString:@"sil"] || [word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) continue;
+        NSNumber *score = saidWord ? [event objectForKey:@"score"] : 0;
         NSNumber *wstart = [event objectForKey:@"start"];
         NSNumber *wend = [event objectForKey:@"end"];
         

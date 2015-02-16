@@ -8,14 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface EAFAudioCache : NSObject<NSURLConnectionDelegate>
+@interface EAFAudioCache : NSObject
 
-//@property NSArray *paths;
-//@property NSArray *rawPaths;
 @property NSString *language;
-
 @property NSData *mp3Audio;
-//@property int itemIndex;
 
 - (void) goGetAudio:(NSArray *)rawPaths paths:(NSArray *)ppaths language:(NSString *)lang;
 - (void) cancelAllOperations;

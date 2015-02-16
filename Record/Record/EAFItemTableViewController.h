@@ -24,9 +24,7 @@
 @property (strong, nonatomic) NSDictionary *chapterToItems;
 @property (strong, nonatomic) NSArray *jsonItems;
 
-
 @property (strong, nonatomic) NSData *responseData;
-
 
 @property NSArray *scores;
 

@@ -36,7 +36,9 @@
                   @"Korean",
             //      @"Levantine",
                   @"CM",
-                  @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",
+                 // @"MSACandidate",
+                  @"MSA",
+                  @"Pashto1", @"Pashto2", @"Pashto3",
                   //@"Russian", @"Spanish",
                   @"Sudanese",  @"Urdu",  nil];
   
