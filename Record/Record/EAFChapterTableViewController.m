@@ -16,6 +16,14 @@
 
 @property BOOL isRefresh;
 @property CFAbsoluteTime startPost;
+@property NSArray *jsonContentArray;
+@property (strong, nonatomic) NSData *responseData;
+@property int reqCount;
+@property int receivedCount;
+
+@property NSDictionary* chapterInfo;
+@property BOOL hasModel;
+@property NSArray *currentItems;
 
 @end
 
@@ -26,6 +34,8 @@
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
+        _reqCount = 0;
+        _receivedCount = 0;
     }
     return self;
 }
@@ -67,13 +77,10 @@
     }
 }
 
-int reqCount = 0;;
-int receivedCount = 0;;
-
 - (void)askServerForJson:(BOOL) isRefresh {
     _isRefresh = isRefresh;
     
-    reqCount++;
+    _reqCount++;
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?nestedChapters", _language];
     
     NSURL *url = [NSURL URLWithString:baseurl];
@@ -81,7 +88,6 @@ int receivedCount = 0;;
     NSLog(@"ChapterTableViewController - askServerForJson %@",url);
 
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    //[urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
@@ -93,8 +99,7 @@ int receivedCount = 0;;
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
-         NSLog(@"ChapterTableViewController - Got response %@",error);
-         
+         //NSLog(@"ChapterTableViewController - Got response %@",error);
          if (error != nil) {
              NSLog(@"ChapterTableViewController Got error %@",error);
              dispatch_async(dispatch_get_main_queue(), ^{
@@ -141,18 +146,13 @@ UIAlertView *loadingContentAlert;
 
 // refresh cache checks how old the cached file is
 - (void)writeToCache:(NSData *) toWrite {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *fileName = [NSString stringWithFormat:@"%@_chapters.json",_language];
-    NSString *appFile = [documentsDirectory stringByAppendingPathComponent:fileName];
-    
+    NSString *appFile = [self getCachedJsonFile];
     NSLog(@"Writing json data to file %@ %lu bytes",appFile,(unsigned long)toWrite.length);
     [toWrite writeToFile:appFile atomically:YES];
 }
 
 - (NSString *)getCachedJsonFile {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *fileName = [NSString stringWithFormat:@"%@_chapters.json",_language];
     NSString *appFile = [documentsDirectory stringByAppendingPathComponent:fileName];
@@ -206,38 +206,6 @@ UIAlertView *loadingContentAlert;
     }
 }
 
-#pragma mark NSURLConnection Delegate Methods
-
-//long long expected;
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-    // A response has been received, this is where we initialize the instance var you created
-    // so that we can append data to it in the didReceiveData method
-    // Furthermore, this method is called each time there is a redirect so reinitializing it
-    // also serves to clear it
- //   NSLog(@"didReceiveResponse... %@ %lld",response, response.expectedContentLength);
-//    expected = response.expectedContentLength;
-    _responseData = [[NSMutableData alloc] init];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    // Append the new data to the instance variable you declared
-  //  float progress = ((float) [_responseData length] / (float) expected);
-  //  NSLog(@"didReceiveData... %f",progress);
-   // NSLog(@"didReceiveData...");
-
- //   [_responseData appendData:data];
-}
-
-- (NSCachedURLResponse *)connection:(NSURLConnection *)connection
-                  willCacheResponse:(NSCachedURLResponse*)cachedResponse {
-    // Return nil to indicate not necessary to store a cached response for this connection
-    return nil;
-}
-
-NSDictionary* chapterInfo;
-BOOL hasModel;
-
 - (BOOL)useJsonChapterData {
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
@@ -254,10 +222,8 @@ BOOL hasModel;
     
     if (jsonArray != nil) {
         _jsonContentArray = jsonArray;
-        id something =[json objectForKey:@"hasModel"];
-        
-        hasModel = [something boolValue];
-     
+        _hasModel = [[json objectForKey:@"hasModel"] boolValue];
+        NSLog(@"Chapter - Got model %@",_hasModel ?@"YES":@"NO");
         NSMutableArray *myArray = [[NSMutableArray alloc] init];
         
         for (NSDictionary *entry in jsonArray) {
@@ -274,9 +240,10 @@ BOOL hasModel;
             return [str1 compare:str2 options:(NSNumericSearch)];
         }];
         _chapters = myArray;
-        chapterInfo = json;
+        _chapterInfo = json;
     }
     else {
+        NSLog(@"\n\n\n Got model %@",_hasModel ?@"YES":@"NO");
         _chapters = [json allKeys];
         
         NSMutableArray *myArray = [NSMutableArray arrayWithArray:_chapters];
@@ -287,13 +254,12 @@ BOOL hasModel;
         }];
         
         _chapters = myArray;
-        chapterInfo = json; // this is the full json dictionary (???)
+        _chapterInfo = json; // this is the full json dictionary (???)
     }
     [[self tableView] reloadData];
     
     return true;
 }
-
 
 - (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
@@ -315,9 +281,9 @@ BOOL hasModel;
     BOOL dataIsValid = [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 
-    receivedCount++;
-    if (receivedCount != reqCount) {
-        NSLog(@"ignoring out of order requests %d vs %d",reqCount,receivedCount);
+    _receivedCount++;
+    if (_receivedCount != _reqCount) {
+        NSLog(@"ignoring out of order requests %d vs %d",_reqCount,_receivedCount);
     }
     else if (dataIsValid) {
         [self writeToCache:_responseData];
@@ -330,7 +296,7 @@ BOOL hasModel;
     NSLog(@"ChapterTable Download content failed with %@",error);
     [loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
     
-    receivedCount++;
+    _receivedCount++;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
     if (!_isRefresh) {
@@ -345,13 +311,6 @@ BOOL hasModel;
                                               cancelButtonTitle:@"OK"
                                               otherButtonTitles:nil] show];
     }
-}
-
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Table view data source
@@ -420,7 +379,6 @@ BOOL hasModel;
 
 
 #pragma mark - Navigation
-NSArray *currentItems;
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -435,13 +393,13 @@ NSArray *currentItems;
     NSLog(@"Chapter table view controller prepareForSegue identifier %@ %@ %@ %@ %@",segue.identifier,_chapterName,tappedItem,
           _unitTitle,_unit);
 
- //   NSLog(@"Got prepare -- %@",itemController);
-    [itemController setChapterToItems:chapterInfo];
-    [itemController setJsonItems:currentItems];
-    [itemController setChapterTitle:_chapterName];
-    [itemController setChapter:_currentChapter];
+   // NSLog(@"Chapter table Got prepare -- %@ has model %@",itemController, _hasModel?@"YES":@"NO");
+    [itemController setChapterToItems:_chapterInfo];
+    [itemController setJsonItems:_currentItems];
+    itemController.chapterTitle = _chapterName;
+    itemController.currentChapter =_currentChapter;
     [itemController setLanguage:_language];
-    [itemController setHasModel:hasModel];
+    itemController.hasModel=_hasModel;
     itemController.unitTitle = _unitTitle;
     itemController.unit = _unit;
 }
@@ -490,19 +448,18 @@ NSArray *currentItems;
                 [myController setChapterName:childType];
                 myController.unitTitle = _unitTitle;
                 myController.unit = name;
+                myController.hasModel = _hasModel;
                 
                 [self.navigationController pushViewController: myController animated:YES];
                 break;
             }
             else {
-         //       NSLog(@"items is %@",items);
-         //       NSLog(@"Got click to segue to items");
-                
-                // TODO : ask for history here!
+         //       NSLog(@"Got click to segue to items is %@",items);
+                // TODO : ask for history here?
                 // when returns, go ahead and do segue
                 
                 _currentChapter = name;
-                currentItems = items;
+                _currentItems = items;
                 [self performSegueWithIdentifier:@"ItemViewController" sender:self];
                 
                 break;

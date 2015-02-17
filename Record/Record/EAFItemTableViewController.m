@@ -20,17 +20,6 @@
 
 @implementation EAFItemTableViewController
 
-//
-//- (id)initWithStyle:(UITableViewStyle)style
-//{
-//    self = [super initWithStyle:style];
-//    if (self) {
-//        // Custom initialization
-//    }
-//
-//    return self;
-//}
-
 - (NSString *)getURL
 {
     return [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/", _language];
@@ -57,9 +46,9 @@
                 [paths addObject:mu];
                 [rawPaths addObject:refPath];
             }
-            else {
+            //else {
                 //NSLog(@"skipping %@ %@",id,refPath);
-            }
+            //}
         }
     }
     
@@ -67,23 +56,20 @@
     
     [_audioCache goGetAudio:rawPaths paths:paths language:_language];
 
-    NSLog(@"cacheAudio Got get audio -- after ");
+    //NSLog(@"cacheAudio Got get audio -- after ");
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
     _audioCache = [[EAFAudioCache alloc] init];
-    
     //NSLog(@"\n\n\nmade audio cache...");
     
-    _requestPending = true;
-    NSLog(@"viewDidLoad - item table controller");
+    NSLog(@"viewDidLoad - item table controller - %@", _hasModel?@"YES":@"NO");
 
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
-    [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,chapterTitle,currentChapter]];
+    [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,_chapterTitle,_currentChapter]];
     
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
@@ -97,9 +83,15 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-  //  NSLog(@"ItemViewController : viewWillDisappear -- cancelling %@",_audioCache);
+    NSLog(@"ItemViewController : viewWillDisappear -- cancelling %@",_audioCache);
     [_audioCache cancelAllOperations];
     [super viewWillDisappear:animated];
+}
+
+-(void)viewWillAppear:(BOOL)animated {
+    NSLog(@"ItemViewController : viewWillAppear ");
+    [self askServerForJson];
+    [super viewWillAppear:animated];
 }
 
 //- (void) viewDidDisappear:(BOOL)animated {
@@ -109,17 +101,14 @@
 //
 //}
 
-NSString *currentChapter;
-NSString *chapterTitle = @"Chapter";
+//- (void)setChapter:(NSString *) chapter {
+//    currentChapter = chapter;
+//    NSLog(@"ItemTableViewController - current chapter %@",currentChapter);
+//}
 
-- (void)setChapter:(NSString *) chapter {
-    currentChapter = chapter;
-    NSLog(@"ItemTableViewController - current chapter %@",currentChapter);
-}
-
-- (void)setChapterTitle:(NSString *) title {
-    chapterTitle = title;
-}
+//- (void)setChapterTitle:(NSString *) title {
+//    chapterTitle = title;
+//}
 
 #pragma mark - Table view data source
 
@@ -219,16 +208,18 @@ NSString *chapterTitle = @"Chapter";
     EAFRecoFlashcardController *flashcardController = [segue destinationViewController];
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSInteger row = indexPath.row;
-    NSLog(@"got seque row %ld %@ %@",(long)indexPath.row, chapterTitle, currentChapter );
+    NSLog(@"Item Table - got seque row %ld %@ %@",(long)indexPath.row, _chapterTitle, _currentChapter );
  
     flashcardController.jsonItems = _jsonItems;
     flashcardController.index = row;
     flashcardController.language = _language;
     flashcardController.url = [self getURL];
-    [flashcardController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,currentChapter]];
-    [flashcardController setHasModel:_hasModel];
-    flashcardController.chapterTitle = chapterTitle;
-    flashcardController.currentChapter = currentChapter;
+    [flashcardController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,_currentChapter]];
+    
+   // NSLog(@"\n\n\nmodel %@",_hasModel ? @" YES ":@"NO");
+    flashcardController.hasModel=_hasModel;
+    flashcardController.chapterTitle = _chapterTitle;
+    flashcardController.currentChapter = _currentChapter;
     flashcardController.unitTitle = _unitTitle;
     flashcardController.currentUnit = _unit;
     
@@ -237,7 +228,8 @@ NSString *chapterTitle = @"Chapter";
 }
 
 - (void)askServerForJson {
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitTitle, _unit, chapterTitle, currentChapter];
+    _requestPending = true;
+    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitTitle, _unit, _chapterTitle, _currentChapter];
     
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
@@ -245,7 +237,7 @@ NSString *chapterTitle = @"Chapter";
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    [urlRequest setTimeoutInterval:5];
+    [urlRequest setTimeoutInterval:10];
 
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"

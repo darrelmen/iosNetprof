@@ -15,8 +15,10 @@
 
 @property BOOL hasModel;
 
--(void) setChapter:(NSString *)chapter;
--(void) setChapterTitle:(NSString *)chapter;
+//-(void) setChapter:(NSString *)chapter;
+//-(void) setChapterTitle:(NSString *)chapter;
+@property NSString *currentChapter;
+@property NSString *chapterTitle;
 @property NSString *language;
 @property NSString *unitTitle;
 @property NSString *unit;

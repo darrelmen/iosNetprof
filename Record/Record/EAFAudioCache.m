@@ -74,7 +74,7 @@
     _rawPaths = [rawPaths2 copy];
     _paths = [ppaths2 copy];
     
-    NSLog(@"go get audio for %lu",(unsigned long)_rawPaths.count);
+    NSLog(@"EAFAudioCache - go get audio for %lu",(unsigned long)_rawPaths.count);
     
     dispatch_async(dispatch_get_main_queue(), ^{
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:TRUE];

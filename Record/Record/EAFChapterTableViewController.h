@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <SplunkMint-iOS/SplunkMint-iOS.h>
 
-@interface EAFChapterTableViewController : UITableViewController<NSURLConnectionDelegate>
+@interface EAFChapterTableViewController : UITableViewController
 
 @property NSString *chapterName;
 @property NSString *currentChapter;
@@ -18,9 +18,7 @@
 @property NSString *unit;
 
 @property NSArray *chapters;
-@property NSArray *jsonContentArray;
-@property (strong, nonatomic) NSData *responseData;
 @property NSString *language;
-@property BOOL hasModel;
+//@property BOOL hasModel;
 
 @end

@@ -82,7 +82,7 @@
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName];
     if (fileExists) {
         //NSLog(@"playRefAudio Raw URL %@", _rawRefAudioPath);
-        NSLog(@"playRefAudio using local url %@",destFileName);
+       // NSLog(@"playRefAudio using local url %@",destFileName);
         url = [[NSURL alloc] initFileURLWithPath: destFileName];
     }
     else {

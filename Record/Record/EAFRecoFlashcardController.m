@@ -148,7 +148,7 @@
 
 - (void)viewDidLoad
 {
-    NSLog(@"viewDidLoad --->");
+    NSLog(@"RecoFlashcardController.viewDidLoad --->");
 
     [super viewDidLoad];
     _audioCache = [[EAFAudioCache alloc] init];
@@ -252,7 +252,7 @@
     [_correctFeedback setHidden:true];
     
     if (!_hasModel) {
-        NSLog(@"----> No model for %@",_language);
+        NSLog(@"----> EAFRecoFlashcardController : No model for %@",_language);
         _recordButtonContainer.hidden = true;
     }
     else {
