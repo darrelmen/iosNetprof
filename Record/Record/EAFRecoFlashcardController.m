@@ -45,6 +45,8 @@
 @property (nonatomic, strong) AVSpeechSynthesizer *synthesizer;
 @property NSTimer *autoAdvanceTimer;
 @property NSTimeInterval autoAdvanceInterval;
+@property double gestureStart;
+@property double gestureEnd;
 
 @property CFAbsoluteTime startPost ;
 @property UIBackgroundTaskIdentifier backgroundUpdateTask;
@@ -109,10 +111,11 @@
 //    }
 //}
 
-//- (void)viewWillAppear:(BOOL)animated {
-//    [super viewWillAppear:animated];
-// //   NSLog(@"viewWillAppear --->");
-//}
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+      NSLog(@"RecoFlashcard - viewWillAppear --->");
+    [self respondToSwipe];
+}
 
 //- (void)viewDidAppear:(BOOL)animated {
 //    [super viewDidAppear:animated];
@@ -971,7 +974,7 @@ BOOL preventPlayAudio = false;
    // NSLog(@"play ref if avail");
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     if ([self hasRefAudio]) {
-     //   NSLog(@"\tplay ref if avail");
+        NSLog(@"\tplay ref if avail");
 
         [_myAudioPlayer playRefAudio];
     }
@@ -1140,7 +1143,7 @@ BOOL preventPlayAudio = false;
     double durationInSeconds = CMTimeGetSeconds(time);
     
     NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs event       %f diff %f",durationInSeconds, (_now-_then2), (_now-_then2)-durationInSeconds );
-    NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs gesture end %f diff %f",durationInSeconds, (gestureEnd-_then2), (gestureEnd-_then2)-durationInSeconds );
+    NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs gesture end %f diff %f",durationInSeconds, (_gestureEnd-_then2), (_gestureEnd-_then2)-durationInSeconds );
     
     if (durationInSeconds > 0.3) {
         if (_hasModel) {
@@ -1184,7 +1187,7 @@ BOOL preventPlayAudio = false;
 }
 
 - (void)stopPlayingAudio {
-  //  NSLog(@" stopPlayingAudio");
+   // NSLog(@" stopPlayingAudio");
 
     if (_player) {
         [_player pause];
@@ -1204,7 +1207,6 @@ BOOL preventPlayAudio = false;
 - (void)highlightFLWhilePlaying
 {
 //    NSLog(@" highlightFLWhilePlaying - show fl");
-
     _foreignLang.textColor = [UIColor blueColor];
     _pageControl.currentPage = 1;
 }
@@ -1266,8 +1268,8 @@ bool debugRecord = false;
     _foreignLang.hidden = !_foreignLang.hidden;
     _english.hidden = !_english.hidden;
     
-    NSLog(@"flipCard fl hidden %@", _foreignLang.hidden  ? @"YES" :@"NO");
-    NSLog(@"flipCard en hidden %@", _english.hidden  ? @"YES" :@"NO");
+    //NSLog(@"flipCard fl hidden %@", _foreignLang.hidden  ? @"YES" :@"NO");
+    //NSLog(@"flipCard en hidden %@", _english.hidden  ? @"YES" :@"NO");
     
     if (_foreignLang.hidden && _english.hidden) {
         if (_whatToShow.selectedSegmentIndex == 0) {
@@ -1297,10 +1299,6 @@ bool debugRecord = false;
 // TODO : swipe up to show control center also registers as a swipe up on the card, pausing the auto play playback
 - (IBAction)swipeUp:(UISwipeGestureRecognizer *)sender {
 //    NSLog(@"Got swipe up from %@",sender);
-    
-//    CGPoint pt = [sender locationOfTouch:0 inView:self.view];
- //   NSLog(@"Got swipe up locationOfTouch %f, %f",pt.x, pt.y);
-    
     CGPoint pt2 = [sender locationInView:self.view];
     
 //    NSLog(@"Got swipe up location in view %f, %f",pt2.x, pt2.y);
@@ -1315,7 +1313,6 @@ bool debugRecord = false;
         NSLog(@"Got swipe IGNORING SWIPE, since control center swipe %f, %f",screenWidth,screenHeight);
     }
     else {
-        
         long selected = [_whatToShow selectedSegmentIndex];
         if (selected == 0 || selected == 1) {
             [self flipCard];
@@ -1336,11 +1333,9 @@ bool debugRecord = false;
     }
 }
 
-double gestureStart;
-double gestureEnd;
 - (IBAction)longPressAction:(id)sender {
     if (_longPressGesture.state == UIGestureRecognizerStateBegan) {
-        gestureStart = CFAbsoluteTimeGetCurrent();
+        _gestureStart = CFAbsoluteTimeGetCurrent();
         
         _recordButtonContainer.backgroundColor =[UIColor greenColor];
         _recordButton.enabled = NO;
@@ -1349,16 +1344,15 @@ double gestureEnd;
         _scoreProgress.hidden = true;
 
         [self setDisplayMessage:@""];
-
         [self recordAudio:nil];
     }
     else if (_longPressGesture.state == UIGestureRecognizerStateEnded) {
         _recordButtonContainer.backgroundColor =[UIColor whiteColor];
         _recordButton.enabled = YES;
 
-        gestureEnd = CFAbsoluteTimeGetCurrent();
-        if (debugRecord)  NSLog(@"longPressAction now  time = %f",gestureEnd);
-        double gestureDiff = gestureEnd - gestureStart;
+        _gestureEnd = CFAbsoluteTimeGetCurrent();
+        if (debugRecord)  NSLog(@"longPressAction now  time = %f",_gestureEnd);
+        double gestureDiff = _gestureEnd - _gestureStart;
         
        // NSLog(@"diff %f",gestureDiff);
         if (gestureDiff < 0.4) {
@@ -1500,7 +1494,6 @@ double gestureEnd;
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     [urlRequest setTimeoutInterval:12];
-//    [urlRequest setTimeoutInterval:2];
 
     // add request parameters
     [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
@@ -1529,7 +1522,6 @@ double gestureEnd;
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          dispatch_async(dispatch_get_main_queue(), ^{
-             //    [self connection:nil didFailWithError:error];
              [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
              [_recoFeedbackImage stopAnimating];
          });
@@ -1537,7 +1529,6 @@ double gestureEnd;
          if (error != nil) {
              NSLog(@"postAudio : Got error %@",error);
              dispatch_async(dispatch_get_main_queue(), ^{
-                 
                  if (error.code == NSURLErrorNotConnectedToInternet) {
                      [self setDisplayMessage:@"Make sure your wifi or cellular connection is on."];
                  }
@@ -1554,44 +1545,9 @@ double gestureEnd;
          }
      }];
     
-    
     _startPost = CFAbsoluteTimeGetCurrent();
-    NSLog(@"posting to %@",_url);
+   // NSLog(@"posting to %@",_url);
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-}
-
-#pragma mark NSURLConnection Delegate Methods
-
-NSInteger httpStatusCode;
-NSString *statusCodeDisplay;
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-    // A response has been received, this is where we initialize the instance var you created
-    // so that we can append data to it in the didReceiveData method
-    // Furthermore, this method is called each time there is a redirect so reinitializing it
-    // also serves to clear it
-    NSLog(@"didReceiveResponse ");
-
-    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-        NSHTTPURLResponse *resp = (NSHTTPURLResponse *)response;
-        httpStatusCode = resp.statusCode;
-        statusCodeDisplay = [NSHTTPURLResponse localizedStringForStatusCode:httpStatusCode];
-        if (httpStatusCode >= 400) {
-            NSLog(@"didReceiveResponse error - %@",response);
-        }
-    }
-    _responseData = [[NSMutableData alloc] init];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    // Append the new data to the instance variable you declared
-    NSLog(@"didReceiveData ");
- //   [_responseData appendData:data];
-}
-
-- (NSCachedURLResponse *)connection:(NSURLConnection *)connection
-                  willCacheResponse:(NSCachedURLResponse*)cachedResponse {
-    // Return nil to indicate not necessary to store a cached response for this connection
-    return nil;
 }
 
 - (void)addScoreDisplayConstraints:(UILabel *)toShow {
@@ -1673,10 +1629,6 @@ NSString *statusCodeDisplay;
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    // The request is complete and data has been received
-    // You can parse the stuff in your instance variable now
-   // NSLog(@"connectionDidFinishLoading ");
-
     CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
     CFAbsoluteTime diff = (now-_startPost);
     
@@ -1686,18 +1638,6 @@ NSString *statusCodeDisplay;
     
     [self postEvent:[NSString stringWithFormat:@"round trip was %.2f sec for file of dur %.2f sec",diff,durationInSeconds] widget:[NSString stringWithFormat:@"rt %.2f",diff]  type:[NSString stringWithFormat:@"file %.2f",durationInSeconds] ];
  
-    if (httpStatusCode == 408) {
-        [self setDisplayMessage:@"Please try again."];
-        return;
-    }
-    else if (httpStatusCode >= 400 && httpStatusCode < 500) {
-        [self setDisplayMessage:[NSString stringWithFormat:@"Network connection problem, please try again (%ld).",(long)httpStatusCode]];
-        return;
-    }
-    else if (httpStatusCode >= 500) {
-        [self setDisplayMessage:[NSString stringWithFormat:@"Server error : %@",statusCodeDisplay]];
-        return;
-    }
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_responseData
@@ -1712,8 +1652,8 @@ NSString *statusCodeDisplay;
     NSNumber *overallScore = saidWord ? [json objectForKey:@"score"] : 0;
     BOOL correct = [[json objectForKey:@"isCorrect"] boolValue];
     //  NSLog(@"score was %@",overallScore);
-      NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
-      NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
+    //  NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
+    //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *valid = [json objectForKey:@"valid"];
     NSString *exid = [json objectForKey:@"exid"];
     NSNumber *previousScore;
@@ -2101,25 +2041,6 @@ BOOL addSpaces = false;
                                            constant:0.0]];
 }
 
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-    // The request has failed for some reason!
-    // Check the error var
-    [_recoFeedbackImage stopAnimating];
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-    
-    NSLog(@"got %@",error);
-    if ([[error localizedDescription] containsString:@"timed"]) {
-        [self setDisplayMessage:@"Network connection problem, please try again."];
-        [self postEvent:[error localizedDescription] widget:@"Scoring post timed out." type:@""];
-    }
-    else {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't connect to server." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alert show];
-        [self postEvent:[error localizedDescription] widget:@"Connection problem" type:@""];
-    }
-}
-
-
 - (UIColor *) getColor2:(float) score {
     if (score > 1.0) score = 1.0;
     if (score < 0)  score = 0;
@@ -2163,11 +2084,11 @@ BOOL addSpaces = false;
         }
     }
     
-    NSLog(@"Got get audio -- %@ ",_audioCache);
+    NSLog(@"EAFRecoFlashcardController - Got get audio -- %@ ",_audioCache);
     
     [_audioCache goGetAudio:rawPaths paths:paths language:_language];
     
-    NSLog(@"Got get audio -- after ");
+   // NSLog(@"Got get audio -- after ");
 }
 
 #pragma mark - Managing popovers

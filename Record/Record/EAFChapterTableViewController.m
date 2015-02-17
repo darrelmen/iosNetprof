@@ -417,7 +417,6 @@ UIAlertView *loadingContentAlert;
         //NSLog(@"looking for '%@' '%@'",name, tappedItem);
 
         if ([name isEqualToString:tappedItem]) {
-            
            // NSLog(@"=---- > got match '%@' '%@'",name, tappedItem);
 
             NSArray *items = [entry objectForKey:@"items"];
@@ -454,12 +453,13 @@ UIAlertView *loadingContentAlert;
                 break;
             }
             else {
-         //       NSLog(@"Got click to segue to items is %@",items);
+                NSLog(@"Got click to segue to items is %lu",(unsigned long)items.count);
                 // TODO : ask for history here?
                 // when returns, go ahead and do segue
                 
                 _currentChapter = name;
                 _currentItems = items;
+                
                 [self performSegueWithIdentifier:@"ItemViewController" sender:self];
                 
                 break;

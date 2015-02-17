@@ -15,7 +15,17 @@
 
 @property BOOL requestPending;
 @property EAFAudioCache *audioCache;
+@property (strong, nonatomic) NSData *responseData;
 
+@property NSArray *scores;
+
+@property NSDictionary *exToEnglish;
+
+@property NSDictionary *exToScore;
+@property NSDictionary *exToHistory;
+//@property NSMutableArray *exList;
+
+@property EAFRecoFlashcardController *notifyFlashcardController;
 @end
 
 @implementation EAFItemTableViewController
@@ -65,7 +75,7 @@
     _audioCache = [[EAFAudioCache alloc] init];
     //NSLog(@"\n\n\nmade audio cache...");
     
-    NSLog(@"viewDidLoad - item table controller - %@", _hasModel?@"YES":@"NO");
+    NSLog(@"viewDidLoad - item table controller - %@, count = %lu", _hasModel?@"YES":@"NO",(unsigned long)_jsonItems.count);
 
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
@@ -134,18 +144,16 @@
     
     NSString *exercise = [jsonObject objectForKey:@"fl"];
     NSString *englishPhrases = [jsonObject objectForKey:@"en"];
-    NSString *id = [jsonObject objectForKey:@"id"];
-    NSArray *answers = [_exToHistory objectForKey:id];
+    NSString *exid = [jsonObject objectForKey:@"id"];
+    NSArray *answers = [_exToHistory objectForKey:exid];
     
     if (answers == nil || answers.count == 0) {
         cell.imageView.image = [UIImage imageNamed:@"questionIcon"];
     }
     else {
-       // int index = 0;
         for (NSString *correct in answers) {
             if ([correct isEqualToString:@"Y"]) {
                 cell.imageView.image = [UIImage imageNamed:@"checkmark32.png"];
-
             }
             else {
                 cell.imageView.image = [UIImage imageNamed:@"redx32.png"];
@@ -153,10 +161,44 @@
         }
     }
     
-    cell.textLabel.text = exercise;
+    NSString *scoreString = [_exToScore objectForKey:exid];
+    if (scoreString == nil) {
+        cell.textLabel.text = exercise;
+    }
+    else {
+        NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:exercise];
+        
+        NSRange range = NSMakeRange(0, [result length]);
+        float score = [scoreString floatValue]/100.0f;
+        if (score > 0) {
+            UIColor *color = [self getColor2:score];
+            [result addAttribute:NSBackgroundColorAttributeName
+                           value:color
+                           range:range];
+        }
+        
+        cell.textLabel.attributedText = result;
+    }
     cell.detailTextLabel.text = englishPhrases;
     
     return cell;
+}
+
+- (UIColor *) getColor2:(float) score {
+    if (score > 1.0) score = 1.0;
+    if (score < 0)  score = 0;
+    
+    //  NSLog(@"getColor2 score %f",score);
+    
+    float red   = fmaxf(0,(255 - (fmaxf(0, score-0.5)*2*255)));
+    float green = fminf(255, score*2*255);
+    float blue  = 0;
+    
+    red /= 255;
+    green /= 255;
+    blue /= 255;
+    
+    return [UIColor colorWithRed:red green:green blue:blue alpha:1];
 }
 
 /*
@@ -227,6 +269,7 @@
     _notifyFlashcardController = flashcardController;
 }
 
+//
 - (void)askServerForJson {
     _requestPending = true;
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitTitle, _unit, _chapterTitle, _currentChapter];
@@ -283,7 +326,7 @@
 }
 
 - (BOOL)useJsonChapterData {
-    NSLog(@"useJsonChapterData --- ");
+    NSLog(@"ITemTableViewController - useJsonChapterData --- ");
 
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
@@ -307,56 +350,44 @@
     if (jsonArray != nil) {
         _exToScore   = [[NSMutableDictionary alloc] init];
         _exToHistory = [[NSMutableDictionary alloc] init];
-        _exList = [[NSMutableArray alloc] init];
         for (NSDictionary *entry in jsonArray) {
             NSString *ex = [entry objectForKey:@"ex"];
-            
             NSDictionary *entryForID = [exToEntry objectForKey:ex];
             if (entryForID != nil) {
                 [newOrder addObject:entryForID];
             }
-            //   NSLog(@"ex key %@",ex);
-            NSString *score = [entry objectForKey:@"s"];
-            //   NSLog(@"score  %@",score);
-            [_exToScore setValue:score forKey:ex];
             
-            NSArray *jsonArrayHistory = [entry objectForKey:@"h"];
-            
-            [_exToHistory setValue:jsonArrayHistory forKey:ex];
-            [_exList addObject:ex];
+            [_exToScore   setValue:[entry objectForKey:@"s"] forKey:ex];
+            [_exToHistory setValue:[entry objectForKey:@"h"] forKey:ex];
         }
         
         if ([newOrder count] > 0) {
             _jsonItems = newOrder;
             if (_notifyFlashcardController != nil) {
                 _notifyFlashcardController.jsonItems = _jsonItems;
-                [_notifyFlashcardController respondToSwipe ];
+            //    [_notifyFlashcardController respondToSwipe ];
             }
             NSLog(@"item table view : reload table ----------- ");
             
             [[self tableView] reloadData];
         }
     }
-    else {
-        NSLog(@"got empty json???");
-        if (_notifyFlashcardController != nil) {
-            [_notifyFlashcardController respondToSwipe ];
-        }
-    }
-    
+
+    [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
+
     return true;
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if([indexPath row] == ((NSIndexPath*)[[tableView indexPathsForVisibleRows] lastObject]).row){
-        //end of loading
-        //for example [activityIndicator stopAnimating];
-//        NSLog(@"finished loading table --- ");
-        NSLog(@"item table view : cacheAudio ----------- ");
-        
-        [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
-    }
-}
+//- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+//    if([indexPath row] == ((NSIndexPath*)[[tableView indexPathsForVisibleRows] lastObject]).row){
+//        //end of loading
+//        //for example [activityIndicator stopAnimating];
+////        NSLog(@"finished loading table --- ");
+//        NSLog(@"item table view : cacheAudio ----------- ");
+//        
+//        [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
+//    }
+//}
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received

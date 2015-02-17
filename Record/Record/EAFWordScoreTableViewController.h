@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <SplunkMint-iOS/SplunkMint-iOS.h>
 #import "EAFAudioPlayer.h"
-//#import "BButton.h"
 
 @interface EAFWordScoreTableViewController : UITableViewController<NSURLConnectionDelegate,AudioPlayerNotification>
 
@@ -38,6 +37,5 @@
 -(void)setCurrentTitle;
 @property EAFAudioPlayer *audioPlayer;
 @property NSString *url;
-//@property (strong, nonatomic) IBOutlet UIButton *playingIcon;
 
 @end

@@ -14,31 +14,15 @@
 @interface EAFItemTableViewController : UITableViewController<NSURLConnectionDelegate>
 
 @property BOOL hasModel;
-
-//-(void) setChapter:(NSString *)chapter;
-//-(void) setChapterTitle:(NSString *)chapter;
 @property NSString *currentChapter;
 @property NSString *chapterTitle;
 @property NSString *language;
 @property NSString *unitTitle;
 @property NSString *unit;
+@property long user;
 
 @property (strong, nonatomic) NSDictionary *chapterToItems;
 @property (strong, nonatomic) NSArray *jsonItems;
-
-@property (strong, nonatomic) NSData *responseData;
-
-@property NSArray *scores;
-
-@property NSDictionary *exToEnglish;
-
-@property NSDictionary *exToScore;
-@property NSDictionary *exToHistory;
-@property NSMutableArray *exList;
-
-@property long user;
-
-@property EAFRecoFlashcardController *notifyFlashcardController;
 
 - (void)askServerForJson;
 
