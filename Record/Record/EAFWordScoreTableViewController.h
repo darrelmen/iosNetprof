@@ -12,7 +12,6 @@
 
 @interface EAFWordScoreTableViewController : UITableViewController<NSURLConnectionDelegate,AudioPlayerNotification>
 
-@property (strong, nonatomic) NSMutableData *responseData;
 
 @property NSString *language;
 
@@ -35,7 +34,6 @@
 @property long user;
 
 -(void)setCurrentTitle;
-@property EAFAudioPlayer *audioPlayer;
 @property NSString *url;
 
 @end
