@@ -23,7 +23,6 @@
 
 @property NSDictionary *exToScore;
 @property NSDictionary *exToHistory;
-//@property NSMutableArray *exList;
 
 @property EAFRecoFlashcardController *notifyFlashcardController;
 @end
@@ -84,7 +83,7 @@
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
     
-    [self askServerForJson];
+  //  [self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
@@ -188,8 +187,6 @@
     if (score > 1.0) score = 1.0;
     if (score < 0)  score = 0;
     
-    //  NSLog(@"getColor2 score %f",score);
-    
     float red   = fmaxf(0,(255 - (fmaxf(0, score-0.5)*2*255)));
     float green = fminf(255, score*2*255);
     float blue  = 0;
@@ -292,7 +289,7 @@
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
-         NSLog(@"ItemTableViewController - Got response %@",error);
+         //NSLog(@"ItemTableViewController - Got response %@",error);
          
          if (error != nil) {
              NSLog(@"ItemTableViewController Got error %@",error);
@@ -393,7 +390,7 @@
     // The request is complete and data has been received
     
     //[loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
-    NSLog(@"ItemTableViewController connectionDidFinishLoading... ");
+   // NSLog(@"ItemTableViewController connectionDidFinishLoading... ");
 
     [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];

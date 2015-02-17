@@ -10,19 +10,66 @@
 #import "FAImageView.h"
 #import "MyTableViewCell.h"
 #import "EAFAudioPlayer.h"
+#import "EAFAudioCache.h"
 #import "SSKeychain.h"
 
 @interface EAFWordScoreTableViewController ()
 @property int rowHeight;
 @property UILabel *current;
+@property (strong, nonatomic) NSData *responseData;
+@property EAFAudioPlayer *audioPlayer;
+@property EAFAudioCache *audioCache;
+
 @end
 
 @implementation EAFWordScoreTableViewController
 
+- (NSString *)getURL
+{
+    return [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/", _language];
+}
+
+- (void)cacheAudio:(NSArray *)items
+{
+    NSMutableArray *paths = [[NSMutableArray alloc] init];
+    NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
+    
+    NSArray *fields = [NSArray arrayWithObjects:@"ref",nil];
+    
+    for (NSDictionary *object in items) {
+        for (NSString *id in fields) {
+            NSString *refPath = [object objectForKey:id];
+            
+            if (refPath && refPath.length > 2) { //i.e. not NO
+                //NSLog(@"adding %@ %@",id,refPath);
+                refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+                                                             withString:@".mp3"];
+                
+                NSMutableString *mu = [NSMutableString stringWithString:refPath];
+                [mu insertString:[self getURL] atIndex:0];
+                [paths addObject:mu];
+                [rawPaths addObject:refPath];
+            }
+            //else {
+            //NSLog(@"skipping %@ %@",id,refPath);
+            //}
+        }
+    }
+    
+    NSLog(@"EAFWordScoreTableViewController Got get audio -- %@ ",_audioCache);
+    
+    [_audioCache goGetAudio:rawPaths paths:paths language:_language];
+    
+    //NSLog(@"cacheAudio Got get audio -- after ");
+}
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    _audioCache = [EAFAudioCache new];
     
+    [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
     _rowHeight = 60;
 
     _audioPlayer = [[EAFAudioPlayer alloc] init];
@@ -48,6 +95,10 @@
     }
 }
 
+//-(void) viewWillAppear:(BOOL)animated {
+//    
+//}
+
 - (void)askServerForJson {
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -61,10 +112,29 @@
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     
-    NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
-    [connection start];
+     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+     {
+         dispatch_async(dispatch_get_main_queue(), ^{
+             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+         });
+         
+         if (error != nil) {
+             NSLog(@" : Got error %@",error);
+             [self performSelectorOnMainThread:@selector(reportError:)
+                                    withObject:error
+                                 waitUntilDone:NO];
+         }
+         else {
+             _responseData = data;
+             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+                                    withObject:nil
+                                 waitUntilDone:NO];
+         }
+     }];
 }
 
 #pragma mark - Table view data source
@@ -159,14 +229,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         cell.fl.text = @"";
     }
     else {
-        //NSLog(@"fl is %@",fl);
         NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:fl];
         
         NSRange range = NSMakeRange(0, [result length]);
         NSString *scoreString = [_exToScore objectForKey:exid];
         float score = [scoreString floatValue]/100.0f;
-        
-        // NSLog(@"score was %@ %f",scoreString,score);
         if (score > 0) {
             UIColor *color = [self getColor2:score];
             [result addAttribute:NSBackgroundColorAttributeName
@@ -183,8 +250,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 - (UIColor *) getColor2:(float) score {
     if (score > 1.0) score = 1.0;
     if (score < 0)  score = 0;
-    
-    //  NSLog(@"getColor2 score %f",score);
     
     float red   = fmaxf(0,(255 - (fmaxf(0, score-0.5)*2*255)));
     float green = fminf(255, score*2*255);
@@ -234,22 +299,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return YES;
 }
 */
-
-#pragma mark NSURLConnection Delegate Methods
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-    // A response has been received, this is where we initialize the instance var you created
-    // so that we can append data to it in the didReceiveData method
-    // Furthermore, this method is called each time there is a redirect so reinitializing it
-    // also serves to clear it
-    
-    _responseData = [[NSMutableData alloc] init];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    // Append the new data to the instance variable you declared
-    [_responseData appendData:data];
-}
 
 - (void)setTitleGivenCorrect:(NSString *)incorrect correct:(NSString *)correct {
     float total = [correct floatValue] + [incorrect floatValue];
@@ -336,18 +385,8 @@ NSString *myCurrentTitle;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 
-- (NSCachedURLResponse *)connection:(NSURLConnection *)connection
-                  willCacheResponse:(NSCachedURLResponse*)cachedResponse {
-    // Return nil to indicate not necessary to store a cached response for this connection
-    return nil;
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-    // The request has failed for some reason!
-    // Check the error var
-    NSLog(@"Download content failed with %@",error);
-
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+- (void)reportError:(NSError *)error {
+    //  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
     NSString *message = @"Couldn't connect to server.";
     if (error.code == NSURLErrorNotConnectedToInternet) {
@@ -380,9 +419,9 @@ NSString *myCurrentTitle;
    //     NSLog(@"comparing to %@",[jsonObject objectForKey:@"id"]);
         if ([[jsonObject objectForKey:@"id"] isEqualToString:exid]) {
          //   NSLog(@"got it %@",jsonObject);
-            NSString *refAudio = [jsonObject objectForKey:@"ref"];
+           // NSString *refAudio = [jsonObject objectForKey:@"ref"];
             NSMutableArray *toPlay = [[NSMutableArray alloc] init];
-            [toPlay addObject:refAudio];
+            [toPlay addObject:[jsonObject objectForKey:@"ref"]];
             NSString *fl = [_exToFL objectForKey:exid];
 
             UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
@@ -413,7 +452,6 @@ NSString *myCurrentTitle;
 //    NSLog(@"got play started...");
 }
 
-
 - (void) playStopped {
 //    NSLog(@"got play stopped...");
     _current.textColor = [UIColor blackColor];
@@ -422,7 +460,6 @@ NSString *myCurrentTitle;
 - (void) playGotToEnd {
 //    NSLog(@"got to end...");
     _current.textColor = [UIColor blackColor];
-
 }
 
 #pragma mark - Table view delegate

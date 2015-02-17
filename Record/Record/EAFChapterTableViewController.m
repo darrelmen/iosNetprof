@@ -223,7 +223,7 @@ UIAlertView *loadingContentAlert;
     if (jsonArray != nil) {
         _jsonContentArray = jsonArray;
         _hasModel = [[json objectForKey:@"hasModel"] boolValue];
-        NSLog(@"Chapter - Got model %@",_hasModel ?@"YES":@"NO");
+    //    NSLog(@"Chapter - Got model %@",_hasModel ?@"YES":@"NO");
         NSMutableArray *myArray = [[NSMutableArray alloc] init];
         
         for (NSDictionary *entry in jsonArray) {
@@ -243,7 +243,7 @@ UIAlertView *loadingContentAlert;
         _chapterInfo = json;
     }
     else {
-        NSLog(@"\n\n\n Got model %@",_hasModel ?@"YES":@"NO");
+        NSLog(@"\n\n\n UNexpected - deprecated - Got model %@",_hasModel ?@"YES":@"NO");
         _chapters = [json allKeys];
         
         NSMutableArray *myArray = [NSMutableArray arrayWithArray:_chapters];

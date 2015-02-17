@@ -113,14 +113,11 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-      NSLog(@"RecoFlashcard - viewWillAppear --->");
+  //    NSLog(@"RecoFlashcard - viewWillAppear --->");
+    [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
+
     [self respondToSwipe];
 }
-
-//- (void)viewDidAppear:(BOOL)animated {
-//    [super viewDidAppear:animated];
-// //   NSLog(@"viewDidAppear --->");
-//}
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     [self playRefAudioIfAvailable];
@@ -155,7 +152,10 @@
 
     [super viewDidLoad];
     _audioCache = [[EAFAudioCache alloc] init];
-    [self cacheAudio:_jsonItems];
+    
+    [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
+
+  //  [self cacheAudio:_jsonItems];
     
     _showPhonesLTRAlways = true;
     _exToScore = [[NSMutableDictionary alloc] init];
@@ -349,7 +349,6 @@
 
     [self stopAutoPlay];
    // [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
-    
 }
 
 -(void) viewDidDisappear:(BOOL)animated {
@@ -974,8 +973,7 @@ BOOL preventPlayAudio = false;
    // NSLog(@"play ref if avail");
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     if ([self hasRefAudio]) {
-        NSLog(@"\tplay ref if avail");
-
+      //  NSLog(@"\tplay ref if avail");
         [_myAudioPlayer playRefAudio];
     }
     else {
