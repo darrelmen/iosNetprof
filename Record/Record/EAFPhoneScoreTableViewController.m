@@ -908,7 +908,6 @@ bool playingRef = TRUE;
         [_resultToAnswer setValue:answer forKey:resultID];
         [_resultToWords setValue:[[fields objectForKey:@"result"] objectForKey:@"words"] forKey:resultID];
         
-        
         if (answer && answer.length > 2) { //i.e. not NO
             NSString * refPath = [answer stringByReplacingOccurrencesOfString:@".wav"
                                                                    withString:@".mp3"];

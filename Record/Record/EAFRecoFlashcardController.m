@@ -1491,7 +1491,7 @@ bool debugRecord = false;
     [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
-    [urlRequest setTimeoutInterval:12];
+    [urlRequest setTimeoutInterval:15];
 
     // add request parameters
     [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];

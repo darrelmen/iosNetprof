@@ -326,7 +326,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     else {        
         NSArray *jsonArray = [json objectForKey:@"scores"];
-        // NSLog(@"json for scores was %@",jsonArray);
+      //  NSLog(@"json for scores was %@",jsonArray);
+        
         int indexOfFirst = -1;
         if (jsonArray != nil) {
             _exToScore   = [[NSMutableDictionary alloc] init];
