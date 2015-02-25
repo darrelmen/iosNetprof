@@ -19,6 +19,7 @@
 @property (strong, nonatomic) NSData *responseData;
 @property EAFAudioPlayer *audioPlayer;
 @property EAFAudioCache *audioCache;
+@property NSDictionary *exToJson;
 
 @end
 
@@ -50,9 +51,6 @@
                 [paths addObject:mu];
                 [rawPaths addObject:refPath];
             }
-            //else {
-            //NSLog(@"skipping %@ %@",id,refPath);
-            //}
         }
     }
     
@@ -88,16 +86,11 @@
     
     for(UIViewController *tab in self.tabBarController.viewControllers)
     {
-      //  NSLog(@"EAFWordScoreTableViewController got item %@",tab.tabBarItem);        
         [tab.tabBarItem setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                                 [UIFont fontWithName:@"Helvetica" size:16.0], NSFontAttributeName, nil]
                                       forState:UIControlStateNormal];
     }
 }
-
-//-(void) viewWillAppear:(BOOL)animated {
-//    
-//}
 
 - (void)askServerForJson {
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
@@ -172,6 +165,69 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return _exToScore.count;
 }
 
+- (void)colorWholeString:(NSMutableAttributedString *)result scoreString:(NSString *)scoreString
+{
+    NSRange range = NSMakeRange(0, [result length]);
+    float score = [scoreString floatValue]/100.0f;
+    if (score > 0) {
+        UIColor *color = [self getColor2:score];
+        [result addAttribute:NSBackgroundColorAttributeName
+                       value:color
+                       range:range];
+    }
+}
+
+- (void)colorEachWord:(NSString *)exid cell:(MyTableViewCell *)cell exercise:(NSString *)exercise scoreHistory:(NSDictionary *)scoreHistory
+{
+    NSString *scoreString = [_exToScore objectForKey:exid];
+    if (scoreString == nil) {
+        cell.textLabel.text = exercise;
+    }
+    else {
+        NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:exercise];
+        
+        // NSLog(@"tableView scoreHistory - json %@",scoreHistory);
+        if (scoreHistory == nil || ![scoreHistory isKindOfClass:[NSDictionary class]] || scoreHistory.count == 0) {
+            [self colorWholeString:result scoreString:scoreString];
+        }
+        else {
+            NSArray *words = [scoreHistory valueForKey:@"words"];
+            if (words.count == 1) {
+                [self colorWholeString:result scoreString:scoreString];
+            }
+            else {
+                NSUInteger endToken = 0;
+                int i = 0;
+                NSArray *tokens = [self getTokens:exercise];
+                for (NSDictionary *entry in words) {
+                    NSString *word   = [entry objectForKey:@"w"];
+                    NSString *wscore = [entry objectForKey:@"s"];
+                    float score = [wscore floatValue];
+                    
+                    NSString *token = [tokens objectAtIndex:i++];
+                //    NSLog(@"token %@ score %@ vs %@",word,wscore,token);
+                    
+                    NSRange trange = [exercise rangeOfString:token options:NSCaseInsensitiveSearch range:NSMakeRange(endToken, exercise.length-endToken)];
+                    
+                    if (trange.length > 0) {
+                        UIColor *color = [self getColor2:score];
+                        
+                        [result addAttribute:NSBackgroundColorAttributeName
+                                       value:color
+                                       range:trange];
+                        endToken = trange.location+trange.length;
+                    }
+                    else {
+                        NSLog(@"huh? ERROR - can't find %@ in %@",word,exercise);
+                    }
+                }
+            }
+        }
+        
+        cell.fl.attributedText = result;
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Configure the cell...
@@ -229,22 +285,31 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         cell.fl.text = @"";
     }
     else {
-        NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:fl];
-        
-        NSRange range = NSMakeRange(0, [result length]);
-        NSString *scoreString = [_exToScore objectForKey:exid];
-        float score = [scoreString floatValue]/100.0f;
-        if (score > 0) {
-            UIColor *color = [self getColor2:score];
-            [result addAttribute:NSBackgroundColorAttributeName
-                           value:color
-                           range:range];
-        }
-        
-        cell.fl.attributedText = result;
+        NSDictionary *scoreHistory = [_exToJson objectForKey:exid];
+        [self colorEachWord:exid cell:cell exercise:fl scoreHistory:scoreHistory];
+
         cell.english.text = [_exToEnglish objectForKey:exid];
     }
     return cell;
+}
+
+-(NSArray *)getTokens:(NSString *)sentence {
+    NSMutableArray * all = [[NSMutableArray alloc] init];
+    NSError *error = nil;
+    NSString *regexPattern = @"[\\?\\.,-\\/#!$%\\^&\\*;:{}=\\-_`~()]";
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexPattern options:NSRegularExpressionCaseInsensitive error:&error];
+    sentence = [regex stringByReplacingMatchesInString:sentence options:0 range:NSMakeRange(0, [sentence length]) withTemplate:@" "];
+    
+    for (NSString *untrimedToken in [sentence componentsSeparatedByString:@" "]) { // split on spaces
+        NSString *token = [untrimedToken stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        
+        if (token.length > 0) {
+            [all addObject:token];
+        }
+    }
+    //  NSLog(@"tokens %@", all);
+    
+    return all;
 }
 
 - (UIColor *) getColor2:(float) score {
@@ -333,6 +398,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             _exToScore   = [[NSMutableDictionary alloc] init];
             _exToHistory = [[NSMutableDictionary alloc] init];
             _exList = [[NSMutableArray alloc] init];
+            _exToJson    = [[NSMutableDictionary alloc] init];
+
             for (NSDictionary *entry in jsonArray) {
                 NSString *ex = [entry objectForKey:@"ex"];
                 if ([_exToFL objectForKey:ex] != nil) {
@@ -348,6 +415,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     }
                     [_exToHistory setValue:jsonArrayHistory forKey:ex];
                     [_exList addObject:ex];
+                    [_exToJson    setValue:[entry objectForKey:@"scoreJson"] forKey:ex];
                 }
             }
             NSString *correct   = [json objectForKey:@"lastCorrect"];

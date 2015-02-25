@@ -83,13 +83,18 @@
     
     UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
     gestureRecognizer.cancelsTouchesInView = NO;
-     gestureRecognizer.delegate = self;
+    gestureRecognizer.delegate = self;
     [self.languagePicker addGestureRecognizer:gestureRecognizer];
     
     NSString *languageRemembered = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
     if (languageRemembered != nil) {
         int toChoose = [_languages indexOfObject:languageRemembered];
-        [_languagePicker selectRow:toChoose inComponent:0 animated:false];
+        if (toChoose > _languagePicker.numberOfComponents) {
+            [_languagePicker selectRow:0 inComponent:0 animated:false];
+        }
+        else {
+            [_languagePicker selectRow:toChoose inComponent:0 animated:false];
+        }
     }
     
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
@@ -346,6 +351,7 @@ NSString *statusCodeDisplay;
     return true;
 }
 
+// this is a post request
 - (void)addUser:(NSString *)chosenLanguage username:(NSString *)username password:(NSString *)password email:(NSString *)email {
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet",chosenLanguage
                          ];
@@ -354,7 +360,6 @@ NSString *statusCodeDisplay;
     //NSLog(@"url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
- //   [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
     
     [urlRequest setHTTPMethod: @"POST"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
@@ -372,7 +377,7 @@ NSString *statusCodeDisplay;
     [urlRequest setTimeoutInterval:10];
 
    // [[NSURLConnection connectionWithRequest:urlRequest delegate:self] start];
-    NSLog(@"send async request");
+//    NSLog(@"send async request");
 
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {

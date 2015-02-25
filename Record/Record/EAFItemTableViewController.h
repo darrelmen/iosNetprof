@@ -11,7 +11,7 @@
 #import "EAFAudioCache.h"
 #import "EAFRecoFlashcardController.h"
 
-@interface EAFItemTableViewController : UITableViewController<NSURLConnectionDelegate>
+@interface EAFItemTableViewController : UITableViewController
 
 @property BOOL hasModel;
 @property NSString *currentChapter;

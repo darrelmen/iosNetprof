@@ -108,8 +108,6 @@
     return result;
 }
 
-
-
 -(NSArray *)getTokens:(NSString *)sentence {
     NSMutableArray * all = [[NSMutableArray alloc] init];
     NSError *error = nil;

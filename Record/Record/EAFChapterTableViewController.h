@@ -19,6 +19,5 @@
 
 @property NSArray *chapters;
 @property NSString *language;
-//@property BOOL hasModel;
 
 @end

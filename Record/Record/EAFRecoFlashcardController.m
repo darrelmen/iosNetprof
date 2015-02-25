@@ -1809,6 +1809,7 @@ BOOL addSpaces = false;
     
     NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
                     @"Egyptian",
+                    @"EgyptianCandidate",
                     @"Farsi",
                     @"Levantine",
                     @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];

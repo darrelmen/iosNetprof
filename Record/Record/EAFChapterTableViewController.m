@@ -268,8 +268,6 @@ UIAlertView *loadingContentAlert;
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
-   // NSLog(@"connectionDidFinishLoading : chapters");
-
     CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
     CFAbsoluteTime diff = (now-_startPost);
     
@@ -326,16 +324,34 @@ UIAlertView *loadingContentAlert;
     return [self.chapters count];
 }
 
+/*
+ * Marks chapters that have their content pruned out b/c of missing audio.
+ */
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"ListPrototypeCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
- 
-   // NSLog(@"selecting row %d out of %d chapters",indexPath.row, self.chapters.count);
     
-    NSString *chapter = [self.chapters objectAtIndex:indexPath.row];
+    NSString *chapter = [_chapters objectAtIndex:indexPath.row];
     cell.textLabel.text = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
 
+    // mark chapters with empty content
+    for (NSDictionary *entry in _jsonContentArray) {
+        NSString *name =[entry objectForKey:@"name"];
+        if ([name isEqualToString:chapter]) {
+            NSArray *items = [entry objectForKey:@"items"];
+            if (items == nil) { // no items - not a leaf
+                break;
+            }
+            else {
+                if (items.count == 0) {
+                    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@ (No Audio Available)",_chapterName, chapter];
+                }
+                break;
+            }
+        }
+    }
+    
     return cell;
 }
 
@@ -390,10 +406,10 @@ UIAlertView *loadingContentAlert;
  
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
-    NSLog(@"Chapter table view controller prepareForSegue identifier %@ %@ %@ %@ %@",segue.identifier,_chapterName,tappedItem,
-          _unitTitle,_unit);
+//    NSLog(@"Chapter table view controller prepareForSegue identifier %@ %@ %@ %@ %@",segue.identifier,_chapterName,tappedItem,
+//          _unitTitle,_unit);
 
-   // NSLog(@"Chapter table Got prepare -- %@ has model %@",itemController, _hasModel?@"YES":@"NO");
+  //  NSLog(@"Chapter table Got prepare -- %@ has model %@",itemController, _hasModel?@"YES":@"NO");
     [itemController setChapterToItems:_chapterInfo];
     [itemController setJsonItems:_currentItems];
     itemController.chapterTitle = _chapterName;

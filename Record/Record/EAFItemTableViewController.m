@@ -23,6 +23,7 @@
 
 @property NSDictionary *exToScore;
 @property NSDictionary *exToHistory;
+@property NSDictionary *exToJson;
 
 @property EAFRecoFlashcardController *notifyFlashcardController;
 @end
@@ -72,7 +73,7 @@
 {
     [super viewDidLoad];
     _audioCache = [[EAFAudioCache alloc] init];
-    //NSLog(@"\n\n\nmade audio cache...");
+    //NSLog(@"made audio cache...");
     
     NSLog(@"viewDidLoad - item table controller - %@, count = %lu", _hasModel?@"YES":@"NO",(unsigned long)_jsonItems.count);
 
@@ -83,7 +84,6 @@
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
     
-  //  [self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
@@ -103,22 +103,6 @@
     [super viewWillAppear:animated];
 }
 
-//- (void) viewDidDisappear:(BOOL)animated {
-////    NSLog(@"ItemViewController : viewDidDisappear -- cancelling %@",_audioCache);
-// //   [_audioCache cancelAllOperations];
-//    [super viewWillDisappear:<#animated#>];
-//
-//}
-
-//- (void)setChapter:(NSString *) chapter {
-//    currentChapter = chapter;
-//    NSLog(@"ItemTableViewController - current chapter %@",currentChapter);
-//}
-
-//- (void)setChapterTitle:(NSString *) title {
-//    chapterTitle = title;
-//}
-
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -130,8 +114,71 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    //NSLog(@"found rows %d",self.items.count);
     return _requestPending ? 0:[_jsonItems count];
+}
+
+- (void)colorWholeString:(NSMutableAttributedString *)result scoreString:(NSString *)scoreString
+{
+    NSRange range = NSMakeRange(0, [result length]);
+    float score = [scoreString floatValue]/100.0f;
+    if (score > 0) {
+        UIColor *color = [self getColor2:score];
+        [result addAttribute:NSBackgroundColorAttributeName
+                       value:color
+                       range:range];
+    }
+}
+
+- (void)colorEachWord:(NSString *)exid cell:(UITableViewCell *)cell exercise:(NSString *)exercise scoreHistory:(NSDictionary *)scoreHistory
+{
+    NSString *scoreString = [_exToScore objectForKey:exid];
+    if (scoreString == nil) {
+        cell.textLabel.text = exercise;
+    }
+    else {
+        NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:exercise];
+        
+        //NSLog(@"tableView scoreHistory - json %@",scoreHistory);
+       // NSLog(@"tableView scoreHistory - class %@",[scoreHistory class]);
+        if (scoreHistory == nil || ![scoreHistory isKindOfClass:[NSDictionary class]] || scoreHistory.count == 0) {
+            [self colorWholeString:result scoreString:scoreString];
+        }
+        else {
+            NSArray *words = [scoreHistory valueForKey:@"words"];
+            if (words.count == 1) {
+                [self colorWholeString:result scoreString:scoreString];
+            }
+            else {
+                NSUInteger endToken = 0;
+                int i = 0;
+                NSArray *tokens = [self getTokens:exercise];
+                for (NSDictionary *entry in words) {
+                    NSString *word   = [entry objectForKey:@"w"];
+                    NSString *wscore = [entry objectForKey:@"s"];
+                    float score = [wscore floatValue];
+                    
+                    NSString *token = [tokens objectAtIndex:i++];
+                  //  NSLog(@"token %@ score %@ vs %@",word,wscore,token);
+                    
+                    NSRange trange = [exercise rangeOfString:token options:NSCaseInsensitiveSearch range:NSMakeRange(endToken, exercise.length-endToken)];
+                    
+                    if (trange.length > 0) {
+                        UIColor *color = [self getColor2:score];
+                        
+                        [result addAttribute:NSBackgroundColorAttributeName
+                                       value:color
+                                       range:trange];
+                        endToken = trange.location+trange.length;
+                    }
+                    else {
+                        NSLog(@"huh? ERROR - can't find %@ in %@",word,exercise);
+                    }
+                }
+            }
+        }
+        
+        cell.textLabel.attributedText = result;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -145,6 +192,7 @@
     NSString *englishPhrases = [jsonObject objectForKey:@"en"];
     NSString *exid = [jsonObject objectForKey:@"id"];
     NSArray *answers = [_exToHistory objectForKey:exid];
+    NSDictionary *scoreHistory = [_exToJson objectForKey:exid];
     
     if (answers == nil || answers.count == 0) {
         cell.imageView.image = [UIImage imageNamed:@"questionIcon"];
@@ -160,27 +208,29 @@
         }
     }
     
-    NSString *scoreString = [_exToScore objectForKey:exid];
-    if (scoreString == nil) {
-        cell.textLabel.text = exercise;
-    }
-    else {
-        NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:exercise];
-        
-        NSRange range = NSMakeRange(0, [result length]);
-        float score = [scoreString floatValue]/100.0f;
-        if (score > 0) {
-            UIColor *color = [self getColor2:score];
-            [result addAttribute:NSBackgroundColorAttributeName
-                           value:color
-                           range:range];
-        }
-        
-        cell.textLabel.attributedText = result;
-    }
+    [self colorEachWord:exid cell:cell exercise:exercise scoreHistory:scoreHistory];
     cell.detailTextLabel.text = englishPhrases;
     
     return cell;
+}
+
+-(NSArray *)getTokens:(NSString *)sentence {
+    NSMutableArray * all = [[NSMutableArray alloc] init];
+    NSError *error = nil;
+    NSString *regexPattern = @"[\\?\\.,-\\/#!$%\\^&\\*;:{}=\\-_`~()]";
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexPattern options:NSRegularExpressionCaseInsensitive error:&error];
+    sentence = [regex stringByReplacingMatchesInString:sentence options:0 range:NSMakeRange(0, [sentence length]) withTemplate:@" "];
+    
+    for (NSString *untrimedToken in [sentence componentsSeparatedByString:@" "]) { // split on spaces
+        NSString *token = [untrimedToken stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        
+        if (token.length > 0) {
+            [all addObject:token];
+        }
+    }
+    //  NSLog(@"tokens %@", all);
+    
+    return all;
 }
 
 - (UIColor *) getColor2:(float) score {
@@ -306,25 +356,12 @@
      }];
 }
 
-#pragma mark NSURLConnection Delegate Methods
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-    // A response has been received, this is where we initialize the instance var you created
-    // so that we can append data to it in the didReceiveData method
-    // Furthermore, this method is called each time there is a redirect so reinitializing it
-    // also serves to clear it
-    
-    _responseData = [[NSMutableData alloc] init];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    // Append the new data to the instance variable you declared
-   // [_responseData appendData:data];
-}
-
 - (BOOL)useJsonChapterData {
-    NSLog(@"ITemTableViewController - useJsonChapterData --- ");
+    NSLog(@"ITemTableViewController - useJsonChapterData --- num json %lu ",(unsigned long)_jsonItems.count);
 
+    if (_jsonItems.count == 0) {
+        
+    }
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_responseData
@@ -347,6 +384,7 @@
     if (jsonArray != nil) {
         _exToScore   = [[NSMutableDictionary alloc] init];
         _exToHistory = [[NSMutableDictionary alloc] init];
+        _exToJson    = [[NSMutableDictionary alloc] init];
         for (NSDictionary *entry in jsonArray) {
             NSString *ex = [entry objectForKey:@"ex"];
             NSDictionary *entryForID = [exToEntry objectForKey:ex];
@@ -356,6 +394,7 @@
             
             [_exToScore   setValue:[entry objectForKey:@"s"] forKey:ex];
             [_exToHistory setValue:[entry objectForKey:@"h"] forKey:ex];
+            [_exToJson    setValue:[entry objectForKey:@"scoreJson"] forKey:ex];
         }
         
         if ([newOrder count] > 0) {
@@ -391,15 +430,8 @@
     
     //[loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
    // NSLog(@"ItemTableViewController connectionDidFinishLoading... ");
-
     [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-}
-
-- (NSCachedURLResponse *)connection:(NSURLConnection *)connection
-                  willCacheResponse:(NSCachedURLResponse*)cachedResponse {
-    // Return nil to indicate not necessary to store a cached response for this connection
-    return nil;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
