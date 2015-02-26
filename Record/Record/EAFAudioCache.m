@@ -114,7 +114,6 @@
 
 @property (strong) NSOperationQueue *operationQueue;
 @property int completed;
-@property BOOL reachable;
 @property NSArray *paths;
 @property NSArray *rawPaths;
 
@@ -128,34 +127,8 @@
     {
         _operationQueue = [[NSOperationQueue alloc] init];
         _operationQueue.maxConcurrentOperationCount = 2;
-        _reachable = true;
     }
-    [self setupReachability];
     return self;
-}
-
-- (void) setupReachability {
-    // Allocate a reachability object
-    Reachability* reach = [Reachability reachabilityForInternetConnection];
-    
-    // Set the blocks
-    reach.reachableBlock = ^(Reachability*reach)
-    {
-        // keep in mind this is called on a background thread
-        // and if you are updating the UI it needs to happen
-        // on the main thread, like this:
-        
-        _reachable = true;
-    };
-    
-    reach.unreachableBlock = ^(Reachability*reach)
-    {
-        // NSLog(@"UNREACHABLE!");
-        _reachable = false;
-    };
-    
-    // Start the notifier, which will cause the reachability object to retain itself!
-    [reach startNotifier];
 }
 
 - (void) cancelAllOperations {
@@ -180,8 +153,8 @@
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *audioDir = [NSString stringWithFormat:@"%@_audio",lang];
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
-    
-    if (_reachable) {
+    Reachability* reach = [Reachability reachabilityForInternetConnection];
+    if ([reach isReachable]) {
         for (int index = 0; index < _rawPaths.count; index++) {
             NSString *rawPath = [_rawPaths objectAtIndex:index];
             NSString *path = [_paths objectAtIndex:index];
@@ -189,7 +162,7 @@
             [_operationQueue addOperation:operation];
         }
     }
-    NSLog(@"initial queue posting finished for %@ and %lu items, queue has %lu",self,(unsigned long)_rawPaths.count,_operationQueue.operationCount);
+    NSLog(@"initial queue posting finished for %@ and %lu items, queue has %lu",self,(unsigned long)_rawPaths.count,(unsigned long)_operationQueue.operationCount);
 }
 
 @end

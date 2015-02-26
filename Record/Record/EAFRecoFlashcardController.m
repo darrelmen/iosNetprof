@@ -778,7 +778,6 @@
             else {
                 [self playRefAudioIfAvailable];
             }
-
         }
     }
 }
@@ -1028,12 +1027,10 @@ BOOL preventPlayAudio = false;
 }
 
 - (IBAction)speedSelection:(id)sender {
- //   NSLog(@"Got speed selection...");
     _speedButton.selected = !_speedButton.selected;
     [SSKeychain setPassword:(_speedButton.selected ? @"Slow":@"Regular")
                  forService:@"mitll.proFeedback.device" account:@"audioSpeed"];
 
-  //  _speedButton.imageView = _speedButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
     _speedButton.backgroundColor = _speedButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
     if (!_autoPlayButton.selected) {
         [self respondToSwipe];
@@ -1517,13 +1514,15 @@ bool debugRecord = false;
     [urlRequest setHTTPBody:postData];
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
 
+    // NSLog(@"posting to %@",_url);
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          dispatch_async(dispatch_get_main_queue(), ^{
              [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
              [_recoFeedbackImage stopAnimating];
          });
-         
+     //    NSLog(@"response to post of audio...");
+
          if (error != nil) {
              NSLog(@"postAudio : Got error %@",error);
              dispatch_async(dispatch_get_main_queue(), ^{
@@ -1544,7 +1543,6 @@ bool debugRecord = false;
      }];
     
     _startPost = CFAbsoluteTimeGetCurrent();
-   // NSLog(@"posting to %@",_url);
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
 }
 

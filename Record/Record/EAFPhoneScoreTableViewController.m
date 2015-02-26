@@ -379,7 +379,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     float totalPhoneScore = 0.0f;
     float totalPhones = 0.0f;
    // int count = 0;
-    BOOL addSpaces = true;
+    BOOL addSpaces = false;
 
     // try to worry about the same word appearing multiple times...
     NSMutableSet *shownSoFar = [[NSMutableSet alloc] init];

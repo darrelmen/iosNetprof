@@ -56,17 +56,11 @@
                 [paths addObject:mu];
                 [rawPaths addObject:refPath];
             }
-            //else {
-                //NSLog(@"skipping %@ %@",id,refPath);
-            //}
         }
     }
     
     NSLog(@"ItemTableViewController.cacheAudio Got get audio -- %@ ",_audioCache);
-    
     [_audioCache goGetAudio:rawPaths paths:paths language:_language];
-
-    //NSLog(@"cacheAudio Got get audio -- after ");
 }
 
 - (void)viewDidLoad
@@ -74,12 +68,11 @@
     [super viewDidLoad];
     _audioCache = [[EAFAudioCache alloc] init];
     //NSLog(@"made audio cache...");
-    
-    NSLog(@"viewDidLoad - item table controller - %@, count = %lu", _hasModel?@"YES":@"NO",(unsigned long)_jsonItems.count);
+  //  NSLog(@"viewDidLoad - item table controller - %@, count = %lu", _hasModel?@"YES":@"NO",(unsigned long)_jsonItems.count);
 
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
-    [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,_chapterTitle,_currentChapter]];
+    [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",([_language isEqualToString:@"CM"] ? @"Mandarin":_language),_chapterTitle,_currentChapter]];
     
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
@@ -129,6 +122,7 @@
     }
 }
 
+// use score history to color each word if multi-word phrase
 - (void)colorEachWord:(NSString *)exid cell:(UITableViewCell *)cell exercise:(NSString *)exercise scoreHistory:(NSDictionary *)scoreHistory
 {
     NSString *scoreString = [_exToScore objectForKey:exid];
@@ -138,8 +132,6 @@
     else {
         NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:exercise];
         
-        //NSLog(@"tableView scoreHistory - json %@",scoreHistory);
-       // NSLog(@"tableView scoreHistory - class %@",[scoreHistory class]);
         if (scoreHistory == nil || ![scoreHistory isKindOfClass:[NSDictionary class]] || scoreHistory.count == 0) {
             [self colorWholeString:result scoreString:scoreString];
         }
@@ -297,15 +289,14 @@
     EAFRecoFlashcardController *flashcardController = [segue destinationViewController];
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSInteger row = indexPath.row;
-    NSLog(@"Item Table - got seque row %ld %@ %@",(long)indexPath.row, _chapterTitle, _currentChapter );
+//    NSLog(@"Item Table - got seque row %ld %@ %@",(long)indexPath.row, _chapterTitle, _currentChapter );
  
     flashcardController.jsonItems = _jsonItems;
     flashcardController.index = row;
     flashcardController.language = _language;
     flashcardController.url = [self getURL];
-    [flashcardController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,_currentChapter]];
+    [flashcardController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",([_language isEqualToString:@"CM"] ? @"Mandarin":_language),_currentChapter]];
     
-   // NSLog(@"\n\n\nmodel %@",_hasModel ? @" YES ":@"NO");
     flashcardController.hasModel=_hasModel;
     flashcardController.chapterTitle = _chapterTitle;
     flashcardController.currentChapter = _currentChapter;
@@ -339,8 +330,6 @@
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
-         //NSLog(@"ItemTableViewController - Got response %@",error);
-         
          if (error != nil) {
              NSLog(@"ItemTableViewController Got error %@",error);
              dispatch_async(dispatch_get_main_queue(), ^{
@@ -359,9 +348,6 @@
 - (BOOL)useJsonChapterData {
     NSLog(@"ITemTableViewController - useJsonChapterData --- num json %lu ",(unsigned long)_jsonItems.count);
 
-    if (_jsonItems.count == 0) {
-        
-    }
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_responseData
@@ -414,22 +400,9 @@
     return true;
 }
 
-//- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-//    if([indexPath row] == ((NSIndexPath*)[[tableView indexPathsForVisibleRows] lastObject]).row){
-//        //end of loading
-//        //for example [activityIndicator stopAnimating];
-////        NSLog(@"finished loading table --- ");
-//        NSLog(@"item table view : cacheAudio ----------- ");
-//        
-//        [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
-//    }
-//}
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
-    
-    //[loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
-   // NSLog(@"ItemTableViewController connectionDidFinishLoading... ");
     [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
@@ -440,7 +413,6 @@
     NSLog(@"ItemTableViewController - Download content failed with %@",error);
     _requestPending = false;
     [[self tableView] reloadData];
-
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 

@@ -50,7 +50,8 @@
     
     _language = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
 
-    [self setTitle:_language];
+   // if (_language isEqualToString:@"CM" ? @"Mandarin":_language)
+    [self setTitle:([_language isEqualToString:@"CM"] ? @"Mandarin":_language)];
     
     if (_jsonContentArray == nil) {
         [self loadInitialData];
