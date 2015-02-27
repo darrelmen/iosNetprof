@@ -1635,7 +1635,7 @@ bool debugRecord = false;
         NSLog(@"validity was %@",valid);
     }
     
-    if ([valid containsString:@"OK"]) {
+    if ([valid rangeOfString:@"OK"].location != NSNotFound) {
         //if (saidWord) {
         [self updateScoreDisplay:json];
         // }
@@ -1644,10 +1644,10 @@ bool debugRecord = false;
         // }
     }
     else {
-        if ([valid containsString:@"MIC"] || [valid containsString:@"TOO_QUIET"]) {
+        if ([valid rangeOfString:@"MIC"].location != NSNotFound || [valid rangeOfString:@"TOO_QUIET"].location != NSNotFound) {
             [self setDisplayMessage:@"Please speak louder"];
         }
-        else if ([valid containsString:@"TOO_LOUD"]) {
+        else if ([valid rangeOfString:@"TOO_LOUD"].location != NSNotFound) {
             [self setDisplayMessage:@"Please speak softer"];
             
         }
@@ -1697,7 +1697,6 @@ bool debugRecord = false;
     //  NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
     //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *exid = [json objectForKey:@"exid"];
-
   //  [_exToResponse setObject:json forKey:exid];
     
     NSNumber *previousScore;
@@ -1717,7 +1716,7 @@ bool debugRecord = false;
     }
     NSString *current = [[self getCurrentJson] objectForKey:@"id"];
     if (![exid isEqualToString:current]) {
-        NSLog(@"got %@ vs expecting %@",exid,current );
+        NSLog(@"response exid not same as current - got %@ vs expecting %@",exid,current );
         return;
     }
 
@@ -1760,7 +1759,7 @@ bool debugRecord = false;
     wordLabel.attributedText = coloredWord;
     wordLabel.font = _foreignLang.font; // font sizes should match
     
-    BOOL isIPhone = [[UIDevice currentDevice].model containsString:@"iPhone"];
+    BOOL isIPhone = [[UIDevice currentDevice].model rangeOfString:@"iPhone"].location != NSNotFound;
     
     if (isIPhone && [_foreignLang.text length] > 15) {
         wordLabel.font  = [UIFont systemFontOfSize:24];
@@ -2129,7 +2128,7 @@ BOOL addSpaces = false;
     
     NSString *model = [UIDevice currentDevice].model;
     NSLog(@"model %@",model);
-    BOOL isIPhone = [model containsString:@"iPhone"];
+    BOOL isIPhone = [model rangeOfString:@"iPhone"].location != NSNotFound;
     
     MZFormSheetController *formSheet = isIPhone ?
 //        [[MZFormSheetController alloc] initWithViewController:popupController] :

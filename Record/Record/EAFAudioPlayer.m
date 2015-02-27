@@ -177,7 +177,7 @@
         [_player removeObserver:self forKeyPath:@"status"];
     }
     @catch (NSException *exception) {
-        if (![exception.description containsString:@"registered"]) {
+        if ([exception.description rangeOfString:@"registered"].location != NSNotFound) {
             NSLog(@"removePlayObserver - got exception %@",exception.description);
         }
     }
