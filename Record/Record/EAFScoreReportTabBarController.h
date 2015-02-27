@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <SplunkMint-iOS/SplunkMint-iOS.h>
+//#import <SplunkMint-iOS/SplunkMint-iOS.h>
 
 @interface EAFScoreReportTabBarController : UITabBarController<UITabBarControllerDelegate>
 

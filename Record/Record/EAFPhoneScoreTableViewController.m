@@ -76,7 +76,6 @@
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-   // [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
@@ -86,11 +85,9 @@
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
-         NSLog(@"PhoneScoreTableViewController - Got response %@",error);
-         
+         //NSLog(@"PhoneScoreTableViewController - Got response %@",error);
          if (error != nil) {
              NSLog(@"PhoneScoreTableViewController Got error %@",error);
-             //[self connection:nil didFailWithError:error];
              
              dispatch_async(dispatch_get_main_queue(), ^{
                  [self connection:nil didFailWithError:error];
@@ -98,7 +95,6 @@
          }
          else {
              _responseData = data;
-         //    [self connectionDidFinishLoading:nil];
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:YES];

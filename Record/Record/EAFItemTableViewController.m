@@ -123,6 +123,7 @@
 }
 
 // use score history to color each word if multi-word phrase
+// TODO : don't copy this code - see WordScoreTableViewController
 - (void)colorEachWord:(NSString *)exid cell:(UITableViewCell *)cell exercise:(NSString *)exercise scoreHistory:(NSDictionary *)scoreHistory
 {
     NSString *scoreString = [_exToScore objectForKey:exid];
@@ -146,6 +147,10 @@
                 NSArray *tokens = [self getTokens:exercise];
                 for (NSDictionary *entry in words) {
                     NSString *word   = [entry objectForKey:@"w"];
+                    if ([word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) {
+                        //  NSLog(@"skipping %@",word);
+                        continue;
+                    }
                     NSString *wscore = [entry objectForKey:@"s"];
                     float score = [wscore floatValue];
                     
@@ -326,7 +331,7 @@
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
-    [[Mint sharedInstance] leaveBreadcrumb:@"sendingAsyncItemController"];
+   // [[Mint sharedInstance] leaveBreadcrumb:@"sendingAsyncItemController"];
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {

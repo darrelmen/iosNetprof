@@ -34,7 +34,6 @@
 		B61B946F1A1FF02F0049462E /* questionIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = B61B946E1A1FF02F0049462E /* questionIcon.png */; };
 		B61B94721A23AC1A0049462E /* EAFForgotPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B94711A23AC1A0049462E /* EAFForgotPasswordViewController.m */; };
 		B61B94751A23BB770049462E /* EAFSetPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B94741A23BB770049462E /* EAFSetPasswordViewController.m */; };
-		B6252AA41A1C50810083AE7A /* SplunkMint-iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA31A1C50810083AE7A /* SplunkMint-iOS.framework */; };
 		B6252AA61A1C50EA0083AE7A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA51A1C50EA0083AE7A /* SystemConfiguration.framework */; };
 		B6252AA81A1C50FF0083AE7A /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6252AA71A1C50FF0083AE7A /* CoreTelephony.framework */; };
 		B6252AAB1A1EB53B0083AE7A /* EAFAudioCache.m in Sources */ = {isa = PBXBuildFile; fileRef = B6252AAA1A1EB53B0083AE7A /* EAFAudioCache.m */; };
@@ -190,7 +189,6 @@
 		B61B94711A23AC1A0049462E /* EAFForgotPasswordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFForgotPasswordViewController.m; sourceTree = "<group>"; };
 		B61B94731A23BB770049462E /* EAFSetPasswordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFSetPasswordViewController.h; sourceTree = "<group>"; };
 		B61B94741A23BB770049462E /* EAFSetPasswordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFSetPasswordViewController.m; sourceTree = "<group>"; };
-		B6252AA31A1C50810083AE7A /* SplunkMint-iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "SplunkMint-iOS.framework"; path = "../../../SplunkMint-iOS.framework"; sourceTree = "<group>"; };
 		B6252AA51A1C50EA0083AE7A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		B6252AA71A1C50FF0083AE7A /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		B6252AA91A1EB53B0083AE7A /* EAFAudioCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFAudioCache.h; sourceTree = "<group>"; };
@@ -332,7 +330,6 @@
 				B67E1BB6197EC25D00F42143 /* libz.dylib in Frameworks */,
 				B6252AA81A1C50FF0083AE7A /* CoreTelephony.framework in Frameworks */,
 				B6252AA61A1C50EA0083AE7A /* SystemConfiguration.framework in Frameworks */,
-				B6252AA41A1C50810083AE7A /* SplunkMint-iOS.framework in Frameworks */,
 				B66461F2196F193900943BC2 /* AVFoundation.framework in Frameworks */,
 				F6A5682018ECA98A00B844C6 /* CoreGraphics.framework in Frameworks */,
 				F6A5682218ECA98A00B844C6 /* UIKit.framework in Frameworks */,
@@ -542,7 +539,6 @@
 			children = (
 				B6252AA71A1C50FF0083AE7A /* CoreTelephony.framework */,
 				B6252AA51A1C50EA0083AE7A /* SystemConfiguration.framework */,
-				B6252AA31A1C50810083AE7A /* SplunkMint-iOS.framework */,
 				B67E1BB5197EC25D00F42143 /* libz.dylib */,
 				B66461F1196F193900943BC2 /* AVFoundation.framework */,
 				F6A5681D18ECA98A00B844C6 /* Foundation.framework */,
@@ -999,7 +995,7 @@
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
 				"INSTALL_OWNER[sdk=*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -1028,7 +1024,7 @@
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
 				"INSTALL_OWNER[sdk=*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",

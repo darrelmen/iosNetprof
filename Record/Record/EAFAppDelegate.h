@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <SplunkMint-iOS/SplunkMint-iOS.h>
+//#import <SplunkMint-iOS/SplunkMint-iOS.h>
 #import "EAFRecoFlashcardController.h"
 
 @interface EAFAppDelegate : UIResponder <UIApplicationDelegate>

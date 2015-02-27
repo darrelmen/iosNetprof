@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "BButton.h"
-#import <SplunkMint-iOS/SplunkMint-iOS.h>
+//#import <SplunkMint-iOS/SplunkMint-iOS.h>
 #import "EAFAudioPlayer.h"
 
 @interface EAFRecoFlashcardController : UIViewController

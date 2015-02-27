@@ -54,6 +54,7 @@
 @property UIPopoverController *popover;
 @property EAFAudioCache *audioCache;
 @property NSMutableDictionary *exToScore;
+//@property NSMutableDictionary *exToResponse;
 - (void)postAudio;
 
 @end
@@ -148,17 +149,15 @@
 
 - (void)viewDidLoad
 {
-    NSLog(@"RecoFlashcardController.viewDidLoad --->");
-
+//    NSLog(@"RecoFlashcardController.viewDidLoad --->");
     [super viewDidLoad];
     _audioCache = [[EAFAudioCache alloc] init];
     
     [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
-
-  //  [self cacheAudio:_jsonItems];
     
     _showPhonesLTRAlways = true;
     _exToScore = [[NSMutableDictionary alloc] init];
+ //   _exToResponse = [[NSMutableDictionary alloc] init];
     
     // Turn on remote control event delivery
     EAFAppDelegate *myDelegate = [UIApplication sharedApplication].delegate;
@@ -274,8 +273,11 @@
                             style:BButtonStyleBootstrapV3
                              icon:FAQuoteLeft
                          fontSize:20.0f];
-  //  NSLog(@"%@",[UIDevice currentDevice].model);
-    BOOL isiPad =  [[UIDevice currentDevice].model containsString:@"Pad"];
+    NSString *model=[UIDevice currentDevice].model;
+    NSLog(@"model %@",model);
+    
+    BOOL isiPad = [model rangeOfString:@"Pad"].length > 0;
+    
     if (isiPad) {
         _contextButton.titleLabel.text = @"sentence";
         [_contextButton addAwesomeIcon:FAQuoteLeft beforeTitle:true];
@@ -354,7 +356,7 @@
 -(void) viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
 
-    NSLog(@"- viewDidDisappear - cancelling audio cache queue operations.");
+    NSLog(@"RecoFlashcard - viewDidDisappear - cancelling audio cache queue operations.");
 
     [_audioCache cancelAllOperations];
 }
@@ -410,7 +412,6 @@
 
 - (IBAction)showScoresClick:(id)sender {
     [self stopPlayingAudio];
-    
     [self postEvent:@"showScoresClick" widget:@"showScores" type:@"Button"];
     
     [self performSegueWithIdentifier:@"goToReport" sender:self];
@@ -447,7 +448,6 @@
         {
             builtInMicPort = port;
             NSLog(@"found built in mic %@",port);
-            
             // break;
         }
         else if ([port.portType isEqualToString:AVAudioSessionPortHeadsetMic])
@@ -510,8 +510,7 @@
 
 - (NSDictionary *)getCurrentJson
 {
-    unsigned long toUse = [self getItemIndex];
-    NSDictionary *jsonObject =[_jsonItems objectAtIndex:toUse];
+    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
     return jsonObject;
 }
 
@@ -731,8 +730,7 @@
     [_english setText:enAtIndex];
     
     // todo : remove font foolishness here
-    BOOL isIPhone = [[UIDevice currentDevice].model containsString:@"iPhone"];
-    
+    BOOL isIPhone = [[UIDevice currentDevice].model rangeOfString:@"iPhone"].length > 0;
     if (isIPhone && [enAtIndex length] > 15) {
         _english.font = [UIFont systemFontOfSize:24];
     }
@@ -780,6 +778,13 @@
             }
         }
     }
+    
+//    NSString *current = [[self getCurrentJson] objectForKey:@"id"];
+//    
+//    NSDictionary *previousJson = [_exToResponse objectForKey:current];
+//    if (previousJson != nil) {
+//        [self showScoreToUser:previousJson previousScore:nil];
+//    }
 }
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
@@ -977,7 +982,6 @@ BOOL preventPlayAudio = false;
     }
     else {
         NSString *current = [[self getCurrentJson] objectForKey:@"id"];
-
         NSLog(@"HUH? no ref audio exid %@",current);
     }
 }
@@ -986,7 +990,6 @@ BOOL preventPlayAudio = false;
     _myAudioPlayer.volume = 1;
 
     [self playRefAudioIfAvailable];
-
     [self postEvent:@"playAudioTouch" widget:_english.text type:@"UILabel"];
 }
 
@@ -1392,10 +1395,9 @@ bool debugRecord = false;
           //  NSLog(@"Adding playing icon to %@",first);
 
         }
-        else {
+//        else {
           //  NSLog(@"No subviews in %@",_scoreDisplayContainer);
-
-        }
+  //      }
 
         if (error)
         {
@@ -1522,7 +1524,6 @@ bool debugRecord = false;
              [_recoFeedbackImage stopAnimating];
          });
      //    NSLog(@"response to post of audio...");
-
          if (error != nil) {
              NSLog(@"postAudio : Got error %@",error);
              dispatch_async(dispatch_get_main_queue(), ^{
@@ -1624,63 +1625,23 @@ bool debugRecord = false;
     [self addScoreDisplayConstraints:toShow];
 }
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
-    CFAbsoluteTime diff = (now-_startPost);
-    
-    NSLog(@"connectionDidFinishLoading - round trip time was %f",diff);
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
-    double durationInSeconds = CMTimeGetSeconds(asset.duration);
-    
-    [self postEvent:[NSString stringWithFormat:@"round trip was %.2f sec for file of dur %.2f sec",diff,durationInSeconds] widget:[NSString stringWithFormat:@"rt %.2f",diff]  type:[NSString stringWithFormat:@"file %.2f",durationInSeconds] ];
- 
-    NSError * error;
-    NSDictionary* json = [NSJSONSerialization
-                          JSONObjectWithData:_responseData
-                          options:NSJSONReadingMutableContainers
-                          error:&error];
-    
-    if (error != nil) {
-        NSLog(@"connectionDidFinishLoading - got error %@",error);
-    }
-    
+- (void)showScoreToUser:(NSDictionary *)json previousScore:(NSNumber *)previousScore {
     BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
-    NSNumber *overallScore = saidWord ? [json objectForKey:@"score"] : 0;
     BOOL correct = [[json objectForKey:@"isCorrect"] boolValue];
-    //  NSLog(@"score was %@",overallScore);
-    //  NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
-    //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *valid = [json objectForKey:@"valid"];
-    NSString *exid = [json objectForKey:@"exid"];
-    NSNumber *previousScore;
-    if (exid != nil) {
-         previousScore = [_exToScore objectForKey:exid];
-        [_exToScore setValue:overallScore forKey:exid];
-    }
+    NSNumber *overallScore = saidWord ? [json objectForKey:@"score"] : 0;
     
-    NSString *reqid = [json objectForKey:@"reqid"];
-
-//    NSLog(@"got back %@",reqid);
-    if ([reqid intValue] < _reqid-1) {
-        NSLog(@"discarding old response - got back %@ latest %d",reqid ,_reqid);
-        return;
-    }
-    NSString *current = [[self getCurrentJson] objectForKey:@"id"];
-    if (![exid isEqualToString:current]) {
-        NSLog(@"got %@ vs expecting %@",exid,current );
-        return;
-    }
     if (![valid isEqualToString:@"OK"]) {
         NSLog(@"validity was %@",valid);
     }
     
     if ([valid containsString:@"OK"]) {
         //if (saidWord) {
-            [self updateScoreDisplay:json];
-       // }
+        [self updateScoreDisplay:json];
+        // }
         //else {
         //    [self setIncorrectMessage:_foreignLang.text];
-       // }
+        // }
     }
     else {
         if ([valid containsString:@"MIC"] || [valid containsString:@"TOO_QUIET"]) {
@@ -1709,6 +1670,58 @@ bool debugRecord = false;
     }
     [_correctFeedback setImage:[UIImage imageNamed:correct ? @"checkmark32" : @"redx32"]];
     [_correctFeedback setHidden:false];
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
+    CFAbsoluteTime diff = (now-_startPost);
+    
+    NSLog(@"connectionDidFinishLoading - round trip time was %f",diff);
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
+    double durationInSeconds = CMTimeGetSeconds(asset.duration);
+    
+    [self postEvent:[NSString stringWithFormat:@"round trip was %.2f sec for file of dur %.2f sec",diff,durationInSeconds] widget:[NSString stringWithFormat:@"rt %.2f",diff]  type:[NSString stringWithFormat:@"file %.2f",durationInSeconds] ];
+ 
+    NSError * error;
+    NSDictionary* json = [NSJSONSerialization
+                          JSONObjectWithData:_responseData
+                          options:NSJSONReadingMutableContainers
+                          error:&error];
+    
+    if (error != nil) {
+        NSLog(@"connectionDidFinishLoading - got error %@",error);
+        NSLog(@"data was %@",_responseData);
+    }
+    
+    //  NSLog(@"score was %@",overallScore);
+    //  NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
+    //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
+    NSString *exid = [json objectForKey:@"exid"];
+
+  //  [_exToResponse setObject:json forKey:exid];
+    
+    NSNumber *previousScore;
+    if (exid != nil) {
+        previousScore = [_exToScore objectForKey:exid];
+        BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
+        NSNumber *overallScore = saidWord ? [json objectForKey:@"score"] : 0;
+        [_exToScore setValue:overallScore forKey:exid];
+    }
+    
+    NSString *reqid = [json objectForKey:@"reqid"];
+
+//    NSLog(@"got back %@",reqid);
+    if ([reqid intValue] < _reqid-1) {
+        NSLog(@"discarding old response - got back %@ latest %d",reqid ,_reqid);
+        return;
+    }
+    NSString *current = [[self getCurrentJson] objectForKey:@"id"];
+    if (![exid isEqualToString:current]) {
+        NSLog(@"got %@ vs expecting %@",exid,current );
+        return;
+    }
+
+    [self showScoreToUser:json previousScore:previousScore];
 }
 
 - (void) showProgressAnimated:(NSNumber *)overallScore {
@@ -2113,7 +2126,10 @@ BOOL addSpaces = false;
         popupController.mref  = [[self getCurrentJson] objectForKey:@"ctref"];
     }
     popupController.fref  = [[self getCurrentJson] objectForKey:@"ctfref"];
-    BOOL isIPhone = [[UIDevice currentDevice].model containsString:@"iPhone"];
+    
+    NSString *model = [UIDevice currentDevice].model;
+    NSLog(@"model %@",model);
+    BOOL isIPhone = [model containsString:@"iPhone"];
     
     MZFormSheetController *formSheet = isIPhone ?
 //        [[MZFormSheetController alloc] initWithViewController:popupController] :
@@ -2141,47 +2157,58 @@ BOOL addSpaces = false;
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
- //   NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
-    EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
-    
-    EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
-    wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong_26h"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    wordReport.language = _language;
-    
-    wordReport.chapterName = _chapterTitle;
-    wordReport.chapterSelection = _currentChapter;
-    
-    wordReport.unitName = _unitTitle;
-    wordReport.unitSelection = _currentUnit;
-    
-    wordReport.jsonItems = _jsonItems;
-    wordReport.url = _url;
-    
-    NSMutableDictionary *exToFL = [[NSMutableDictionary alloc] init];
-    NSMutableDictionary *exToEnglish = [[NSMutableDictionary alloc] init];
-    
-    for (NSDictionary *jsonObject in _jsonItems) {
-        NSString *id = [jsonObject objectForKey:@"id"];
-        NSString *exercise = [jsonObject objectForKey:@"fl"];
-        NSString *englishPhrases = [jsonObject objectForKey:@"en"];
-        [exToFL setValue:exercise forKey:id];
-        [exToEnglish setValue:englishPhrases forKey:id];
+    NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
+    @try {
+        EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
+        
+        EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
+        wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong_26h"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        wordReport.language = _language;
+        
+        wordReport.chapterName = _chapterTitle;
+        wordReport.chapterSelection = _currentChapter;
+        
+        wordReport.unitName = _unitTitle;
+        wordReport.unitSelection = _currentUnit;
+        
+        wordReport.jsonItems = _jsonItems;
+        wordReport.url = _url;
+        
+        NSMutableDictionary *exToFL = [[NSMutableDictionary alloc] init];
+        NSMutableDictionary *exToEnglish = [[NSMutableDictionary alloc] init];
+        
+        for (NSDictionary *jsonObject in _jsonItems) {
+            NSString *id = [jsonObject objectForKey:@"id"];
+            NSString *exercise = [jsonObject objectForKey:@"fl"];
+            NSString *englishPhrases = [jsonObject objectForKey:@"en"];
+            [exToFL setValue:exercise forKey:id];
+            [exToEnglish setValue:englishPhrases forKey:id];
+        }
+        
+        // NSLog(@"setting exToFl to %lu",(unsigned long)exToFL.count);
+        wordReport.exToFL = exToFL;
+        wordReport.exToEnglish = exToEnglish;
+        
+        EAFPhoneScoreTableViewController *phoneReport = [[tabBarController viewControllers] objectAtIndex:1];
+        phoneReport.tabBarItem.image = [[UIImage imageNamed:@"sounds.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        
+        phoneReport.language = _language;
+        phoneReport.chapterName = _chapterTitle;
+        phoneReport.chapterSelection = _currentChapter;
+        
+        phoneReport.unitName = _unitTitle;
+        phoneReport.unitSelection = _currentUnit;
+        
+        phoneReport.url = _url;
     }
-    
-    // NSLog(@"setting exToFl to %lu",(unsigned long)exToFL.count);
-    wordReport.exToFL = exToFL;
-    wordReport.exToEnglish = exToEnglish;
-    
-    EAFPhoneScoreTableViewController *phoneReport = [[tabBarController viewControllers] objectAtIndex:1];
-    phoneReport.tabBarItem.image = [[UIImage imageNamed:@"sounds.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
-    phoneReport.language = _language;
-    phoneReport.chapterName = _chapterTitle;
-    phoneReport.chapterSelection = _currentChapter;
-    
-    phoneReport.unitName = _unitTitle;
-    phoneReport.unitSelection = _currentUnit;
-    
-    phoneReport.url = _url;
+    @catch (NSException *exception)
+    {
+        // Print exception information
+        NSLog( @"NSException caught" );
+        NSLog( @"Name: %@", exception.name);
+        NSLog( @"Reason: %@", exception.reason );
+        return;
+    }
+ 
 }
 @end

@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <SplunkMint-iOS/SplunkMint-iOS.h>
+//#import <SplunkMint-iOS/SplunkMint-iOS.h>
 
 @interface EAFSignUpViewController : UIViewController<NSURLConnectionDelegate,UITextFieldDelegate,UIGestureRecognizerDelegate>
 @property (strong, nonatomic) IBOutlet UITextField *username;

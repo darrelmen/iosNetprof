@@ -406,7 +406,7 @@ UIAlertView *loadingContentAlert;
     EAFItemTableViewController *itemController = [segue destinationViewController];
  
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-    NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
+ //   NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
 //    NSLog(@"Chapter table view controller prepareForSegue identifier %@ %@ %@ %@ %@",segue.identifier,_chapterName,tappedItem,
 //          _unitTitle,_unit);
 

@@ -192,15 +192,25 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         else {
             NSArray *words = [scoreHistory valueForKey:@"words"];
+           // NSLog(@"for words %lu count ",(unsigned long)words.count);
+            NSArray *tokens = [self getTokens:exercise];
+            
             if (words.count == 1) {
                 [self colorWholeString:result scoreString:scoreString];
             }
             else {
                 NSUInteger endToken = 0;
                 int i = 0;
-                NSArray *tokens = [self getTokens:exercise];
+               // NSLog(@"for %@ got tokens %@",exercise,tokens);
+              //  NSLog(@"for words %lu count ",(unsigned long)tokens.count);
+
                 for (NSDictionary *entry in words) {
                     NSString *word   = [entry objectForKey:@"w"];
+                    if ([word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) {
+                      //  NSLog(@"skipping %@",word);
+                        continue;
+                    }
+                    
                     NSString *wscore = [entry objectForKey:@"s"];
                     float score = [wscore floatValue];
                     
@@ -307,7 +317,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             [all addObject:token];
         }
     }
-    //  NSLog(@"tokens %@", all);
+   // NSLog(@"tokens %@", all);
     
     return all;
 }

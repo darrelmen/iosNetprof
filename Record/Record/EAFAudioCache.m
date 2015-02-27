@@ -132,7 +132,7 @@
 }
 
 - (void) cancelAllOperations {
-    NSLog(@"-----> cancelAllOperations %@ %lu pending",self,(unsigned long)_operationQueue.operationCount);
+  //  NSLog(@"-----> cancelAllOperations %@ %lu pending",self,(unsigned long)_operationQueue.operationCount);
     [_operationQueue cancelAllOperations ];
 //    dispatch_async(dispatch_get_main_queue(), ^{
 //        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:FALSE];
@@ -147,22 +147,35 @@
     _rawPaths = [rawPaths2 copy];
     _paths = [ppaths2 copy];
     
-    NSLog(@"EAFAudioCache - go get audio for %lu",(unsigned long)_rawPaths.count);
-    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *audioDir = [NSString stringWithFormat:@"%@_audio",lang];
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
-    Reachability* reach = [Reachability reachabilityForInternetConnection];
-    if ([reach isReachable]) {
-        for (int index = 0; index < _rawPaths.count; index++) {
-            NSString *rawPath = [_rawPaths objectAtIndex:index];
-            NSString *path = [_paths objectAtIndex:index];
-            MyOperation *operation = [[MyOperation alloc] initWithNumber:_rawPaths.count rawPath:rawPath path:path filePath:filePath];
-            [_operationQueue addOperation:operation];
+//    NSLog(@"EAFAudioCache - go get audio for %lu",(unsigned long)_rawPaths.count);
+    @try {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
+       // NSLog(@"got doc dir %@",documentsDirectory);
+        NSString *audioDir = [NSString stringWithFormat:@"%@_audio",lang];
+        NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
+        Reachability* reach = [Reachability reachabilityForInternetConnection];
+        if ([reach isReachable]) {
+            //NSLog(@"_rawPaths count %d",_rawPaths.count);
+            //NSLog(@"_paths count %d",_paths .count);
+
+            for (int index = 0; index < _rawPaths.count; index++) {
+                NSString *rawPath = [_rawPaths objectAtIndex:index];
+                NSString *path = [_paths objectAtIndex:index];
+                MyOperation *operation = [[MyOperation alloc] initWithNumber:_rawPaths.count rawPath:rawPath path:path filePath:filePath];
+                [_operationQueue addOperation:operation];
+            }
         }
+        NSLog(@"EAFAudioCache - initial queue posting finished for %@ and %lu items, queue has %lu",self,(unsigned long)_rawPaths.count,(unsigned long)_operationQueue.operationCount);
     }
-    NSLog(@"initial queue posting finished for %@ and %lu items, queue has %lu",self,(unsigned long)_rawPaths.count,(unsigned long)_operationQueue.operationCount);
+    @catch (NSException *exception)
+    {
+        // Print exception information
+        NSLog( @"NSException caught" );
+        NSLog( @"Name: %@", exception.name);
+        NSLog( @"Reason: %@", exception.reason );
+        return;
+    }
 }
 
 @end

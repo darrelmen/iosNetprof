@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
-#import <SplunkMint-iOS/SplunkMint-iOS.h>
+//#import <SplunkMint-iOS/SplunkMint-iOS.h>
 
 @interface EAFPhoneScoreTableViewController : UITableViewController<NSURLConnectionDelegate,AVAudioPlayerDelegate, UIGestureRecognizerDelegate>
 
