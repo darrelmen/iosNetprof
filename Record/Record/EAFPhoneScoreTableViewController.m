@@ -11,6 +11,7 @@
 #import "MyTableViewCell.h"
 #import "EAFAudioView.h"
 #import "EAFAudioCache.h"
+#import "EAFAudioPlayer.h"
 #import <AudioToolbox/AudioServices.h>
 #import "SSKeychain.h"
 
@@ -19,6 +20,8 @@
 @property int rowHeight;
 @property BOOL showPhonesLTRAlways;  // constant
 @property EAFAudioCache *audioCache;
+@property EAFAudioView * currentAudioSelection;
+@property EAFAudioPlayer *myAudioPlayer;
 
 @end
 
@@ -28,17 +31,17 @@
 {
     [super viewDidLoad];
     _audioCache = [[EAFAudioCache alloc] init];
-
+    
     _showPhonesLTRAlways = true;
 
     _rowHeight = 66;
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
-  
-    playingIcon = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, _rowHeight/2,  _rowHeight/2)];
-    playingIcon.image = nil;
-    [playingIcon setDefaultIconIdentifier:@"fa-volume-up"];
-    playingIcon.defaultView.textColor = [UIColor blueColor];
+    
+    _myAudioPlayer = [[EAFAudioPlayer alloc] init];
+    _myAudioPlayer.url = _url;
+    _myAudioPlayer.language = _language;
+    _myAudioPlayer.delegate = self;
     
     [self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.
@@ -51,13 +54,12 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    [_audioCache cancelAllOperations];
     [super viewWillDisappear:animated];
+    [_audioCache cancelAllOperations];
 }
 
 -(void)setCurrentTitle {
-    UIViewController  *parent = [self parentViewController];
-    parent.navigationItem.title = @"Touch to compare audio";
+    [self parentViewController].navigationItem.title = @"Touch to compare audio";
 }
 
 - (BOOL) cancelTouchesInView {
@@ -85,7 +87,6 @@
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
-         //NSLog(@"PhoneScoreTableViewController - Got response %@",error);
          if (error != nil) {
              NSLog(@"PhoneScoreTableViewController Got error %@",error);
              
@@ -181,7 +182,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)addWordLabelConstraints:(EAFAudioView *)exampleView wordLabel:(UILabel *)wordLabel
 {
- //   exampleView.backgroundColor = [UIColor purpleColor];
     // top
     [exampleView addConstraint:[NSLayoutConstraint
                                 constraintWithItem:wordLabel
@@ -396,8 +396,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         [cell.contentView addSubview:exampleView];
         //    [scrollView addSubview:exampleView];
         
-        exampleView.refAudio = [_resultToRef objectForKey:result];
-        exampleView.answer =[_resultToAnswer objectForKey:result];
+        exampleView.refAudio = [_resultToRef    objectForKey:result];
+        exampleView.answer   = [_resultToAnswer objectForKey:result];
         
         //NSLog(@"ref %@ %@",exampleView.refAudio, exampleView.answer);
         // NSLog(@"word is %@",wordEntry);
@@ -597,10 +597,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return array;
 }
 
-- (IBAction)gotTapGesture:(UITapGestureRecognizer *) sender {   
-    //CGPoint p = [sender locationInView:sender.view];
-    //  NSLog(@"Got point %f %f",p.x,p.y);
-    
+- (IBAction)gotTapGesture:(UITapGestureRecognizer *) sender {
    CGPoint p = [sender locationInView:self.tableView];
     //  NSLog(@"Got point %f %f",p.x,p.y);
     
@@ -621,18 +618,22 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             if(CGRectContainsPoint(subview.bounds, loc))
             {
            //     NSLog(@"-XXXX-----> In View for %@",subview);
-                
                 if ([subview isKindOfClass:[EAFAudioView class]]) {
-                    playingRef = TRUE;
-                    currentAudioSelection = (EAFAudioView *)subview;
-                    [self playRefAudio:(EAFAudioView *)subview];
+                    [_myAudioPlayer stopAudio];
+
+                    [self setTextColor:[UIColor blackColor]];
+                    _currentAudioSelection = (EAFAudioView *)subview;
+                    [self playRefAudio:_currentAudioSelection];
                 }
                 else if ([subview isKindOfClass:[UILabel class]]) {
+                    [_myAudioPlayer stopAudio];
+
                     for (UIView *sibling in subview.superview.subviews) {
                         if ([sibling isKindOfClass:[EAFAudioView class]]) {
-                            playingRef = TRUE;
-                            currentAudioSelection = (EAFAudioView *)sibling;
-                            [self playRefAudio:(EAFAudioView *)sibling];
+                    
+                            [self setTextColor:[UIColor blackColor]];
+                            _currentAudioSelection = (EAFAudioView *)sibling;
+                            [self playRefAudio:_currentAudioSelection];
                             break;
                         }
                     }
@@ -643,171 +644,74 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
 }
 
-FAImageView *playingIcon;
-EAFAudioView * currentAudioSelection;
-bool playingRef = TRUE;
-
 // look for local file with mp3 and use it if it's there.
 - (IBAction)playRefAudio:(EAFAudioView *)sender {
-    NSString *refPath = playingRef ? sender.refAudio : sender.answer;
- //   NSLog(@"ref path %@ playing ref %@",refPath, (playingRef ? @"YES":@"NO"));
-
-    NSString *refAudioPath;
-    NSString *rawRefAudioPath;
+    //NSString *refPath = _playingRef ? sender.refAudio : sender.answer;
+    //NSLog(@"ref path %@ playing ref %@",refPath, (_playingRef ? @"YES":@"NO"));
+    NSMutableArray *audioRefs = [[NSMutableArray alloc] init];
     
-    if (refPath) {
-      //  NSLog(@"has ref path %@",refPath);
-        refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
-                                                     withString:@".mp3"];
+    if (sender.refAudio == nil) {
+        NSLog(@"ERROR - ref audio is null on %@",sender);
+    }
+    else {
+        [audioRefs addObject:sender.refAudio];
+    }
+    if (sender.answer == nil) {
+        NSLog(@"ERROR - answer audio is null on %@",sender);
         
-        NSMutableString *mu = [NSMutableString stringWithString:refPath];
-        [mu insertString:_url atIndex:0];
-        refAudioPath = mu;
-        rawRefAudioPath = refPath;
     }
     else {
-      //  NSLog(@"does not have ref path %@",refPath);
-
-      //  refAudioPath = @"NO";
-      //  rawRefAudioPath = @"NO";
-        playingRef = FALSE;
-        [self playRefAudio:currentAudioSelection];
-        return;
+        [audioRefs addObject:sender.answer];
     }
     
-    NSURL *url = [NSURL URLWithString:refAudioPath];
-    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    
-    NSString *audioDir = [NSString stringWithFormat:@"%@_audio",_language];
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
-    
-    NSString *destFileName = [filePath stringByAppendingPathComponent:rawRefAudioPath];
-    
-    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName];
-    if (fileExists) {
-        //NSLog(@"playRefAudio Raw URL %@", _rawRefAudioPath);
-        NSLog(@"using local url %@",destFileName);
-        url = [[NSURL alloc] initFileURLWithPath: destFileName];
-    }
-    else {
-        NSLog(@"can't find local url %@",destFileName);
-        NSLog(@"playRefAudio URL     %@", url);
-    }
-    NSString *PlayerStatusContext;
-    
-    if (_player) {
-        [_player pause];
-        NSLog(@"removing current observer");
-        [self removePlayObserver];
-    }
-    
-    UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
-    AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
-    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
-    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
-    
-    _player = [AVPlayer playerWithURL:url];
-    
-    [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
+    _myAudioPlayer.audioPaths = audioRefs;
+    [_myAudioPlayer playRefAudio];
+   // NSLog(@"playing %@",audioRefs);
 }
 
-- (void)removePlayingAudioIcon {
-    for (UIView *v in [currentAudioSelection subviews]) {
-        if (v == playingIcon) {
-            [v removeFromSuperview];
+- (void) playStarted {
+    [self setTextColor:[UIColor blueColor]];
+}
+
+- (void) playStopped {
+    [self setTextColor:[UIColor blackColor]];
+}
+
+- (void) playGotToEnd {
+    NSLog(@" playGotToEnd");
+    [self setTextColor:[UIColor blackColor]];
+}
+
+// set the text color of all the labels in the scoreDisplayContainer
+- (void)setTextColor:(UIColor *)color {
+    for (UIView *subview in [_currentAudioSelection subviews]) {
+        if ([subview isKindOfClass:[UILabel class]]) {
+            UILabel *asLabel = (UILabel *) subview;
+            asLabel.textColor = color;
+         //   NSLog(@"initial hit %@ %@",asLabel,asLabel.text);
         }
-    }
-}
-
-- (void)playerItemDidReachEnd:(NSNotification *)notification {
-    NSLog(@" playerItemDidReachEnd");
-    
-    [self removePlayingAudioIcon];
-    
-    if (playingRef) {
-        playingRef = FALSE;
-        [self playRefAudio:currentAudioSelection];
-    }
-}
-
-- (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
-    NSLog(@"Got error %@", error);
-    [self removePlayingAudioIcon];
-}
-
-
-// So this is more complicated -- we have to wait until the mp3 has arrived from the server before we can play it
-// we remove the observer, or else we will later get a message when the player discarded
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
-                        change:(NSDictionary *)change context:(void *)context {
-    //NSLog(@" observeValueForKeyPath %@",keyPath);
-    
-    if (object == _player && [keyPath isEqualToString:@"status"]) {
-        if (_player.status == AVPlayerStatusReadyToPlay) {
-            NSLog(@" audio ready so playing...");
-            [currentAudioSelection addSubview:playingIcon];
-
-            [_player play];
-            
-            AVPlayerItem *currentItem = [_player currentItem];
-            
-            [[NSNotificationCenter defaultCenter]
-             addObserver:self
-             selector:@selector(playerItemDidReachEnd:)
-             name:AVPlayerItemDidPlayToEndTimeNotification
-             object:currentItem];
-            
-            @try {
-                [_player removeObserver:self forKeyPath:@"status"];
+        else {
+            for (UIView *subview2 in [subview subviews]) {
+                if ([subview2 isKindOfClass:[UILabel class]]) {
+                    UILabel *asLabel = (UILabel *) subview2;
+                    asLabel.textColor = color;
+                }
             }
-            @catch (NSException *exception) {
-                NSLog(@"observeValueForKeyPath : got exception %@",exception.description);
-            }
-            
-        } else if (_player.status == AVPlayerStatusFailed) {
-            // something went wrong. player.error should contain some information
-            [self removePlayingAudioIcon];
-
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't play audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [alert show];
-            
-            //  NSLog(@"player status failed %@",_player.status);
-            
-            [_player removeObserver:self forKeyPath:@"status"];
         }
-    }
-    else {
-        NSLog(@"ignoring value... %@",keyPath);
-    }
-}
-
-- (void)removePlayObserver {
-    NSLog(@" remove observer");
-    
-    @try {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
-        [_player removeObserver:self forKeyPath:@"status"];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"initial create - got exception %@",exception.description);
     }
 }
 
 - (UIColor *) getColor2:(float) score {
     if (score > 1.0) score = 1.0;
-    if (score < 0)  score = 0;
-    
-    //  NSLog(@"getColor2 score %f",score);
+    if (score < 0)   score = 0;
     
     float red   = fmaxf(0,(255 - (fmaxf(0, score-0.5)*2*255)));
     float green = fminf(255, score*2*255);
     float blue  = 0;
     
-    red /= 255;
+    red   /= 255;
     green /= 255;
-    blue /= 255;
+    blue  /= 255;
     
     return [UIColor colorWithRed:red green:green blue:blue alpha:1];
 }
@@ -850,21 +754,6 @@ bool playingRef = TRUE;
  }
  */
 
-#pragma mark NSURLConnection Delegate Methods
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-    // A response has been received, this is where we initialize the instance var you created
-    // so that we can append data to it in the didReceiveData method
-    // Furthermore, this method is called each time there is a redirect so reinitializing it
-    // also serves to clear it
-    
-    _responseData = [[NSMutableData alloc] init];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    // Append the new data to the instance variable you declared
-  //  [_responseData appendData:data];
-}
 
 - (BOOL)useJsonChapterData {
     NSError * error;
@@ -877,7 +766,6 @@ bool playingRef = TRUE;
         NSLog(@"useJsonChapterData error %@",error.description);
         return false;
     }
-    
     //   NSLog(@"useJsonChapter data ");
     
     NSDictionary *phoneDict = [json objectForKey:@"phones"];
@@ -894,7 +782,7 @@ bool playingRef = TRUE;
         [_phoneToWords setValue:wordsPhoneAppearsIn forKey:phone];
     }
     
-    NSMutableArray *paths = [[NSMutableArray alloc] init];
+    NSMutableArray *paths    = [[NSMutableArray alloc] init];
     NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
     
     for (NSString *resultID in resultsDict) {
@@ -915,6 +803,7 @@ bool playingRef = TRUE;
         }
     }
     
+    //NSLog(@"getting audio %lul",(unsigned long)paths.count);
     [_audioCache goGetAudio:rawPaths paths:paths language:_language];
     
     UIViewController  *parent = [self parentViewController];
@@ -937,12 +826,6 @@ bool playingRef = TRUE;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 
-- (NSCachedURLResponse *)connection:(NSURLConnection *)connection
-                  willCacheResponse:(NSCachedURLResponse*)cachedResponse {
-    // Return nil to indicate not necessary to store a cached response for this connection
-    return nil;
-}
-
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     // The request has failed for some reason!
     // Check the error var
@@ -950,7 +833,7 @@ bool playingRef = TRUE;
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
-    NSString *message = @"Couldn't connect to server.";
+    NSString *message = error.localizedDescription;
     if (error.code == NSURLErrorNotConnectedToInternet) {
         message = @"NetProF needs a wifi or cellular internet connection.";
     }

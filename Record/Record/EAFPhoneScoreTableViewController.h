@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 //#import <SplunkMint-iOS/SplunkMint-iOS.h>
+#import "EAFAudioPlayer.h"
 
-@interface EAFPhoneScoreTableViewController : UITableViewController<NSURLConnectionDelegate,AVAudioPlayerDelegate, UIGestureRecognizerDelegate>
+@interface EAFPhoneScoreTableViewController : UITableViewController<AVAudioPlayerDelegate, UIGestureRecognizerDelegate,AudioPlayerNotification>
 
 @property (strong, nonatomic) NSData *responseData;
 

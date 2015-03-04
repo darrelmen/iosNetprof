@@ -26,7 +26,7 @@
 }
 
 - (IBAction)stopAudio {
- //   NSLog(@"stopAudio ---- %@",self);
+    NSLog(@"stopAudio ---- %@",self);
     _currentIndex = _audioPaths.count;
     if (_player != nil) {
         [_player pause];
@@ -41,36 +41,73 @@
     [self playRefAudioInternal];
 }
 
-- (void)makePlayerGivenURL:(NSURL *)url {
+- (void)makeAVPlayer:(NSURL *)url {
     _player = [AVPlayer playerWithURL:url];
     NSString *PlayerStatusContext;
     [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
     _player.volume = _volume;
- //   NSLog(@"Playing at volume %@ %f",_player,_player.volume);
 }
 
-// look for local file with mp3 and use it if it's there.
-- (IBAction)playRefAudioInternal {
-   // NSLog(@"playRefAudioInternal using paths %@",_audioPaths);
-
-    if (_audioPaths.count == 0) {
-        return;
+// Maybe this is overkill, but try to read from the url and if it fails, try the waveURL
+// for the original wav file on the server (somehow perhaps an mp3 file was not created?)
+//
+- (void)makePlayerGivenURL:(NSURL *)url waveURL:(NSURL *)waveURL {
+    NSDictionary * dict = [self id3TagsForURL:url];
+//    NSLog(@"reading %@ header - %@",url,dict);
+    if (dict == nil) {
+        BOOL val  = [self webFileExists:waveURL];
+        if (val) {
+//            dict = [self id3TagsForURL:waveURL];
+//            NSLog(@"trying again - reading %@ header - %@",waveURL,dict);
+            [self makeAVPlayer:waveURL];
+        }
+        else {
+            NSLog(@"can't find %@ on server",waveURL);
+        }
     }
-    NSString *refPath = [_audioPaths objectAtIndex:_currentIndex];
+    else {
+        [self makeAVPlayer:url];
+    }
+}
+
+- (NSDictionary *)id3TagsForURL:(NSURL *)resourceUrl
+{
+    AudioFileID fileID;
+    OSStatus result = AudioFileOpenURL((__bridge CFURLRef)resourceUrl, kAudioFileReadPermission, 0, &fileID);
     
-    NSString *refAudioPath;
-    NSString *rawRefAudioPath;
+    if (result != noErr) {
+        NSLog(@"id3TagsForURL Error reading tags for %@: %i", resourceUrl, (int)result);
+        return nil;
+    }
     
-    refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
-                                                 withString:@".mp3"];
+    CFDictionaryRef piDict = nil;
+    UInt32 piDataSize = sizeof(piDict);
     
-    NSMutableString *mu = [NSMutableString stringWithString:refPath];
-    [mu insertString:_url atIndex:0];
-    refAudioPath = mu;
-    rawRefAudioPath = refPath;
+    result = AudioFileGetProperty(fileID, kAudioFilePropertyInfoDictionary, &piDataSize, &piDict);
+    if (result != noErr)
+        NSLog(@"Error reading tags. AudioFileGetProperty failed");
     
-    NSURL *url = [NSURL URLWithString:refAudioPath];
+    AudioFileClose(fileID);
     
+    NSDictionary *tagsDictionary = [NSDictionary dictionaryWithDictionary:(__bridge NSDictionary*)piDict];
+    CFRelease(piDict);
+    
+    return tagsDictionary;
+}
+
+-(BOOL) webFileExists:(NSURL *) url
+{
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:5.0];
+    [request setHTTPMethod:@"HEAD"];
+    NSHTTPURLResponse* response = nil;
+    NSError* error = nil;
+    [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+   // NSLog(@"statusCode = %ld", (long)[response statusCode]);
+    
+    return [response statusCode] == 404 ? NO : YES;
+}
+
+- (NSString *)getCacheMP3:(NSString *)rawRefAudioPath {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     
@@ -78,12 +115,55 @@
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
     
     NSString *destFileName = [filePath stringByAppendingPathComponent:rawRefAudioPath];
+    return destFileName;
+}
+
+// look for local file with mp3 and use it if it's there.
+- (IBAction)playRefAudioInternal {
+  //  NSLog(@"playRefAudioInternal using paths %@",_audioPaths);
+
+    if (_audioPaths.count == 0) {
+        return;
+    }
+    NSString *origRefPath = [_audioPaths objectAtIndex:_currentIndex];
+    
+    NSString *refAudioPathURL;
+    NSString *wavAudioPath;
+    NSString *rawRefAudioPath;
+    
+    NSString *mp3RefPath = [origRefPath stringByReplacingOccurrencesOfString:@".wav"
+                                                 withString:@".mp3"];
+    
+    NSMutableString *mu = [NSMutableString stringWithString:mp3RefPath];
+    [mu insertString:_url atIndex:0];
+    refAudioPathURL = mu;
+    wavAudioPath = [NSString stringWithFormat:@"%@%@",_url,origRefPath];
+    rawRefAudioPath = mp3RefPath;
+    
+    NSURL *url = [NSURL URLWithString:refAudioPathURL];
+    NSURL *waveUrl = [NSURL URLWithString:wavAudioPath];
+    NSLog(@"default URL %@",url);
+    
+    NSString *destFileName = [self getCacheMP3:rawRefAudioPath];
     
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName];
     if (fileExists) {
         //NSLog(@"playRefAudio Raw URL %@", _rawRefAudioPath);
-       // NSLog(@"playRefAudio using local url %@",destFileName);
-        url = [[NSURL alloc] initFileURLWithPath: destFileName];
+        //      NSError *attributesError = nil;
+        //NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:destFileName error:&attributesError];
+        //NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
+        
+        //        NSLog(@"playRefAudio using local url %@ size %@",destFileName,fileSizeNumber);
+        
+        NSURL *testURL = [[NSURL alloc] initFileURLWithPath: destFileName];
+        NSDictionary * dict = [self id3TagsForURL:testURL];
+        //NSLog(@"file exists - checking header - %@",dict);
+        if (dict == nil) {
+            NSLog(@"warning : mp3 at %@ was corrupt?", testURL);
+        } else {
+            NSLog(@"playRefAudio using local header %@ url %@",dict,destFileName);
+            url = testURL;
+        }
     }
     else {
         NSLog(@"playRefAudio can't find local url %@",destFileName);
@@ -101,7 +181,7 @@
     UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
     AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
     
-    [self makePlayerGivenURL:url];
+    [self makePlayerGivenURL:url waveURL:waveUrl];
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {

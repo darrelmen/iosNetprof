@@ -33,7 +33,6 @@
 
 @interface EAFRecoFlashcardController ()
 
-@property BButton *playingIcon;
 @property NSString *flashcardPlayerStatusContext;
 
 @property CFAbsoluteTime then2 ;
@@ -171,11 +170,6 @@
         self.synthesizer = [[AVSpeechSynthesizer alloc] init];
         _synthesizer.delegate = self;
     }
-    _playingIcon = [BButton awesomeButtonWithOnlyIcon:FAVolumeUp
-                                                  type: BButtonTypeDefault
-                                                 style:BButtonStyleBootstrapV3];
-    _playingIcon.color = [UIColor colorWithWhite:1.0f alpha:0.0f];
-    [_playingIcon setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
 
     _myAudioPlayer = [[EAFAudioPlayer alloc] init];
     _myAudioPlayer.url = _url;
@@ -750,7 +744,7 @@
     
     BOOL showEnglish = _whatToShow.selectedSegmentIndex == 0;
     // complicated...
-    _myAudioPlayer.audioPaths = _audioRefs;
+   // _myAudioPlayer.audioPaths = _audioRefs;
     if (_audioOnButton.selected &&   // volume on
         !preventPlayAudio &&
         showedIntro != nil) {
@@ -1071,7 +1065,7 @@ BOOL preventPlayAudio = false;
 (AVAudioPlayer *)player successfully:(BOOL)flag
 {
     _recordButton.enabled = YES;
-    [self removePlayingAudioIcon];
+    [self setTextColor:[UIColor blackColor]];
 }
 
 - (void) playStarted {
@@ -1105,22 +1099,20 @@ BOOL preventPlayAudio = false;
     }
 }
 
-// find first subview and remove the icon from it
-// TODO : fix this for spacer case
-// TODO : don't do floating icon - change foreground text color instead
-- (void)removePlayingAudioIcon {
-    NSArray *subviews = [_scoreDisplayContainer subviews];
-    if (subviews.count > 0) {
-        UIView *first = [subviews objectAtIndex:0];
-        if (first.frame.size.height == 0 && subviews.count > 2) {
-            first = [subviews objectAtIndex:2];
-        //    NSLog(@"instead, removing playing icon from %@",first);
+// set the text color of all the labels in the scoreDisplayContainer
+- (void)setTextColor:(UIColor *)color {
+    for (UIView *subview in [_scoreDisplayContainer subviews]) {
+        if ([subview isKindOfClass:[UILabel class]]) {
+            UILabel *asLabel = (UILabel *) subview;
+            asLabel.textColor = color;
+            NSLog(@"initial hit %@ %@",asLabel,asLabel.text);
         }
-        for (UIView *v in [first subviews]) {
-            if (v == _playingIcon) {
-                [v removeFromSuperview];
-              //  NSLog(@"Removing playing icon from %@",first);
-                break;
+        else {
+            for (UIView *subview2 in [subview subviews]) {
+                if ([subview2 isKindOfClass:[UILabel class]]) {
+                    UILabel *asLabel = (UILabel *) subview2;
+                    asLabel.textColor = color;
+                }
             }
         }
     }
@@ -1186,7 +1178,6 @@ BOOL preventPlayAudio = false;
 
 - (void)stopPlayingAudio {
    // NSLog(@" stopPlayingAudio");
-
     if (_player) {
         [_player pause];
         [self removePlayObserver];
@@ -1257,7 +1248,6 @@ bool debugRecord = false;
 }
 
 - (void)flipCard {
- //   NSLog(@"flipCard");
     [self unselectAutoPlay];
     [self stopPlayingAudio];
     
@@ -1381,23 +1371,8 @@ bool debugRecord = false;
                         error:&error];
         
         _audioPlayer.delegate = self;
-
-        // add icon to first subview
-        NSArray *subviews = [_scoreDisplayContainer subviews];
-        if (subviews.count > 0) {
-            UIView *first = [subviews objectAtIndex:0];
-            if (first.frame.size.height == 0 && subviews.count > 2) {
-                first = [subviews objectAtIndex:2];
-               // NSLog(@"instead, adding playing icon to %@",first);
-            }
-            [first addSubview:_playingIcon];
-            
-          //  NSLog(@"Adding playing icon to %@",first);
-
-        }
-//        else {
-          //  NSLog(@"No subviews in %@",_scoreDisplayContainer);
-  //      }
+       
+        [self setTextColor:[UIColor blueColor]];
 
         if (error)
         {
@@ -1636,12 +1611,7 @@ bool debugRecord = false;
     }
     
     if ([valid rangeOfString:@"OK"].location != NSNotFound) {
-        //if (saidWord) {
         [self updateScoreDisplay:json];
-        // }
-        //else {
-        //    [self setIncorrectMessage:_foreignLang.text];
-        // }
     }
     else {
         if ([valid rangeOfString:@"MIC"].location != NSNotFound || [valid rangeOfString:@"TOO_QUIET"].location != NSNotFound) {
@@ -1874,7 +1844,7 @@ BOOL addSpaces = false;
     for (NSDictionary *event in wordAndScore) {
         NSString *word = [event objectForKey:@"event"];
         if ([word isEqualToString:@"sil"] || [word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) continue;
-        NSNumber *score = saidWord ? [event objectForKey:@"score"] : 0;
+        NSNumber *score = [event objectForKey:@"score"];//saidWord ? [event objectForKey:@"score"] : 0;
         NSNumber *wstart = [event objectForKey:@"start"];
         NSNumber *wend = [event objectForKey:@"end"];
         
