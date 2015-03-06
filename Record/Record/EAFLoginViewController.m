@@ -24,13 +24,35 @@
 
 @implementation EAFLoginViewController
 
+// look at cookie value and set the language picker accordingly
+- (void)setLanguagePicker {
+   // NSLog(@"setting language picker language");
+    NSString *languageRemembered = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
+    if (languageRemembered != nil) {
+        NSUInteger toChoose = [_languages indexOfObject:languageRemembered];
+        //NSLog(@"language cookie now %@ = %d",languageRemembered,toChoose);
+        if (toChoose > [_languagePicker numberOfRowsInComponent:0]) {
+       //     NSLog(@"choose %d bigger than num selected is %d",toChoose,[_languagePicker numberOfRowsInComponent:0]);
+            [_languagePicker selectRow:0 inComponent:0 animated:false];
+        }
+        else {
+            [_languagePicker selectRow:toChoose inComponent:0 animated:false];
+          //  NSLog(@"selected is %d",[_languagePicker selectedRowInComponent:0]);
+        }
+    }
+    //else {
+    //    NSLog(@"no language cookie");
+   // }
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     //not japanese or levantine -- consider levantine?
     // TODO : get list of languages from server call?
     
-    _languages = [NSArray arrayWithObjects: @"Dari", @"English",
+    _languages = [NSArray arrayWithObjects: @"Dari",
+                  @"English",
                   @"Egyptian",
                   @"Farsi",
                   @"Korean",
@@ -58,14 +80,7 @@
     _username.delegate = self;
     _password.delegate = self;
     
-    NSString *rememberedUserID = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenUserID"];
-    if (rememberedUserID != nil) {
-        _username.text = rememberedUserID;
-    }
-    NSString *rememberedPass = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenPassword"];
-    if (rememberedPass != nil) {
-        _password.text = rememberedPass;
-    }
+
     
     [_forgotUsername initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
                              color:[UIColor colorWithWhite:1.0f alpha:0.0f]
@@ -84,30 +99,28 @@
     UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
     gestureRecognizer.cancelsTouchesInView = NO;
     gestureRecognizer.delegate = self;
-    [self.languagePicker addGestureRecognizer:gestureRecognizer];
-    
-    NSString *languageRemembered = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
-    if (languageRemembered != nil) {
-        int toChoose = [_languages indexOfObject:languageRemembered];
-        if (toChoose > _languagePicker.numberOfComponents) {
-            [_languagePicker selectRow:0 inComponent:0 animated:false];
-        }
-        else {
-            [_languagePicker selectRow:toChoose inComponent:0 animated:false];
-        }
-    }
+    [_languagePicker addGestureRecognizer:gestureRecognizer];
     
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     if (userid != nil) {
         [self performSegueWithIdentifier:@"goToChapter" sender:self];
     }
-    
-
 }
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES];   //it hides
+
+    [self setLanguagePicker];
+    
+    NSString *rememberedUserID = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenUserID"];
+    if (rememberedUserID != nil) {
+        _username.text = rememberedUserID;
+    }
+    NSString *rememberedPass = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenPassword"];
+    if (rememberedPass != nil) {
+        _password.text = rememberedPass;
+    }
 }
 
 -(void)viewWillDisappear:(BOOL)animated{
@@ -149,12 +162,11 @@
     
     NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
     
-    NSLog(@"language %@",chosenLanguage);
+  //  NSLog(@"language %@",chosenLanguage);
     
     if (valid) {
         // make sure multiple events don't occur
         _languagePicker.userInteractionEnabled = false;
-        //NSLog(@"password '%@'",_password.text);
         NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?hasUser=%@&p=%@", chosenLanguage,_username.text,[[self MD5:_password.text] uppercaseString]];
         NSURL *url = [NSURL URLWithString:baseurl];
         
@@ -171,17 +183,14 @@
         
         [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
          {
-            // NSLog(@"\n\n\n1 Got response %@",error);
              if (error != nil) {
                  NSLog(@"\n\n\n\t1 Got error %@",error);
-                 //[self connection:nil didFailWithError:error];
                  dispatch_async(dispatch_get_main_queue(), ^{
                      [self connection:nil didFailWithError:error];
                  });
              }
              else {
                  _responseData = data;
-              //   [self connectionDidFinishLoading:nil];
                  [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                         withObject:nil
                                      waitUntilDone:YES];
@@ -227,9 +236,7 @@
 }
 
 - (void) passwordChanged:(id)notification {
-    _usernameFeedback.text = @"";
-    _passwordFeedback.text = @"";
-    _signUpFeedback.text = @"";
+    [self textFieldText:nil];
 }
 
 - (NSString*)MD5:(NSString*)toConvert
@@ -249,41 +256,6 @@
         [output appendFormat:@"%02x",md5Buffer[i]];
     
     return output;
-}
-
-#pragma mark NSURLConnection Delegate Methods
-
-NSInteger httpStatusCode;
-NSString *statusCodeDisplay;
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-    // A response has been received, this is where we initialize the instance var you created
-    // so that we can append data to it in the didReceiveData method
-    // Furthermore, this method is called each time there is a redirect so reinitializing it
-    // also serves to clear it
-    
-    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-        NSHTTPURLResponse *resp = (NSHTTPURLResponse *)response;
-        httpStatusCode = resp.statusCode;
-        statusCodeDisplay = [NSHTTPURLResponse localizedStringForStatusCode:httpStatusCode];
-        if (httpStatusCode >= 400) {
-            NSLog(@"didReceiveResponse error - %@",response);
-        }
-    }
-    
-    _responseData = [[NSMutableData alloc] init];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    // NSLog(@"didReceiveData ----- ");
-    
-    // Append the new data to the instance variable you declared
-  //  [_responseData appendData:data];
-}
-
-- (NSCachedURLResponse *)connection:(NSURLConnection *)connection
-                  willCacheResponse:(NSCachedURLResponse*)cachedResponse {
-    // Return nil to indicate not necessary to store a cached response for this connection
-    return nil;
 }
 
 - (BOOL)useJsonChapterData {
@@ -328,7 +300,7 @@ NSString *statusCodeDisplay;
         else {
             // no user with that name
             _passwordFeedback.text = @"Username or password incorrect";
-            _signUpFeedback.text = @"Have you signed up?";
+            _signUpFeedback.text   = @"Have you signed up?";
         }
     }
     else if (resetToken.length > 0) {
@@ -341,7 +313,6 @@ NSString *statusCodeDisplay;
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
         NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
-        //NSLog(@"chosenLanguage %@",chosenLanguage);
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
         [self performSegueWithIdentifier:@"goToChapter" sender:self];
    } else {
@@ -376,23 +347,18 @@ NSString *statusCodeDisplay;
     
     [urlRequest setTimeoutInterval:10];
 
-   // [[NSURLConnection connectionWithRequest:urlRequest delegate:self] start];
-//    NSLog(@"send async request");
-
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          NSLog(@"\n\n\nGot response %@",error);
 
          if (error != nil) {
              NSLog(@"\n\n\n\tGot error %@",error);
-             //[self connection:nil didFailWithError:error];
              dispatch_async(dispatch_get_main_queue(), ^{
                  [self connection:nil didFailWithError:error];
              });
          }
          else {
              _responseData = data;
- //            [self connectionDidFinishLoading:nil];
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:YES];
@@ -430,7 +396,7 @@ NSString *statusCodeDisplay;
 }
 
 - (IBAction)gotSingleTap:(id)sender {
-    NSLog(@"dismiss keyboard! %@",_currentResponder);
+   // NSLog(@"dismiss keyboard! %@",_currentResponder);
     [_currentResponder resignFirstResponder];
 }
 
@@ -497,22 +463,17 @@ NSString *statusCodeDisplay;
         [chapterController setTitle:toShow];
     }
     else {
-        EAFSignUpViewController *signUp = [segue destinationViewController];
-        
         long selection = [_languagePicker selectedRowInComponent:0];
         
-        NSString *chosenLanguage = [_languages objectAtIndex:selection];
-        //[signUp.languagePicker selectRow:selection inComponent:0 animated:false];
+        //NSString *chosenLanguage = [_languages objectAtIndex:selection];
+        //NSLog(@"language %@ %@ %@",chosenLanguage,_username.text,_password.text);
         
-        NSLog(@"language %@ %@ %@",chosenLanguage,_username.text,_password.text);
-        
+        EAFSignUpViewController *signUp = [segue destinationViewController];
         signUp.userFromLogin = _username.text;
         signUp.passFromLogin = _password.text;
         signUp.languageIndex = selection;
         
-        _usernameFeedback.text = @"";
-        _passwordFeedback.text = @"";
-        _signUpFeedback.text = @"";
+        [self textFieldText:nil];
     }
 }
 

@@ -144,18 +144,21 @@
             else {
                 NSUInteger endToken = 0;
                 int i = 0;
+                
+                // attempt to avoid "cant" - "can't" issue
+                
                 NSArray *tokens = [self getTokens:exercise];
+                BOOL useToken = tokens.count == words.count;
                 for (NSDictionary *entry in words) {
                     NSString *word   = [entry objectForKey:@"w"];
                     if ([word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) {
-                        //  NSLog(@"skipping %@",word);
                         continue;
                     }
                     NSString *wscore = [entry objectForKey:@"s"];
                     float score = [wscore floatValue];
                     
-                    NSString *token = [tokens objectAtIndex:i++];
-                  //  NSLog(@"token %@ score %@ vs %@",word,wscore,token);
+                    NSString *token = useToken ? [tokens objectAtIndex:i++] : word;
+                  // NSLog(@"token %@ score %@ vs %@",word,wscore,token);
                     
                     NSRange trange = [exercise rangeOfString:token options:NSCaseInsensitiveSearch range:NSMakeRange(endToken, exercise.length-endToken)];
                     

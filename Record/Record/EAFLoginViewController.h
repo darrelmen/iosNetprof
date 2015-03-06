@@ -10,7 +10,7 @@
 //#import <SplunkMint-iOS/SplunkMint-iOS.h>
 #import "BButton.h"
 
-@interface EAFLoginViewController : UIViewController<NSURLConnectionDelegate,UITextFieldDelegate,UIGestureRecognizerDelegate>
+@interface EAFLoginViewController : UIViewController<UITextFieldDelegate,UIGestureRecognizerDelegate>
 @property (strong, nonatomic) IBOutlet UITextField *username;
 @property (strong, nonatomic) IBOutlet UITextField *password;
 @property (strong, nonatomic) IBOutlet UIButton *logIn;

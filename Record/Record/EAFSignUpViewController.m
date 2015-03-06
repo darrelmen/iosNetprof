@@ -114,7 +114,7 @@
     
     [urlRequest setValue:username forHTTPHeaderField:@"user"];
     [urlRequest setValue:[[self MD5:password] uppercaseString] forHTTPHeaderField:@"passwordH"];
-    [urlRequest setValue:[[self MD5:email] uppercaseString]    forHTTPHeaderField:@"emailH"];
+    [urlRequest setValue:[[self MD5:email]    uppercaseString] forHTTPHeaderField:@"emailH"];
     [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
@@ -289,7 +289,7 @@
                           options:NSJSONReadingAllowFragments
                           error:&error];
     [_activityIndicator stopAnimating];
-
+    
     if (error) {
         NSLog(@"useJsonChapterData error %@",error.description);
         _signUp.enabled = true;
@@ -299,20 +299,26 @@
     //   NSLog(@"useJsonChapter got %@ ",json);
     NSString *existing = [json objectForKey:@"ExistingUserName"];
     
-    NSString *userIDExisting = [json objectForKey:@"userid"];
-   
     if (existing != nil) {
         // no user with that name
-        _usernameFeedback.text = @"Username exists already.";
+        if ([existing isEqualToString:@"wrongPassword"]) {
+            _passwordFeedback.text = @"Password incorrect";
+        }
+        else {
+            _usernameFeedback.text = @"Username exists.";
+            _passwordFeedback.text = @"Password correct?";
+        }
     }
     else {
+        NSString *userIDExisting = [json objectForKey:@"userid"];
+     
         // OK store info and segue
-        NSLog(@"userid %@",userIDExisting);
-        NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];
-        [SSKeychain setPassword:converted forService:@"mitll.proFeedback.device" account:@"userid"];
+//        NSLog(@"userid %@",userIDExisting);
+        NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];  // huh? why is this necessary?
+        [SSKeychain setPassword:converted      forService:@"mitll.proFeedback.device" account:@"userid"];
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
-        [SSKeychain setPassword:_email.text forService:@"mitll.proFeedback.device" account:@"chosenEmail"];
+        [SSKeychain setPassword:_email.text    forService:@"mitll.proFeedback.device" account:@"chosenEmail"];
         NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
         
@@ -337,7 +343,7 @@
 
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
-    NSString *message = @"Couldn't connect to server.";
+    NSString *message = error.localizedDescription;// @"Couldn't connect to server.";
     if (error.code == NSURLErrorNotConnectedToInternet) {
         message = @"NetProF needs a wifi or cellular internet connection.";
     }

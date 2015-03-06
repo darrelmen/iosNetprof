@@ -203,6 +203,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 int i = 0;
                // NSLog(@"for %@ got tokens %@",exercise,tokens);
               //  NSLog(@"for words %lu count ",(unsigned long)tokens.count);
+                BOOL useToken = tokens.count == words.count;
 
                 for (NSDictionary *entry in words) {
                     NSString *word   = [entry objectForKey:@"w"];
@@ -214,8 +215,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     NSString *wscore = [entry objectForKey:@"s"];
                     float score = [wscore floatValue];
                     
-                    NSString *token = [tokens objectAtIndex:i++];
-                //    NSLog(@"token %@ score %@ vs %@",word,wscore,token);
+                    NSString *token = useToken ? [tokens objectAtIndex:i++] : word;
                     
                     NSRange trange = [exercise rangeOfString:token options:NSCaseInsensitiveSearch range:NSMakeRange(endToken, exercise.length-endToken)];
                     
