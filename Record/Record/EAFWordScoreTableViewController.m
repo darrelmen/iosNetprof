@@ -61,7 +61,6 @@
     //NSLog(@"cacheAudio Got get audio -- after ");
 }
 
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -90,6 +89,11 @@
                                                 [UIFont fontWithName:@"Helvetica" size:16.0], NSFontAttributeName, nil]
                                       forState:UIControlStateNormal];
     }
+}
+
+- (void) viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [_audioPlayer stopAudio];
 }
 
 - (void)askServerForJson {

@@ -26,7 +26,7 @@
 }
 
 - (IBAction)stopAudio {
-    NSLog(@"stopAudio ---- %@",self);
+    NSLog(@"EAFAudioPlayer : stopAudio ---- %@",self);
     _currentIndex = _audioPaths.count;
     if (_player != nil) {
         [_player pause];
@@ -41,6 +41,7 @@
     [self playRefAudioInternal];
 }
 
+// @see #makePlayerGivenURL
 - (void)makeAVPlayer:(NSURL *)url {
     _player = [AVPlayer playerWithURL:url];
     NSString *PlayerStatusContext;
@@ -119,6 +120,7 @@
 }
 
 // look for local file with mp3 and use it if it's there.
+// otherwise hit the URL on the server.
 - (IBAction)playRefAudioInternal {
   //  NSLog(@"playRefAudioInternal using paths %@",_audioPaths);
 
@@ -142,7 +144,7 @@
     
     NSURL *url = [NSURL URLWithString:refAudioPathURL];
     NSURL *waveUrl = [NSURL URLWithString:wavAudioPath];
-    NSLog(@"default URL %@",url);
+  //  NSLog(@"default URL %@",url);
     
     NSString *destFileName = [self getCacheMP3:rawRefAudioPath];
     
@@ -161,7 +163,7 @@
         if (dict == nil) {
             NSLog(@"warning : mp3 at %@ was corrupt?", testURL);
         } else {
-            NSLog(@"playRefAudio using local header %@ url %@",dict,destFileName);
+          //  NSLog(@"playRefAudio using local header %@ url %@",dict,destFileName);
             url = testURL;
         }
     }
@@ -172,7 +174,7 @@
     
     if (_player) {
         [_player pause];
-        //NSLog(@" playRefAudioInternal : removing current observer");
+        NSLog(@" playRefAudioInternal : removing current observer");
         [self removePlayObserver];
     }
     
@@ -212,7 +214,10 @@
     
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
-          //  NSLog(@" audio ready so playing...");
+            [self removeStatusObserver];
+            
+            //  NSLog(@" audio ready so playing...");
+            // GAH what thread should we do this on???
             [self.delegate playStarted];
 
             [_player play];
@@ -224,24 +229,16 @@
              selector:@selector(playerItemDidReachEnd:)
              name:AVPlayerItemDidPlayToEndTimeNotification
              object:currentItem];
-            
-            @try {
-                [_player removeObserver:self forKeyPath:@"status"];
-            }
-            @catch (NSException *exception) {
-                NSLog(@"observeValueForKeyPath : got exception %@",exception.description);
-            }
-            
         } else if (_player.status == AVPlayerStatusFailed) {
             // something went wrong. player.error should contain some information
+            [self removeStatusObserver];
+            
             [self.delegate playStopped];
 
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't play audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alert show];
             
             //  NSLog(@"player status failed %@",_player.status);
-            
-            [_player removeObserver:self forKeyPath:@"status"];
         }
     }
     else {
@@ -249,15 +246,31 @@
     }
 }
 
+- (void)removeStatusObserver
+{
+    @try {
+        NSLog(@" remove status observer...");
+        [_player removeObserver:self forKeyPath:@"status"];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"observeValueForKeyPath : got exception %@",exception.description);
+    }
+}
+
+// called from stopAudio and playRefAudioInternal
 - (void)removePlayObserver {
    // NSLog(@"paths were %@, remove observer %@",_audioPaths,self);
     
     @try {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
-        [_player removeObserver:self forKeyPath:@"status"];
+//        [_player removeObserver:self forKeyPath:@"status"];
+        [self removeStatusObserver];
     }
     @catch (NSException *exception) {
         if ([exception.description rangeOfString:@"registered"].location != NSNotFound) {
+            NSLog(@"removePlayObserver - got registration exception %@",exception.description);
+        }
+        else {
             NSLog(@"removePlayObserver - got exception %@",exception.description);
         }
     }

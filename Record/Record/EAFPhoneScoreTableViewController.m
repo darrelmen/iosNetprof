@@ -56,6 +56,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [_audioCache cancelAllOperations];
+    [_myAudioPlayer stopAudio];
 }
 
 -(void)setCurrentTitle {

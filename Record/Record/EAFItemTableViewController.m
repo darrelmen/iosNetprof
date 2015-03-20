@@ -171,7 +171,7 @@
                         endToken = trange.location+trange.length;
                     }
                     else {
-                        NSLog(@"huh? ERROR - can't find %@ in %@",word,exercise);
+                        NSLog(@"colorEachWord : huh? ERROR - can't find %@ in %@",word,exercise);
                     }
                 }
             }

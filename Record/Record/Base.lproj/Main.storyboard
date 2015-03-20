@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="gDn-g3-mfX">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="gDn-g3-mfX">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -256,6 +256,9 @@
                                                 <exclude reference="7jP-Zp-tfr"/>
                                             </mask>
                                         </variation>
+                                        <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="6" y="393" width="553" height="70"/>
+                                        </variation>
                                         <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
                                             <rect key="frame" x="6" y="317" width="553" height="130"/>
                                         </variation>
@@ -263,12 +266,15 @@
                                             <outletCollection property="gestureRecognizers" destination="0JG-qf-3We" appends="YES" id="S8Q-Jb-7b0"/>
                                         </connections>
                                     </view>
-                                    <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="900" restorationIdentifier="foreignLang" text="foreign language" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="j6L-63-Jyx">
+                                    <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="900" misplaced="YES" restorationIdentifier="foreignLang" text="foreign language" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="j6L-63-Jyx">
                                         <rect key="frame" x="8" y="170" width="549" height="53"/>
                                         <gestureRecognizers/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="44"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="48"/>
                                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <nil key="highlightedColor"/>
+                                        <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="8" y="248" width="549" height="53"/>
+                                        </variation>
                                         <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
                                             <rect key="frame" x="8" y="177" width="549" height="53"/>
                                         </variation>
@@ -276,12 +282,13 @@
                                             <outletCollection property="gestureRecognizers" destination="cKC-E7-J88" appends="YES" id="76e-st-qGa"/>
                                         </connections>
                                     </label>
-                                    <view contentMode="scaleToFill" verticalHuggingPriority="900" restorationIdentifier="scoreContainer" translatesAutoresizingMaskIntoConstraints="NO" id="vlT-Ea-UA6">
+                                    <view contentMode="scaleToFill" verticalHuggingPriority="900" misplaced="YES" restorationIdentifier="scoreContainer" translatesAutoresizingMaskIntoConstraints="NO" id="vlT-Ea-UA6">
                                         <rect key="frame" x="8" y="225" width="549" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="height" priority="750" constant="50" id="nMQ-q0-cCJ"/>
                                         </constraints>
-                                        <variation key="heightClass=compact-widthClass=compact">
+                                        <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="8" y="303" width="549" height="53"/>
                                             <mask key="constraints">
                                                 <exclude reference="nMQ-q0-cCJ"/>
                                             </mask>
@@ -294,6 +301,9 @@
                                         <rect key="frame" x="542" y="178" width="23" height="37"/>
                                         <color key="pageIndicatorTintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="currentPageIndicatorTintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="542" y="256" width="23" height="37"/>
+                                        </variation>
                                         <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
                                             <rect key="frame" x="542" y="185" width="23" height="37"/>
                                         </variation>
@@ -317,11 +327,14 @@
                                             <action selector="showPopover:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Vp5-ws-qIw"/>
                                         </connections>
                                     </button>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" restorationIdentifier="correctnessIndicator" image="checkmark32.png" translatesAutoresizingMaskIntoConstraints="NO" id="ZN1-US-MJW">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" misplaced="YES" restorationIdentifier="correctnessIndicator" image="checkmark32.png" translatesAutoresizingMaskIntoConstraints="NO" id="ZN1-US-MJW">
                                         <rect key="frame" x="20" y="278" width="32" height="32"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="32" id="X52-iz-Og2"/>
                                         </constraints>
+                                        <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="20" y="359" width="32" height="32"/>
+                                        </variation>
                                         <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
                                             <rect key="frame" x="20" y="284" width="32" height="32"/>
                                             <mask key="constraints">
@@ -329,21 +342,27 @@
                                             </mask>
                                         </variation>
                                     </imageView>
-                                    <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" restorationIdentifier="scoringIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="vmx-bc-B8p" customClass="UIProgressView">
+                                    <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" misplaced="YES" restorationIdentifier="scoringIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="vmx-bc-B8p" customClass="UIProgressView">
                                         <rect key="frame" x="60" y="282" width="485" height="24"/>
                                         <color key="backgroundColor" red="1" green="0.1644589393" blue="0.85615095880000003" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="24" id="eGw-2Z-N2T"/>
                                         </constraints>
+                                        <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="60" y="363" width="485" height="24"/>
+                                        </variation>
                                         <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
                                             <rect key="frame" x="60" y="288" width="485" height="24"/>
                                         </variation>
                                     </view>
-                                    <label opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="900" restorationIdentifier="english" text="english text" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="7" translatesAutoresizingMaskIntoConstraints="NO" id="wAh-a0-3Cd">
+                                    <label opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="900" misplaced="YES" restorationIdentifier="english" text="english text" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="7" translatesAutoresizingMaskIntoConstraints="NO" id="wAh-a0-3Cd">
                                         <rect key="frame" x="47" y="115" width="471" height="53"/>
                                         <gestureRecognizers/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="44"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="48"/>
                                         <nil key="highlightedColor"/>
+                                        <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                            <rect key="frame" x="47" y="193" width="471" height="53"/>
+                                        </variation>
                                         <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
                                             <rect key="frame" x="47" y="116" width="471" height="53"/>
                                         </variation>
@@ -431,7 +450,8 @@
                                         <exclude reference="6co-eg-htr"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=compact-widthClass=compact">
+                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="19" y="28" width="565" height="469"/>
                                     <mask key="subviews">
                                         <include reference="ZN1-US-MJW"/>
                                         <include reference="vmx-bc-B8p"/>
@@ -473,6 +493,9 @@
                                         <exclude reference="3zh-Ju-JNK"/>
                                     </mask>
                                 </variation>
+                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="16" y="501" width="176" height="45"/>
+                                </variation>
                                 <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
                                     <rect key="frame" x="16" y="485" width="176" height="53"/>
                                 </variation>
@@ -493,7 +516,7 @@
                                     <rect key="frame" x="325" y="21" width="150" height="5"/>
                                 </variation>
                             </progressView>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="2" translatesAutoresizingMaskIntoConstraints="NO" id="A7I-P6-hq3">
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="2" translatesAutoresizingMaskIntoConstraints="NO" id="A7I-P6-hq3">
                                 <rect key="frame" x="392" y="557" width="140" height="41"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="28" id="1n4-LE-Z68">
@@ -512,6 +535,9 @@
                                         <exclude reference="fFO-No-DIg"/>
                                     </mask>
                                 </variation>
+                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="398" y="553" width="140" height="45"/>
+                                </variation>
                                 <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
                                     <rect key="frame" x="384" y="545" width="140" height="53"/>
                                     <mask key="constraints">
@@ -529,6 +555,9 @@
                                 <state key="normal">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="16" y="553" width="44" height="44"/>
+                                </variation>
                                 <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
                                     <rect key="frame" x="16" y="545" width="52" height="52"/>
                                 </variation>
@@ -552,6 +581,9 @@
                                 <state key="normal">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="62" y="553" width="44" height="44"/>
+                                </variation>
                                 <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
                                     <rect key="frame" x="76" y="545" width="52" height="52"/>
                                 </variation>
@@ -579,6 +611,9 @@
                                         <exclude reference="EHp-3G-zYQ"/>
                                     </mask>
                                 </variation>
+                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="108" y="553" width="44" height="44"/>
+                                </variation>
                                 <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
                                     <rect key="frame" x="136" y="545" width="52" height="52"/>
                                 </variation>
@@ -603,6 +638,9 @@
                                         <exclude reference="pDm-Ab-g7m"/>
                                     </mask>
                                 </variation>
+                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="490" y="507" width="94" height="32"/>
+                                </variation>
                                 <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
                                     <rect key="frame" x="434" y="479" width="150" height="64"/>
                                     <mask key="constraints">
@@ -614,7 +652,7 @@
                                     <action selector="showScoresClick:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="R87-o2-QmA"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B1O-St-k2h">
+                            <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="1000" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B1O-St-k2h">
                                 <rect key="frame" x="534" y="557" width="50" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="32" id="ZSl-BB-9Tk">
@@ -632,7 +670,8 @@
                                         <exclude reference="acU-6q-uZg"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=compact-widthClass=compact">
+                                <variation key="heightClass=compact-widthClass=compact" misplaced="YES">
+                                    <rect key="frame" x="540" y="553" width="44" height="44"/>
                                     <mask key="constraints">
                                         <exclude reference="ZSl-BB-9Tk"/>
                                         <include reference="acU-6q-uZg"/>

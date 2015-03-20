@@ -23,8 +23,6 @@
     
     _regex = @"[\\?\\.,-\\/#!$%\\^&\\*;:{}=\\-_`~()]";
     
-    _audioPlayer = [[EAFAudioPlayer alloc] init];
-    
     _contextFL.attributedText = [self highlightTerm:_fl refSentence:_item];
     _contextTranslation.text = _en;
     _itemFL.text = _item;
@@ -55,6 +53,7 @@
     
     _maleFemale.enabled = audioCuts.count > 0;
 
+    _audioPlayer = [[EAFAudioPlayer alloc] init];
     _audioPlayer.audioPaths = audioCuts;
     _audioPlayer.url = _url;
     _audioPlayer.language = _language;

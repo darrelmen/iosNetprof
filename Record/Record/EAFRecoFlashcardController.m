@@ -342,7 +342,6 @@
    [super viewWillDisappear:animated];
 
     NSLog(@"- viewWillDisappear - Stop auto play.");
-
     [self stopAutoPlay];
    // [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
 }
@@ -555,7 +554,7 @@
     _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
     [self hideAndShowText];
 
-    [self removePlayObserver];
+ //   [self removePlayObserver];
    
     if ([self hasRefAudio]) {
         [_myAudioPlayer stopAudio];
@@ -892,12 +891,13 @@ BOOL preventPlayAudio = false;
 }
 
 - (void)showSpeechEnded:(BOOL) isEnglish {
-    if (isEnglish) {
+//    if (isEnglish) {
         _english.textColor = [UIColor blackColor];
-    }
-    else {
-        _foreignLang.textColor = [UIColor blackColor];
-    }
+//    }
+//    else {
+//        _foreignLang.textColor = [UIColor blackColor];
+//    }
+    NSLog(@"Font size %f",_foreignLang.font.pointSize);
 }
 
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didContinueSpeechUtterance:(AVSpeechUtterance *)utterance {
@@ -935,7 +935,7 @@ BOOL preventPlayAudio = false;
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didFinishSpeechUtterance:(AVSpeechUtterance *)utterance
 {
     NSLog(@"recoflashcard : didFinishSpeechUtterance--- '%@'",utterance.speechString);
-    BOOL isEnglish = true;//![utterance.speechString isEqualToString:_foreignLang.text];
+    BOOL isEnglish = true;
     [self showSpeechEnded:isEnglish];
     
     if (_autoPlayButton.selected) {
@@ -1156,16 +1156,6 @@ BOOL preventPlayAudio = false;
     [alert show];
 }
 
-- (void)removePlayObserver {   
-    @try {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
-        [_player removeObserver:self forKeyPath:@"status"];
-    }
-    @catch (NSException *exception) {
-        // NSLog(@"initial create - got exception %@",exception.description);
-    }
-}
-
 - (IBAction)gotTapInSuperview:(id)sender {
    // NSLog(@" gotTapInSuperview");
     [self stopAutoPlay];
@@ -1178,11 +1168,7 @@ BOOL preventPlayAudio = false;
 
 - (void)stopPlayingAudio {
    // NSLog(@" stopPlayingAudio");
-    if (_player) {
-        [_player pause];
-        [self removePlayObserver];
-        [self removePlayingAudioHighlight];
-    }
+    [self removePlayingAudioHighlight];
     [_myAudioPlayer stopAudio];
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
 }
@@ -1774,7 +1760,7 @@ BOOL addSpaces = false;
 - (void)updateScoreDisplay:(NSDictionary*) json {
     NSArray *wordAndScore  = [json objectForKey:@"WORD_TRANSCRIPT"];
     NSArray *phoneAndScore = [json objectForKey:@"PHONE_TRANSCRIPT"];
-    BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
+    //BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
 
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
