@@ -1444,7 +1444,7 @@ bool debugRecord = false;
     
     // NSLog(@"file length %@",postLength);
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
-   //   NSLog(@"talking to %@",baseurl);
+   // NSLog(@"talking to %@",baseurl);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
@@ -1495,6 +1495,7 @@ bool debugRecord = false;
                      [self setDisplayMessage:@"Network connection problem, please try again."];
                  }
              });
+             [self postEvent:error.localizedDescription widget:@"Record" type:@"Connection error"];
          }
          else {
              _responseData = data;
@@ -1646,7 +1647,7 @@ bool debugRecord = false;
     
     if (error != nil) {
         NSLog(@"connectionDidFinishLoading - got error %@",error);
-        NSLog(@"data was %@",_responseData);
+       // NSLog(@"data was %@",_responseData);
     }
     
     //  NSLog(@"score was %@",overallScore);
