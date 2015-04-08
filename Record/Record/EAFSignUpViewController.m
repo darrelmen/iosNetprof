@@ -28,10 +28,11 @@
                   @"Egyptian",
                   @"Farsi",
                   @"Korean",
-                  //  @"Levantine",
+                  @"Levantine",
                   @"CM",
                   @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",
-                  //@"Russian", @"Spanish",
+                  //@"Russian",
+                  @"SpanishTest",
                   @"Sudanese",  @"Urdu",  nil];
   
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];

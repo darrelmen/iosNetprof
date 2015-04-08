@@ -13,7 +13,6 @@
 
 @interface EAFPhoneScoreTableViewController : UITableViewController<AVAudioPlayerDelegate, UIGestureRecognizerDelegate,AudioPlayerNotification>
 
-@property (strong, nonatomic) NSData *responseData;
 
 @property NSString *language;
 

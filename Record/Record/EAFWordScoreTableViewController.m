@@ -20,6 +20,12 @@
 @property EAFAudioPlayer *audioPlayer;
 @property EAFAudioCache *audioCache;
 @property NSDictionary *exToJson;
+@property NSArray *scores;
+
+@property NSDictionary *exToScore;
+@property NSDictionary *exToHistory;
+@property NSDictionary *exToHistoryScores;
+@property NSMutableArray *exList;
 
 @end
 
@@ -100,7 +106,7 @@
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
- //   NSLog(@"askServerForJson url %@",baseurl);
+   // NSLog(@"askServerForJson url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -108,7 +114,8 @@
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
-    
+    [urlRequest setTimeoutInterval:10];
+
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
      NSOperationQueue *queue = [[NSOperationQueue alloc] init];
@@ -263,7 +270,12 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger row = indexPath.row;
     NSString *exid = [_exList objectAtIndex:row];
     NSArray *answers = [_exToHistory objectForKey:exid];
-    //NSLog(@"ex answers %@ %@",exid,answers);
+    NSArray *scores = [_exToHistoryScores objectForKey:exid];
+    
+   // NSDictionary *scoreHistory = [_exToJson objectForKey:exid];
+ //   NSLog(@"scoreHistory %@ %@",exid,scores);
+ //   NSLog(@"ex answers %@ %@",exid,answers);
+    
     float iconDim = 22.f;
     if (answers == nil || answers.count == 0) {
         FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, iconDim,iconDim)];
@@ -274,19 +286,23 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     else {
         int index = 0;
         for (NSString *correct in answers) {
+            NSNumber *score   = [scores objectAtIndex:index];
             UIView *container = [icons objectAtIndex:(index++ + (5-[answers count]))];
             
             FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, iconDim, iconDim)];
             correctView.image = nil;
+            
+            UIColor *scoreColor = [self getColor2:score.floatValue];
+            
             if ([correct isEqualToString:@"Y"]) {
                 [correctView setDefaultIconIdentifier:@"fa-check"];
-                correctView.defaultIconColor = [UIColor greenColor];
-                correctView.defaultView.backgroundColor = [UIColor greenColor];
+                correctView.defaultIconColor = scoreColor; // TODO needed at all??
+                correctView.defaultView.backgroundColor = scoreColor;
             }
             else {
                 [correctView setDefaultIconIdentifier:@"fa-times"];
-                correctView.defaultIconColor = [UIColor redColor];
-                correctView.defaultView.backgroundColor = [UIColor redColor];
+                correctView.defaultIconColor = scoreColor;
+                correctView.defaultView.backgroundColor = scoreColor;
             }
             
             [container addSubview:correctView];
@@ -407,11 +423,13 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSArray *jsonArray = [json objectForKey:@"scores"];
       //  NSLog(@"json for scores was %@",jsonArray);
         
-        int indexOfFirst = -1;
+        unsigned long indexOfFirst = 0;
+        BOOL isEmpty = true;
         if (jsonArray != nil) {
             _exToScore   = [[NSMutableDictionary alloc] init];
             _exToHistory = [[NSMutableDictionary alloc] init];
-            _exList = [[NSMutableArray alloc] init];
+            _exToHistoryScores = [[NSMutableDictionary alloc] init];
+            _exList      = [[NSMutableArray alloc] init];
             _exToJson    = [[NSMutableDictionary alloc] init];
 
             for (NSDictionary *entry in jsonArray) {
@@ -424,10 +442,12 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     [_exToScore setValue:score forKey:ex];
                     
                     NSArray *jsonArrayHistory = [entry objectForKey:@"h"];
-                    if (jsonArrayHistory.count > 0 && indexOfFirst == -1) {
+                    if (jsonArrayHistory.count > 0 && isEmpty) {
                         indexOfFirst = _exToHistory.count;
+                        isEmpty = false;
                     }
                     [_exToHistory setValue:jsonArrayHistory forKey:ex];
+                    [_exToHistoryScores setValue:[entry objectForKey:@"scores"] forKey:ex];
                     [_exList addObject:ex];
                     [_exToJson    setValue:[entry objectForKey:@"scoreJson"] forKey:ex];
                 }
@@ -446,7 +466,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         [[self tableView] reloadData];
         
         // scroll to first item with history
-        if (indexOfFirst > -1) {
+        if (!isEmpty) {
             NSIndexPath *scrollIndexPath = [NSIndexPath indexPathForRow:indexOfFirst inSection:0];
             [[self tableView] scrollToRowAtIndexPath:scrollIndexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
         }

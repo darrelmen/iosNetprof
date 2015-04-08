@@ -193,18 +193,15 @@
     NSString *exid = [jsonObject objectForKey:@"id"];
     NSArray *answers = [_exToHistory objectForKey:exid];
     NSDictionary *scoreHistory = [_exToJson objectForKey:exid];
+  //  NSLog(@"Scores %@",scoreHistory);
     
     if (answers == nil || answers.count == 0) {
         cell.imageView.image = [UIImage imageNamed:@"questionIcon"];
     }
     else {
         for (NSString *correct in answers) {
-            if ([correct isEqualToString:@"Y"]) {
-                cell.imageView.image = [UIImage imageNamed:@"checkmark32.png"];
-            }
-            else {
-                cell.imageView.image = [UIImage imageNamed:@"redx32.png"];
-            }
+          BOOL isCorrect = [correct isEqualToString:@"Y"];
+          cell.imageView.image = [UIImage imageNamed:isCorrect ? @"checkmark32.png" : @"redx32.png"];
         }
     }
     

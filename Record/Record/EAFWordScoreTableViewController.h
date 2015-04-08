@@ -21,14 +21,9 @@
 @property NSString *unitName;
 @property NSString *unitSelection;
 
-@property NSArray *scores;
-
 @property NSDictionary *exToFL;
 @property NSDictionary *exToEnglish;
 
-@property NSDictionary *exToScore;
-@property NSDictionary *exToHistory;
-@property NSMutableArray *exList;
 @property NSArray *jsonItems;
 
 @property long user;

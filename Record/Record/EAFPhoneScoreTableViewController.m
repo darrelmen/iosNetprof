@@ -22,6 +22,7 @@
 @property EAFAudioCache *audioCache;
 @property EAFAudioView * currentAudioSelection;
 @property EAFAudioPlayer *myAudioPlayer;
+@property (strong, nonatomic) NSData *responseData;
 
 @end
 
@@ -59,6 +60,14 @@
     [_myAudioPlayer stopAudio];
 }
 
+-(void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (_responseData == nil) { // if it failed before.
+        NSLog(@"PhoneScoreTableViewController.viewWillAppear - ask server for json");
+        [self askServerForJson];
+    }
+}
+
 -(void)setCurrentTitle {
     [self parentViewController].navigationItem.title = @"Touch to compare audio";
 }
@@ -75,7 +84,7 @@
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-//    NSLog(@"EAFPhoneScoreTableViewController url %@",baseurl);
+    NSLog(@"EAFPhoneScoreTableViewController url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -83,7 +92,8 @@
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
-    
+    [urlRequest setTimeoutInterval:10];
+
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)

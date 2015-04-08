@@ -771,13 +771,6 @@
             }
         }
     }
-    
-//    NSString *current = [[self getCurrentJson] objectForKey:@"id"];
-//    
-//    NSDictionary *previousJson = [_exToResponse objectForKey:current];
-//    if (previousJson != nil) {
-//        [self showScoreToUser:previousJson previousScore:nil];
-//    }
 }
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
@@ -1649,11 +1642,23 @@ bool debugRecord = false;
         NSLog(@"connectionDidFinishLoading - got error %@",error);
        // NSLog(@"data was %@",_responseData);
     }
-    
+    else {
+      //  NSLog(@"JSON was %@",json);
+    }
     //  NSLog(@"score was %@",overallScore);
     //  NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
     //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *exid = [json objectForKey:@"exid"];
+   // NSLog(@"exid was %@",exid);
+    NSNumber *score = [json objectForKey:@"score"];
+   // NSLog(@"score was %@ class %@",[json objectForKey:@"score"], [[json objectForKey:@"score"] class]);
+    NSNumber *minusOne = [NSNumber numberWithInt:-1];
+   // NSLog(@"score was %@ vs %@",score, minusOne);
+    if ([score isEqualToNumber:minusOne]) {
+        [self setDisplayMessage:@"Server error, please report."];
+        return;
+    }
+
   //  [_exToResponse setObject:json forKey:exid];
     
     NSNumber *previousScore;
@@ -1761,7 +1766,6 @@ BOOL addSpaces = false;
 - (void)updateScoreDisplay:(NSDictionary*) json {
     NSArray *wordAndScore  = [json objectForKey:@"WORD_TRANSCRIPT"];
     NSArray *phoneAndScore = [json objectForKey:@"PHONE_TRANSCRIPT"];
-    //BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
 
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
@@ -2053,8 +2057,6 @@ BOOL addSpaces = false;
     NSLog(@"EAFRecoFlashcardController - Got get audio -- %@ ",_audioCache);
     
     [_audioCache goGetAudio:rawPaths paths:paths language:_language];
-    
-   // NSLog(@"Got get audio -- after ");
 }
 
 #pragma mark - Managing popovers
