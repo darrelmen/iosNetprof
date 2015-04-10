@@ -212,7 +212,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             else {
                 NSUInteger endToken = 0;
                 int i = 0;
-               // NSLog(@"for %@ got tokens %@",exercise,tokens);
+             //   NSLog(@"for %@ got tokens %@",exercise,tokens);
               //  NSLog(@"for words %lu count ",(unsigned long)tokens.count);
                 BOOL useToken = tokens.count == words.count;
 
@@ -292,18 +292,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, iconDim, iconDim)];
             correctView.image = nil;
             
-            UIColor *scoreColor = [self getColor2:score.floatValue];
+            [correctView setDefaultIconIdentifier:[correct isEqualToString:@"Y"] ? @"fa-check" : @"fa-times"];
             
-            if ([correct isEqualToString:@"Y"]) {
-                [correctView setDefaultIconIdentifier:@"fa-check"];
-                correctView.defaultIconColor = scoreColor; // TODO needed at all??
-                correctView.defaultView.backgroundColor = scoreColor;
-            }
-            else {
-                [correctView setDefaultIconIdentifier:@"fa-times"];
-                correctView.defaultIconColor = scoreColor;
-                correctView.defaultView.backgroundColor = scoreColor;
-            }
+            UIColor *scoreColor = [self getColor2:score.floatValue];
+            correctView.defaultView.backgroundColor = scoreColor;
             
             [container addSubview:correctView];
         }

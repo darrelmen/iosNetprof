@@ -275,6 +275,8 @@
     if (isiPad) {
         _contextButton.titleLabel.text = @"sentence";
         [_contextButton addAwesomeIcon:FAQuoteLeft beforeTitle:true];
+        [_foreignLang setFont:[UIFont systemFontOfSize:52]];
+        NSLog(@"font size is %@",_foreignLang.font);
     }
     [_shuffleButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
      //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
@@ -890,7 +892,7 @@ BOOL preventPlayAudio = false;
 //    else {
 //        _foreignLang.textColor = [UIColor blackColor];
 //    }
-    NSLog(@"Font size %f",_foreignLang.font.pointSize);
+  //  NSLog(@"Font size %f",_foreignLang.font.pointSize);
 }
 
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didContinueSpeechUtterance:(AVSpeechUtterance *)utterance {
@@ -1581,10 +1583,10 @@ bool debugRecord = false;
 }
 
 - (void)showScoreToUser:(NSDictionary *)json previousScore:(NSNumber *)previousScore {
-    BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
+ //   BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
     BOOL correct = [[json objectForKey:@"isCorrect"] boolValue];
     NSString *valid = [json objectForKey:@"valid"];
-    NSNumber *overallScore = saidWord ? [json objectForKey:@"score"] : 0;
+    NSNumber *overallScore = correct ? [json objectForKey:@"score"] : 0;
     
     if (![valid isEqualToString:@"OK"]) {
         NSLog(@"validity was %@",valid);
@@ -1720,7 +1722,7 @@ bool debugRecord = false;
     
     wordLabel.attributedText = coloredWord;
     wordLabel.font = _foreignLang.font; // font sizes should match
-    
+   // NSLog(@"Font size %f",_foreignLang.font.pointSize);
     BOOL isIPhone = [[UIDevice currentDevice].model rangeOfString:@"iPhone"].location != NSNotFound;
     
     if (isIPhone && [_foreignLang.text length] > 15) {
@@ -1831,6 +1833,7 @@ BOOL addSpaces = false;
                                            attribute:NSLayoutAttributeLeft
                                            multiplier:1.0
                                            constant:0.0]];
+ //   NSMutableArray *wordLabels = [NSMutableArray new];
     
     for (NSDictionary *event in wordAndScore) {
         NSString *word = [event objectForKey:@"event"];
@@ -1897,7 +1900,8 @@ BOOL addSpaces = false;
         
         UILabel *wordLabel = [self getWordLabel:word score:score];
         wordLabel.textAlignment = isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
-
+     //   [wordLabels addObject:wordLabel];
+        
         [exampleView addSubview:wordLabel];
         
         // top
@@ -2009,6 +2013,11 @@ BOOL addSpaces = false;
                                            attribute:NSLayoutAttributeLeft
                                            multiplier:1.0
                                            constant:0.0]];
+
+    // TODO : consider how to make all the labels have the same font after being adjusted
+//    for (UILabel *word in wordLabels) {
+//        NSLog(@"Word %@ %@",word.text,word.font);
+//    }
 }
 
 - (UIColor *) getColor2:(float) score {

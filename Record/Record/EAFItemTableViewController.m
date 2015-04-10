@@ -131,7 +131,7 @@
         cell.textLabel.text = exercise;
     }
     else {
-        NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:exercise];
+        NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:[self trim:exercise]];
         
         if (scoreHistory == nil || ![scoreHistory isKindOfClass:[NSDictionary class]] || scoreHistory.count == 0) {
             [self colorWholeString:result scoreString:scoreString];
@@ -149,29 +149,45 @@
                 
                 NSArray *tokens = [self getTokens:exercise];
                 BOOL useToken = tokens.count == words.count;
-                for (NSDictionary *entry in words) {
-                    NSString *word   = [entry objectForKey:@"w"];
-                    if ([word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) {
-                        continue;
-                    }
+                
+               // NSLog(@"for %@ got tokens %@",exercise,tokens);
+              //  NSLog(@"for words %lu count ",(unsigned long)tokens.count);
+                
+                if (tokens.count == 1 && words.count > 0) {
+                    NSDictionary *entry = [words objectAtIndex:0];
                     NSString *wscore = [entry objectForKey:@"s"];
                     float score = [wscore floatValue];
+                    UIColor *color = [self getColor2:score];
                     
-                    NSString *token = useToken ? [tokens objectAtIndex:i++] : word;
-                  // NSLog(@"token %@ score %@ vs %@",word,wscore,token);
-                    
-                    NSRange trange = [exercise rangeOfString:token options:NSCaseInsensitiveSearch range:NSMakeRange(endToken, exercise.length-endToken)];
-                    
-                    if (trange.length > 0) {
-                        UIColor *color = [self getColor2:score];
+                    [result addAttribute:NSBackgroundColorAttributeName
+                                   value:color
+                                   range:NSMakeRange(0, result.length)];
+                }
+                else {
+                    for (NSDictionary *entry in words) {
+                        NSString *word   = [entry objectForKey:@"w"];
+                        if ([word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) {
+                            continue;
+                        }
+                        NSString *wscore = [entry objectForKey:@"s"];
+                        float score = [wscore floatValue];
                         
-                        [result addAttribute:NSBackgroundColorAttributeName
-                                       value:color
-                                       range:trange];
-                        endToken = trange.location+trange.length;
-                    }
-                    else {
-                        NSLog(@"colorEachWord : huh? ERROR - can't find %@ in %@",word,exercise);
+                        NSString *token = useToken ? [tokens objectAtIndex:i++] : word;
+                    //    NSLog(@"token %@ score %@ vs %@",word,wscore,token);
+                        
+                        NSRange trange = [exercise rangeOfString:token options:NSCaseInsensitiveSearch range:NSMakeRange(endToken, exercise.length-endToken)];
+                        
+                        if (trange.length > 0) {
+                            UIColor *color = [self getColor2:score];
+                            
+                            [result addAttribute:NSBackgroundColorAttributeName
+                                           value:color
+                                           range:trange];
+                            endToken = trange.location+trange.length;
+                        }
+                        else {
+                            NSLog(@"colorEachWord : huh? ERROR - can't find %@ in %@",word,exercise);
+                        }
                     }
                 }
             }
@@ -211,6 +227,10 @@
     return cell;
 }
 
+- (NSString *)trim:(NSString *)untrimedToken {
+   return [untrimedToken stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
 -(NSArray *)getTokens:(NSString *)sentence {
     NSMutableArray * all = [[NSMutableArray alloc] init];
     NSError *error = nil;
@@ -219,7 +239,8 @@
     sentence = [regex stringByReplacingMatchesInString:sentence options:0 range:NSMakeRange(0, [sentence length]) withTemplate:@" "];
     
     for (NSString *untrimedToken in [sentence componentsSeparatedByString:@" "]) { // split on spaces
-        NSString *token = [untrimedToken stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        NSString *token;
+        token = [self trim:untrimedToken];
         
         if (token.length > 0) {
             [all addObject:token];

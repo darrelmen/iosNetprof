@@ -62,7 +62,7 @@
                   @"MSA",
                   @"Pashto1", @"Pashto2", @"Pashto3",
                   //@"Russian",
-                  @"SpanishTest",
+                  @"Spanish",
                   @"Sudanese",  @"Urdu",  nil];
   
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -462,6 +462,7 @@
             toShow = @"Mandarin";
         }
         [chapterController setTitle:toShow];
+        [self textFieldText:nil];
     }
     else {
         long selection = [_languagePicker selectedRowInComponent:0];

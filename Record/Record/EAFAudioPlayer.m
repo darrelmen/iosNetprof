@@ -249,7 +249,7 @@
 - (void)removeStatusObserver
 {
     @try {
-        NSLog(@" remove status observer...");
+     //   NSLog(@" remove status observer...");
         [_player removeObserver:self forKeyPath:@"status"];
     }
     @catch (NSException *exception) {
