@@ -292,7 +292,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, iconDim, iconDim)];
             correctView.image = nil;
             
-            [correctView setDefaultIconIdentifier:[correct isEqualToString:@"Y"] ? @"fa-check" : @"fa-times"];
+           // NSLog(@"Score is %@",score);
+            BOOL isCorrect = [correct isEqualToString:@"Y"];
+            [correctView setDefaultIconIdentifier:isCorrect ? @"fa-check" : @"fa-times"];
             
             UIColor *scoreColor = [self getColor2:score.floatValue];
             correctView.defaultView.backgroundColor = scoreColor;

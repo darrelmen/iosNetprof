@@ -217,6 +217,8 @@
     else {
         for (NSString *correct in answers) {
           BOOL isCorrect = [correct isEqualToString:@"Y"];
+         //   NSLog(@"tableView  : history %@", scoreHistory);
+         //   NSLog(@"tableView  : exid %@ score %@",  exid,[_exToScore objectForKey:exid]);
           cell.imageView.image = [UIImage imageNamed:isCorrect ? @"checkmark32.png" : @"redx32.png"];
         }
     }

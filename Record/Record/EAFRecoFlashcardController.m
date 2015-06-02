@@ -1140,6 +1140,11 @@ BOOL preventPlayAudio = false;
     }
     else {
         [self setDisplayMessage:@"Recording too short."];
+        if (_audioRecorder.recording)
+        {
+            if (debugRecord)  NSLog(@"audioRecorderDidFinishRecording : stopAudio stop time = %f",CFAbsoluteTimeGetCurrent());
+            [_audioRecorder stop];
+        }
     }
 }
 
@@ -1326,6 +1331,12 @@ bool debugRecord = false;
        // NSLog(@"diff %f",gestureDiff);
         if (gestureDiff < 0.4) {
             [self setDisplayMessage:@"Press and hold to record."];
+            if (_audioRecorder.recording)
+            {
+                if (debugRecord)  NSLog(@"longPressAction : stopAudio stop time = %f",CFAbsoluteTimeGetCurrent());
+                [_audioRecorder stop];
+                
+            }
         }
         else {
             [self stopRecordingWithDelay:nil];
@@ -1586,7 +1597,8 @@ bool debugRecord = false;
  //   BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
     BOOL correct = [[json objectForKey:@"isCorrect"] boolValue];
     NSString *valid = [json objectForKey:@"valid"];
-    NSNumber *overallScore = correct ? [json objectForKey:@"score"] : 0;
+    //NSNumber *overallScore = correct ? [json objectForKey:@"score"] : 0;
+    NSNumber *overallScore = [json objectForKey:@"score"];
     
     if (![valid isEqualToString:@"OK"]) {
         NSLog(@"validity was %@",valid);
@@ -1648,14 +1660,14 @@ bool debugRecord = false;
       //  NSLog(@"JSON was %@",json);
     }
     //  NSLog(@"score was %@",overallScore);
-    //  NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
-    //  NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
+ //     NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
+ //     NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *exid = [json objectForKey:@"exid"];
-   // NSLog(@"exid was %@",exid);
+ //   NSLog(@"exid was %@",exid);
     NSNumber *score = [json objectForKey:@"score"];
-   // NSLog(@"score was %@ class %@",[json objectForKey:@"score"], [[json objectForKey:@"score"] class]);
+ //   NSLog(@"score was %@ class %@",[json objectForKey:@"score"], [[json objectForKey:@"score"] class]);
     NSNumber *minusOne = [NSNumber numberWithInt:-1];
-   // NSLog(@"score was %@ vs %@",score, minusOne);
+ //   NSLog(@"score was %@ vs %@",score, minusOne);
     if ([score isEqualToNumber:minusOne]) {
         [self setDisplayMessage:@"Server error, please report."];
         return;
