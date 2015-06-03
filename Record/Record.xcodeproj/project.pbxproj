@@ -692,10 +692,10 @@
 			attributes = {
 				CLASSPREFIX = EAF;
 				LastUpgradeCheck = 0600;
-				ORGANIZATIONNAME = "Ferme, Elizabeth - 0553 - MITLL";
+				ORGANIZATIONNAME = "MIT Lincoln Laboratory";
 				TargetAttributes = {
 					F6A5681918ECA98A00B844C6 = {
-						DevelopmentTeam = UN34VY9C7D;
+						DevelopmentTeam = 2C83Y973FA;
 					};
 					F6A5683A18ECA98B00B844C6 = {
 						TestTargetID = F6A5681918ECA98A00B844C6;

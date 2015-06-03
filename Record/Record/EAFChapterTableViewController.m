@@ -47,10 +47,16 @@
     if (self.chapters == nil) {
         self.chapters = [[NSMutableArray alloc] init];
     }
+    NSString *version = [[UIDevice currentDevice] systemVersion];
+    
+    BOOL isEight = [version hasPrefix:@"8"];
+    
+    if (isEight) {
+        [self tableView].rowHeight = UITableViewAutomaticDimension;
+    }
     
     _language = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
 
-   // if (_language isEqualToString:@"CM" ? @"Mandarin":_language)
     [self setTitle:([_language isEqualToString:@"CM"] ? @"Mandarin":_language)];
     
     if (_jsonContentArray == nil) {
@@ -334,8 +340,13 @@ UIAlertView *loadingContentAlert;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
     NSString *chapter = [_chapters objectAtIndex:indexPath.row];
+    
     cell.textLabel.text = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
-
+    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+    {
+        cell.textLabel.font = [UIFont systemFontOfSize:28]; //Change this value to adjust size
+    }
+    
     // mark chapters with empty content
     for (NSDictionary *entry in _jsonContentArray) {
         NSString *name =[entry objectForKey:@"name"];
@@ -348,12 +359,19 @@ UIAlertView *loadingContentAlert;
                 if (items.count == 0) {
                     cell.textLabel.text = [NSString stringWithFormat:@"%@ %@ (No Audio Available)",_chapterName, chapter];
                 }
+//                NSLog(@"items %lu",(unsigned long)items.count);
+
                 break;
             }
         }
     }
     
     return cell;
+}
+
+
+- (NSString *)trim:(NSString *)untrimedToken {
+    return [untrimedToken stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 /*
