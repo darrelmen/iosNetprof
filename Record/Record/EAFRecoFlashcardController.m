@@ -1759,8 +1759,8 @@ BOOL addSpaces = false;
         if ([phoneText isEqualToString:@"sil"]) continue;
         
         NSNumber *pscore = [event objectForKey:@"score"];
-        NSNumber *start = [event objectForKey:@"start"];
-        NSNumber *end = [event objectForKey:@"end"];
+        NSNumber *start  = [event objectForKey:@"start"];
+        NSNumber *end    = [event objectForKey:@"end"];
         
         if ([start floatValue] >= [wstart floatValue] && [end floatValue] <= [wend floatValue]) {
             NSRange range = NSMakeRange(pstart, [phoneText length]);
@@ -1776,11 +1776,118 @@ BOOL addSpaces = false;
     return coloredPhones;
 }
 
+- (BOOL)isRTL {
+    NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
+                    @"Egyptian",
+                    @"EgyptianCandidate",
+                    @"Farsi",
+                    @"Levantine",
+                    @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
+    BOOL isRTL = [rtl containsObject:_language];
+    return isRTL;
+}
+
+- (void)addSingleTap:(UIView *)exampleView {
+    UITapGestureRecognizer *singleFingerTap =
+    [[UITapGestureRecognizer alloc] initWithTarget:self
+                                            action:@selector(playAudio:)];
+    singleFingerTap.delegate = self;
+    [exampleView addGestureRecognizer:singleFingerTap];
+}
+
+- (NSString *)getPhonesWithinWord:(NSNumber *)wend wstart:(NSNumber *)wstart phoneAndScore:(NSArray *)phoneAndScore {
+    // get the phone sequence for the word
+    NSString *phoneToShow = @"";
+    for (NSDictionary *event in phoneAndScore) {
+        NSString *phone = [event objectForKey:@"event"];
+        if ([phone isEqualToString:@"sil"]) continue;
+        NSNumber *start = [event objectForKey:@"start"];
+        NSNumber *end = [event objectForKey:@"end"];
+        
+        if ([start floatValue] >= [wstart floatValue] && [end floatValue] <= [wend floatValue]) {
+            phoneToShow = [phoneToShow stringByAppendingString:phone];
+            if (addSpaces) {
+                phoneToShow = [phoneToShow stringByAppendingString:@" "];
+            }
+        }
+    }
+    return phoneToShow;
+}
+
+- (void)addPhoneLabelConstraints:(UIView *)exampleView phoneLabel:(UILabel *)phoneLabel {
+    // left
+    
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:phoneLabel
+                                attribute:NSLayoutAttributeLeft
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeLeft
+                                multiplier:1.0
+                                constant:0.0]];
+    
+    // right
+    
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:phoneLabel
+                                attribute:NSLayoutAttributeRight
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeRight
+                                multiplier:1.0
+                                constant:0.0]];
+    
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:phoneLabel
+                                attribute:NSLayoutAttributeBottom
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeBottom
+                                multiplier:1.0
+                                constant:2.0]];
+}
+
+- (void)addWordLabelContstraints:(UIView *)exampleView wordLabel:(UILabel *)wordLabel {
+    // top
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:wordLabel
+                                attribute:NSLayoutAttributeTop
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeTop
+                                multiplier:1.0
+                                constant:0.0]];
+    
+    // left
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:wordLabel
+                                attribute:NSLayoutAttributeLeft
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeLeft
+                                multiplier:1.0
+                                constant:0.0]];
+    
+    // right
+    [exampleView addConstraint:[NSLayoutConstraint
+                                constraintWithItem:wordLabel
+                                attribute:NSLayoutAttributeRight
+                                relatedBy:NSLayoutRelationEqual
+                                toItem:exampleView
+                                attribute:NSLayoutAttributeRight
+                                multiplier:1.0
+                                constant:0.0]];
+}
+
 // worries about RTL languages
 - (void)updateScoreDisplay:(NSDictionary*) json {
     NSArray *wordAndScore  = [json objectForKey:@"WORD_TRANSCRIPT"];
     NSArray *phoneAndScore = [json objectForKey:@"PHONE_TRANSCRIPT"];
 
+        NSLog(@"updateScoreDisplay size for words %lu",(unsigned long)wordAndScore.count);
+
+//    NSLog(@"word  json %@",wordAndScore);
+//    NSLog(@"phone json %@",phoneAndScore);
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
     }
@@ -1792,13 +1899,7 @@ BOOL addSpaces = false;
     UIView *leftView  = nil;
     UIView *rightView = nil;
     
-    NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
-                    @"Egyptian",
-                    @"EgyptianCandidate",
-                    @"Farsi",
-                    @"Levantine",
-                    @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
-    BOOL isRTL = [rtl containsObject:_language];
+    BOOL isRTL = [self isRTL];
     
     if (isRTL) {
         wordAndScore  = [self reversedArray:wordAndScore];
@@ -1858,13 +1959,9 @@ BOOL addSpaces = false;
         exampleView.translatesAutoresizingMaskIntoConstraints = NO;
         [_scoreDisplayContainer addSubview:exampleView];
         rightView = exampleView;
-        UITapGestureRecognizer *singleFingerTap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                action:@selector(playAudio:)];
-        singleFingerTap.delegate = self;
-        [exampleView addGestureRecognizer:singleFingerTap];
+        [self addSingleTap:exampleView];
         
-        // NSLog(@"word is %@",wordEntry);
+       //  NSLog(@"word is %@",word);
         // first example view constraints left side to left side of container
         // all - top to top of container
         // bottom to bottom of container
@@ -1916,51 +2013,10 @@ BOOL addSpaces = false;
         
         [exampleView addSubview:wordLabel];
         
-        // top
-        [exampleView addConstraint:[NSLayoutConstraint
-                                    constraintWithItem:wordLabel
-                                    attribute:NSLayoutAttributeTop
-                                    relatedBy:NSLayoutRelationEqual
-                                    toItem:exampleView
-                                    attribute:NSLayoutAttributeTop
-                                    multiplier:1.0
-                                    constant:0.0]];
-        
-        // left
-        [exampleView addConstraint:[NSLayoutConstraint
-                                    constraintWithItem:wordLabel
-                                    attribute:NSLayoutAttributeLeft
-                                    relatedBy:NSLayoutRelationEqual
-                                    toItem:exampleView
-                                    attribute:NSLayoutAttributeLeft
-                                    multiplier:1.0
-                                    constant:0.0]];
-        
-        // right
-        [exampleView addConstraint:[NSLayoutConstraint
-                                    constraintWithItem:wordLabel
-                                    attribute:NSLayoutAttributeRight
-                                    relatedBy:NSLayoutRelationEqual
-                                    toItem:exampleView
-                                    attribute:NSLayoutAttributeRight
-                                    multiplier:1.0
-                                    constant:0.0]];
+        [self addWordLabelContstraints:exampleView wordLabel:wordLabel];
 
-        // get the phone sequence for the word
-        NSString *phoneToShow = @"";
-        for (NSDictionary *event in phoneAndScore) {
-            NSString *phone = [event objectForKey:@"event"];
-            if ([phone isEqualToString:@"sil"]) continue;
-            NSNumber *start = [event objectForKey:@"start"];
-            NSNumber *end = [event objectForKey:@"end"];
-            
-            if ([start floatValue] >= [wstart floatValue] && [end floatValue] <= [wend floatValue]) {
-                phoneToShow = [phoneToShow stringByAppendingString:phone];
-                if (addSpaces) {
-                    phoneToShow = [phoneToShow stringByAppendingString:@" "];
-                }
-            }
-        }
+        NSString *phoneToShow = [self getPhonesWithinWord:wend wstart:wstart phoneAndScore:phoneAndScore];
+   //     NSLog(@"phone to show %@",phoneToShow);
         
         NSMutableAttributedString *coloredPhones;
         coloredPhones = [self getColoredPhones:phoneToShow wend:wend wstart:wstart phoneAndScore:phoneAndScore];
@@ -1985,36 +2041,7 @@ BOOL addSpaces = false;
                                     multiplier:1.0
                                     constant:+2.0]];
         
-        // left
-        
-        [exampleView addConstraint:[NSLayoutConstraint
-                                    constraintWithItem:phoneLabel
-                                    attribute:NSLayoutAttributeLeft
-                                    relatedBy:NSLayoutRelationEqual
-                                    toItem:exampleView
-                                    attribute:NSLayoutAttributeLeft
-                                    multiplier:1.0
-                                    constant:0.0]];
-        
-        // right
-        
-        [exampleView addConstraint:[NSLayoutConstraint
-                                    constraintWithItem:phoneLabel
-                                    attribute:NSLayoutAttributeRight
-                                    relatedBy:NSLayoutRelationEqual
-                                    toItem:exampleView
-                                    attribute:NSLayoutAttributeRight
-                                    multiplier:1.0
-                                    constant:0.0]];
-        
-        [exampleView addConstraint:[NSLayoutConstraint
-                                    constraintWithItem:phoneLabel
-                                    attribute:NSLayoutAttributeBottom
-                                    relatedBy:NSLayoutRelationEqual
-                                    toItem:exampleView
-                                    attribute:NSLayoutAttributeBottom
-                                    multiplier:1.0
-                                    constant:2.0]];
+        [self addPhoneLabelConstraints:exampleView phoneLabel:phoneLabel];
     }
     
     [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
@@ -2107,7 +2134,7 @@ BOOL addSpaces = false;
     popupController.fref  = [[self getCurrentJson] objectForKey:@"ctfref"];
     
     NSString *model = [UIDevice currentDevice].model;
-    NSLog(@"model %@",model);
+ //   NSLog(@"model %@",model);
     BOOL isIPhone = [model rangeOfString:@"iPhone"].location != NSNotFound;
     
     MZFormSheetController *formSheet = isIPhone ?
