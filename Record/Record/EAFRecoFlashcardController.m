@@ -1879,12 +1879,22 @@ BOOL addSpaces = false;
                                 constant:0.0]];
 }
 
+- (UILabel *)makeThePhoneLabel:(BOOL)isRTL coloredPhones:(NSMutableAttributedString *)coloredPhones {
+    UILabel *phoneLabel = [[UILabel alloc] init];
+    phoneLabel.font = [UIFont systemFontOfSize:32];
+    phoneLabel.adjustsFontSizeToFitWidth=YES;
+    phoneLabel.textAlignment = isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
+    phoneLabel.attributedText = coloredPhones;
+    [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    return phoneLabel;
+}
+
 // worries about RTL languages
 - (void)updateScoreDisplay:(NSDictionary*) json {
     NSArray *wordAndScore  = [json objectForKey:@"WORD_TRANSCRIPT"];
     NSArray *phoneAndScore = [json objectForKey:@"PHONE_TRANSCRIPT"];
 
-        NSLog(@"updateScoreDisplay size for words %lu",(unsigned long)wordAndScore.count);
+//    NSLog(@"updateScoreDisplay size for words %lu",(unsigned long)wordAndScore.count);
 
 //    NSLog(@"word  json %@",wordAndScore);
 //    NSLog(@"phone json %@",phoneAndScore);
@@ -1918,6 +1928,8 @@ BOOL addSpaces = false;
     [_scoreDisplayContainer addSubview:spacerRight];
 
     leftView = spacerLeft;
+
+    // width of spacers on left and right are equal
     [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
                                            constraintWithItem:spacerLeft
                                            attribute:NSLayoutAttributeWidth
@@ -1926,7 +1938,7 @@ BOOL addSpaces = false;
                                            attribute:NSLayoutAttributeWidth
                                            multiplier:1.0
                                            constant:0.0]];
-    
+
     //right edge of right spacer
     [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
                                 constraintWithItem:spacerRight
@@ -1936,7 +1948,7 @@ BOOL addSpaces = false;
                                 attribute:NSLayoutAttributeRight
                                 multiplier:1.0
                                 constant:0.0]];
-    
+
     // left edge of left spacer
     [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
                                            constraintWithItem:spacerLeft
@@ -1961,7 +1973,7 @@ BOOL addSpaces = false;
         rightView = exampleView;
         [self addSingleTap:exampleView];
         
-       //  NSLog(@"word is %@",word);
+//         NSLog(@"word is %@",word);
         // first example view constraints left side to left side of container
         // all - top to top of container
         // bottom to bottom of container
@@ -1986,7 +1998,6 @@ BOOL addSpaces = false;
                                                constant:0.0]];
         
         // bottom
-        
         [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
                                                constraintWithItem:exampleView
                                                attribute:NSLayoutAttributeBottom
@@ -1995,8 +2006,8 @@ BOOL addSpaces = false;
                                                attribute:NSLayoutAttributeBottom
                                                multiplier:1.0
                                                constant:0.0]];
-        
-        // left
+  
+        // left - initial left view is the left spacer, but afterwards is the previous word view
         [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
                                                constraintWithItem:exampleView
                                                attribute:NSLayoutAttributeLeft
@@ -2016,22 +2027,15 @@ BOOL addSpaces = false;
         [self addWordLabelContstraints:exampleView wordLabel:wordLabel];
 
         NSString *phoneToShow = [self getPhonesWithinWord:wend wstart:wstart phoneAndScore:phoneAndScore];
-   //     NSLog(@"phone to show %@",phoneToShow);
+//        NSLog(@"phone to show %@",phoneToShow);
         
-        NSMutableAttributedString *coloredPhones;
-        coloredPhones = [self getColoredPhones:phoneToShow wend:wend wstart:wstart phoneAndScore:phoneAndScore];
+        NSMutableAttributedString *coloredPhones = [self getColoredPhones:phoneToShow wend:wend wstart:wstart phoneAndScore:phoneAndScore];
         
-        UILabel *phoneLabel = [[UILabel alloc] init];
-        phoneLabel.font = [UIFont systemFontOfSize:32];
-        phoneLabel.adjustsFontSizeToFitWidth=YES;
-
-        phoneLabel.textAlignment = isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
-        
-        phoneLabel.attributedText = coloredPhones;
-        [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+        UILabel *phoneLabel = [self makeThePhoneLabel:isRTL coloredPhones:coloredPhones];
         
         [exampleView addSubview:phoneLabel];
-        
+
+        // top of the phone label is the bottom of the word
         [exampleView addConstraint:[NSLayoutConstraint
                                     constraintWithItem:phoneLabel
                                     attribute:NSLayoutAttributeTop
@@ -2044,18 +2048,20 @@ BOOL addSpaces = false;
         [self addPhoneLabelConstraints:exampleView phoneLabel:phoneLabel];
     }
     
-    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                           constraintWithItem:rightView
-                                           attribute:NSLayoutAttributeRight
-                                           relatedBy:NSLayoutRelationEqual
-                                           toItem:spacerRight
-                                           attribute:NSLayoutAttributeLeft
-                                           multiplier:1.0
-                                           constant:0.0]];
-
+    // if the alignment fails completely it can sometimes return no words at all.
+    if (rightView != nil)  {
+        [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                               constraintWithItem:rightView
+                                               attribute:NSLayoutAttributeRight
+                                               relatedBy:NSLayoutRelationEqual
+                                               toItem:spacerRight
+                                               attribute:NSLayoutAttributeLeft
+                                               multiplier:1.0
+                                               constant:0.0]];
+    }
     // TODO : consider how to make all the labels have the same font after being adjusted
-//    for (UILabel *word in wordLabels) {
-//        NSLog(@"Word %@ %@",word.text,word.font);
+    //    for (UILabel *word in wordLabels) {
+    //        NSLog(@"Word %@ %@",word.text,word.font);
 //    }
 }
 
