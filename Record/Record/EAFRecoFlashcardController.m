@@ -262,21 +262,14 @@
     _pageControl.transform = CGAffineTransformMakeRotation(M_PI_2);
     
     [_contextButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
-     //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
                             color:[UIColor whiteColor]
                             style:BButtonStyleBootstrapV3
                              icon:FAQuoteLeft
                          fontSize:20.0f];
-    NSString *model=[UIDevice currentDevice].model;
-    NSLog(@"model %@",model);
-    
-    BOOL isiPad = [model rangeOfString:@"Pad"].length > 0;
-    
-    if (isiPad) {
+
+    if ([self isiPad]) {
         _contextButton.titleLabel.text = @"sentence";
         [_contextButton addAwesomeIcon:FAQuoteLeft beforeTitle:true];
-        [_foreignLang setFont:[UIFont systemFontOfSize:52]];
-        NSLog(@"font size is %@",_foreignLang.font);
     }
     [_shuffleButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
      //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
@@ -362,24 +355,24 @@
     if (receivedEvent.type == UIEventTypeRemoteControl) {
         switch (receivedEvent.subtype) {
             case UIEventSubtypeRemoteControlPause:
-                NSLog(@"Got paused  --->");
+           //     NSLog(@"Got paused  --->");
 
                 [self stopTimer];
                 [self unselectAutoPlay];
                 break;
             case UIEventSubtypeRemoteControlPlay:
-                NSLog(@"Got play  --->");
+             //   NSLog(@"Got play  --->");
                 _autoPlayButton.selected = true;
                 _autoPlayButton.color = _autoPlayButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
 
                 [self respondToSwipe];
                 break;
             case UIEventSubtypeRemoteControlTogglePlayPause:
-                NSLog(@"Got play/pause track --->");
+            //    NSLog(@"Got play/pause track --->");
                 break;
                 
             case UIEventSubtypeRemoteControlPreviousTrack:
-                NSLog(@"Got prev track --->");
+             //   NSLog(@"Got prev track --->");
                 [self stopPlayingAudio];
                 _index--;
                 if (_index == -1) _index = _jsonItems.count  -1UL;
@@ -387,7 +380,7 @@
                 break;
                 
             case UIEventSubtypeRemoteControlNextTrack:
-                NSLog(@"Got next track --->");
+             //   NSLog(@"Got next track --->");
                 [self stopPlayingAudio];
                 [self doAutoAdvance];
                 break;
@@ -505,23 +498,52 @@
 
 - (NSDictionary *)getCurrentJson
 {
-    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-    return jsonObject;
+    return [_jsonItems objectAtIndex:[self getItemIndex]];
+}
+
+- (BOOL)isiPhone
+{
+    return [[UIDevice currentDevice].model rangeOfString:@"iPhone"].location != NSNotFound;
+}
+
+- (BOOL)isiPad
+{
+    return ![self isiPhone];
+}
+
+- (void)scaleFLFont:(NSString *)exercise
+{
+    float len = [NSNumber numberWithUnsignedLong:exercise.length].floatValue;
+    NSLog(@"len %lu",(unsigned long)len);
+    float slen = 30;
+    float scale = slen/len;
+    scale = fmin(1,scale);
+    float newFont = 48*scale;
+    NSLog(@"font is %f",newFont);
+    [_foreignLang setFont:[UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue]];
 }
 
 - (void)configureTextFields
 {
-    NSDictionary *jsonObject;
-    jsonObject = [self getCurrentJson];
-    NSString *exercise = [jsonObject objectForKey:@"fl"];
+    NSDictionary *jsonObject = [self getCurrentJson];
+    NSString *exercise       = [jsonObject objectForKey:@"fl"];
     NSString *englishPhrases = [jsonObject objectForKey:@"en"];
+ 
     exercise = [exercise stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-
     [_foreignLang setText:exercise];
+
     [_english setText:englishPhrases];
     
     _foreignLang.adjustsFontSizeToFitWidth=YES;
+    _foreignLang.minimumScaleFactor=0.1;
+  
     _english.adjustsFontSizeToFitWidth=YES;
+    _english.minimumScaleFactor=0.1;
+
+    if ([self isiPad]) {
+        [_foreignLang setFont:[UIFont systemFontOfSize:52]];
+//        NSLog(@"font size is %@",_foreignLang.font);
+    }
 }
 
 - (unsigned long)getItemIndex {
@@ -725,14 +747,18 @@
     [_english setText:enAtIndex];
     
     // todo : remove font foolishness here
-    BOOL isIPhone = [[UIDevice currentDevice].model rangeOfString:@"iPhone"].length > 0;
+    BOOL isIPhone = [self isiPhone];
     if (isIPhone && [enAtIndex length] > 15) {
         _english.font = [UIFont systemFontOfSize:24];
     }
     else {
         _english.font = [UIFont systemFontOfSize:isIPhone ? 32 :44];
     }
-
+    
+    if (isIPhone) {
+        [self scaleFLFont:flAtIndex];
+    }
+    
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
     }
@@ -1715,7 +1741,8 @@ bool debugRecord = false;
 
 - (UILabel *)getWordLabel:(NSString *)word score:(NSNumber *)score {
     UILabel *wordLabel = [[UILabel alloc] init];
-    
+     NSLog(@"getWordLabel word %@",word);
+
     NSString *wordActually = word;
     if ([_language isEqualToString:@"English"]) {
         wordActually = [word lowercaseString];
@@ -1734,11 +1761,10 @@ bool debugRecord = false;
     
     wordLabel.attributedText = coloredWord;
     wordLabel.font = _foreignLang.font; // font sizes should match
-   // NSLog(@"Font size %f",_foreignLang.font.pointSize);
-    BOOL isIPhone = [[UIDevice currentDevice].model rangeOfString:@"iPhone"].location != NSNotFound;
     
-    if (isIPhone && [_foreignLang.text length] > 15) {
+    if ([self isiPhone] && [_foreignLang.text length] > 15) {
         wordLabel.font  = [UIFont systemFontOfSize:24];
+//        NSLog(@"got constraint %f",[wordLabel contentHuggingPriorityForAxis:UILayoutConstraintAxisHorizontal] );
     }
     
     [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -2050,6 +2076,7 @@ BOOL addSpaces = false;
     
     // if the alignment fails completely it can sometimes return no words at all.
     if (rightView != nil)  {
+        // the right side of the last word is the same as the left side of the right side spacer
         [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
                                                constraintWithItem:rightView
                                                attribute:NSLayoutAttributeRight
@@ -2139,14 +2166,13 @@ BOOL addSpaces = false;
     }
     popupController.fref  = [[self getCurrentJson] objectForKey:@"ctfref"];
     
-    NSString *model = [UIDevice currentDevice].model;
- //   NSLog(@"model %@",model);
-    BOOL isIPhone = [model rangeOfString:@"iPhone"].location != NSNotFound;
+//    BOOL isIPhone;
+  //  isIPhone = [self isiPhone];
     
-    MZFormSheetController *formSheet = isIPhone ?
-//        [[MZFormSheetController alloc] initWithViewController:popupController] :
+    MZFormSheetController *formSheet = [self isiPhone] ?
+    //        [[MZFormSheetController alloc] initWithViewController:popupController] :
     [[MZFormSheetController alloc] initWithSize:CGSizeMake(300, 350) viewController:popupController] :
-        [[MZFormSheetController alloc] initWithSize:CGSizeMake(500, 500) viewController:popupController];
+    [[MZFormSheetController alloc] initWithSize:CGSizeMake(500, 500) viewController:popupController];
     
     formSheet.transitionStyle = MZFormSheetTransitionStyleSlideFromTop;
     formSheet.shouldDismissOnBackgroundViewTap = YES;
@@ -2158,7 +2184,7 @@ BOOL addSpaces = false;
     formSheet.didTapOnBackgroundViewCompletionHandler = ^(CGPoint location)
     {
         
-    };   
+    };
 }
 
 
