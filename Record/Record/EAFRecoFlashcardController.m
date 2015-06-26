@@ -23,6 +23,7 @@
 #import "EAFAudioPlayer.h"
 #import "EAFAppDelegate.h"
 #import "EAFPopoverViewController.h"
+#import <sys/utsname.h> // import it in your header or implementation file.
 
 @implementation UIProgressView (customView)
 - (CGSize)sizeThatFits:(CGSize)size {
@@ -503,6 +504,7 @@
 
 - (BOOL)isiPhone
 {
+  //  NSLog(@"dev %@",[UIDevice currentDevice].model);
     return [[UIDevice currentDevice].model rangeOfString:@"iPhone"].location != NSNotFound;
 }
 
@@ -511,16 +513,15 @@
     return ![self isiPhone];
 }
 
-- (void)scaleFLFont:(NSString *)exercise
+- (void)scaleFont:(NSString *)exercise labelToScale:(UILabel *)labelToScale largest:(int) largest slen:(float) slen smallest:(int) smallest
 {
     float len = [NSNumber numberWithUnsignedLong:exercise.length].floatValue;
-    NSLog(@"len %lu",(unsigned long)len);
-    float slen = 30;
+//    NSLog(@"scaleFont len of %@ = %lu",exercise,(unsigned long)len);
     float scale = slen/len;
     scale = fmin(1,scale);
-    float newFont = 48*scale;
-    NSLog(@"font is %f",newFont);
-    [_foreignLang setFont:[UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue]];
+    float newFont = smallest + floor((largest-smallest)*scale);
+  //  NSLog(@"scaleFont font is %f",newFont);
+    [labelToScale setFont:[UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue]];
 }
 
 - (void)configureTextFields
@@ -746,17 +747,26 @@
     [_foreignLang setText:flAtIndex];
     [_english setText:enAtIndex];
     
-    // todo : remove font foolishness here
     BOOL isIPhone = [self isiPhone];
-    if (isIPhone && [enAtIndex length] > 15) {
-        _english.font = [UIFont systemFontOfSize:24];
-    }
-    else {
-        _english.font = [UIFont systemFontOfSize:isIPhone ? 32 :44];
-    }
     
     if (isIPhone) {
-        [self scaleFLFont:flAtIndex];
+        int maxFont  = 48;
+        int maxEFont = 40;
+        
+        NSString *dev =[self deviceName];
+        
+        BOOL issmall = [dev rangeOfString:@"iPhone4"].location != NSNotFound;
+        if (issmall) {
+            maxFont = 30;
+            maxEFont = 30;
+        }
+        [self scaleFont:flAtIndex labelToScale:_foreignLang largest:maxFont slen:22 smallest:14];
+        
+   //     CGRect rect = [_english.text boundingRectWithSize:_english.bounds.size options:NSStringDrawingTruncatesLastVisibleLine attributes:nil context:nil];
+     //   NSLog(@"Got rect %@",rect);
+   //     NSLog(@"%@ vs %@", NSStringFromCGRect(rect), NSStringFromCGRect(_english.bounds));
+    
+        [self scaleFont:enAtIndex labelToScale:_english     largest:maxEFont slen:10 smallest:14];
     }
     
     for (UIView *v in [_scoreDisplayContainer subviews]) {
@@ -799,6 +809,14 @@
             }
         }
     }
+}
+
+- (NSString*) deviceName {
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    
+    return [NSString stringWithCString:systemInfo.machine
+                              encoding:NSUTF8StringEncoding];
 }
 
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender {
@@ -1608,7 +1626,7 @@ bool debugRecord = false;
 
 - (void)setIncorrectMessage:(NSString *) toUse {
     //NSLog(@"display %@",toUse);
-    UILabel *toShow = [self getWordLabel:toUse score:0];
+    UILabel *toShow = [self getWordLabel:toUse score:0 wordFont:[UIFont systemFontOfSize:24]];
     toShow.userInteractionEnabled = YES;
 
     UITapGestureRecognizer *singleFingerTap =
@@ -1739,9 +1757,9 @@ bool debugRecord = false;
     return array;
 }
 
-- (UILabel *)getWordLabel:(NSString *)word score:(NSNumber *)score {
+- (UILabel *)getWordLabel:(NSString *)word score:(NSNumber *)score wordFont:(UIFont *)wordFont {
     UILabel *wordLabel = [[UILabel alloc] init];
-     NSLog(@"getWordLabel word %@",word);
+   //  NSLog(@"getWordLabel word %@",word);
 
     NSString *wordActually = word;
     if ([_language isEqualToString:@"English"]) {
@@ -1762,10 +1780,19 @@ bool debugRecord = false;
     wordLabel.attributedText = coloredWord;
     wordLabel.font = _foreignLang.font; // font sizes should match
     
-    if ([self isiPhone] && [_foreignLang.text length] > 15) {
-        wordLabel.font  = [UIFont systemFontOfSize:24];
-//        NSLog(@"got constraint %f",[wordLabel contentHuggingPriorityForAxis:UILayoutConstraintAxisHorizontal] );
-    }
+    
+    wordLabel.font  = wordFont;
+    
+//    if ([self isiPhone]// && [_foreignLang.text length] > 15
+//        ) {
+//        wordLabel.font  = wordFont;//[UIFont systemFontOfSize:24];
+//      //  int v = [wordLabel contentCompressionResistancePriorityForAxis:UILayoutConstraintAxisHorizontal];
+//     //   NSLog(@"got constraint %d",v);
+////        NSLog(@"got constraint %f",[wordLabel contentHuggingPriorityForAxis:UILayoutConstraintAxisHorizontal] );
+//    }
+//    else {
+//        
+//    }
     
     [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
     wordLabel.adjustsFontSizeToFitWidth=YES;
@@ -1905,14 +1932,30 @@ BOOL addSpaces = false;
                                 constant:0.0]];
 }
 
-- (UILabel *)makeThePhoneLabel:(BOOL)isRTL coloredPhones:(NSMutableAttributedString *)coloredPhones {
+- (UILabel *)getPhoneLabel:(BOOL)isRTL coloredPhones:(NSMutableAttributedString *)coloredPhones phoneFont:(UIFont *) phoneFont {
     UILabel *phoneLabel = [[UILabel alloc] init];
-    phoneLabel.font = [UIFont systemFontOfSize:32];
+    phoneLabel.font = phoneFont;
     phoneLabel.adjustsFontSizeToFitWidth=YES;
     phoneLabel.textAlignment = isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
     phoneLabel.attributedText = coloredPhones;
     [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
     return phoneLabel;
+}
+
+- (UIFont *)getWordFont {
+    float len = [NSNumber numberWithUnsignedLong:_foreignLang.text.length].floatValue;
+    // NSLog(@"len %lu",(unsigned long)len);
+    float slen = [self isiPhone] ? 10 : 20;
+    float scale = slen/len;
+    scale = fmin(1,scale);
+    
+    int largest  = [self isiPhone] ? 24 : 48;
+    int smallest = [self isiPhone] ? 7  : 14;
+
+    float newFont = smallest + floor((largest-smallest)*scale);
+   // NSLog(@"getWordFont len %lu font is %f",(unsigned long)len,newFont);
+    UIFont *wordFont = [UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue];
+    return wordFont;
 }
 
 // worries about RTL languages
@@ -1927,6 +1970,9 @@ BOOL addSpaces = false;
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
     }
+    
+    UIFont *wordFont;
+    wordFont = [self getWordFont];
     
     [_scoreDisplayContainer removeConstraints:_scoreDisplayContainer.constraints];
     _scoreDisplayContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -2044,7 +2090,7 @@ BOOL addSpaces = false;
                                                constant:5.0]];
         leftView = exampleView;
         
-        UILabel *wordLabel = [self getWordLabel:word score:score];
+        UILabel *wordLabel = [self getWordLabel:word score:score wordFont:wordFont];
         wordLabel.textAlignment = isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
      //   [wordLabels addObject:wordLabel];
         
@@ -2057,7 +2103,7 @@ BOOL addSpaces = false;
         
         NSMutableAttributedString *coloredPhones = [self getColoredPhones:phoneToShow wend:wend wstart:wstart phoneAndScore:phoneAndScore];
         
-        UILabel *phoneLabel = [self makeThePhoneLabel:isRTL coloredPhones:coloredPhones];
+        UILabel *phoneLabel = [self getPhoneLabel:isRTL coloredPhones:coloredPhones phoneFont:wordFont];
         
         [exampleView addSubview:phoneLabel];
 
