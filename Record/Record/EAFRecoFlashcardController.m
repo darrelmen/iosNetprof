@@ -42,6 +42,8 @@
 @property NSMutableArray *audioRefs;
 @property EAFAudioPlayer *myAudioPlayer;
 @property (strong, nonatomic) AVAudioPlayer *audioPlayer;
+@property (strong, nonatomic) AVPlayer *altPlayer;
+@property float lastUpdate;
 @property (nonatomic, strong) AVSpeechSynthesizer *synthesizer;
 @property NSTimer *autoAdvanceTimer;
 @property NSTimeInterval autoAdvanceInterval;
@@ -54,6 +56,12 @@
 @property UIPopoverController *popover;
 @property EAFAudioCache *audioCache;
 @property NSMutableDictionary *exToScore;
+@property NSArray *wordTranscript;
+@property NSArray *phoneTranscript;
+@property NSMutableArray *wordLabels;
+//@property NSMutableArray *phoneStarts;
+//@property NSMutableArray *phoneEnds;
+@property NSMutableArray *phoneLabels;
 //@property NSMutableDictionary *exToResponse;
 - (void)postAudio;
 
@@ -200,6 +208,12 @@
     
     // Setup audio session
     AVAudioSession *session = [AVAudioSession sharedInstance];
+    
+//    [session setCategory:AVAudioSessionCategoryPlayAndRecord error: nil];
+//    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+//    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,
+//                             sizeof (audioRouteOverride),&audioRouteOverride);
+    
     
     [session setCategory:AVAudioSessionCategoryPlayAndRecord error:&setCategoryError];
     
@@ -1402,23 +1416,113 @@ bool debugRecord = false;
         // what does this do?
         [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
         
-        _audioPlayer = [[AVAudioPlayer alloc]
-                        initWithContentsOfURL:_audioRecorder.url
-                        error:&error];
+        if (false) {
+            _audioPlayer = [[AVAudioPlayer alloc]
+                            initWithContentsOfURL:_audioRecorder.url
+                            error:&error];
+            
+            _audioPlayer.delegate = self;
+        }
         
-        _audioPlayer.delegate = self;
-       
-        [self setTextColor:[UIColor blueColor]];
+        _altPlayer = [[AVPlayer alloc] initWithURL:_audioRecorder.url];
+        
+        CMTime tm = CMTimeMakeWithSeconds(0.02, 100);
+        _lastUpdate = 0.0;
+        
+        __weak typeof(self) weakSelf = self;
+        
+        [_altPlayer addPeriodicTimeObserverForInterval:tm queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
+            //  float duration = CMTimeGetSeconds(_altPlayer.currentItem.duration);
+            float now = CMTimeGetSeconds(time);
+           // NSLog(@"Got time updated %f",now);
+            if (now == weakSelf.lastUpdate && now > 0) {
+           //     NSLog(@"Got to end!");
+                //  [weakSelf setTextColor:[UIColor blueColor]];
+                weakSelf.recordButton.enabled = YES;
+                [weakSelf setTextColor:[UIColor blackColor]];
+            }
+            else {
+                int i = 0;
+                for (NSDictionary *event in weakSelf.wordTranscript) {
+                    NSString *word = [event objectForKey:@"event"];
+                    if ([word isEqualToString:@"sil"] || [word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) continue;
+                    // NSNumber *score = [event objectForKey:@"score"];//saidWord ? [event objectForKey:@"score"] : 0;
+                    NSNumber *wstart = [event objectForKey:@"start"];
+                    NSNumber *wend  = [event objectForKey:@"end"];
+                   // NSLog(@"w on %d of %d",i,weakSelf.wordLabels.count);
+                 //   NSLog(@"p on %d of %d",i,weakSelf.phoneLabels.count);
+                    
+                    UILabel *label      = [weakSelf.wordLabels  objectAtIndex:i];
+                    UILabel *phoneLabel = [weakSelf.phoneLabels objectAtIndex:i++];
+                    
+                    if (now >= [wstart floatValue] && now < [wend floatValue]) {
+                        [label setTextColor:[UIColor blueColor]];
+                        NSAttributedString *attr =
+                        [weakSelf markForegroundPhones:wend wstart:wstart phoneAndScore:weakSelf.phoneTranscript current:phoneLabel.attributedText now:now];
+                        phoneLabel.attributedText = attr;
+                        break;
+                    }
+                    else {
+                        NSMutableAttributedString *coloredPhones = [[NSMutableAttributedString alloc] initWithAttributedString:phoneLabel.attributedText];
+                        //    NSLog(@"current %@ at %d",current,[current length]);
+                        
+                        //[coloredPhones beginEditing];
+                       // __block BOOL found = NO;
+                        [coloredPhones enumerateAttribute:NSForegroundColorAttributeName inRange:NSMakeRange(0, coloredPhones.length) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+                            if (value) {
+                                //   UIFont *oldFont = (UIFont *)value;
+                                //   UIFont *newFont = [oldFont fontWithSize:oldFont.pointSize * 2];
+                                [coloredPhones removeAttribute:NSForegroundColorAttributeName range:range];
+                                //   [res addAttribute:NSFontAttributeName value:newFont range:range];
+                              //  found = YES;
+                            }
+                        }];
+                        phoneLabel.attributedText = coloredPhones;
 
+                  //      NSLog(@"event %@ at %f - %f not in %f",word,[wstart floatValue],[wend floatValue],now);
+                        [label setTextColor:[UIColor blackColor]];
+                    }
+                }
+//                
+//                int j = 0;
+//                for (NSDictionary *event in weakSelf.phoneTranscript) {
+//                    NSString *word = [event objectForKey:@"event"];
+//                    if ([word isEqualToString:@"sil"] || [word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) continue;
+//                    // NSNumber *score = [event objectForKey:@"score"];//saidWord ? [event objectForKey:@"score"] : 0;
+//                    NSNumber *wstart = [event objectForKey:@"start"];
+//                    NSNumber *wend  = [event objectForKey:@"end"];
+//                    UILabel *label = [weakSelf.phoneLabels objectAtIndex:j++];
+//                    if (now >= [wstart floatValue] && now < [wend floatValue]) {
+//                        [label setTextColor:[UIColor blueColor]];
+//                        break;
+//                    }
+//                    else {
+//                        //      NSLog(@"event %@ at %f - %f not in %f",word,[wstart floatValue],[wend floatValue],now);
+//                        [label setTextColor:[UIColor blackColor]];
+//                    }
+//                }
+            }
+            
+            weakSelf.lastUpdate = now;
+            //NSLog(@"Got status %f",);
+        }];
+        
+        //[self setTextColor:[UIColor blueColor]];
+        
         if (error)
         {
             NSLog(@"Error: %@", [error localizedDescription]);
         } else {
-            [_audioPlayer setVolume:3];  // TODO Valid???
-         //   NSLog(@"volume %f",[_audioPlayer volume]);
-            [_audioPlayer play];
+            if (false) {
+                [_audioPlayer setVolume:3];  // TODO Valid???
+                //   NSLog(@"volume %f",[_audioPlayer volume]);
+                [_audioPlayer play];
+            }
+            else {
+                [_altPlayer play];
+            }
         }
-
+        
         [self postEvent:@"playUserAudio" widget:@"userScoreDisplay" type:@"UIView"];
    }
 }
@@ -1824,10 +1928,75 @@ BOOL addSpaces = false;
             [coloredPhones addAttribute:NSBackgroundColorAttributeName
                                   value:color
                                   range:range];
+            //   [_phoneStarts addObject:start];
+            //   [_phoneEnds   addObject:end];
+        }
+        else {
+            
         }
     }
     return coloredPhones;
 }
+
+-  (NSMutableAttributedString *) markForegroundPhones:(NSNumber *)wend wstart:(NSNumber *)wstart
+                                        phoneAndScore:(NSArray *)phoneAndScore
+                                              current:(NSAttributedString *)current
+                                                  now:(float) now
+{
+    // now mark the ranges in the string with colors
+    
+    NSMutableAttributedString *coloredPhones = [[NSMutableAttributedString alloc] initWithAttributedString:current];
+//    NSLog(@"current %@ at %d",current,[current length]);
+
+    //[coloredPhones beginEditing];
+    __block BOOL found = NO;
+    [coloredPhones enumerateAttribute:NSForegroundColorAttributeName inRange:NSMakeRange(0, coloredPhones.length) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+        if (value) {
+            //   UIFont *oldFont = (UIFont *)value;
+            //   UIFont *newFont = [oldFont fontWithSize:oldFont.pointSize * 2];
+            [coloredPhones removeAttribute:NSForegroundColorAttributeName range:range];
+            //   [res addAttribute:NSFontAttributeName value:newFont range:range];
+            found = YES;
+        }
+    }];
+    
+    if (!found) {
+       // NSLog(@"didn't find it!");
+        // No font was found - do something else?
+    }
+    
+    int pstart = 0;
+    for (NSDictionary *event in phoneAndScore) {
+        NSString *phoneText = [event objectForKey:@"event"];
+        if ([phoneText isEqualToString:@"sil"]) continue;
+   //     NSLog(@"phone %@ at %d",phoneText,pstart);
+        
+        //        NSNumber *pscore = [event objectForKey:@"score"];
+        NSNumber *start  = [event objectForKey:@"start"];
+        NSNumber *end    = [event objectForKey:@"end"];
+        
+        if ([start floatValue] >= [wstart floatValue] && [end floatValue] <= [wend floatValue]) {
+            NSRange range = NSMakeRange(pstart, [phoneText length]);
+         //   NSLog(@"pstart %@ at %d",phoneText,pstart);
+            pstart += range.length + (addSpaces ? 1 : 0);
+
+            if (now >= [start floatValue] && now < [end floatValue]) {
+          //      NSLog(@"%f-%f in %f phone %@ range %@",[start floatValue],[end floatValue],now,phoneText,NSStringFromRange(range));
+                //  float score = [pscore floatValue];
+                //  UIColor *color = [self getColor2:score];
+                //        NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
+                [coloredPhones addAttribute:NSForegroundColorAttributeName
+                                      value:[UIColor blueColor]
+                                      range:range];
+                // [_phoneStarts addObject:start];
+                //[_phoneEnds   addObject:end];
+            }
+            
+        }
+    }
+    return coloredPhones;
+}
+
 
 - (BOOL)isRTL {
     NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
@@ -2030,8 +2199,13 @@ BOOL addSpaces = false;
                                            attribute:NSLayoutAttributeLeft
                                            multiplier:1.0
                                            constant:0.0]];
- //   NSMutableArray *wordLabels = [NSMutableArray new];
-    
+    _wordLabels  = [NSMutableArray new];
+    _phoneLabels = [NSMutableArray new];
+    _wordTranscript = wordAndScore;
+    _phoneTranscript = phoneAndScore;
+   // _phoneStarts = [NSMutableArray new];
+   // _phoneEnds = [NSMutableArray new];
+
     for (NSDictionary *event in wordAndScore) {
         NSString *word = [event objectForKey:@"event"];
         if ([word isEqualToString:@"sil"] || [word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) continue;
@@ -2092,7 +2266,7 @@ BOOL addSpaces = false;
         
         UILabel *wordLabel = [self getWordLabel:word score:score wordFont:wordFont];
         wordLabel.textAlignment = isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
-     //   [wordLabels addObject:wordLabel];
+        [_wordLabels addObject:wordLabel];
         
         [exampleView addSubview:wordLabel];
         
@@ -2104,7 +2278,8 @@ BOOL addSpaces = false;
         NSMutableAttributedString *coloredPhones = [self getColoredPhones:phoneToShow wend:wend wstart:wstart phoneAndScore:phoneAndScore];
         
         UILabel *phoneLabel = [self getPhoneLabel:isRTL coloredPhones:coloredPhones phoneFont:wordFont];
-        
+        [_phoneLabels addObject:phoneLabel];
+
         [exampleView addSubview:phoneLabel];
 
         // top of the phone label is the bottom of the word
