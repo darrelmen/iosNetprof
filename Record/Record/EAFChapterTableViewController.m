@@ -354,7 +354,7 @@ UIAlertView *loadingContentAlert;
         cell.textLabel.font = [UIFont systemFontOfSize:28]; //Change this value to adjust size
     }
     
-    NSDictionary *theChapter;// = [_jsonContentArray objectAtIndex:indexPath.row];
+    NSDictionary *theChapter = [NSDictionary new];
     
     // mark chapters with empty content
     for (NSDictionary *entry in _jsonContentArray) {
@@ -376,11 +376,8 @@ UIAlertView *loadingContentAlert;
         }
     }
     
-    
     NSArray *items2 = [theChapter objectForKey:@"items"];
-    if (items2 == nil) {
-    }
-    else {
+    if (items2 != nil) {
         unsigned long max = items2.count;
         if (max > 5) max = 5;
         int count = 0;
@@ -392,9 +389,9 @@ UIAlertView *loadingContentAlert;
             NSString *fl =[item objectForKey:@"fl"];
             NSString *en =[item objectForKey:@"en"];
             //NSLog(@"fl %@",[self trim:fl]);
-            [starts addObject:[NSNumber numberWithInt:title.length]];
+            [starts addObject:[NSNumber numberWithUnsignedInteger:title.length]];
             NSString *trimFL =[self trim:fl];
-            [ends addObject:[NSNumber numberWithInt:trimFL.length]];
+            [ends addObject:[NSNumber numberWithUnsignedInteger:trimFL.length]];
             
             [title appendString:trimFL];
             [title appendString:@" "];
@@ -405,16 +402,9 @@ UIAlertView *loadingContentAlert;
         }
         NSMutableAttributedString *title2 = [[NSMutableAttributedString alloc] initWithString:title];
         
-//        NSLog(@"title  %@",title);
-//        NSLog(@"title2 %@",title2);
-//        NSLog(@"Starts %@",starts);
-//        NSLog(@"Lens   %@",ends);
         for (int i = 0; i < starts.count; i++) {
             NSNumber *start = [starts objectAtIndex:i];
             NSNumber *len =   [ends objectAtIndex:i];
-//            NSLog(@"start   %@",start);
-//            NSLog(@"len   %@",len);
-            
             NSUInteger len2 = [len unsignedIntegerValue];
             
             NSRange range = NSMakeRange([start unsignedIntegerValue], len2);
@@ -548,7 +538,7 @@ UIAlertView *loadingContentAlert;
                 break;
             }
             else {
-                NSLog(@"Got click to segue to items is %lu",(unsigned long)items.count);
+         //       NSLog(@"Got click to segue to items is %lu",(unsigned long)items.count);
                 // TODO : ask for history here?
                 // when returns, go ahead and do segue
                 
