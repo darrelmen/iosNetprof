@@ -21,6 +21,23 @@
     [super viewDidLoad];
     [self setTitle:[NSString stringWithFormat:@"Forgot password for %@",_language]];
     _username.text = _userFromLogin;
+    
+    NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+    
+    [notificationCenter addObserver:self
+                           selector:@selector (emailChanged:)
+                               name:UITextFieldTextDidChangeNotification
+                             object:_username];
+    
+    [notificationCenter addObserver:self
+                           selector:@selector (emailChanged:)
+                               name:UITextFieldTextDidChangeNotification
+                             object:_email];
+}
+
+- (void) emailChanged:(id)notification {
+    _usernameFeedback.text = @"";
+    _emailFeedback.text = @"";
 }
 
 - (IBAction)gotClick:(id)sender {
