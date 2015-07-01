@@ -61,7 +61,7 @@
 //                  @"MSACandidate",
                   @"MSA",
                   @"Pashto1", @"Pashto2", @"Pashto3",
-                  //@"Russian",
+                  @"Russian",
                   @"Spanish",
                   @"Sudanese",  @"Urdu",  nil];
   
@@ -266,13 +266,15 @@
                           options:NSJSONReadingAllowFragments
                           error:&error];
     
+    [_activityIndicator stopAnimating];
+    _logIn.enabled = true;
+    _languagePicker.userInteractionEnabled = true;
+    
     if (error) {
         NSLog(@"got error %@",error);
         NSLog(@"useJsonChapterData error %@",error.description);
         return false;
     }
-    
-    [_activityIndicator stopAnimating];
     
     NSString *userIDExisting = [json objectForKey:@"userid"];
     NSString *passCorrectValue = [json objectForKey:@"passwordCorrect"];
@@ -285,9 +287,6 @@
 //    NSLog(@"useJsonChapterData resetToken %@",resetToken);
 //    NSLog(@"useJsonChapterData userIDExisting %@",userIDExisting);
 //    NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
-
-    _logIn.enabled = true;
-    _languagePicker.userInteractionEnabled = true;
     
     if ([userIDExisting integerValue] == -1) {
         NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];

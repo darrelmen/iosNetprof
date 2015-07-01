@@ -31,7 +31,7 @@
                   @"Levantine",
                   @"CM",
                   @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",
-                  //@"Russian",
+                  @"Russian",
                   @"Spanish",
                   @"Sudanese",  @"Urdu",  nil];
   
@@ -312,9 +312,9 @@
     }
     else {
         NSString *userIDExisting = [json objectForKey:@"userid"];
-     
+        
         // OK store info and segue
-//        NSLog(@"userid %@",userIDExisting);
+        //        NSLog(@"userid %@",userIDExisting);
         NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];  // huh? why is this necessary?
         [SSKeychain setPassword:converted      forService:@"mitll.proFeedback.device" account:@"userid"];
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
@@ -324,7 +324,7 @@
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
         
         [self performSegueWithIdentifier:@"goToChapterFromSignUp" sender:self];
-   }
+    }
     return true;
 }
 
