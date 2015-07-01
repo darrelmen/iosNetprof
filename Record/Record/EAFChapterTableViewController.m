@@ -337,9 +337,16 @@ UIAlertView *loadingContentAlert;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"ListPrototypeCell";
+
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
     NSString *chapter = [_chapters objectAtIndex:indexPath.row];
+    NSString *prefix = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
+    
+    NSMutableString  *title = [[NSMutableString alloc] init];
+    
+    [title appendString:prefix];
+    [title appendString:@" : "];
     
     cell.textLabel.text = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
     if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
@@ -347,9 +354,12 @@ UIAlertView *loadingContentAlert;
         cell.textLabel.font = [UIFont systemFontOfSize:28]; //Change this value to adjust size
     }
     
+    NSDictionary *theChapter;// = [_jsonContentArray objectAtIndex:indexPath.row];
+    
     // mark chapters with empty content
     for (NSDictionary *entry in _jsonContentArray) {
         NSString *name =[entry objectForKey:@"name"];
+        theChapter = entry;
         if ([name isEqualToString:chapter]) {
             NSArray *items = [entry objectForKey:@"items"];
             if (items == nil) { // no items - not a leaf
@@ -364,6 +374,56 @@ UIAlertView *loadingContentAlert;
                 break;
             }
         }
+    }
+    
+    
+    NSArray *items2 = [theChapter objectForKey:@"items"];
+    if (items2 == nil) {
+    }
+    else {
+        unsigned long max = items2.count;
+        if (max > 5) max = 5;
+        int count = 0;
+        NSArray *smallArray = [items2 subarrayWithRange:NSMakeRange(0, max)];
+        NSMutableArray *starts = [NSMutableArray new];
+        NSMutableArray *ends   = [NSMutableArray new];
+        
+        for (NSDictionary *item in smallArray) {
+            NSString *fl =[item objectForKey:@"fl"];
+            NSString *en =[item objectForKey:@"en"];
+            //NSLog(@"fl %@",[self trim:fl]);
+            [starts addObject:[NSNumber numberWithInt:title.length]];
+            NSString *trimFL =[self trim:fl];
+            [ends addObject:[NSNumber numberWithInt:trimFL.length]];
+            
+            [title appendString:trimFL];
+            [title appendString:@" "];
+            [title appendString:[self trim:en]];
+            if (++count < smallArray.count) {
+                [title appendString:@", "];
+            }
+        }
+        NSMutableAttributedString *title2 = [[NSMutableAttributedString alloc] initWithString:title];
+        
+//        NSLog(@"title  %@",title);
+//        NSLog(@"title2 %@",title2);
+//        NSLog(@"Starts %@",starts);
+//        NSLog(@"Lens   %@",ends);
+        for (int i = 0; i < starts.count; i++) {
+            NSNumber *start = [starts objectAtIndex:i];
+            NSNumber *len =   [ends objectAtIndex:i];
+//            NSLog(@"start   %@",start);
+//            NSLog(@"len   %@",len);
+            
+            NSUInteger len2 = [len unsignedIntegerValue];
+            
+            NSRange range = NSMakeRange([start unsignedIntegerValue], len2);
+            
+            [title2 addAttribute:NSForegroundColorAttributeName
+                           value:[UIColor blueColor]
+                           range:range];
+        }
+        cell.textLabel.attributedText = title2;
     }
     
     return cell;

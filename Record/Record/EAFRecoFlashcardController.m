@@ -41,7 +41,7 @@
 @property int reqid;
 @property NSMutableArray *audioRefs;
 @property EAFAudioPlayer *myAudioPlayer;
-@property (strong, nonatomic) AVAudioPlayer *audioPlayer;
+//@property (strong, nonatomic) AVAudioPlayer *audioPlayer;
 @property (strong, nonatomic) AVPlayer *altPlayer;
 @property float lastUpdate;
 @property (nonatomic, strong) AVSpeechSynthesizer *synthesizer;
@@ -1443,14 +1443,6 @@ bool debugRecord = false;
         // what does this do?
         [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
         
-        if (false) {
-            _audioPlayer = [[AVAudioPlayer alloc]
-                            initWithContentsOfURL:_audioRecorder.url
-                            error:&error];
-            
-            _audioPlayer.delegate = self;
-        }
-        
         _altPlayer = [[AVPlayer alloc] initWithURL:_audioRecorder.url];
         
         CMTime tm = CMTimeMakeWithSeconds(0.01, 100);
@@ -1479,11 +1471,8 @@ bool debugRecord = false;
         
         [_altPlayer addPeriodicTimeObserverForInterval:tm queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
             float now = CMTimeGetSeconds(time);
-           // NSLog(@"Got time updated %f",now);
             if (now == weakSelf.lastUpdate && now > 0) {
-           //     NSLog(@"Got to end!");
                 weakSelf.recordButton.enabled = YES;
-                [weakSelf setTextColor:[UIColor blackColor]];
             }
             else {
                 int i = 0;
@@ -1500,7 +1489,6 @@ bool debugRecord = false;
                     UILabel *phoneLabel = [weakSelf.phoneLabels objectAtIndex:i++];
                     
                     if (now >= [wstart floatValue] && now < [wend floatValue]) {
-                        //[label setTextColor:[UIColor blueColor]];
                      //   NSLog(@"hilight text %@",label.text);
                         NSMutableAttributedString *highlight = [[NSMutableAttributedString alloc] initWithString:label.text];
                         
@@ -1516,18 +1504,15 @@ bool debugRecord = false;
                         [weakSelf markForegroundPhones:wend wstart:wstart phoneAndScore:weakSelf.phoneTranscript current:phoneLabel.attributedText now:now];
                         
                         phoneLabel.attributedText = attr;
-                       // break;
                     }
                     else {
                       //  NSLog(@"don't highlight %@",label.text);
-
                         label.attributedText = [prevWordAttr objectForKey:index];
                         
                         NSMutableAttributedString *coloredPhones = [weakSelf getColoredPhones:phoneLabel.text wend:wend wstart:wstart phoneAndScore:weakSelf.phoneTranscript];
                         phoneLabel.attributedText = coloredPhones;
 
                   //      NSLog(@"event %@ at %f - %f not in %f",word,[wstart floatValue],[wend floatValue],now);
-//                        [label setTextColor:[UIColor blackColor]];
                     }
                 }
             }
@@ -1539,14 +1524,7 @@ bool debugRecord = false;
         {
             NSLog(@"Error: %@", [error localizedDescription]);
         } else {
-            if (false) {
-                [_audioPlayer setVolume:3];  // TODO Valid???
-                //   NSLog(@"volume %f",[_audioPlayer volume]);
-                [_audioPlayer play];
-            }
-            else {
-                [_altPlayer play];
-            }
+            [_altPlayer play];
         }
         
         [self postEvent:@"playUserAudio" widget:@"userScoreDisplay" type:@"UIView"];
@@ -1575,9 +1553,6 @@ bool debugRecord = false;
         
     } else {
         NSLog(@"stopAudio not recording");
-        if (_audioPlayer.playing) {
-            [_audioPlayer stop];
-        }
     }
 }
 
