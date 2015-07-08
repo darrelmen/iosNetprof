@@ -651,7 +651,7 @@
 				ORGANIZATIONNAME = "MIT Lincoln Laboratory";
 				TargetAttributes = {
 					F6A5681918ECA98A00B844C6 = {
-						DevelopmentTeam = UN34VY9C7D;
+						DevelopmentTeam = 2C83Y973FA;
 					};
 					F6A5683A18ECA98B00B844C6 = {
 						TestTargetID = F6A5681918ECA98A00B844C6;
@@ -935,8 +935,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: DEFENSE LANGUAGE INSTITUTE, FOREIGN LANGUAGE CENTER [Ent]";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: DEFENSE LANGUAGE INSTITUTE, FOREIGN LANGUAGE CENTER [Ent]";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -964,8 +964,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: DEFENSE LANGUAGE INSTITUTE, FOREIGN LANGUAGE CENTER [Ent]";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: DEFENSE LANGUAGE INSTITUTE, FOREIGN LANGUAGE CENTER [Ent]";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
