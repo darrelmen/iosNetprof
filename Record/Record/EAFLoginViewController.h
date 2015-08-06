@@ -27,5 +27,6 @@
 
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property NSString *token;
+@property (weak, nonatomic) IBOutlet UILabel *versionLabel;
 
 @end

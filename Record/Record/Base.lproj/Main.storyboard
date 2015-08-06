@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="13F1077" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="gDn-g3-mfX">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="gDn-g3-mfX">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -1560,12 +1560,19 @@
                                     <rect key="frame" x="125" y="411" width="350" height="24"/>
                                 </variation>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oMa-Vz-aY3">
+                                <rect key="frame" x="559" y="587" width="23" height="11"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="9"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="evG-Kz-2LI" firstAttribute="top" secondItem="QA1-pl-s2n" secondAttribute="bottom" priority="750" constant="50" id="0V1-SE-nRN"/>
                             <constraint firstAttribute="centerX" secondItem="W1c-hO-87v" secondAttribute="centerX" id="2vc-6n-gZf"/>
+                            <constraint firstItem="jBk-Kx-iZ3" firstAttribute="top" secondItem="oMa-Vz-aY3" secondAttribute="bottom" constant="2" id="4hZ-Pd-vJu"/>
                             <constraint firstItem="I4h-Pm-bnY" firstAttribute="centerY" secondItem="xWs-V3-BGT" secondAttribute="centerY" constant="5" id="604-hw-h9S"/>
                             <constraint firstItem="aTh-Xw-7oD" firstAttribute="width" secondItem="xWs-V3-BGT" secondAttribute="width" id="6Bc-aJ-Leb"/>
                             <constraint firstItem="jBk-Kx-iZ3" firstAttribute="top" secondItem="rQr-BW-qEu" secondAttribute="bottom" constant="8" id="6fo-hG-X8N"/>
@@ -1605,6 +1612,7 @@
                             <constraint firstItem="n6p-AP-fgq" firstAttribute="top" secondItem="aTh-Xw-7oD" secondAttribute="bottom" constant="8" id="PRO-mB-GCF">
                                 <variation key="heightClass=compact-widthClass=compact" constant="2"/>
                             </constraint>
+                            <constraint firstAttribute="trailingMargin" secondItem="oMa-Vz-aY3" secondAttribute="trailing" constant="2" id="RTU-9U-MLr"/>
                             <constraint firstItem="aTh-Xw-7oD" firstAttribute="leading" secondItem="xWs-V3-BGT" secondAttribute="leading" id="RoL-uw-glC"/>
                             <constraint firstItem="Qzl-8u-y4u" firstAttribute="leading" secondItem="n6p-AP-fgq" secondAttribute="trailing" constant="1" id="Scf-vD-6g4"/>
                             <constraint firstItem="jYO-aD-nI4" firstAttribute="centerY" secondItem="o2e-xg-EB1" secondAttribute="centerY" id="SeL-Bj-rP8"/>
@@ -1735,6 +1743,7 @@
                         <outlet property="signUpFeedback" destination="QA1-pl-s2n" id="Mpi-3A-6GH"/>
                         <outlet property="username" destination="xWs-V3-BGT" id="EEu-Zk-snA"/>
                         <outlet property="usernameFeedback" destination="aTh-Xw-7oD" id="KqR-Q8-ZjN"/>
+                        <outlet property="versionLabel" destination="oMa-Vz-aY3" id="kpg-Er-LhI"/>
                         <segue destination="VFl-2k-NIH" kind="show" identifier="goToChapter" id="U5f-EU-68h"/>
                         <segue destination="BOF-fy-aN9" kind="show" identifier="goToSetPassword" id="Rkv-H3-tXt"/>
                     </connections>
@@ -2591,6 +2600,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="FlI-iz-r1d"/>
-        <segue reference="q28-aI-wTP"/>
+        <segue reference="U5f-EU-68h"/>
     </inferredMetricsTieBreakers>
 </document>

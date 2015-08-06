@@ -45,9 +45,17 @@
    // }
 }
 
+- (NSString *)appNameAndVersionNumberDisplayString {
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    NSString *minorVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
+    return minorVersion;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
+   _versionLabel.text = [self appNameAndVersionNumberDisplayString];
+
     //not japanese or levantine -- consider levantine?
     // TODO : get list of languages from server call?
     
