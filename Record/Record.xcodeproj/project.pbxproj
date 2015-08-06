@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B604662B1A38B4E0000B5464 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B604661A1A38B4E0000B5464 /* LICENSE */; };
 		B60466431A38B540000B5464 /* MZFormSheetBackgroundWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B60466351A38B540000B5464 /* MZFormSheetBackgroundWindow.m */; };
 		B60466441A38B540000B5464 /* MZFormSheetBackgroundWindowViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B60466371A38B540000B5464 /* MZFormSheetBackgroundWindowViewController.m */; };
 		B60466451A38B540000B5464 /* MZFormSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = B60466391A38B540000B5464 /* MZFormSheetController.m */; };
@@ -140,7 +139,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B604661A1A38B4E0000B5464 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = "../../../MZFormSheetController-master/LICENSE"; sourceTree = "<group>"; };
 		B60466341A38B540000B5464 /* MZFormSheetBackgroundWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZFormSheetBackgroundWindow.h; sourceTree = "<group>"; };
 		B60466351A38B540000B5464 /* MZFormSheetBackgroundWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZFormSheetBackgroundWindow.m; sourceTree = "<group>"; };
 		B60466361A38B540000B5464 /* MZFormSheetBackgroundWindowViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZFormSheetBackgroundWindowViewController.h; sourceTree = "<group>"; };
@@ -471,7 +469,6 @@
 				B6B94F141A7C1289004AFFE8 /* Reachability */,
 				B695FDDD1A3A521B0064DC83 /* Settings.bundle */,
 				B60466331A38B540000B5464 /* MZFormSheetController */,
-				B604661A1A38B4E0000B5464 /* LICENSE */,
 				B6A8D96E19770C1000E8F1D5 /* icons */,
 				F6A5682318ECA98A00B844C6 /* Record */,
 				F6A5684218ECA98B00B844C6 /* RecordTests */,
@@ -737,7 +734,6 @@
 				B6EEB9071A6959CC000793F0 /* turtle_selected.png in Resources */,
 				B6629E411A440192008EAC75 /* audioOff_smaller.png in Resources */,
 				B6629E441A440192008EAC75 /* audioOn.png in Resources */,
-				B604662B1A38B4E0000B5464 /* LICENSE in Resources */,
 				B695FDEB1A43F7010064DC83 /* female_better_h32.png in Resources */,
 				B68A5C341979B3480036B90C /* mic-icon.png in Resources */,
 				B695FDEC1A43F7010064DC83 /* male_better_smaller.png in Resources */,
