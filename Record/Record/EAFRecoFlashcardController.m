@@ -84,38 +84,6 @@
     }
 }
 
-//- (void) checkAndShowPopover
-//{
-//    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
-//    NSString *showedID = [NSString stringWithFormat:@"showedRecordPopover_%@",userid];
-//    NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
-//    
-//    UIDevice* thisDevice = [UIDevice currentDevice];
-//    
-//    if ((showedIntro == nil || true) && thisDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-//        
-//        //EAFPopoverViewController *newViewController = [[EAFPopoverViewController alloc] initWithNibName:@"popupController" bundle:nil];
-//        EAFPopoverViewController *newViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"popupController"];
-//        //  newViewController.frame.size = CGSizeMake(80.0, 50.0);
-//        
-//        _popover = [[UIPopoverController alloc] initWithContentViewController:newViewController];
-//        
-//        _popover.popoverContentSize = CGSizeMake(200.0, 30.0);
-//        
-//        //NSMutableArray *passthrough = [[NSMutableArray alloc]init];
-//        //[passthrough addObject:_recordButtonContainer];
-//        //[passthrough addObject:self.view];
-//        //_popover.passthroughViews = passthrough;
-//        //   [_popover presentPopoverFromRect:[_recordButtonContainer frame]  inView:_recordButtonContainer permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
-//        [_popover presentPopoverFromRect:CGRectMake(_recordButtonContainer.center.x+80, 0, 1, 1)
-//                                  inView:_recordButtonContainer
-//                permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
-//        _popover.delegate = self;
-//        
-//        [SSKeychain setPassword:@"Yes"
-//                     forService:@"mitll.proFeedback.device" account:showedID];
-//    }
-//}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -529,15 +497,18 @@
     [labelToScale setFont:[UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue]];
 }
 
+- (NSString *)trim:(NSString *)exercise
+{
+    return [exercise stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
 - (void)configureTextFields
 {
     NSDictionary *jsonObject = [self getCurrentJson];
     NSString *exercise       = [jsonObject objectForKey:@"fl"];
-    NSString *englishPhrases = [jsonObject objectForKey:@"en"];
- 
-    exercise = [exercise stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    [_foreignLang setText:exercise];
+    [_foreignLang setText:[self trim:exercise]];
 
+    NSString *englishPhrases = [jsonObject objectForKey:@"en"];
     [_english setText:englishPhrases];
     
     _foreignLang.adjustsFontSizeToFitWidth=YES;
@@ -747,7 +718,7 @@
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
     
-    flAtIndex = [flAtIndex stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    flAtIndex = [self trim:flAtIndex];
 
     [_foreignLang setText:flAtIndex];
     [_english setText:enAtIndex];
@@ -1046,16 +1017,38 @@ BOOL preventPlayAudio = false;
     else if (selected == 1) {  // fl
         _foreignLang.hidden = false;
         _english.hidden = true;
+        
+        NSDictionary *jsonObject = [self getCurrentJson];
+        NSString *exercise       = [jsonObject objectForKey:@"fl"];
+        [_foreignLang setText:[self trim:exercise]];
 
         _pageControl.hidden = false;
         _pageControl.currentPage = 1;
         
         [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     }
-    else {
+    else if (selected == 2){
         _foreignLang.hidden = false;
         _english.hidden = false;
         _pageControl.hidden = true;
+
+        NSDictionary *jsonObject = [self getCurrentJson];
+        NSString *exercise       = [jsonObject objectForKey:@"fl"];
+        [_foreignLang setText:[self trim:exercise]];
+    }
+    else {
+        _foreignLang.hidden = false;
+        _english.hidden = true;
+        NSDictionary *jsonObject = [self getCurrentJson];
+        NSString *exercise       = [jsonObject objectForKey:@"fl"];
+        
+        NSString *trim = [self trim:exercise];
+        NSError *error = nil;
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[^\\s]" options:NSRegularExpressionCaseInsensitive error:&error];
+        NSString *modifiedString = [regex stringByReplacingMatchesInString:trim options:0 range:NSMakeRange(0, [trim length]) withTemplate:@"-"];
+      //  NSLog(@"%@", modifiedString);
+        
+        [_foreignLang setText:modifiedString];
     }
 }
 

@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import "BButton.h"
-//#import <SplunkMint-iOS/SplunkMint-iOS.h>
 #import "EAFAudioPlayer.h"
 
 @interface EAFRecoFlashcardController : UIViewController
@@ -46,7 +45,6 @@
 
 @property (weak, nonatomic) IBOutlet UIView *scoreDisplayContainer;
 @property (strong, nonatomic) IBOutlet UIProgressView *scoreProgress;
-//@property AVPlayer *player;
 - (IBAction)showScoresClick:(id)sender;
 
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *longPressGesture;
