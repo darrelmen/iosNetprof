@@ -18,7 +18,6 @@
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)0];
     
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", [self getURL:lang]];
-    //NSLog(@"postEvent talking to %@",baseurl);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
@@ -30,7 +29,6 @@
 
     [urlRequest setValue:userid forHTTPHeaderField:@"user"];
     
-   // NSString *fullContext = [NSString stringWithFormat:@"%@ %@",retrieveuuid,context];
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     [urlRequest setValue:context forHTTPHeaderField:@"context"];
     [urlRequest setValue:exid forHTTPHeaderField:@"exid"];
@@ -45,7 +43,39 @@
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          if (error != nil) {
-             NSLog(@"postAudio : Got error %@",error);
+             NSLog(@"postEvent : Got error %@",error);
+         }
+         else {
+         }
+     }];
+}
+
+- (void) postRT:(NSString *)resultID rtDur:(NSString *)rtDur lang:(NSString *)lang {
+    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", [self getURL:lang]];
+    
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
+    [urlRequest setHTTPMethod: @"POST"];
+    
+    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)0];
+
+    [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
+
+    [urlRequest setValue:@"application/x-www-form-urlencoded"
+      forHTTPHeaderField:@"Content-Type"];
+    
+    [urlRequest setValue:@"roundTrip" forHTTPHeaderField:@"request"];
+
+    // add request parameters
+    [urlRequest setValue:resultID forHTTPHeaderField:@"resultID"];
+    [urlRequest setValue:rtDur forHTTPHeaderField:@"roundTrip"];
+    // post the audio
+    
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+     {
+         if (error != nil) {
+             NSLog(@"postRT : Got error %@",error);
          }
          else {
          }

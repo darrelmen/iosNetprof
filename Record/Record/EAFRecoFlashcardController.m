@@ -1662,6 +1662,7 @@ bool debugRecord = false;
      }];
     
     _startPost = CFAbsoluteTimeGetCurrent();
+    
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
 }
 
@@ -1789,12 +1790,17 @@ bool debugRecord = false;
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
     CFAbsoluteTime diff = (now-_startPost);
+    CFAbsoluteTime millis = diff * 1000;
+    int iMillis = (int) millis;
     
-    NSLog(@"connectionDidFinishLoading - round trip time was %f",diff);
+    NSLog(@"connectionDidFinishLoading - round trip time was %f %d ",diff, iMillis);
+    
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
     double durationInSeconds = CMTimeGetSeconds(asset.duration);
     
-    [self postEvent:[NSString stringWithFormat:@"round trip was %.2f sec for file of dur %.2f sec",diff,durationInSeconds] widget:[NSString stringWithFormat:@"rt %.2f",diff]  type:[NSString stringWithFormat:@"file %.2f",durationInSeconds] ];
+    [self postEvent:[NSString stringWithFormat:@"round trip was %.2f sec for file of dur %.2f sec",diff,durationInSeconds]
+             widget:[NSString stringWithFormat:@"rt %.2f",diff]
+               type:[NSString stringWithFormat:@"file %.2f",durationInSeconds] ];
  
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
@@ -1813,6 +1819,13 @@ bool debugRecord = false;
  //     NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
  //     NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *exid = [json objectForKey:@"exid"];
+ 
+    NSNumber *resultID = [json objectForKey:@"resultID"];
+    
+    // Post a RT value for the result id
+    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+    [poster postRT:[resultID stringValue] rtDur:[NSString stringWithFormat:@"%d",iMillis] lang:_language];
+    
  //   NSLog(@"exid was %@",exid);
     NSNumber *score = [json objectForKey:@"score"];
  //   NSLog(@"score was %@ class %@",[json objectForKey:@"score"], [[json objectForKey:@"score"] class]);

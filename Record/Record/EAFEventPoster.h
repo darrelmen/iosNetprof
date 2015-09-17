@@ -13,5 +13,6 @@
 @property NSMutableData *response;
 
 - (void) postEvent:(NSString *)context exid:(NSString *)exid lang:(NSString *)lang widget:(NSString *)widget  widgetType:(NSString *)widgetType ;
+- (void) postRT:(NSString *)resultID rtDur:(NSString *)rtDur lang:(NSString *)lang;
 
 @end
