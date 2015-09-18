@@ -99,13 +99,15 @@
 };
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
-    NSLog(@"popoverControllerDidDismissPopover --->");
+    //NSLog(@"popoverControllerDidDismissPopover --->");
 }
 
 - (void)configureWhatToShow
 {
     [_whatToShow setSelectedSegmentIndex:2];
+    
     [_whatToShow setTitle:_language forSegmentAtIndex:1];
+    
     if ([_language isEqualToString:@"English"]) {
         [_whatToShow setTitle:@"Def." forSegmentAtIndex:0];
     }
@@ -117,6 +119,10 @@
     }
     else if ([_language isEqualToString:@"Pashto1"] || [_language isEqualToString:@"Pashto2"] || [_language isEqualToString:@"Pashto3"]) {
         [_whatToShow setTitle:@"Pashto" forSegmentAtIndex:1];
+    }
+    
+    if (![self isiPad] && ![_language isEqualToString:@"English"]) {
+        [_whatToShow setTitle:@"Eng" forSegmentAtIndex:0];
     }
 }
 
@@ -506,8 +512,15 @@
 {
     NSDictionary *jsonObject = [self getCurrentJson];
     NSString *exercise       = [jsonObject objectForKey:@"fl"];
-    [_foreignLang setText:[self trim:exercise]];
-
+    
+    long selected = [_whatToShow selectedSegmentIndex];
+    if (selected == 3) {
+        [self hideWithDashes:exercise];
+    }
+    else {
+        [_foreignLang setText:[self trim:exercise]];
+    }
+    
     NSString *englishPhrases = [jsonObject objectForKey:@"en"];
     [_english setText:englishPhrases];
     
@@ -719,8 +732,15 @@
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
     
     flAtIndex = [self trim:flAtIndex];
-
-    [_foreignLang setText:flAtIndex];
+    
+    long selected = [_whatToShow selectedSegmentIndex];
+    if (selected == 3) {
+        [self hideWithDashes:flAtIndex];
+    }
+    else {
+        [_foreignLang setText:flAtIndex];
+    }
+    
     [_english setText:enAtIndex];
     
     BOOL isIPhone = [self isiPhone];
@@ -1002,6 +1022,15 @@ BOOL preventPlayAudio = false;
     [self postEvent:@"playAudioTouch" widget:_english.text type:@"UILabel"];
 }
 
+- (void)hideWithDashes:(NSString *)exercise {
+    NSString *trim = [self trim:exercise];
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[^\\s]" options:NSRegularExpressionCaseInsensitive error:&error];
+    NSString *modifiedString = [regex stringByReplacingMatchesInString:trim options:0 range:NSMakeRange(0, [trim length]) withTemplate:@"-"];
+    
+    [_foreignLang setText:modifiedString];
+}
+
 - (void)hideAndShowText {
     long selected = [_whatToShow selectedSegmentIndex];
    // NSLog(@"recoflashcard : hideAndShowText %ld", selected);
@@ -1039,16 +1068,11 @@ BOOL preventPlayAudio = false;
     else {
         _foreignLang.hidden = false;
         _english.hidden = true;
+        
         NSDictionary *jsonObject = [self getCurrentJson];
         NSString *exercise       = [jsonObject objectForKey:@"fl"];
         
-        NSString *trim = [self trim:exercise];
-        NSError *error = nil;
-        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[^\\s]" options:NSRegularExpressionCaseInsensitive error:&error];
-        NSString *modifiedString = [regex stringByReplacingMatchesInString:trim options:0 range:NSMakeRange(0, [trim length]) withTemplate:@"-"];
-      //  NSLog(@"%@", modifiedString);
-        
-        [_foreignLang setText:modifiedString];
+        [self hideWithDashes:exercise];
     }
 }
 
