@@ -1788,7 +1788,9 @@ bool debugRecord = false;
         }
         else if ([valid rangeOfString:@"TOO_LOUD"].location != NSNotFound) {
             [self setDisplayMessage:@"Please speak softer"];
-            
+        }
+        else if ([valid rangeOfString:@"SNR_TOO_LOW"].location != NSNotFound) {
+            [self setDisplayMessage:@"Speaking too quietly or the room is too noisy."];
         }
         else {
             [self setDisplayMessage:[json objectForKey:@"valid"]];
