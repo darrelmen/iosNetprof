@@ -41,7 +41,6 @@
 @property int reqid;
 @property NSMutableArray *audioRefs;
 @property EAFAudioPlayer *myAudioPlayer;
-//@property (strong, nonatomic) AVAudioPlayer *audioPlayer;
 @property (strong, nonatomic) AVPlayer *altPlayer;
 @property float lastUpdate;
 @property (nonatomic, strong) AVSpeechSynthesizer *synthesizer;
@@ -370,7 +369,6 @@
         }
     }
 }
-
 
 - (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
@@ -1305,7 +1303,11 @@ bool debugRecord = false;
     
     [_myAudioPlayer stopAudio];
 
-    [self postEvent:@"record audio start" widget:@"record audio" type:@"Button"];
+//    [self performSelectorOnMainThread:@selector(postRecordAudioStart)
+//                           withObject:nil
+//                        waitUntilDone:NO];
+    
+ //   [self postEvent:@"record audio start" widget:@"record audio" type:@"Button"];
     if (!_audioRecorder.recording)
     {
         if (debugRecord) NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
@@ -1316,9 +1318,7 @@ bool debugRecord = false;
         }
         
         NSError *error = nil;
-        AVAudioSession *session = [AVAudioSession sharedInstance];
-        
-        [session setCategory:AVAudioSessionCategoryRecord error:nil];
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryRecord error:&error];
         [_audioRecorder record];
         
         if (_audioRecorder.recording)
@@ -1333,6 +1333,10 @@ bool debugRecord = false;
             [self logError:error];
         }
     }
+}
+
+- (void)postRecordAudioStart {
+    [self postEvent:@"record audio start" widget:@"record audio" type:@"Button"];
 }
 
 - (void)flipCard {
@@ -1423,10 +1427,11 @@ bool debugRecord = false;
         [self recordAudio:nil];
     }
     else if (_longPressGesture.state == UIGestureRecognizerStateEnded) {
+        _gestureEnd = CFAbsoluteTimeGetCurrent();
+
         _recordButtonContainer.backgroundColor =[UIColor whiteColor];
         _recordButton.enabled = YES;
 
-        _gestureEnd = CFAbsoluteTimeGetCurrent();
         if (debugRecord)  NSLog(@"longPressAction now  time = %f",_gestureEnd);
         double gestureDiff = _gestureEnd - _gestureStart;
         
@@ -1437,7 +1442,6 @@ bool debugRecord = false;
             {
                 if (debugRecord)  NSLog(@"longPressAction : stopAudio stop time = %f",CFAbsoluteTimeGetCurrent());
                 [_audioRecorder stop];
-                
             }
         }
         else {
@@ -1612,7 +1616,6 @@ bool debugRecord = false;
 }
 
 // Posts audio with current fl field
-// NOTE : not used right now since can't post UTF8 characters - see postAudio2
 - (void)postAudio {
     // create request
     [_recoFeedbackImage startAnimating];
