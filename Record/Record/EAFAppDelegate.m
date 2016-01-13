@@ -31,7 +31,7 @@
     
     //NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     [[NSUserDefaults standardUserDefaults] setObject:[self appNameAndVersionNumberDisplayString] forKey:@"version_preference"];
-    
+
     return YES;
 }
 

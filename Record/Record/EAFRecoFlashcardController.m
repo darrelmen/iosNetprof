@@ -2486,7 +2486,8 @@ BOOL addSpaces = false;
         EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
         
         EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
-        wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong_26h"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong_26h-unselected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        wordReport.tabBarItem.selectedImage = [[UIImage imageNamed:@"rightAndWrong_26h-selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         wordReport.language = _language;
         
         wordReport.chapterName = _chapterTitle;
@@ -2514,7 +2515,8 @@ BOOL addSpaces = false;
         wordReport.exToEnglish = exToEnglish;
         
         EAFPhoneScoreTableViewController *phoneReport = [[tabBarController viewControllers] objectAtIndex:1];
-        phoneReport.tabBarItem.image = [[UIImage imageNamed:@"sounds.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        phoneReport.tabBarItem.selectedImage = [[UIImage imageNamed:@"checkAndEar.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        phoneReport.tabBarItem.image = [[UIImage imageNamed:@"ear-unselected_32.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         
         phoneReport.language = _language;
         phoneReport.chapterName = _chapterTitle;
