@@ -91,7 +91,7 @@
 }
 
 -(void)viewWillAppear:(BOOL)animated {
-    NSLog(@"ItemViewController : viewWillAppear ");
+  //  NSLog(@"ItemViewController : viewWillAppear ");
     [self askServerForJson];
     [super viewWillAppear:animated];
 }
@@ -417,7 +417,7 @@
                 _notifyFlashcardController.jsonItems = _jsonItems;
             //    [_notifyFlashcardController respondToSwipe ];
             }
-            NSLog(@"item table view : reload table ----------- ");
+         //   NSLog(@"item table view : reload table ----------- ");
             
             [[self tableView] reloadData];
         }
