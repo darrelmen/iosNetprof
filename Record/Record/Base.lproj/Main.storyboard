@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9060" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="gDn-g3-mfX">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="14F1509" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="gDn-g3-mfX">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -1060,9 +1060,6 @@
                                     <gestureRecognizers/>
                                 </tableViewCellContentView>
                                 <gestureRecognizers/>
-                                <connections>
-                                    <outletCollection property="gestureRecognizers" destination="Lnc-Ji-4eA" appends="YES" id="YK2-6C-6bX"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                     </tableView>
@@ -1073,11 +1070,6 @@
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9ca-Yq-0fn" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer cancelsTouchesInView="NO" id="Lnc-Ji-4eA">
-                    <connections>
-                        <action selector="gotTapGesture:" destination="Zf4-6q-7PM" id="o3Z-wQ-yfv"/>
-                    </connections>
-                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="5271" y="616"/>
         </scene>
@@ -1192,7 +1184,6 @@
                                     <outlet property="fourth" destination="P6I-9B-d2X" id="grD-g8-PBU"/>
                                     <outlet property="second" destination="rN3-gE-Cgu" id="lMe-X5-6Hv"/>
                                     <outlet property="third" destination="2gn-CW-Kve" id="MT4-gC-SiQ"/>
-                                    <outletCollection property="gestureRecognizers" destination="AzF-eT-OjS" appends="YES" id="55D-43-QNw"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -1201,11 +1192,6 @@
                     <tabBarItem key="tabBarItem" title="Correct/Incorrect" id="YRI-VJ-lXY"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KY7-eJ-CCF" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="AzF-eT-OjS">
-                    <connections>
-                        <action selector="gotTapGesture:" destination="U7m-Ih-ip0" id="41s-9V-5NU"/>
-                    </connections>
-                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="5271" y="-114"/>
         </scene>
@@ -1564,7 +1550,7 @@
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oMa-Vz-aY3">
                                 <rect key="frame" x="559" y="587" width="23" height="11"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>

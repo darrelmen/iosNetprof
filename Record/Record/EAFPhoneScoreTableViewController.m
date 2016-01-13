@@ -300,6 +300,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"PhoneCell";
     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gotTapGesture:)];
+    tap.cancelsTouchesInView = YES;
+    tap.numberOfTapsRequired = 1;
+    [cell addGestureRecognizer:tap];
+    
     UIView *bgColorView = [[UIView alloc] init];
     
     [bgColorView setBackgroundColor:[UIColor whiteColor]];

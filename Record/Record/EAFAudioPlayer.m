@@ -53,9 +53,27 @@
 // for the original wav file on the server (somehow perhaps an mp3 file was not created?)
 //
 - (void)makePlayerGivenURL:(NSURL *)url waveURL:(NSURL *)waveURL {
-    NSDictionary * dict = [self id3TagsForURL:url];
+    //NSLog(@"makePlayerGivenURL checking %@ scheme %@",url, [url scheme]);
+
+    BOOL isValid;
+    
+    if ([[url scheme] hasPrefix:@"file"]) {
+      //  NSLog(@"makePlayerGivenURL reading file %@",url);
+
+        NSDictionary * dict = [self id3TagsForURL:url];
+        
+        isValid = dict != nil;
+    }
+    else {
+        //NSLog(@"makePlayerGivenURL reading url %@",url);
+
+        isValid  = [self webFileExists:url];
+    }
+
+//    BOOL isMP3Available  = [self webFileExists:url];
+
 //    NSLog(@"reading %@ header - %@",url,dict);
-    if (dict == nil) {
+    if (!isValid) {
         BOOL val  = [self webFileExists:waveURL];
         if (val) {
 //            dict = [self id3TagsForURL:waveURL];
@@ -71,9 +89,19 @@
     }
 }
 
+// The purpose here is defensive - if the mp3 is truncated, you can't read the header, so you can't get the tags dictionary
+// if you can get the dictionary, the mp3 file is valid and can be played.
+
 - (NSDictionary *)id3TagsForURL:(NSURL *)resourceUrl
 {
     AudioFileID fileID;
+    
+   // NSLog(@"id3TagsForURL get tags for '%@'", resourceUrl);
+    
+ //   CFURLRef test = (__bridge CFURLRef)resourceUrl;
+    
+   // NSLog(@"id3TagsForURL get tags for test '%@'", test);
+
     OSStatus result = AudioFileOpenURL((__bridge CFURLRef)resourceUrl, kAudioFileReadPermission, 0, &fileID);
     
     if (result != noErr) {
@@ -158,8 +186,10 @@
         //        NSLog(@"playRefAudio using local url %@ size %@",destFileName,fileSizeNumber);
         
         NSURL *testURL = [[NSURL alloc] initFileURLWithPath: destFileName];
+     
+    //    NSLog(@"testURL - %@",testURL);
         NSDictionary * dict = [self id3TagsForURL:testURL];
-        //NSLog(@"file exists - checking header - %@",dict);
+      //  NSLog(@"file exists - checking header - %@",dict);
         if (dict == nil) {
             NSLog(@"warning : mp3 at %@ was corrupt?", testURL);
         } else {
@@ -174,7 +204,7 @@
     
     if (_player) {
         [_player pause];
-        NSLog(@" playRefAudioInternal : removing current observer");
+     //   NSLog(@" playRefAudioInternal : removing current observer");
         [self removePlayObserver];
     }
     

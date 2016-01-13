@@ -1848,14 +1848,17 @@ bool debugRecord = false;
  //     NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
  //     NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *exid = [json objectForKey:@"exid"];
- 
+    
     NSNumber *resultID = [json objectForKey:@"resultID"];
     
     // Post a RT value for the result id
     EAFEventPoster *poster = [[EAFEventPoster alloc] init];
-    [poster postRT:[resultID stringValue] rtDur:[NSString stringWithFormat:@"%d",iMillis] lang:_language];
+    NSString * roundTrip =[NSString stringWithFormat:@"%d",iMillis];
+    NSLog(@"connectionDidFinishLoading - roundTrip  %@",roundTrip);
     
- //   NSLog(@"exid was %@",exid);
+    [poster postRT:[resultID stringValue] rtDur:roundTrip lang:_language];
+    
+    //   NSLog(@"exid was %@",exid);
     NSNumber *score = [json objectForKey:@"score"];
  //   NSLog(@"score was %@ class %@",[json objectForKey:@"score"], [[json objectForKey:@"score"] class]);
     NSNumber *minusOne = [NSNumber numberWithInt:-1];

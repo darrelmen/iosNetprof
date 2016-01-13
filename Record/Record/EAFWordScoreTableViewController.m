@@ -106,7 +106,7 @@
     NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-   // NSLog(@"askServerForJson url %@",baseurl);
+    NSLog(@"askServerForJson url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -254,6 +254,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     // Configure the cell...
     MyTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"WordScoreCell" forIndexPath:indexPath];
  
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gotTapGesture:)];
+    tap.cancelsTouchesInView = YES;
+    tap.numberOfTapsRequired = 1;
+    [cell addGestureRecognizer:tap];    
+    
     NSMutableArray *icons = [[NSMutableArray alloc] init];
     [icons addObject:cell.first];
     [icons addObject:cell.second];
