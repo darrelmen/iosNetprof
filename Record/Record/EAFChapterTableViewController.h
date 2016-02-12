@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-//#import <SplunkMint-iOS/SplunkMint-iOS.h>
+#import "EAFGetSites.h"
 
-@interface EAFChapterTableViewController : UITableViewController
+@interface EAFChapterTableViewController : UITableViewController<SitesNotification>
 
 @property NSString *chapterName;
 @property NSString *currentChapter;

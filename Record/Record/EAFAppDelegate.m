@@ -10,7 +10,16 @@
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
 
+@interface EAFAppDelegate ()
+@property (strong, nonatomic) NSData *sitesData;
+@end
+
 @implementation EAFAppDelegate
+
+//- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions  {
+//  
+//    return YES;
+//}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -32,8 +41,11 @@
     //NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     [[NSUserDefaults standardUserDefaults] setObject:[self appNameAndVersionNumberDisplayString] forKey:@"version_preference"];
 
+  //  [self getSites];
+    
     return YES;
 }
+
 
 - (NSString *)appNameAndVersionNumberDisplayString {
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
@@ -71,8 +83,11 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     NSLog(@"got applicationDidBecomeActive --->");
+  //  [self getSites];
+    
     [_recoController viewBecameActive];
 }
 

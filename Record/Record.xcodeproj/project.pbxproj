@@ -86,6 +86,7 @@
 		B698213E1A029C9A00BB9865 /* BButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B698213D1A029C9A00BB9865 /* BButton.m */; };
 		B69821411A029CA500BB9865 /* UIColor+BButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69821401A029CA500BB9865 /* UIColor+BButton.m */; };
 		B69821441A029F6400BB9865 /* NSString+FontAwesome.m in Sources */ = {isa = PBXBuildFile; fileRef = B69821431A029F6400BB9865 /* NSString+FontAwesome.m */; };
+		B69CBD151C6E7CC200651D5F /* EAFGetSites.m in Sources */ = {isa = PBXBuildFile; fileRef = B69CBD141C6E7CC200651D5F /* EAFGetSites.m */; };
 		B6A8D96B1976F27100E8F1D5 /* media-record-4_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96A1976F27100E8F1D5 /* media-record-4_32x32.png */; };
 		B6A8D96D1976F27C00E8F1D5 /* media-record-3_32x32.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96C1976F27C00E8F1D5 /* media-record-3_32x32.png */; };
 		B6A8D97719770C2100E8F1D5 /* Icon-40.png in Resources */ = {isa = PBXBuildFile; fileRef = B6A8D96F19770C2100E8F1D5 /* Icon-40.png */; };
@@ -257,6 +258,8 @@
 		B69821401A029CA500BB9865 /* UIColor+BButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+BButton.m"; sourceTree = "<group>"; };
 		B69821421A029F6400BB9865 /* NSString+FontAwesome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+FontAwesome.h"; sourceTree = "<group>"; };
 		B69821431A029F6400BB9865 /* NSString+FontAwesome.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+FontAwesome.m"; sourceTree = "<group>"; };
+		B69CBD131C6E7CA900651D5F /* EAFGetSites.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EAFGetSites.h; sourceTree = "<group>"; };
+		B69CBD141C6E7CC200651D5F /* EAFGetSites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFGetSites.m; sourceTree = "<group>"; };
 		B6A8D96A1976F27100E8F1D5 /* media-record-4_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "media-record-4_32x32.png"; sourceTree = "<group>"; };
 		B6A8D96C1976F27C00E8F1D5 /* media-record-3_32x32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "media-record-3_32x32.png"; sourceTree = "<group>"; };
 		B6A8D96F19770C2100E8F1D5 /* Icon-40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-40.png"; sourceTree = "<group>"; };
@@ -519,6 +522,8 @@
 			children = (
 				B6D9AF8C1A37C15200911A36 /* EAFContextPopupViewController.h */,
 				B6D9AF8D1A37C15200911A36 /* EAFContextPopupViewController.m */,
+				B69CBD131C6E7CA900651D5F /* EAFGetSites.h */,
+				B69CBD141C6E7CC200651D5F /* EAFGetSites.m */,
 				B6DF20A21A2679FC00CA31B1 /* EAFEventPoster.h */,
 				B6DF20A31A2679FC00CA31B1 /* EAFEventPoster.m */,
 				B61B94731A23BB770049462E /* EAFSetPasswordViewController.h */,
@@ -791,6 +796,7 @@
 				B61B82321A16D223009B00D1 /* EAFLoginViewController.m in Sources */,
 				B636FFD41A098FD200C3B62E /* UIFont+FontAwesome2.m in Sources */,
 				B6B94F131A7C1265004AFFE8 /* Reachability.m in Sources */,
+				B69CBD151C6E7CC200651D5F /* EAFGetSites.m in Sources */,
 				B61B946D1A1FA1210049462E /* EAFForgotUsernameViewController.m in Sources */,
 				B66BACAF197055F500E28ECC /* EAFChapterTableViewController.m in Sources */,
 				B636FFCE1A098D8500C3B62E /* UIFont+FontAwesome.m in Sources */,

@@ -15,10 +15,14 @@
 #import "EAFForgotPasswordViewController.h"
 #import "EAFSetPasswordViewController.h"
 #import "EAFEventPoster.h"
+#import "EAFGetSites.h"
 
 @interface EAFLoginViewController ()
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
+//@property (strong, nonatomic) NSDictionary *nameToURL;
+@property (strong, nonatomic) NSData *sitesData;
+@property EAFGetSites *siteGetter;
 
 @end
 
@@ -26,23 +30,23 @@
 
 // look at cookie value and set the language picker accordingly
 - (void)setLanguagePicker {
-   // NSLog(@"setting language picker language");
+    // NSLog(@"setting language picker language");
     NSString *languageRemembered = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
     if (languageRemembered != nil) {
-        NSUInteger toChoose = [_languages indexOfObject:languageRemembered];
+        NSUInteger toChoose = [_siteGetter.languages indexOfObject:languageRemembered];
         //NSLog(@"language cookie now %@ = %d",languageRemembered,toChoose);
         if (toChoose > [_languagePicker numberOfRowsInComponent:0]) {
-       //     NSLog(@"choose %d bigger than num selected is %d",toChoose,[_languagePicker numberOfRowsInComponent:0]);
+            //     NSLog(@"choose %d bigger than num selected is %d",toChoose,[_languagePicker numberOfRowsInComponent:0]);
             [_languagePicker selectRow:0 inComponent:0 animated:false];
         }
         else {
             [_languagePicker selectRow:toChoose inComponent:0 animated:false];
-          //  NSLog(@"selected is %d",[_languagePicker selectedRowInComponent:0]);
+            //  NSLog(@"selected is %d",[_languagePicker selectedRowInComponent:0]);
         }
     }
     //else {
     //    NSLog(@"no language cookie");
-   // }
+    // }
 }
 
 - (NSString *)appNameAndVersionNumberDisplayString {
@@ -53,33 +57,22 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-   _versionLabel.text = [self appNameAndVersionNumberDisplayString];
-
-    //not japanese or levantine -- consider levantine?
-    // TODO : get list of languages from server call?
     
-    _languages = [NSArray arrayWithObjects: @"Dari",
-                  @"English",
-                  @"Egyptian",
-                  @"Farsi",
-                  @"Korean",
-                  @"Levantine",
-                  @"CM",
-//                  @"MSACandidate",
-                  @"MSA",
-                  @"Pashto1", @"Pashto2", @"Pashto3",
-                  @"Russian",
-                  @"Spanish",
-                  @"Sudanese",  @"Urdu",  nil];
-  
+    _versionLabel.text = [self appNameAndVersionNumberDisplayString];
+    
+    _siteGetter = [EAFGetSites new];
+    _siteGetter.delegate = self;
+    [_siteGetter getSites];
+    
+    NSLog(@"viewDidLoad : languages now %@",_siteGetter.languages);
+    
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
     
     [notificationCenter addObserver:self
                            selector:@selector (textFieldText:)
                                name:UITextFieldTextDidChangeNotification
                              object:_username];
-   
+    
     [notificationCenter addObserver:self
                            selector:@selector (passwordChanged:)
                                name:UITextFieldTextDidChangeNotification
@@ -89,15 +82,13 @@
     _username.delegate = self;
     _password.delegate = self;
     
-
-    
     [_forgotUsername initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
                              color:[UIColor colorWithWhite:1.0f alpha:0.0f]
                              style:BButtonStyleBootstrapV3
                               icon:FAQuestion
                           fontSize:20.0f];
     [_forgotUsername setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-
+    
     [_forgotPassword initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
                              color:[UIColor colorWithWhite:1.0f alpha:0.0f]
                              style:BButtonStyleBootstrapV3
@@ -110,16 +101,26 @@
     gestureRecognizer.delegate = self;
     [_languagePicker addGestureRecognizer:gestureRecognizer];
     
+}
+
+
+- (void) sitesReady {
+    //    NSLog(@"sitesReady : languages now %@",_siteGetter.languages);
+    
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     if (userid != nil) {
         [self performSegueWithIdentifier:@"goToChapter" sender:self];
     }
+    NSLog(@"sitesReady : reloadAllComponents now %lu",(unsigned long)_siteGetter.languages.count);
+    
+    [_languagePicker reloadAllComponents ];
+    [self setLanguagePicker];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES];   //it hides
-
+    
     [self setLanguagePicker];
     
     NSString *rememberedUserID = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenUserID"];
@@ -147,18 +148,18 @@
     
     CGRect frame = _languagePicker.frame;
     CGRect selectorFrame = CGRectInset( frame, 0.0, _languagePicker.bounds.size.height * 0.85 / 2.0 );
-   // NSLog( @"Got tap -- Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
-
+    // NSLog( @"Got tap -- Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
+    
     if( CGRectContainsPoint( selectorFrame, touchPoint) )
     {
-      //  NSLog( @"Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
+        //  NSLog( @"Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
         [self onClick:nil];
     }
     [self gotSingleTap:nil];
 }
 
 - (IBAction)onClick:(id)sender {
-   // NSLog(@"Got click");
+    // NSLog(@"Got click");
     BOOL valid = true;
     if (_username.text.length == 0) {
         _usernameFeedback.text = @"Please enter a username";
@@ -169,25 +170,25 @@
         valid = false;
     }
     
-    NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+    NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
     
-  //  NSLog(@"language %@",chosenLanguage);
+    NSLog(@"onClick language %@",chosenLanguage);
     
     if (valid) {
         // make sure multiple events don't occur
         _languagePicker.userInteractionEnabled = false;
-        NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?hasUser=%@&p=%@", chosenLanguage,_username.text,[[self MD5:_password.text] uppercaseString]];
+        NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?hasUser=%@&p=%@", [_siteGetter.nameToURL objectForKey:chosenLanguage],_username.text,[[self MD5:_password.text] uppercaseString]];
         NSURL *url = [NSURL URLWithString:baseurl];
         
         NSLog(@"url %@",url);
-
+        
         NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
         
         [urlRequest setHTTPMethod: @"GET"];
         [urlRequest setValue:@"application/x-www-form-urlencoded"
           forHTTPHeaderField:@"Content-Type"];
         [urlRequest setTimeoutInterval:15];
-
+        
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
         
         [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
@@ -223,19 +224,22 @@
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
     //set number of rows
-    return _languages.count;
+    
+    NSLog(@"numberOfRowsInComponent : languages now %lu",(unsigned long)_siteGetter.languages.count);
+    
+    return _siteGetter.languages.count;
 }
 
 -(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
     //set item per row
-    NSString *lang = [_languages objectAtIndex:row];
-    if ([lang isEqualToString:@"CM"]) {
-        return @"Mandarin";
-    }
-    else {
-        return lang;
-    }
+    NSString *lang = [_siteGetter.languages objectAtIndex:row];
+    //    if ([lang isEqualToString:@"CM"]) {
+    //        return @"Mandarin";
+    //    }
+    //    else {
+    return lang;
+    //    }
 }
 
 - (void) textFieldText:(id)notification {
@@ -291,16 +295,16 @@
     
     NSString *existing = [json objectForKey:@"ExistingUserName"];
     
-//    NSLog(@"useJsonChapterData existing %@",existing);
-//    NSLog(@"useJsonChapterData resetToken %@",resetToken);
-//    NSLog(@"useJsonChapterData userIDExisting %@",userIDExisting);
-//    NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
+    //    NSLog(@"useJsonChapterData existing %@",existing);
+    //    NSLog(@"useJsonChapterData resetToken %@",resetToken);
+    //    NSLog(@"useJsonChapterData userIDExisting %@",userIDExisting);
+    //    NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
     
     if ([userIDExisting integerValue] == -1) {
         NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
         if (rememberedEmail != nil && existing == nil) {
-//            NSLog(@"useJsonChapterData OK, let's sign up!");
-            NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+            //            NSLog(@"useJsonChapterData OK, let's sign up!");
+            NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
             [self addUser:chosenLanguage username:_username.text password: _password.text email:rememberedEmail];
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
             [_activityIndicator startAnimating];
@@ -320,10 +324,10 @@
         [SSKeychain setPassword:converted forService:@"mitll.proFeedback.device" account:@"userid"];
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
-        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
         [self performSegueWithIdentifier:@"goToChapter" sender:self];
-   } else {
+    } else {
         // password is bad
         _passwordFeedback.text = @"Username or password incorrect";
     }
@@ -332,8 +336,7 @@
 
 // this is a post request
 - (void)addUser:(NSString *)chosenLanguage username:(NSString *)username password:(NSString *)password email:(NSString *)email {
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet",chosenLanguage
-                         ];
+    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet",[_siteGetter.nameToURL objectForKey:chosenLanguage]];
     
     NSURL *url = [NSURL URLWithString:baseurl];
     //NSLog(@"url %@",url);
@@ -354,11 +357,11 @@
     [urlRequest setValue:@"addUser"    forHTTPHeaderField:@"request"];
     
     [urlRequest setTimeoutInterval:10];
-
+    
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          NSLog(@"\n\n\nGot response %@",error);
-
+         
          if (error != nil) {
              NSLog(@"\n\n\n\tGot error %@",error);
              dispatch_async(dispatch_get_main_queue(), ^{
@@ -388,7 +391,7 @@
     NSLog(@"login call to server failed with %@",error);
     [_activityIndicator stopAnimating];
     _logIn.enabled = true;
-
+    
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
     NSString *message = @"Couldn't connect to server.";
@@ -404,18 +407,18 @@
 }
 
 - (IBAction)gotSingleTap:(id)sender {
-   // NSLog(@"dismiss keyboard! %@",_currentResponder);
+    // NSLog(@"dismiss keyboard! %@",_currentResponder);
     [_currentResponder resignFirstResponder];
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
- //   NSLog(@"got text field start on %@",textField);
+    //   NSLog(@"got text field start on %@",textField);
     _currentResponder = textField;
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
-//    NSLog(@"textFieldShouldBeginEditing text field start on %@",textField);
+    //    NSLog(@"textFieldShouldBeginEditing text field start on %@",textField);
     _currentResponder = textField;
     return YES;
 }
@@ -435,16 +438,14 @@
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
+    NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+    
     if ([segue.identifier isEqualToString:@"goToForgotUsername"]) {
         EAFForgotUsernameViewController *forgotUserName = [segue destinationViewController];
-        
-        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [forgotUserName setLanguage:chosenLanguage];
     }
     else if ([segue.identifier isEqualToString:@"goToForgotPassword"]) {
         EAFForgotPasswordViewController *forgotUserName = [segue destinationViewController];
-        
-        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [forgotUserName setLanguage:chosenLanguage];
         NSLog(@"username %@",_username.text);
         forgotUserName.userFromLogin = _username.text;
@@ -453,22 +454,18 @@
         [SSKeychain deletePasswordForService:@"mitll.proFeedback.device" account:@"password"];
         _password.text = @"";
         EAFSetPasswordViewController *forgotUserName = [segue destinationViewController];
-        
-        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [forgotUserName setLanguage:chosenLanguage];
         forgotUserName.token  = _token;
     }
     else if ([segue.identifier isEqualToString:@"goToChapter"]) {
         EAFChapterTableViewController *chapterController = [segue destinationViewController];
-        
-        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [chapterController setLanguage:chosenLanguage];
         
-        NSString *toShow = chosenLanguage;
-        if ([toShow isEqualToString:@"CM"]) {
-            toShow = @"Mandarin";
-        }
-        [chapterController setTitle:toShow];
+        //        NSString *toShow = chosenLanguage;
+        //        if ([toShow isEqualToString:@"CM"]) {
+        //            toShow = @"Mandarin";
+        //        }
+        [chapterController setTitle:chosenLanguage];
         [self textFieldText:nil];
     }
     else {

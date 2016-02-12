@@ -15,4 +15,8 @@
 // required!
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) EAFRecoFlashcardController *recoController;
+
+
+@property (strong, nonatomic) NSDictionary *nameToURL;
+
 @end

@@ -11,6 +11,7 @@
 #import "EAFItemTableViewController.h"
 #import "SSKeychain.h"
 #import "EAFEventPoster.h"
+#import "EAFGetSites.h"
 
 @interface EAFChapterTableViewController ()
 
@@ -24,6 +25,7 @@
 @property NSDictionary* chapterInfo;
 @property BOOL hasModel;
 @property NSArray *currentItems;
+@property EAFGetSites *siteGetter;
 
 @end
 
@@ -44,6 +46,9 @@
 {
     [super viewDidLoad];
     
+    _siteGetter = [EAFGetSites new];
+    _siteGetter.delegate = self;
+    
     if (self.chapters == nil) {
         self.chapters = [[NSMutableArray alloc] init];
     }
@@ -59,9 +64,10 @@
 
     [self setTitle:([_language isEqualToString:@"CM"] ? @"Mandarin":_language)];
     
-    if (_jsonContentArray == nil) {
-        [self loadInitialData];
-    }
+//    if (_jsonContentArray == nil) {
+//        [self loadInitialData];
+//    }
+    [_siteGetter getSites];
     
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
@@ -88,7 +94,7 @@
     _isRefresh = isRefresh;
     
     _reqCount++;
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?nestedChapters", _language];
+    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?nestedChapters", [_siteGetter.nameToURL objectForKey:_language]];
     
     NSURL *url = [NSURL URLWithString:baseurl];
     
@@ -122,6 +128,12 @@
                                  waitUntilDone:YES];
          }
      }];
+}
+
+- (void) sitesReady {
+    if (_jsonContentArray == nil) {
+        [self loadInitialData];
+    }
 }
 
 UIAlertView *loadingContentAlert;

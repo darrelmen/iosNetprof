@@ -1666,7 +1666,7 @@ bool debugRecord = false;
     
     // NSLog(@"file length %@",postLength);
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
-    // NSLog(@"talking to %@",baseurl);
+    NSLog(@"postAudio talking to %@",baseurl);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
@@ -1697,15 +1697,19 @@ bool debugRecord = false;
     // post the audio
     
     [urlRequest setHTTPBody:postData];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    // NSLog(@"posting to %@",_url);
+    NSLog(@"posting to %@",_url);
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          dispatch_async(dispatch_get_main_queue(), ^{
              [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
              [_recoFeedbackImage stopAnimating];
          });
+         
+         NSLog(@"Got back error %@",error);
+         NSLog(@"Got back response %@",response);
+         
          //    NSLog(@"response to post of audio...");
          if (error != nil) {
              NSLog(@"postAudio : Got error %@",error);
@@ -1919,6 +1923,8 @@ bool debugRecord = false;
     
     //    NSLog(@"got back %@",reqid);
     if ([reqid intValue] < _reqid-1) {
+           NSLog(@"json was %@",json);
+
         NSLog(@"discarding old response - got back %@ latest %d",reqid ,_reqid);
         return;
     }
