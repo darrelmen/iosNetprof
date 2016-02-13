@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-//#import <SplunkMint-iOS/SplunkMint-iOS.h>
 
 @interface EAFForgotPasswordViewController : UIViewController<NSURLConnectionDelegate,UITextFieldDelegate>
 
@@ -22,5 +21,6 @@
 @property NSString *language;
 - (BOOL) validateEmail: (NSString *) candidate;
 @property (strong, nonatomic) NSString *userFromLogin;
+@property (strong, nonatomic) NSString *url;
 
 @end

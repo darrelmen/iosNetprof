@@ -30,11 +30,6 @@
 
 @implementation EAFItemTableViewController
 
-- (NSString *)getURL
-{
-    return [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/", _language];
-}
-
 - (void)cacheAudio:(NSArray *)items
 {
     NSMutableArray *paths = [[NSMutableArray alloc] init];
@@ -52,7 +47,7 @@
                                                              withString:@".mp3"];
                 
                 NSMutableString *mu = [NSMutableString stringWithString:refPath];
-                [mu insertString:[self getURL] atIndex:0];
+                [mu insertString:_url atIndex:0];
                 [paths addObject:mu];
                 [rawPaths addObject:refPath];
             }
@@ -67,12 +62,12 @@
 {
     [super viewDidLoad];
     _audioCache = [[EAFAudioCache alloc] init];
-    //NSLog(@"made audio cache...");
+    NSLog(@"viewDidLoad made audio cache, url %@ ",_url );
   //  NSLog(@"viewDidLoad - item table controller - %@, count = %lu", _hasModel?@"YES":@"NO",(unsigned long)_jsonItems.count);
 
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
-    [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",([_language isEqualToString:@"CM"] ? @"Mandarin":_language),_chapterTitle,_currentChapter]];
+    [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,_chapterTitle,_currentChapter]];
     
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
@@ -91,7 +86,7 @@
 }
 
 -(void)viewWillAppear:(BOOL)animated {
-  //  NSLog(@"ItemViewController : viewWillAppear ");
+    NSLog(@"ItemViewController : viewWillAppear ");
     [self askServerForJson];
     [super viewWillAppear:animated];
 }
@@ -317,13 +312,14 @@
     EAFRecoFlashcardController *flashcardController = [segue destinationViewController];
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSInteger row = indexPath.row;
-//    NSLog(@"Item Table - got seque row %ld %@ %@",(long)indexPath.row, _chapterTitle, _currentChapter );
+    NSLog(@"Item Table - got seque row %ld %@ %@ url %@",(long)indexPath.row, _chapterTitle, _currentChapter, _url );
  
+    flashcardController.url = _url;
     flashcardController.jsonItems = _jsonItems;
     flashcardController.index = row;
     flashcardController.language = _language;
-    flashcardController.url = [self getURL];
-    [flashcardController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",([_language isEqualToString:@"CM"] ? @"Mandarin":_language),_currentChapter]];
+    flashcardController.url = _url;
+    [flashcardController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,_currentChapter]];
     
     flashcardController.hasModel=_hasModel;
     flashcardController.chapterTitle = _chapterTitle;
@@ -338,11 +334,11 @@
 //
 - (void)askServerForJson {
     _requestPending = true;
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _language, _user, _unitTitle, _unit, _chapterTitle, _currentChapter];
+    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _url, _user, _unitTitle, _unit, _chapterTitle, _currentChapter];
     
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-    NSLog(@"askServerForJson url %@",baseurl);
+    NSLog(@"ItemViewController askServerForJson url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];

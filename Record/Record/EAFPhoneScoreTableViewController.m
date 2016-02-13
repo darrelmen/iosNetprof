@@ -81,7 +81,7 @@
 }
 
 - (void)askServerForJson {
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _language, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
+    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
     NSLog(@"EAFPhoneScoreTableViewController url %@",baseurl);
@@ -813,7 +813,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                                                    withString:@".mp3"];
             
             NSMutableString *mu = [NSMutableString stringWithString:refPath];
-            [mu insertString:[self getURL] atIndex:0];
+            [mu insertString:_url atIndex:0];
             [paths addObject:mu];
             [rawPaths addObject:refPath];
         }
@@ -828,11 +828,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     [[self tableView] reloadData];
     
     return true;
-}
-
-- (NSString *)getURL
-{
-    return [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/", _language];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {

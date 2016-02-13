@@ -26,6 +26,7 @@
 @property BOOL hasModel;
 @property NSArray *currentItems;
 @property EAFGetSites *siteGetter;
+@property EAFEventPoster *poster;
 
 @end
 
@@ -48,6 +49,7 @@
     
     _siteGetter = [EAFGetSites new];
     _siteGetter.delegate = self;
+    _poster = [[EAFEventPoster alloc] initWithURL:_url];
     
     if (self.chapters == nil) {
         self.chapters = [[NSMutableArray alloc] init];
@@ -62,7 +64,7 @@
     
     _language = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
 
-    [self setTitle:([_language isEqualToString:@"CM"] ? @"Mandarin":_language)];
+   [self setTitle:_language];
     
 //    if (_jsonContentArray == nil) {
 //        [self loadInitialData];
@@ -281,8 +283,7 @@ UIAlertView *loadingContentAlert;
 }
 
 - (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
-    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
-    [poster postEvent:message exid:@"N/A" lang:_language widget:widget widgetType:type];
+    [_poster postEvent:message exid:@"N/A" widget:widget widgetType:type];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
@@ -348,9 +349,7 @@ UIAlertView *loadingContentAlert;
  */
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"ListPrototypeCell";
-
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ListPrototypeCell" forIndexPath:indexPath];
     
     NSString *chapter = [_chapters objectAtIndex:indexPath.row];
     NSString *prefix = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
@@ -490,7 +489,7 @@ UIAlertView *loadingContentAlert;
 //    NSLog(@"Chapter table view controller prepareForSegue identifier %@ %@ %@ %@ %@",segue.identifier,_chapterName,tappedItem,
 //          _unitTitle,_unit);
 
-  //  NSLog(@"Chapter table Got prepare -- %@ has model %@",itemController, _hasModel?@"YES":@"NO");
+    NSLog(@"Chapter table Got prepare -- %@ has model %@ url %@",itemController, _hasModel?@"YES":@"NO", _url);
     [itemController setChapterToItems:_chapterInfo];
     [itemController setJsonItems:_currentItems];
     itemController.chapterTitle = _chapterName;
@@ -499,6 +498,7 @@ UIAlertView *loadingContentAlert;
     itemController.hasModel=_hasModel;
     itemController.unitTitle = _unitTitle;
     itemController.unit = _unit;
+    itemController.url = _url;
 }
 
 #pragma mark - Table view delegate
@@ -545,6 +545,7 @@ UIAlertView *loadingContentAlert;
                 myController.unitTitle = _unitTitle;
                 myController.unit = name;
                 myController.hasModel = _hasModel;
+                myController.url = _url;
                 
                 [self.navigationController pushViewController: myController animated:YES];
                 break;

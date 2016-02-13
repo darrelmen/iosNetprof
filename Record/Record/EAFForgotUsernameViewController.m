@@ -81,7 +81,7 @@
 
 
 - (void) forgotUsername:(NSString *)email language:(NSString *)lang {
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?forgotUsername=%@", lang, email];
+    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?forgotUsername=%@", _url, email];
     
     NSLog(@"url %@",baseurl);
     
@@ -179,17 +179,6 @@
 //- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
 //    // Get the new view controller using [segue destinationViewController].
 //    // Pass the selected object to the new view controller.
-//    
-//    EAFChapterTableViewController *chapterController = [segue destinationViewController];
-//    
-//     NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
-//    [chapterController setLanguage:chosenLanguage];
-//    
-//    NSString *toShow = chosenLanguage;
-//    if ([toShow isEqualToString:@"CM"]) {
-//        toShow = @"Mandarin";
-//    }
-//    [chapterController setTitle:toShow];
 //}
 //
 //

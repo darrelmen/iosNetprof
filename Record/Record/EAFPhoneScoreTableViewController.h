@@ -8,11 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
-//#import <SplunkMint-iOS/SplunkMint-iOS.h>
 #import "EAFAudioPlayer.h"
 
 @interface EAFPhoneScoreTableViewController : UITableViewController<AVAudioPlayerDelegate, UIGestureRecognizerDelegate,AudioPlayerNotification>
-
 
 @property NSString *language;
 

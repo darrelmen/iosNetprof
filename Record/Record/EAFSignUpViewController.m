@@ -11,8 +11,11 @@
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
 #import "EAFEventPoster.h"
+#import "EAFGetSites.h"
 
 @interface EAFSignUpViewController ()
+
+@property EAFEventPoster *poster;
 
 @end
 
@@ -21,23 +24,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //not japanese or egyptian?
-    // TODO : get list of languages from server call?
-    // TODO : don't duplicate this with login page
-    _languages = [NSArray arrayWithObjects: @"Dari", @"English",
-                  @"Egyptian",
-                  @"Farsi",
-                  @"Korean",
-                  @"Levantine",
-                  @"CM",
-                  @"MSA",
-                  @"Pashto1", @"Pashto2", @"Pashto3",
-                  @"Russian",
-                  @"Spanish",
-                  @"Sudanese",
-                  @"Tagalog",
-                  @"Urdu",  nil];
-  
+    _poster = [[EAFEventPoster alloc] init];
+
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
     
     [notificationCenter addObserver:self
@@ -84,6 +72,11 @@
     [self.languagePicker addGestureRecognizer:gestureRecognizer];
 }
 
+- (void) sitesReady {
+    [_languagePicker reloadAllComponents ];
+   // [self setLanguagePicker];
+}
+
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
     return true;
 }
@@ -105,11 +98,8 @@
 
 // POST request
 - (void)addUser:(NSString *)chosenLanguage username:(NSString *)username password:(NSString *)password email:(NSString *)email {
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet",chosenLanguage
-                         ];
-    
-    NSURL *url = [NSURL URLWithString:baseurl];
-    //NSLog(@"url %@",url);
+    NSURL *url = [NSURL URLWithString:[_siteGetter.nameToURL objectForKey:chosenLanguage]];
+    NSLog(@"addUser url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     [urlRequest setHTTPMethod: @"POST"];
@@ -161,7 +151,7 @@
     if (valid) {
         _emailFeedback.textColor = [UIColor blackColor];
 
-        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         NSString *username = _username.text;
         NSString *password = _password.text;
         NSString *email = _email.text;
@@ -171,8 +161,8 @@
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
         [_activityIndicator startAnimating];
         
-        EAFEventPoster *poster = [[EAFEventPoster alloc] init];
-        [poster postEvent:[NSString stringWithFormat:@"signUp by %@",_username.text] exid:@"N/A" lang:chosenLanguage widget:@"SignIn" widgetType:@"Button"];
+        [_poster setURL:[_siteGetter.nameToURL objectForKey:chosenLanguage]];
+        [_poster postEvent:[NSString stringWithFormat:@"signUp by %@",_username.text] exid:@"N/A" widget:@"SignIn" widgetType:@"Button"];
     }
 }
 
@@ -185,19 +175,12 @@
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
     //set number of rows
-    return _languages.count;
+    return _siteGetter.languages.count;
 }
 
 -(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
-    //set item per row
-    NSString *lang = [_languages objectAtIndex:row];
-    if ([lang isEqualToString:@"CM"]) {
-        return @"Mandarin";
-    }
-    else {
-        return lang;
-    }
+    return [_siteGetter.languages objectAtIndex:row];
 }
 
 - (void) textFieldText:(id)notification {
@@ -323,7 +306,7 @@
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
         [SSKeychain setPassword:_email.text    forService:@"mitll.proFeedback.device" account:@"chosenEmail"];
-        NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
         
         [self performSegueWithIdentifier:@"goToChapterFromSignUp" sender:self];
@@ -368,15 +351,11 @@
     
     EAFChapterTableViewController *chapterController = [segue destinationViewController];
     
-     NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+     NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
     [chapterController setLanguage:chosenLanguage];
+    chapterController.url = [_siteGetter.nameToURL objectForKey:chosenLanguage];
     
-    NSString *toShow = chosenLanguage;
-    if ([toShow isEqualToString:@"CM"]) {
-        toShow = @"Mandarin";
-    }
-    [chapterController setTitle:toShow];
+    [chapterController setTitle:chosenLanguage];
 }
-
 
 @end

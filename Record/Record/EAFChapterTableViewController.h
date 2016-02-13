@@ -19,5 +19,6 @@
 
 @property NSArray *chapters;
 @property NSString *language;
+@property NSString *url;
 
 @end

@@ -69,22 +69,22 @@
     }
     else {
         _nameToURL = [NSDictionary dictionaryWithObjectsAndKeys:
-                      @"Dari",	@"https://np.ll.mit.edu/npfClassroomDari"
-                      @"Egyptian",	@"https://np.ll.mit.edu/npfClassroomEgyptian"
-                      @"English",	@"https://np.ll.mit.edu/npfClassroomEnglish"
-                      @"Farsi",	@"https://np.ll.mit.edu/npfClassroomFarsi"
-                      @"Korean",	@"https://np.ll.mit.edu/npfClassroomKorean"
-                      @"Levantine",	@"https://np.ll.mit.edu/npfClassroomLevantine"
-                      @"Mandarin",	@"https://np.ll.mit.edu/npfClassroomCM"
-                      @"MSA",	@"https://np.ll.mit.edu/npfClassroomMSA"
-                      @"Pashto1",	@"https://np.ll.mit.edu/npfClassroomPashto1"
-                      @"Pashto2",	@"https://np.ll.mit.edu/npfClassroomPashto2"
-                      @"Pashto3",	@"https://np.ll.mit.edu/npfClassroomPashto3"
-                      @"Russian",	@"https://np.ll.mit.edu/npfClassroomRussian"
-                      @"Spanish",	@"https://np.ll.mit.edu/npfClassroomSpanish"
-                      @"Sudanese",	@"https://np.ll.mit.edu/npfClassroomSudanese"
-                      @"Tagalog",	@"https://np.ll.mit.edu/npfClassroomTagalog"
-                      @"Urdu",@"https://np.ll.mit.edu/npfClassroomUrdu",
+                      @"Dari",	@"https://np.ll.mit.edu/npfClassroomDari/"
+                      @"Egyptian",	@"https://np.ll.mit.edu/npfClassroomEgyptian/"
+                      @"English",	@"https://np.ll.mit.edu/npfClassroomEnglish/"
+                      @"Farsi",	@"https://np.ll.mit.edu/npfClassroomFarsi/"
+                      @"Korean",	@"https://np.ll.mit.edu/npfClassroomKorean/"
+                      @"Levantine",	@"https://np.ll.mit.edu/npfClassroomLevantine/"
+                      @"Mandarin",	@"https://np.ll.mit.edu/npfClassroomCM/"
+                      @"MSA",	@"https://np.ll.mit.edu/npfClassroomMSA/"
+                      @"Pashto1",	@"https://np.ll.mit.edu/npfClassroomPashto1/"
+                      @"Pashto2",	@"https://np.ll.mit.edu/npfClassroomPashto2/"
+                      @"Pashto3",	@"https://np.ll.mit.edu/npfClassroomPashto3/"
+                      @"Russian",	@"https://np.ll.mit.edu/npfClassroomRussian/"
+                      @"Spanish",	@"https://np.ll.mit.edu/npfClassroomSpanish/"
+                      @"Sudanese",	@"https://np.ll.mit.edu/npfClassroomSudanese/"
+                      @"Tagalog",	@"https://np.ll.mit.edu/npfClassroomTagalog/"
+                      @"Urdu",@"https://np.ll.mit.edu/npfClassroomUrdu/",
                       nil                                      ];
         [self setLanguagesGivenData];
     }
@@ -116,13 +116,18 @@
         BOOL showOnIOS = [[site valueForKey:@"showOnIOS"] boolValue];
         if (showOnIOS) {
             NSString *name = [site objectForKey:@"name"];
-            [nameToURLLocal setObject:[site objectForKey:@"url"] forKey:name];
+            NSString *url = [site objectForKey:@"url"];
+            if (![url hasSuffix:@"/"]) {
+                url = [NSString stringWithFormat:@"%@/",url];
+            }
+            
+            [nameToURLLocal setObject:url forKey:name];
         }
     }
     
     [self setLanguagesGivenData];
-    NSLog(@"name to url now %@",_nameToURL);
-    NSLog(@"_languages now %@",_languages);
+  //  NSLog(@"name to url now %@",_nameToURL);
+  //  NSLog(@"_languages now %@",_languages);
     
     [self writeSitesDataToCacheAt:[self getCachePath] mp3AudioData:_sitesData];
     [_delegate sitesReady];
@@ -154,7 +159,7 @@
     [mp3AudioData writeToFile:destFileName atomically:YES];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:destFileName]) {
-        NSLog(@"huh? can't find     %@",destFileName);
+        NSLog(@"writeSitesDataToCacheAt huh? can't find     %@",destFileName);
     }
 }
 

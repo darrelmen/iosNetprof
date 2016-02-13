@@ -116,9 +116,6 @@
     else if ([_language isEqualToString:@"Sudanese"]) {
         [_whatToShow setTitle:@"Sudan" forSegmentAtIndex:1];
     }
-    else if ([_language isEqualToString:@"CM"]) {
-        [_whatToShow setTitle:@"Mandarin" forSegmentAtIndex:1];
-    }
     else if ([_language isEqualToString:@"Pashto1"] || [_language isEqualToString:@"Pashto2"] || [_language isEqualToString:@"Pashto3"]) {
         [_whatToShow setTitle:@"Pashto" forSegmentAtIndex:1];
     }
@@ -374,9 +371,9 @@
 }
 
 - (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
-    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-    [poster postEvent:message exid:[jsonObject objectForKey:@"id"] lang:_language widget:widget widgetType:type];
+    [poster postEvent:message exid:[jsonObject objectForKey:@"id"] widget:widget widgetType:type];
 }
 
 - (IBAction)showScoresClick:(id)sender {
@@ -1895,11 +1892,12 @@ bool debugRecord = false;
     NSNumber *resultID = [json objectForKey:@"resultID"];
     
     // Post a RT value for the result id
-    EAFEventPoster *poster = [[EAFEventPoster alloc] init];
+    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
     NSString * roundTrip =[NSString stringWithFormat:@"%d",iMillis];
     NSLog(@"connectionDidFinishLoading - roundTrip  %@",roundTrip);
     
-    [poster postRT:[resultID stringValue] rtDur:roundTrip lang:_language];
+    
+    [poster postRT:[resultID stringValue] rtDur:roundTrip];
     
     //   NSLog(@"exid was %@",exid);
     NSNumber *score = [json objectForKey:@"score"];
@@ -2406,6 +2404,7 @@ BOOL addSpaces = false;
     
     NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"msr",@"frr",@"fsr",@"ctmref",@"ctfref",@"ctref",nil];
     
+    NSString *urlWithSlash = [NSString stringWithFormat:@"%@/",_url];
     for (NSDictionary *object in items) {
         for (NSString *id in fields) {
             NSString *refPath = [object objectForKey:id];
@@ -2417,7 +2416,9 @@ BOOL addSpaces = false;
                                                              withString:@".mp3"];
                 
                 NSMutableString *mu = [NSMutableString stringWithString:refPath];
-                [mu insertString:_url atIndex:0];
+                [mu insertString:urlWithSlash atIndex:0];
+              //  NSLog(@"cacheAudio %@ %@",mu,urlWithSlash);
+
                 [paths addObject:mu];
                 [rawPaths addObject:refPath];
             }

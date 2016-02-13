@@ -104,9 +104,8 @@
 
 #pragma mark NSURLConnection Delegate Methods
 
-
 - (void) forgotUsername:(NSString *)email language:(NSString *)lang {
-    NSString *baseurl = [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/scoreServlet?resetPassword=%@&email=%@", lang, _username.text, email];
+    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?resetPassword=%@&email=%@", _url, _username.text, email];
     
     NSLog(@"url %@",baseurl);
     
@@ -199,19 +198,6 @@
 //
 //// In a storyboard-based application, you will often want to do a little preparation before navigation
 //- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-//    // Get the new view controller using [segue destinationViewController].
-//    // Pass the selected object to the new view controller.
-//    
-//    EAFChapterTableViewController *chapterController = [segue destinationViewController];
-//    
-//     NSString *chosenLanguage = [_languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
-//    [chapterController setLanguage:chosenLanguage];
-//    
-//    NSString *toShow = chosenLanguage;
-//    if ([toShow isEqualToString:@"CM"]) {
-//        toShow = @"Mandarin";
-//    }
-//    [chapterController setTitle:toShow];
 //}
 //
 //

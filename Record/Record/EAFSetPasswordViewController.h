@@ -22,5 +22,6 @@
 @property NSString *language;
 @property (strong, nonatomic) NSString *userFromLogin;
 @property (strong, nonatomic) NSString *token;
+@property (strong, nonatomic) NSString *url;
 
 @end

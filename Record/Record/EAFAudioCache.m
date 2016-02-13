@@ -34,7 +34,7 @@
 }
 
 - (void)writeMP3DataToCacheAt:(NSString *)destFileName mp3AudioData:(NSData *)mp3AudioData {
-    //  NSLog(@"connectionDidFinishLoading : writing to      %@",destFileName);
+    NSLog(@"writeMP3DataToCacheAt : writing to      %@",destFileName);
     NSString *parent = [destFileName stringByDeletingLastPathComponent];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:parent]) {
@@ -44,7 +44,7 @@
     [mp3AudioData writeToFile:destFileName atomically:YES];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:destFileName]) {
-        NSLog(@"huh? can't find     %@",destFileName);
+        NSLog(@"writeMP3DataToCacheAt huh? can't find     %@",destFileName);
     }
 }
 
@@ -57,8 +57,7 @@
     if (![self isCancelled]){
         // NSLog(@"queue posting finished for %@ and %lu items, queue has %lu",self,(unsigned long)_rawPaths.count,_operationQueue.operationCount);
         
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:_path]];
-        //NSLog(@"audio cache url talking to %@",_path);
+        NSLog(@"MyOperation audio cache url talking to %@ raw %@ file %@",_path,_rawPath,_filePath);
         
         NSString *destFileName = [self getFileInCache:_rawPath filePath:_filePath];
         //NSLog(@"%@ started to check %@.",self,destFileName);
@@ -78,6 +77,7 @@
         else {
             NSURLResponse * response = nil;
             NSError * error = nil;
+            NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:_path]];
             NSData * data = [NSURLConnection sendSynchronousRequest:request
                                                   returningResponse:&response
                                                               error:&error];
@@ -88,7 +88,7 @@
                 });
             }
             else {
-                //    NSLog(@"%@ completed %@",self,destFileName);
+              //  NSLog(@"%@ completed %@",self,destFileName);
                 //                _completed++;
                 //                if (_completed % 10 == 0) NSLog(@"%@ completed %d",self,_completed);
                 //
@@ -147,7 +147,7 @@
     _rawPaths = [rawPaths2 copy];
     _paths = [ppaths2 copy];
     
-//    NSLog(@"EAFAudioCache - go get audio for %lu",(unsigned long)_rawPaths.count);
+    NSLog(@"EAFAudioCache - go get audio for %lu",(unsigned long)_rawPaths.count);
     @try {
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
         NSString *documentsDirectory = [paths objectAtIndex:0];

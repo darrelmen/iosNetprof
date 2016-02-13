@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-//#import <SplunkMint-iOS/SplunkMint-iOS.h>
 #import "EAFAudioCache.h"
 #import "EAFRecoFlashcardController.h"
 
@@ -25,5 +24,6 @@
 @property (strong, nonatomic) NSArray *jsonItems;
 
 - (void)askServerForJson;
+@property NSString *url;
 
 @end

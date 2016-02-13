@@ -8,16 +8,45 @@
 
 #import "EAFEventPoster.h"
 #import "SSKeychain.h"
+#import "EAFGetSites.h"
+
+@interface EAFEventPoster ()
+
+@property NSString *urlToUse;
+
+@end
 
 @implementation EAFEventPoster
 
-- (void) postEvent:(NSString *)context exid:(NSString *)exid lang:(NSString *)lang widget:(NSString *)widget  widgetType:(NSString *)widgetType {
+
+- (id) init {
+    if ( self = [super init] ) {
+        _urlToUse = @"unset";
+        return self;
+    } else
+        return nil;
+}
+
+- (id) initWithURL:(NSString *) url {
+    if ( self = [super init] ) {
+        _urlToUse = url;
+        return self;
+    } else
+        return nil;
+}
+
+- (void) setURL:(NSString *) url {
+    _urlToUse = url;
+}
+
+- (void) postEvent:(NSString *)context exid:(NSString *)exid widget:(NSString *)widget  widgetType:(NSString *)widgetType {
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     
-    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)0];
-    
-    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", [self getURL:lang]];
+    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)0];   
+    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _urlToUse];
+
+    NSLog(@"postEvent post %@ to %@ or %@",context,_urlToUse,baseurl);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
@@ -26,7 +55,7 @@
       forHTTPHeaderField:@"Content-Type"];
     
     // add request parameters
-
+    
     [urlRequest setValue:userid forHTTPHeaderField:@"user"];
     
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
@@ -46,25 +75,27 @@
              NSLog(@"postEvent : Got error %@",error);
          }
          else {
+           //  NSLog(@"postEvent : reply %@",data);
+
          }
      }];
 }
 
-- (void) postRT:(NSString *)resultID rtDur:(NSString *)rtDur lang:(NSString *)lang {
-    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", [self getURL:lang]];
+- (void) postRT:(NSString *)resultID rtDur:(NSString *)rtDur {
+    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _urlToUse];
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
     
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)0];
-
+    
     [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
-
+    
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     
     [urlRequest setValue:@"roundTrip" forHTTPHeaderField:@"request"];
-
+    
     // add request parameters
     [urlRequest setValue:resultID forHTTPHeaderField:@"resultID"];
     [urlRequest setValue:rtDur forHTTPHeaderField:@"roundTrip"];
@@ -82,10 +113,10 @@
      }];
 }
 
-- (NSString *)getURL:(NSString *) lang
-{
-    return [NSString stringWithFormat:@"https://np.ll.mit.edu/npfClassroom%@/", lang];
-}
+//- (NSString *)getURL:(NSString *) lang
+//{
+//    return  [_siteGetter.nameToURL objectForKey:lang];
+//}
 #pragma mark NSURLConnection Delegate Methods
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
@@ -107,14 +138,14 @@
 
 //
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-//    NSString *destFileName = [self getCurrentCachePath];
- //   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-  //  NSLog(@"connectionDidFinishLoading : writing to      %@",destFileName);
-
+    //    NSString *destFileName = [self getCurrentCachePath];
+    //   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+    //  NSLog(@"connectionDidFinishLoading : writing to      %@",destFileName);
+    
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
- //   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+    //   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 
 @end
