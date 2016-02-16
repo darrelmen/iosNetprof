@@ -382,11 +382,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 //                                     constant:0.0]];
 //    [scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
 
-    NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
-                    @"Egyptian",
-                    @"Farsi",
-                    @"Levantine",
-                    @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
+//    NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
+//                    @"Egyptian",
+//                    @"Farsi",
+//                    @"Levantine",
+//                    @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
     
     float totalPhoneScore = 0.0f;
     float totalPhones = 0.0f;
@@ -518,9 +518,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             if ([wordInResult isEqualToString:wordPhoneAppearsIn]) {
                 NSArray *phoneArray = [wordResult objectForKey:@"phones"];
                 
-                BOOL isRTL = [rtl containsObject:_language];
+                //BOOL isRTL = [rtl containsObject:_language];
                 
-                if (isRTL && !_showPhonesLTRAlways) {
+                if (_isRTL && !_showPhonesLTRAlways) {
                     phoneArray = [self reversedArray:phoneArray];
                 }
                 NSDictionary *lastPhone = phoneArray.count > 0 ? [phoneArray objectAtIndex:phoneArray.count-1] : nil;

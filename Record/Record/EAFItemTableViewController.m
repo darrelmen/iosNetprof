@@ -62,7 +62,7 @@
 {
     [super viewDidLoad];
     _audioCache = [[EAFAudioCache alloc] init];
-    NSLog(@"viewDidLoad made audio cache, url %@ ",_url );
+  //  NSLog(@"viewDidLoad made audio cache, url %@ ",_url );
   //  NSLog(@"viewDidLoad - item table controller - %@, count = %lu", _hasModel?@"YES":@"NO",(unsigned long)_jsonItems.count);
 
     // Uncomment the following line to preserve selection between presentations.
@@ -315,10 +315,10 @@
     NSLog(@"Item Table - got seque row %ld %@ %@ url %@",(long)indexPath.row, _chapterTitle, _currentChapter, _url );
  
     flashcardController.url = _url;
+    flashcardController.isRTL = _isRTL;
     flashcardController.jsonItems = _jsonItems;
     flashcardController.index = row;
     flashcardController.language = _language;
-    flashcardController.url = _url;
     [flashcardController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,_currentChapter]];
     
     flashcardController.hasModel=_hasModel;

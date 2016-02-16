@@ -27,6 +27,7 @@
 @property NSArray *phonesInOrder;
 @property AVPlayer *player;
 @property NSString *url;
+@property BOOL isRTL;
 
 @property long user;
 -(void)setCurrentTitle;

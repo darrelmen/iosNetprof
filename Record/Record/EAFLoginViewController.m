@@ -183,7 +183,8 @@
     if (valid) {
         // make sure multiple events don't occur
         _languagePicker.userInteractionEnabled = false;
-        NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?hasUser=%@&p=%@", [_siteGetter.nameToURL objectForKey:chosenLanguage],_username.text,[[self MD5:_password.text] uppercaseString]];
+        NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
+        NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?hasUser=%@&p=%@", urlForLanguage,_username.text,[[self MD5:_password.text] uppercaseString]];
         NSURL *url = [NSURL URLWithString:baseurl];
         
         NSLog(@"url %@",url);
@@ -215,6 +216,8 @@
         
         [_activityIndicator startAnimating];
         _logIn.enabled = false;
+        
+        [_poster setURL:urlForLanguage];
         
         [_poster postEvent:@"login" exid:@"N/A" widget:@"LogIn" widgetType:@"Button"];
     }
@@ -439,8 +442,9 @@
     
     NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
     NSString *url= [_siteGetter.nameToURL objectForKey:chosenLanguage];
+    BOOL isRTL= [_siteGetter.rtlLanguages containsObject:chosenLanguage];
     
-    NSLog(@"prepareForSegue login view %@ url %@",chosenLanguage,url);
+  //  NSLog(@"prepareForSegue login view %@ url %@",chosenLanguage,url);
 
     if ([segue.identifier isEqualToString:@"goToForgotUsername"]) {
         EAFForgotUsernameViewController *forgotUserName = [segue destinationViewController];
@@ -466,6 +470,7 @@
         EAFChapterTableViewController *chapterController = [segue destinationViewController];
         [chapterController setLanguage:chosenLanguage];
         chapterController.url =url;
+        chapterController.isRTL = isRTL;
         [chapterController setTitle:chosenLanguage];
         [self textFieldText:nil];
     }

@@ -162,7 +162,8 @@
     
     NSMutableString *mu = [NSMutableString stringWithString:mp3RefPath];
     
-    NSString *urlWithSlash = [NSString stringWithFormat:@"%@/",_url];
+   // NSString *urlWithSlash = [NSString stringWithFormat:@"%@/",_url];
+    NSString *urlWithSlash = _url;
 
     [mu insertString:urlWithSlash atIndex:0];
     refAudioPathURL = mu;

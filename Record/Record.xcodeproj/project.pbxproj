@@ -661,7 +661,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = EAF;
-				LastUpgradeCheck = 0600;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "MIT Lincoln Laboratory";
 				TargetAttributes = {
 					F6A5681918ECA98A00B844C6 = {
@@ -893,6 +893,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -969,6 +970,7 @@
 					"-all_load",
 					"-ObjC",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "edu.dliflc.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -998,6 +1000,7 @@
 					"-all_load",
 					"-ObjC",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "edu.dliflc.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -1022,6 +1025,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "RecordTests/RecordTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "edu.mit.ll.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -1040,6 +1044,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "RecordTests/RecordTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "edu.mit.ll.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;

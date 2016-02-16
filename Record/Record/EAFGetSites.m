@@ -21,6 +21,7 @@
 
 - (void) getSites {
     _languagesLocal = [[NSMutableArray alloc] init];
+    _rtlLanguages = [[NSMutableSet alloc] init];
     _languages =_languagesLocal;
     
     NSString *baseurl = @"https://np.ll.mit.edu/sites.json";
@@ -32,7 +33,7 @@
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setTimeoutInterval:10];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-   
+    
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          //      NSLog(@"Got response %@",error);
@@ -108,7 +109,10 @@
     
     NSMutableDictionary *nameToURLLocal = [[NSMutableDictionary alloc] init];
     _nameToURL =nameToURLLocal;
-    
+   
+    NSMutableSet *localRTL = [[NSMutableSet alloc] init];
+    _rtlLanguages = localRTL;
+
     for (int i = 0; i<fetchedArr.count; i++) {
         NSDictionary* site = fetchedArr[i];
         // NSLog(@"got %@",site);
@@ -116,18 +120,21 @@
         BOOL showOnIOS = [[site valueForKey:@"showOnIOS"] boolValue];
         if (showOnIOS) {
             NSString *name = [site objectForKey:@"name"];
-            NSString *url = [site objectForKey:@"url"];
+            NSString *url  = [site objectForKey:@"url"];
             if (![url hasSuffix:@"/"]) {
                 url = [NSString stringWithFormat:@"%@/",url];
             }
+            BOOL isRTL = [[site valueForKey:@"rtl"] boolValue];
+
+            if (isRTL) [localRTL addObject:name];
             
             [nameToURLLocal setObject:url forKey:name];
         }
     }
     
     [self setLanguagesGivenData];
-  //  NSLog(@"name to url now %@",_nameToURL);
-  //  NSLog(@"_languages now %@",_languages);
+    //  NSLog(@"name to url now %@",_nameToURL);
+    //  NSLog(@"_languages now %@",_languages);
     
     [self writeSitesDataToCacheAt:[self getCachePath] mp3AudioData:_sitesData];
     [_delegate sitesReady];
@@ -144,8 +151,8 @@
     [languagesLocal sortUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
         return [str1 compare:str2 options:(NSNumericSearch)];
     }];
-
-    _languages =languagesLocal;
+    
+    _languages = languagesLocal;
 }
 
 - (void)writeSitesDataToCacheAt:(NSString *)destFileName mp3AudioData:(NSData *)mp3AudioData {

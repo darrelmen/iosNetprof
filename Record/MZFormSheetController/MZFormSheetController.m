@@ -731,7 +731,7 @@ static BOOL MZFromSheetControllerIsViewControllerBasedStatusBarAppearance(void) 
 {
     CGRect screenRect = [[notification userInfo][UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
-    if (UIDeviceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation) && MZSystemVersionLessThan_iOS8()) {
+    if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation) && MZSystemVersionLessThan_iOS8()) {
         screenRect.size.height = [UIScreen mainScreen].bounds.size.width - screenRect.size.width;
         screenRect.size.width = [UIScreen mainScreen].bounds.size.height;
     } else {
@@ -867,7 +867,7 @@ static BOOL MZFromSheetControllerIsViewControllerBasedStatusBarAppearance(void) 
     return [self.presentedFSViewController mz_childTargetViewControllerForStatusBarStyle];
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return [self.presentedFSViewController supportedInterfaceOrientations];
 }

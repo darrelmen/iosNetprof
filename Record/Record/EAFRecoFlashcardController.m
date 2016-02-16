@@ -1517,7 +1517,7 @@ bool debugRecord = false;
             //   NSLog(@"p on %d of %d",i,weakSelf.phoneLabels.count);
             
             UILabel *label      = [weakSelf.wordLabels  objectAtIndex:i];
-            UILabel *phoneLabel = [weakSelf.phoneLabels objectAtIndex:i];
+           // UILabel *phoneLabel = [weakSelf.phoneLabels objectAtIndex:i];
             
             [prevWordAttr  setObject:label.attributedText forKey:[NSNumber numberWithInt:i]];
             //   [prevPhoneAttr setObject:phoneLabel.attributedText forKey:[NSNumber numberWithInt:i]];
@@ -1696,7 +1696,7 @@ bool debugRecord = false;
     [urlRequest setHTTPBody:postData];
      NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    NSLog(@"posting to %@",_url);
+   // NSLog(@"posting to %@",_url);
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          dispatch_async(dispatch_get_main_queue(), ^{
@@ -1704,8 +1704,8 @@ bool debugRecord = false;
              [_recoFeedbackImage stopAnimating];
          });
          
-         NSLog(@"Got back error %@",error);
-         NSLog(@"Got back response %@",response);
+       //  NSLog(@"Got back error %@",error);
+       //  NSLog(@"Got back response %@",response);
          
          //    NSLog(@"response to post of audio...");
          if (error != nil) {
@@ -1862,7 +1862,7 @@ bool debugRecord = false;
     CFAbsoluteTime millis = diff * 1000;
     int iMillis = (int) millis;
     
-    NSLog(@"connectionDidFinishLoading - round trip time was %f %d ",diff, iMillis);
+  //  NSLog(@"connectionDidFinishLoading - round trip time was %f %d ",diff, iMillis);
     
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
     double durationInSeconds = CMTimeGetSeconds(asset.duration);
@@ -1894,8 +1894,7 @@ bool debugRecord = false;
     // Post a RT value for the result id
     EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
     NSString * roundTrip =[NSString stringWithFormat:@"%d",iMillis];
-    NSLog(@"connectionDidFinishLoading - roundTrip  %@",roundTrip);
-    
+    //NSLog(@"connectionDidFinishLoading - roundTrip  %@",roundTrip);
     
     [poster postRT:[resultID stringValue] rtDur:roundTrip];
     
@@ -2067,16 +2066,16 @@ BOOL addSpaces = false;
     return coloredPhones;
 }
 
-- (BOOL)isRTL {
-    NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
-                    @"Egyptian",
-                    @"EgyptianCandidate",
-                    @"Farsi",
-                    @"Levantine",
-                    @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
-    BOOL isRTL = [rtl containsObject:_language];
-    return isRTL;
-}
+//- (BOOL)isRTL {
+//    NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
+//                    @"Egyptian",
+//                    @"EgyptianCandidate",
+//                    @"Farsi",
+//                    @"Levantine",
+//                    @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
+//    BOOL isRTL = [rtl containsObject:_language];
+//    return isRTL;
+//}
 
 - (void)addSingleTap:(UIView *)exampleView {
     UITapGestureRecognizer *singleFingerTap =
@@ -2219,9 +2218,9 @@ BOOL addSpaces = false;
     UIView *leftView  = nil;
     UIView *rightView = nil;
     
-    BOOL isRTL = [self isRTL];
+    //BOOL isRTL = [self isRTL];
     
-    if (isRTL) {
+    if (_isRTL) {
         wordAndScore  = [self reversedArray:wordAndScore];
         if (!_showPhonesLTRAlways) {
             phoneAndScore = [self reversedArray:phoneAndScore];
@@ -2334,7 +2333,7 @@ BOOL addSpaces = false;
         leftView = exampleView;
         
         UILabel *wordLabel = [self getWordLabel:word score:score wordFont:wordFont];
-        wordLabel.textAlignment = isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
+        wordLabel.textAlignment = _isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
         [_wordLabels addObject:wordLabel];
         
         [exampleView addSubview:wordLabel];
@@ -2346,7 +2345,7 @@ BOOL addSpaces = false;
         
         NSMutableAttributedString *coloredPhones = [self getColoredPhones:phoneToShow wend:wend wstart:wstart phoneAndScore:phoneAndScore];
         
-        UILabel *phoneLabel = [self getPhoneLabel:isRTL coloredPhones:coloredPhones phoneFont:wordFont];
+        UILabel *phoneLabel = [self getPhoneLabel:_isRTL coloredPhones:coloredPhones phoneFont:wordFont];
         [_phoneLabels addObject:phoneLabel];
         
         [exampleView addSubview:phoneLabel];
@@ -2404,7 +2403,7 @@ BOOL addSpaces = false;
     
     NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"msr",@"frr",@"fsr",@"ctmref",@"ctfref",@"ctref",nil];
     
-    NSString *urlWithSlash = [NSString stringWithFormat:@"%@/",_url];
+    NSString *urlWithSlash = _url; //[NSString stringWithFormat:@"%@/",_url];
     for (NSDictionary *object in items) {
         for (NSString *id in fields) {
             NSString *refPath = [object objectForKey:id];
@@ -2533,6 +2532,7 @@ BOOL addSpaces = false;
         phoneReport.unitSelection = _currentUnit;
         
         phoneReport.url = _url;
+        phoneReport.isRTL = _isRTL;
     }
     @catch (NSException *exception)
     {

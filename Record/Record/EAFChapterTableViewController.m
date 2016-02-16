@@ -499,6 +499,7 @@ UIAlertView *loadingContentAlert;
     itemController.unitTitle = _unitTitle;
     itemController.unit = _unit;
     itemController.url = _url;
+    itemController.isRTL = _isRTL;
 }
 
 #pragma mark - Table view delegate
@@ -546,6 +547,7 @@ UIAlertView *loadingContentAlert;
                 myController.unit = name;
                 myController.hasModel = _hasModel;
                 myController.url = _url;
+                myController.isRTL = _isRTL;
                 
                 [self.navigationController pushViewController: myController animated:YES];
                 break;

@@ -9,7 +9,7 @@
 #import "EAFAudioCache.h"
 #import "Reachability.h"
 
-@interface MyOperation : NSOperation
+@interface AudioCacheOperation : NSOperation
 
 -(id)initWithNumber:(unsigned long)total rawPath:(NSString *)rawPath path:(NSString *) path filePath:(NSString *) filePath;
 @property unsigned long total;
@@ -19,7 +19,7 @@
 
 @end
 
-@implementation MyOperation
+@implementation AudioCacheOperation
 
 -(id)initWithNumber:(unsigned long)total rawPath:(NSString *)rawPath path:(NSString *) path filePath:(NSString *) filePath {
     self = [super init];
@@ -34,7 +34,7 @@
 }
 
 - (void)writeMP3DataToCacheAt:(NSString *)destFileName mp3AudioData:(NSData *)mp3AudioData {
-    NSLog(@"writeMP3DataToCacheAt : writing to      %@",destFileName);
+   // NSLog(@"AudioCache : writeMP3DataToCacheAt : writing to      %@",destFileName);
     NSString *parent = [destFileName stringByDeletingLastPathComponent];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:parent]) {
@@ -57,7 +57,7 @@
     if (![self isCancelled]){
         // NSLog(@"queue posting finished for %@ and %lu items, queue has %lu",self,(unsigned long)_rawPaths.count,_operationQueue.operationCount);
         
-        NSLog(@"MyOperation audio cache url talking to %@ raw %@ file %@",_path,_rawPath,_filePath);
+        //NSLog(@"AudioCacheOperation audio cache url talking to %@ raw %@ file %@",_path,_rawPath,_filePath);
         
         NSString *destFileName = [self getFileInCache:_rawPath filePath:_filePath];
         //NSLog(@"%@ started to check %@.",self,destFileName);
@@ -82,7 +82,7 @@
                                                   returningResponse:&response
                                                               error:&error];
             if (error != nil) {
-                NSLog(@"\t goGetAudio Got error %@",error);
+                NSLog(@"\t AudioCacheOperation main Got error %@",error);
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
                 });
@@ -105,7 +105,7 @@
         }
     }
     else {
-        NSLog(@"operation cancelled...");
+        NSLog(@"AudioCacheOperation operation cancelled...");
     }
 }
 @end
@@ -147,7 +147,7 @@
     _rawPaths = [rawPaths2 copy];
     _paths = [ppaths2 copy];
     
-    NSLog(@"EAFAudioCache - go get audio for %lu",(unsigned long)_rawPaths.count);
+  //  NSLog(@"EAFAudioCache - go get audio for %lu",(unsigned long)_rawPaths.count);
     @try {
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
         NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -162,11 +162,11 @@
             for (int index = 0; index < _rawPaths.count; index++) {
                 NSString *rawPath = [_rawPaths objectAtIndex:index];
                 NSString *path = [_paths objectAtIndex:index];
-                MyOperation *operation = [[MyOperation alloc] initWithNumber:_rawPaths.count rawPath:rawPath path:path filePath:filePath];
+                AudioCacheOperation *operation = [[AudioCacheOperation alloc] initWithNumber:_rawPaths.count rawPath:rawPath path:path filePath:filePath];
                 [_operationQueue addOperation:operation];
             }
         }
-        NSLog(@"EAFAudioCache - initial queue posting finished for %@ and %lu items, queue has %lu",self,(unsigned long)_rawPaths.count,(unsigned long)_operationQueue.operationCount);
+    //    NSLog(@"EAFAudioCache - initial queue posting finished for %@ and %lu items, queue has %lu",self,(unsigned long)_rawPaths.count,(unsigned long)_operationQueue.operationCount);
     }
     @catch (NSException *exception)
     {

@@ -25,14 +25,14 @@
     [super viewDidLoad];
     
     _poster = [[EAFEventPoster alloc] init];
-
+    
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
     
     [notificationCenter addObserver:self
                            selector:@selector (textFieldText:)
                                name:UITextFieldTextDidChangeNotification
                              object:_username];
-   
+    
     [notificationCenter addObserver:self
                            selector:@selector (passwordChanged:)
                                name:UITextFieldTextDidChangeNotification
@@ -46,7 +46,7 @@
     _username.text = _userFromLogin;
     _password.text = _passFromLogin;
     [_languagePicker selectRow:_languageIndex inComponent:0 animated:false];
-  
+    
     _username.delegate = self;
     _password.delegate = self;
     _email.delegate = self;
@@ -74,7 +74,7 @@
 
 - (void) sitesReady {
     [_languagePicker reloadAllComponents ];
-   // [self setLanguagePicker];
+    // [self setLanguagePicker];
 }
 
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
@@ -98,7 +98,10 @@
 
 // POST request
 - (void)addUser:(NSString *)chosenLanguage username:(NSString *)username password:(NSString *)password email:(NSString *)email {
-    NSURL *url = [NSURL URLWithString:[_siteGetter.nameToURL objectForKey:chosenLanguage]];
+    
+    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet",[_siteGetter.nameToURL objectForKey:chosenLanguage]];
+    NSURL *url = [NSURL URLWithString:baseurl];
+
     NSLog(@"addUser url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -114,6 +117,10 @@
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     
     [urlRequest setValue:@"addUser"    forHTTPHeaderField:@"request"];
+    
+  //  NSLog(@"addUser request %@",urlRequest);
+
+    
     [[NSURLConnection connectionWithRequest:urlRequest delegate:self] start];
 }
 
@@ -150,7 +157,7 @@
     
     if (valid) {
         _emailFeedback.textColor = [UIColor blackColor];
-
+        
         NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         NSString *username = _username.text;
         NSString *password = _password.text;
@@ -158,11 +165,13 @@
         
         [self addUser:chosenLanguage username:username password:password email:email];
         
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-        [_activityIndicator startAnimating];
-        
-        [_poster setURL:[_siteGetter.nameToURL objectForKey:chosenLanguage]];
-        [_poster postEvent:[NSString stringWithFormat:@"signUp by %@",_username.text] exid:@"N/A" widget:@"SignIn" widgetType:@"Button"];
+      //  if (FALSE) {
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+            [_activityIndicator startAnimating];
+            
+            [_poster setURL:[_siteGetter.nameToURL objectForKey:chosenLanguage]];
+            [_poster postEvent:[NSString stringWithFormat:@"signUp by %@",_username.text] exid:@"N/A" widget:@"SignIn" widgetType:@"Button"];
+       // }
     }
 }
 
@@ -198,7 +207,7 @@
 }
 
 - (IBAction)gotSingleTap:(id)sender {
-//    NSLog(@"dismiss keyboard! %@",_currentResponder);
+    //    NSLog(@"dismiss keyboard! %@",_currentResponder);
     [_currentResponder resignFirstResponder];
 }
 
@@ -278,7 +287,8 @@
     [_activityIndicator stopAnimating];
     
     if (error) {
-        NSLog(@"useJsonChapterData error %@",error.description);
+        NSLog(@"EAFSignUpViewController.useJsonChapterData error %@",error.description);
+        NSLog(@"EAFSignUpViewController.useJsonChapterData _responseData %@",_responseData);
         _signUp.enabled = true;
         return false;
     }
@@ -327,7 +337,7 @@
     NSLog(@"Download content failed with %@",error);
     _signUp.enabled = true;
     [_activityIndicator stopAnimating];
-
+    
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
     NSString *message = error.localizedDescription;// @"Couldn't connect to server.";
@@ -351,7 +361,7 @@
     
     EAFChapterTableViewController *chapterController = [segue destinationViewController];
     
-     NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+    NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
     [chapterController setLanguage:chosenLanguage];
     chapterController.url = [_siteGetter.nameToURL objectForKey:chosenLanguage];
     

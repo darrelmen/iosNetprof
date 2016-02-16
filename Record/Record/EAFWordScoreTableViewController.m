@@ -69,7 +69,7 @@
     
     [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
     _rowHeight = 60;
-
+    
     _audioPlayer = [[EAFAudioPlayer alloc] init];
     _audioPlayer.url = _url;
     _audioPlayer.language = _language;
@@ -100,7 +100,7 @@
 - (void)askServerForJson {
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
+    
     NSLog(@"askServerForJson url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
@@ -110,10 +110,10 @@
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     [urlRequest setTimeoutInterval:10];
-
+    
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
-     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
@@ -198,7 +198,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         else {
             NSArray *words = [scoreHistory valueForKey:@"words"];
-           // NSLog(@"for words %lu count ",(unsigned long)words.count);
+            // NSLog(@"for words %lu count ",(unsigned long)words.count);
             NSArray *tokens = [self getTokens:exercise];
             
             if (words.count == 1) {
@@ -207,14 +207,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             else {
                 NSUInteger endToken = 0;
                 int i = 0;
-             //   NSLog(@"for %@ got tokens %@",exercise,tokens);
-              //  NSLog(@"for words %lu count ",(unsigned long)tokens.count);
+                //   NSLog(@"for %@ got tokens %@",exercise,tokens);
+                //  NSLog(@"for words %lu count ",(unsigned long)tokens.count);
                 BOOL useToken = tokens.count == words.count;
-
+                
                 for (NSDictionary *entry in words) {
                     NSString *word   = [entry objectForKey:@"w"];
                     if ([word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) {
-                      //  NSLog(@"skipping %@",word);
+                        //  NSLog(@"skipping %@",word);
                         continue;
                     }
                     
@@ -248,11 +248,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 {
     // Configure the cell...
     MyTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"WordScoreCell" forIndexPath:indexPath];
- 
+    
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(gotTapGesture:)];
     tap.cancelsTouchesInView = YES;
     tap.numberOfTapsRequired = 1;
-    [cell addGestureRecognizer:tap];    
+    [cell addGestureRecognizer:tap];
     
     NSMutableArray *icons = [[NSMutableArray alloc] init];
     [icons addObject:cell.first];
@@ -272,9 +272,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSArray *answers = [_exToHistory objectForKey:exid];
     NSArray *scores = [_exToHistoryScores objectForKey:exid];
     
-   // NSDictionary *scoreHistory = [_exToJson objectForKey:exid];
- //   NSLog(@"scoreHistory %@ %@",exid,scores);
- //   NSLog(@"ex answers %@ %@",exid,answers);
+    // NSDictionary *scoreHistory = [_exToJson objectForKey:exid];
+    //   NSLog(@"scoreHistory %@ %@",exid,scores);
+    //   NSLog(@"ex answers %@ %@",exid,answers);
     
     float iconDim = 22.f;
     if (answers == nil || answers.count == 0) {
@@ -292,7 +292,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             FAImageView *correctView = [[FAImageView alloc] initWithFrame:CGRectMake(0.f, 0.f, iconDim, iconDim)];
             correctView.image = nil;
             
-           // NSLog(@"Score is %@",score);
+            // NSLog(@"Score is %@",score);
             BOOL isCorrect = [correct isEqualToString:@"Y"];
             [correctView setDefaultIconIdentifier:isCorrect ? @"fa-check" : @"fa-times"];
             
@@ -311,7 +311,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     else {
         NSDictionary *scoreHistory = [_exToJson objectForKey:exid];
         [self colorEachWord:exid cell:cell exercise:fl scoreHistory:scoreHistory];
-
+        
         cell.english.text = [_exToEnglish objectForKey:exid];
     }
     return cell;
@@ -331,7 +331,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             [all addObject:token];
         }
     }
-   // NSLog(@"tokens %@", all);
+    // NSLog(@"tokens %@", all);
     
     return all;
 }
@@ -352,42 +352,42 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 /*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
+ // Override to support conditional editing of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ // Return NO if you do not want the specified item to be editable.
+ return YES;
+ }
+ */
 
 /*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
+ // Override to support editing the table view.
+ - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ if (editingStyle == UITableViewCellEditingStyleDelete) {
+ // Delete the row from the data source
+ [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+ } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+ // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+ }
+ }
+ */
 
 /*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
+ // Override to support rearranging the table view.
+ - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+ {
+ }
+ */
 
 /*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
+ // Override to support conditional rearranging of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ // Return NO if you do not want the item to be re-orderable.
+ return YES;
+ }
+ */
 
 - (void)setTitleGivenCorrect:(NSString *)incorrect correct:(NSString *)correct {
     float total = [correct floatValue] + [incorrect floatValue];
@@ -398,7 +398,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     UIViewController  *parent = [self parentViewController];
     NSString *wordReport;
     wordReport = [NSString stringWithFormat:@"%@ of %d Correct (%d%%)",correct,totalInt,percentInt];
- //   NSLog(@"setting correct title %@",wordReport);
+    //   NSLog(@"setting correct title %@",wordReport);
     parent.navigationItem.title = wordReport;
     myCurrentTitle = wordReport;
 }
@@ -413,9 +413,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (error) {
         NSLog(@"useJsonChapterData error %@",error.description);
     }
-    else {        
+    else {
         NSArray *jsonArray = [json objectForKey:@"scores"];
-      //  NSLog(@"json for scores was %@",jsonArray);
+        //  NSLog(@"json for scores was %@",jsonArray);
         
         unsigned long indexOfFirst = 0;
         BOOL isEmpty = true;
@@ -425,7 +425,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             _exToHistoryScores = [[NSMutableDictionary alloc] init];
             _exList      = [[NSMutableArray alloc] init];
             _exToJson    = [[NSMutableDictionary alloc] init];
-
+            
             for (NSDictionary *entry in jsonArray) {
                 NSString *ex = [entry objectForKey:@"ex"];
                 if ([_exToFL objectForKey:ex] != nil) {
@@ -498,64 +498,70 @@ NSString *myCurrentTitle;
 }
 
 - (IBAction)gotTapGesture:(UITapGestureRecognizer *) sender {
-  //  CGPoint p = [sender locationInView:sender.view];
+    //  CGPoint p = [sender locationInView:sender.view];
     //  NSLog(@"Got point %f %f",p.x,p.y);
     
     CGPoint p = [sender locationInView:self.tableView];
-  //    NSLog(@"Got point %f %f",p.x,p.y);
+    //    NSLog(@"Got point %f %f",p.x,p.y);
     
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
- //     NSLog(@"Got path %@",indexPath);
+    //     NSLog(@"Got path %@",indexPath);
     
     NSInteger row = indexPath.row;
     NSString *exid = [_exList objectAtIndex:row];
     
- //   NSLog(@"exid selection %@",exid);
+    //   NSLog(@"exid selection %@",exid);
     
     for (NSDictionary *jsonObject in _jsonItems) {
-   //     NSLog(@"comparing to %@",[jsonObject objectForKey:@"id"]);
+        //     NSLog(@"comparing to %@",[jsonObject objectForKey:@"id"]);
         if ([[jsonObject objectForKey:@"id"] isEqualToString:exid]) {
-         //   NSLog(@"got it %@",jsonObject);
-           // NSString *refAudio = [jsonObject objectForKey:@"ref"];
+            //   NSLog(@"got it %@",jsonObject);
+            // NSString *refAudio = [jsonObject objectForKey:@"ref"];
             NSMutableArray *toPlay = [[NSMutableArray alloc] init];
-            [toPlay addObject:[jsonObject objectForKey:@"ref"]];
-            NSString *fl = [_exToFL objectForKey:exid];
-
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            
-            for (UIView *subview in [cell.contentView subviews]) {
-               // NSLog(@"subview %@",subview);
-
-                if ([subview isKindOfClass:[UILabel class]]) {
-                 //   NSLog(@"found label %@, %@", subview, ((UILabel *) subview).text);
-                    if ([ fl isEqualToString:((UILabel *) subview).text]) {
-                        if (_current) {
-                            _current.textColor = [UIColor blackColor];
+            NSString *refAudioPath = [jsonObject objectForKey:@"ref"];
+            if (refAudioPath == nil) {
+                NSLog(@"ERROR : no ref audio in %@",jsonObject);
+            }
+            else {
+                [toPlay addObject:refAudioPath];
+                NSString *fl = [_exToFL objectForKey:exid];
+                
+                UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+                
+                for (UIView *subview in [cell.contentView subviews]) {
+                    // NSLog(@"subview %@",subview);
+                    
+                    if ([subview isKindOfClass:[UILabel class]]) {
+                        //   NSLog(@"found label %@, %@", subview, ((UILabel *) subview).text);
+                        if ([ fl isEqualToString:((UILabel *) subview).text]) {
+                            if (_current) {
+                                _current.textColor = [UIColor blackColor];
+                            }
+                            _current = ((UILabel *) subview);
+                            _current.textColor = [UIColor blueColor];
                         }
-                        _current = ((UILabel *) subview);
-                        _current.textColor = [UIColor blueColor];
                     }
                 }
+                
+                _audioPlayer.audioPaths = toPlay;
+                [_audioPlayer playRefAudio];
             }
-            
-            _audioPlayer.audioPaths = toPlay;
-            [_audioPlayer playRefAudio];
         }
     }
-
+    
 }
 
 - (void) playStarted {
-//    NSLog(@"got play started...");
+    //    NSLog(@"got play started...");
 }
 
 - (void) playStopped {
-//    NSLog(@"got play stopped...");
+    //    NSLog(@"got play stopped...");
     _current.textColor = [UIColor blackColor];
 }
 
 - (void) playGotToEnd {
-//    NSLog(@"got to end...");
+    //    NSLog(@"got to end...");
     _current.textColor = [UIColor blackColor];
 }
 

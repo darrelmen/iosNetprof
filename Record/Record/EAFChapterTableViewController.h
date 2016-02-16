@@ -20,5 +20,6 @@
 @property NSArray *chapters;
 @property NSString *language;
 @property NSString *url;
+@property BOOL isRTL;
 
 @end

@@ -21,6 +21,7 @@
 
 @property (strong, nonatomic) NSDictionary *nameToURL;
 @property (strong, nonatomic) NSArray *languages;
+@property (strong, nonatomic) NSSet *rtlLanguages;
 - (void) getSites;
 
 @property(assign) id<SitesNotification> delegate;

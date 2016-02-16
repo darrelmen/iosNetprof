@@ -36,6 +36,7 @@
 @property NSArray *jsonItems;
 
 @property NSString *url;
+@property BOOL isRTL;
 @property BOOL hasModel;
 @property NSString *currentChapter;
 @property NSString *chapterTitle;
