@@ -19,7 +19,7 @@
 
 @property (strong, nonatomic) AVAudioRecorder *audioRecorder;
 
-@property (strong, nonatomic) IBOutlet UIButton *playRefAudioButton;
+//@property (strong, nonatomic) IBOutlet UIButton *playRefAudioButton;
 @property (strong, nonatomic) IBOutlet UIButton *recordButton;
 
 - (IBAction)recordAudio:(id)sender;

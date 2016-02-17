@@ -54,7 +54,7 @@
         }
     }
     
-    NSLog(@"ItemTableViewController.cacheAudio Got get audio -- %@ ",_audioCache);
+ //   NSLog(@"ItemTableViewController.cacheAudio Got get audio -- %@ ",_audioCache);
     [_audioCache goGetAudio:rawPaths paths:paths language:_language];
 }
 
@@ -370,7 +370,7 @@
 }
 
 - (BOOL)useJsonChapterData {
-    NSLog(@"ITemTableViewController - useJsonChapterData --- num json %lu ",(unsigned long)_jsonItems.count);
+  //  NSLog(@"ITemTableViewController - useJsonChapterData --- num json %lu ",(unsigned long)_jsonItems.count);
 
     NSError * error;
     NSDictionary* json = [NSJSONSerialization

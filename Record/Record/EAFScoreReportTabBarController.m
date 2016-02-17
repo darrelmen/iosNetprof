@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "EAFScoreReportTabBarController.h"
+#import "EAFEventPoster.h"
 
 @interface EAFScoreReportTabBarController ()
 
@@ -32,7 +33,10 @@
 
 // this is OK - I just go looking for the method
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
-   // NSLog(@"got selection event %@",viewController);
+   // NSLog(@"tabBarController got selection event %@",viewController);
+    
+    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
+    [poster postEvent:NSStringFromClass([viewController class]) exid:@"n/a" widget:@"Choice" widgetType:@"Button"];
     
     if ( [viewController respondsToSelector:@selector(setCurrentTitle)] )
     {

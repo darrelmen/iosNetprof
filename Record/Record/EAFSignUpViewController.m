@@ -74,7 +74,6 @@
 
 - (void) sitesReady {
     [_languagePicker reloadAllComponents ];
-    // [self setLanguagePicker];
 }
 
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{

@@ -12,6 +12,7 @@
 #import "EAFAudioView.h"
 #import "EAFAudioCache.h"
 #import "EAFAudioPlayer.h"
+#import "EAFEventPoster.h"
 #import <AudioToolbox/AudioServices.h>
 #import "SSKeychain.h"
 
@@ -34,7 +35,7 @@
     _audioCache = [[EAFAudioCache alloc] init];
     
     _showPhonesLTRAlways = true;
-
+    
     _rowHeight = 66;
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
@@ -51,7 +52,7 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
-    // _tableView.cancelTouchesInView = NO;    
+    // _tableView.cancelTouchesInView = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -83,7 +84,7 @@
 - (void)askServerForJson {
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
+    
     NSLog(@"EAFPhoneScoreTableViewController url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
@@ -93,7 +94,7 @@
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     [urlRequest setTimeoutInterval:10];
-
+    
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
@@ -142,7 +143,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 {
     UILabel *overallPhoneLabel = [[UILabel alloc] init];
     [cell.contentView addSubview:overallPhoneLabel];
-
+    
     overallPhoneLabel.translatesAutoresizingMaskIntoConstraints = NO;
     
     overallPhoneLabel.text = phone;
@@ -312,7 +313,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     NSString *phone = [_phonesInOrder objectAtIndex:indexPath.row];
     
- //   NSLog(@"tableView phone is %@",phone);
+    //   NSLog(@"tableView phone is %@",phone);
     
     for (UIView *v in [cell.contentView subviews]) {
         [v removeFromSuperview];
@@ -332,67 +333,67 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     [cell.contentView.superview addConstraint:constraint];
     
     NSArray *words = [_phoneToWords objectForKey:phone];
-   
+    
     UIView *leftView = nil;
     
     UILabel *overallPhoneLabel = [self getOverallPhoneLabel:phone cell:cell];
     
-   // UIScrollView *scrollView = [[UIScrollView alloc] init];
-//    UIView *scrollView = [[UIView alloc] init];
-//    scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-//
-//    scrollView.backgroundColor = [UIColor purpleColor];
-//    [cell.contentView addSubview:scrollView];
-//    
-//    // top
-//    [cell.contentView addConstraint:[NSLayoutConstraint
-//                                     constraintWithItem:scrollView
-//                                     attribute:NSLayoutAttributeTop
-//                                     relatedBy:NSLayoutRelationEqual
-//                                     toItem:cell.contentView
-//                                     attribute:NSLayoutAttributeTop
-//                                     multiplier:1.0
-//                                     constant:0.0]];
-//    // bottom
-//    [cell.contentView addConstraint:[NSLayoutConstraint
-//                                     constraintWithItem:scrollView
-//                                     attribute:NSLayoutAttributeBottom
-//                                     relatedBy:NSLayoutRelationEqual
-//                                     toItem:cell.contentView
-//                                     attribute:NSLayoutAttributeBottom
-//                                     multiplier:1.0
-//                                     constant:0.0]];
-//    
-//    [cell.contentView addConstraint:[NSLayoutConstraint
-//                                     constraintWithItem:scrollView
-//                                     attribute:NSLayoutAttributeLeft
-//                                     relatedBy:NSLayoutRelationEqual
-//                                     toItem:overallPhoneLabel
-//                                     attribute:NSLayoutAttributeRight
-//                                     multiplier:1.0
-//                                     constant:3.0]];
-//    
-//    [cell.contentView addConstraint:[NSLayoutConstraint
-//                                     constraintWithItem:scrollView
-//                                     attribute:NSLayoutAttributeRight
-//                                     relatedBy:NSLayoutRelationEqual
-//                                     toItem:cell.contentView
-//                                     attribute:NSLayoutAttributeRight
-//                                     multiplier:1.0
-//                                     constant:0.0]];
-//    [scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
-
-//    NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
-//                    @"Egyptian",
-//                    @"Farsi",
-//                    @"Levantine",
-//                    @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
+    // UIScrollView *scrollView = [[UIScrollView alloc] init];
+    //    UIView *scrollView = [[UIView alloc] init];
+    //    scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+    //
+    //    scrollView.backgroundColor = [UIColor purpleColor];
+    //    [cell.contentView addSubview:scrollView];
+    //
+    //    // top
+    //    [cell.contentView addConstraint:[NSLayoutConstraint
+    //                                     constraintWithItem:scrollView
+    //                                     attribute:NSLayoutAttributeTop
+    //                                     relatedBy:NSLayoutRelationEqual
+    //                                     toItem:cell.contentView
+    //                                     attribute:NSLayoutAttributeTop
+    //                                     multiplier:1.0
+    //                                     constant:0.0]];
+    //    // bottom
+    //    [cell.contentView addConstraint:[NSLayoutConstraint
+    //                                     constraintWithItem:scrollView
+    //                                     attribute:NSLayoutAttributeBottom
+    //                                     relatedBy:NSLayoutRelationEqual
+    //                                     toItem:cell.contentView
+    //                                     attribute:NSLayoutAttributeBottom
+    //                                     multiplier:1.0
+    //                                     constant:0.0]];
+    //
+    //    [cell.contentView addConstraint:[NSLayoutConstraint
+    //                                     constraintWithItem:scrollView
+    //                                     attribute:NSLayoutAttributeLeft
+    //                                     relatedBy:NSLayoutRelationEqual
+    //                                     toItem:overallPhoneLabel
+    //                                     attribute:NSLayoutAttributeRight
+    //                                     multiplier:1.0
+    //                                     constant:3.0]];
+    //
+    //    [cell.contentView addConstraint:[NSLayoutConstraint
+    //                                     constraintWithItem:scrollView
+    //                                     attribute:NSLayoutAttributeRight
+    //                                     relatedBy:NSLayoutRelationEqual
+    //                                     toItem:cell.contentView
+    //                                     attribute:NSLayoutAttributeRight
+    //                                     multiplier:1.0
+    //                                     constant:0.0]];
+    //    [scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    
+    //    NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
+    //                    @"Egyptian",
+    //                    @"Farsi",
+    //                    @"Levantine",
+    //                    @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
     
     float totalPhoneScore = 0.0f;
     float totalPhones = 0.0f;
-   // int count = 0;
+    // int count = 0;
     BOOL addSpaces = false;
-
+    
     // try to worry about the same word appearing multiple times...
     NSMutableSet *shownSoFar = [[NSMutableSet alloc] init];
     for (NSDictionary *wordEntry in words) {
@@ -402,7 +403,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         if ([shownSoFar containsObject:word]) continue;
         else [shownSoFar addObject:word];
         
-    //    if (count++ > 5) break; // only first five?
+        //    if (count++ > 5) break; // only first five?
         NSString *result = [wordEntry objectForKey:@"result"];
         NSArray *resultWords = [_resultToWords objectForKey:result];
         
@@ -454,29 +455,29 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         if (leftView == nil) {
             // left
             NSLayoutConstraint *constraint = [NSLayoutConstraint
-             constraintWithItem:exampleView
-             attribute:NSLayoutAttributeLeft
-             relatedBy:NSLayoutRelationEqual
-             toItem:overallPhoneLabel//scrollView
-             attribute:NSLayoutAttributeRight
-             multiplier:1.0
-             constant:3.0];
+                                              constraintWithItem:exampleView
+                                              attribute:NSLayoutAttributeLeft
+                                              relatedBy:NSLayoutRelationEqual
+                                              toItem:overallPhoneLabel//scrollView
+                                              attribute:NSLayoutAttributeRight
+                                              multiplier:1.0
+                                              constant:3.0];
             
             [cell.contentView addConstraint:constraint];
-        //    NSLog(@"adding (no left view) constraint %@",constraint);
+            //    NSLog(@"adding (no left view) constraint %@",constraint);
         }
         else {
             NSLayoutConstraint *constraint = [NSLayoutConstraint
-             constraintWithItem:exampleView
-             attribute:NSLayoutAttributeLeft
-             relatedBy:NSLayoutRelationEqual
-             toItem:leftView
-             attribute:NSLayoutAttributeRight
-             multiplier:1.0
-             constant:5.0];
+                                              constraintWithItem:exampleView
+                                              attribute:NSLayoutAttributeLeft
+                                              relatedBy:NSLayoutRelationEqual
+                                              toItem:leftView
+                                              attribute:NSLayoutAttributeRight
+                                              multiplier:1.0
+                                              constant:5.0];
             
             [cell.contentView addConstraint:constraint];
-          //  NSLog(@"adding (to left view) constraint %@",constraint);
+            //  NSLog(@"adding (to left view) constraint %@",constraint);
         }
         
         leftView = exampleView;
@@ -490,14 +491,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             if ([_language isEqualToString:@"English"]) {
                 word = [word lowercaseString];
             }
-     //       NSLog(@"Word is %@",word);
+            //       NSLog(@"Word is %@",word);
             NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
-           
+            
             NSRange range = NSMakeRange(0, [coloredWord length]);
             NSString *scoreString = [wordResult objectForKey:@"s"];
             float score = [scoreString floatValue];
             
-           // NSLog(@"score was %@ %f",scoreString,score);
+            // NSLog(@"score was %@ %f",scoreString,score);
             if (score > 0) {
                 UIColor *color = [self getColor2:score];
                 [coloredWord addAttribute:NSBackgroundColorAttributeName
@@ -508,7 +509,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             wordLabel.attributedText = coloredWord;
             //NSLog(@"label word is %@",wordLabel.attributedText);
             [wordLabel setFont:[UIFont systemFontOfSize:24]];
-
+            
             [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
             
             [exampleView addSubview:wordLabel];
@@ -546,7 +547,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     // NSLog(@"score was %@ %f",scoreString,score);
                     // NSLog(@"%@ vs %@ ",phoneText,phone);
                     BOOL match = [phoneText isEqualToString:phone];
-                  
+                    
                     UIColor *color = match? [self getColor2:score] : [UIColor whiteColor];
                     if (match) {
                         totalPhoneScore += score;
@@ -577,22 +578,22 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         
         exampleView.userInteractionEnabled = YES;
     }
-//    
-//    [cell.contentView addConstraint:[NSLayoutConstraint
-//                                     constraintWithItem:scrollView
-//                                     attribute:NSLayoutAttributeRight
-//                                     relatedBy:NSLayoutRelationEqual
-//                                     toItem:leftView
-//                                     attribute:NSLayoutAttributeRight
-//                                     multiplier:1.0
-//                                     constant:0.0]];
+    //
+    //    [cell.contentView addConstraint:[NSLayoutConstraint
+    //                                     constraintWithItem:scrollView
+    //                                     attribute:NSLayoutAttributeRight
+    //                                     relatedBy:NSLayoutRelationEqual
+    //                                     toItem:leftView
+    //                                     attribute:NSLayoutAttributeRight
+    //                                     multiplier:1.0
+    //                                     constant:0.0]];
     
     NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:overallPhoneLabel.text];
     
     NSRange range = NSMakeRange(0, [coloredWord length]);
     
     float overallAvg = totalPhoneScore/totalPhones;
- //   NSLog(@"%@ score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
+    //   NSLog(@"%@ score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
     if (overallAvg > -0.1) {
         UIColor *color = [self getColor2:overallAvg];
         [coloredWord addAttribute:NSBackgroundColorAttributeName
@@ -614,17 +615,18 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (IBAction)gotTapGesture:(UITapGestureRecognizer *) sender {
-   CGPoint p = [sender locationInView:self.tableView];
+    CGPoint p = [sender locationInView:self.tableView];
     //  NSLog(@"Got point %f %f",p.x,p.y);
     
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
     //  NSLog(@"Got path %@",indexPath);
     
+    
     if (indexPath == nil) {
         NSLog(@"press on table view but not on a row");
     } else {
         UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
- //      CGPoint p = [sender locationInView:cell.contentView];
+        //      CGPoint p = [sender locationInView:cell.contentView];
         //  NSLog(@"Got point in cell content view %f %f",p.x,p.y);
         
         for (UIView *subview in [cell.contentView subviews]) {
@@ -633,27 +635,27 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             
             if(CGRectContainsPoint(subview.bounds, loc))
             {
-           //     NSLog(@"-XXXX-----> In View for %@",subview);
+                //     NSLog(@"-XXXX-----> In View for %@",subview);
                 if ([subview isKindOfClass:[EAFAudioView class]]) {
                     [_myAudioPlayer stopAudio];
-
+                    
                     [self setTextColor:[UIColor blackColor]];
                     _currentAudioSelection = (EAFAudioView *)subview;
                     [self playRefAudio:_currentAudioSelection];
                 }
                 else if ([subview isKindOfClass:[UILabel class]]) {
                     [_myAudioPlayer stopAudio];
-
+                    
                     for (UIView *sibling in subview.superview.subviews) {
                         if ([sibling isKindOfClass:[EAFAudioView class]]) {
-                    
+                            
                             [self setTextColor:[UIColor blackColor]];
                             _currentAudioSelection = (EAFAudioView *)sibling;
                             [self playRefAudio:_currentAudioSelection];
                             break;
                         }
                     }
-          
+                    
                 }
             }
         }
@@ -671,6 +673,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     else {
         [audioRefs addObject:sender.refAudio];
+        EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
+        [poster postEvent:sender.refAudio exid:@"n/a" widget:@"refAudio" widgetType:@"PhoneScoreTableCell"];
     }
     if (sender.answer == nil) {
         NSLog(@"ERROR - answer audio is null on %@",sender);
@@ -682,7 +686,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     _myAudioPlayer.audioPaths = audioRefs;
     [_myAudioPlayer playRefAudio];
-   // NSLog(@"playing %@",audioRefs);
 }
 
 - (void) playStarted {
@@ -704,7 +707,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         if ([subview isKindOfClass:[UILabel class]]) {
             UILabel *asLabel = (UILabel *) subview;
             asLabel.textColor = color;
-         //   NSLog(@"initial hit %@ %@",asLabel,asLabel.text);
+            //   NSLog(@"initial hit %@ %@",asLabel,asLabel.text);
         }
         else {
             for (UIView *subview2 in [subview subviews]) {
@@ -824,7 +827,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UIViewController  *parent = [self parentViewController];
     parent.navigationItem.title = @"Touch to compare audio";
-
+    
     [[self tableView] reloadData];
     
     return true;
@@ -832,7 +835,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
-   
+    
     [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }

@@ -30,13 +30,11 @@
 
 // look at cookie value and set the language picker accordingly
 - (void)setLanguagePicker {
-     NSLog(@"setting language picker language");
+   //  NSLog(@"setting language picker language");
     NSString *languageRemembered = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
     if (languageRemembered != nil) {
-        
-        
         NSUInteger toChoose = [_siteGetter.languages indexOfObject:languageRemembered];
-        NSLog(@"setLanguagePicker language cookie now %@ = %lu among %@",languageRemembered,(unsigned long)toChoose,_siteGetter.languages);
+//        NSLog(@"setLanguagePicker language cookie now %@ = %lu among %@",languageRemembered,(unsigned long)toChoose,_siteGetter.languages);
         if (toChoose > [_languagePicker numberOfRowsInComponent:0]) {
                  NSLog(@"setLanguagePicker choose %lu bigger than num selected is %ld",(unsigned long)toChoose,(long)[_languagePicker numberOfRowsInComponent:0]);
             [_languagePicker selectRow:0 inComponent:0 animated:false];
@@ -108,11 +106,6 @@
 
 
 - (void) sitesReady {
-    //    NSLog(@"sitesReady : languages now %@",_siteGetter.languages);
-    
-
-    NSLog(@"sitesReady : reloadAllComponents now %lu",(unsigned long)_siteGetter.languages.count);
-    
     [_languagePicker reloadAllComponents ];
     [self setLanguagePicker];
 
@@ -126,9 +119,7 @@
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES];   //it hides
-    
-  //  [self setLanguagePicker];
-    
+        
     NSString *rememberedUserID = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenUserID"];
     if (rememberedUserID != nil) {
         _username.text = rememberedUserID;
@@ -231,10 +222,7 @@
 
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
-    //set number of rows
-    
-  //  NSLog(@"numberOfRowsInComponent : languages now %lu",(unsigned long)_siteGetter.languages.count);
-    
+    //set number of rows    
     return _siteGetter.languages.count;
 }
 

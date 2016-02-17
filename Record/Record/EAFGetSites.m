@@ -40,7 +40,7 @@
          //     NSLog(@"Got data %@",data);
          
          if (error != nil) {
-             NSLog(@"\tGot error %@",error);
+             NSLog(@"\tgetSites Got error %@",error);
              //             dispatch_async(dispatch_get_main_queue(), ^{
              //                 [self connection:nil didFailWithError:error];
              //             });
@@ -64,9 +64,22 @@
 
 - (void)getCacheOrDefault {
     if ([[NSFileManager defaultManager] fileExistsAtPath:[self getCachePath]]) {
-        NSLog(@"reading from %@",[self getCachePath]);
+        NSLog(@"getCacheOrDefault reading from %@",[self getCachePath]);
         _sitesData = [NSData dataWithContentsOfFile:[self getCachePath]];
-        [self useJsonSitesData];
+        
+        NSError * error;
+        NSDictionary* json = [NSJSONSerialization
+                              JSONObjectWithData:_sitesData
+                              options:NSJSONReadingAllowFragments
+                              error:&error];
+        
+        if (error) {
+            NSLog(@"getCacheOrDefault got error %@",error);
+            NSLog(@"getCacheOrDefault error %@",error.description);
+        }
+        else {
+            [self parseJSON:json];
+        }
     }
     else {
         _nameToURL = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -92,30 +105,18 @@
     [_delegate sitesReady];
 }
 
-- (void)useJsonSitesData {
-    NSError * error;
-    NSDictionary* json = [NSJSONSerialization
-                          JSONObjectWithData:_sitesData
-                          options:NSJSONReadingAllowFragments
-                          error:&error];
-    
-    if (error) {
-        NSLog(@"got error %@",error);
-        NSLog(@"useJsonChapterData error %@",error.description);
-        [self getCacheOrDefault];
-    }
-    
+- (void)parseJSON:(NSDictionary *)json {
     NSArray *fetchedArr = [json objectForKey:@"sites"];
     
     NSMutableDictionary *nameToURLLocal = [[NSMutableDictionary alloc] init];
     _nameToURL =nameToURLLocal;
-   
+    
     NSMutableSet *localRTL = [[NSMutableSet alloc] init];
     _rtlLanguages = localRTL;
-
+    
     for (int i = 0; i<fetchedArr.count; i++) {
         NSDictionary* site = fetchedArr[i];
-        // NSLog(@"got %@",site);
+        //   NSLog(@"got %@",site);
         
         BOOL showOnIOS = [[site valueForKey:@"showOnIOS"] boolValue];
         if (showOnIOS) {
@@ -125,7 +126,7 @@
                 url = [NSString stringWithFormat:@"%@/",url];
             }
             BOOL isRTL = [[site valueForKey:@"rtl"] boolValue];
-
+            
             if (isRTL) [localRTL addObject:name];
             
             [nameToURLLocal setObject:url forKey:name];
@@ -133,11 +134,30 @@
     }
     
     [self setLanguagesGivenData];
-    //  NSLog(@"name to url now %@",_nameToURL);
-    //  NSLog(@"_languages now %@",_languages);
+}
+
+- (void)useJsonSitesData {
+    NSError * error;
+    NSDictionary* json = [NSJSONSerialization
+                          JSONObjectWithData:_sitesData
+                          options:NSJSONReadingAllowFragments
+                          error:&error];
     
-    [self writeSitesDataToCacheAt:[self getCachePath] mp3AudioData:_sitesData];
-    [_delegate sitesReady];
+    if (error) {
+        NSLog(@"useJsonSitesData got error %@",error);
+        NSLog(@"useJsonChapterData error %@",error.description);
+        
+        [self getCacheOrDefault];
+    }
+    else {
+        
+        [self parseJSON:json];
+        //  NSLog(@"name to url now %@",_nameToURL);
+        //  NSLog(@"_languages now %@",_languages);
+        
+        [self writeSitesDataToCacheAt:[self getCachePath] mp3AudioData:_sitesData];
+        [_delegate sitesReady];
+    }
 }
 
 - (void)setLanguagesGivenData {
@@ -169,6 +189,4 @@
         NSLog(@"writeSitesDataToCacheAt huh? can't find     %@",destFileName);
     }
 }
-
-
 @end

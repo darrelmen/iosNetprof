@@ -379,7 +379,6 @@
 - (IBAction)showScoresClick:(id)sender {
     [self stopPlayingAudio];
     [self postEvent:@"showScoresClick" widget:@"showScores" type:@"Button"];
-    
     [self performSegueWithIdentifier:@"goToReport" sender:self];
 }
 
@@ -546,9 +545,13 @@
 }
 
 - (IBAction)gotGenderSelection:(id)sender {
+    NSString *genderSelect = _genderMaleSelector.selectedSegmentIndex == 0 ? @"Male":_genderMaleSelector.selectedSegmentIndex == 1 ? @"Female" : @"Both";
     
-    [SSKeychain setPassword:(_genderMaleSelector.selectedSegmentIndex == 0 ? @"Male":_genderMaleSelector.selectedSegmentIndex == 1 ? @"Female" : @"Both")
+    [SSKeychain setPassword:genderSelect
                  forService:@"mitll.proFeedback.device" account:@"audioGender"];
+    
+    [self postEvent:genderSelect widget:@"genderSelect" type:@"UIButton"];
+    
     [self respondToSwipe];
 }
 
@@ -872,8 +875,12 @@
         NSLog(@"beginReceivingRemoteControlEvents ----\n");
         
         [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+        [self postEvent:@"autoPlaySelected" widget:@"autoPlay" type:@"Button"];
+        
     }
     else {
+        [self postEvent:@"autoPlayDeselected" widget:@"autoPlay" type:@"Button"];
+        
         // stop autoplay
         //[[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     }
@@ -901,7 +908,7 @@
     AVSpeechUtterance *utterance = [AVSpeechUtterance speechUtteranceWithString:toSpeak];
     
     utterance.volume = 0.8;
-    [utterance setRate:0.2f];
+    // [utterance setRate:0.2f];
     
     if (!_audioOnButton.selected && !volumnOn) {
         utterance.volume = 0;
@@ -1047,14 +1054,12 @@
         _pageControl.currentPage = 1;
         
         [self setForeignLang];
-        
         [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     }
     else if (selected == 2){
         _foreignLang.hidden = false;
         _english.hidden = false;
         _pageControl.hidden = true;
-        
         [self setForeignLang];
     }
     else {
@@ -1078,6 +1083,22 @@
 // control showing english, fl phrase, or both
 - (IBAction)whatToShowSelection:(id)sender {
     [self hideAndShowText];
+    
+    long selected = [_whatToShow selectedSegmentIndex];
+    
+    if (selected == 0) { // english
+        [self postEvent:@"showOnlyEnglish" widget:@"UIChoice" type:@"Button"];
+    }
+    else if (selected == 1) {  // fl
+        [self postEvent:@"showOnlyForeign" widget:@"UIChoice" type:@"Button"];
+    }
+    else if (selected == 2){
+        [self postEvent:@"showBothEnglishAndForeign" widget:@"UIChoice" type:@"Button"];
+    }
+    else {
+        [self postEvent:@"hideBoth" widget:@"UIChoice" type:@"Button"];
+    }
+    
     if (_autoPlayButton.selected) {
         [self doAutoAdvance];
     }
@@ -1085,15 +1106,20 @@
 
 - (IBAction)speedSelection:(id)sender {
     _speedButton.selected = !_speedButton.selected;
-    [SSKeychain setPassword:(_speedButton.selected ? @"Slow":@"Regular")
+    NSString *speed = (_speedButton.selected ? @"Slow":@"Regular");
+    [SSKeychain setPassword:speed
                  forService:@"mitll.proFeedback.device" account:@"audioSpeed"];
     
+    
+    [self postEvent:speed widget:@"speed" type:@"UIButton"];
+
     _speedButton.backgroundColor = _speedButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
     if (!_autoPlayButton.selected) {
         [self respondToSwipe];
     }
 }
 
+// remember selection in keychain cache
 - (IBAction)audioOnSelection:(id)sender {
     [SSKeychain setPassword:(_audioOnButton.selected ? @"Yes":@"No")
                  forService:@"mitll.proFeedback.device" account:@"audioOn"];
@@ -1101,6 +1127,14 @@
     _audioOnButton.color = _audioOnButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
     
     _myAudioPlayer.volume = _audioOnButton.selected ? 1: 0;
+    
+    if (_audioOnButton.selected) {
+        [self postEvent:@"turnOnAudio" widget:@"audioOnButton" type:@"Button"];
+    }
+    else {
+        [self postEvent:@"turnOffAudio" widget:@"audioOnButton" type:@"Button"];
+        
+    }
     
     if (!_autoPlayButton.selected) {
         if (!_audioOnButton.selected) {
@@ -1232,7 +1266,8 @@
 }
 
 - (void)stopPlayingAudio {
-    // NSLog(@" stopPlayingAudio");
+    NSLog(@" stopPlayingAudio ---- ");
+    
     [self removePlayingAudioHighlight];
     [_myAudioPlayer stopAudio];
     [_altPlayer pause];
@@ -1517,7 +1552,7 @@ bool debugRecord = false;
             //   NSLog(@"p on %d of %d",i,weakSelf.phoneLabels.count);
             
             UILabel *label      = [weakSelf.wordLabels  objectAtIndex:i];
-           // UILabel *phoneLabel = [weakSelf.phoneLabels objectAtIndex:i];
+            // UILabel *phoneLabel = [weakSelf.phoneLabels objectAtIndex:i];
             
             [prevWordAttr  setObject:label.attributedText forKey:[NSNumber numberWithInt:i]];
             //   [prevPhoneAttr setObject:phoneLabel.attributedText forKey:[NSNumber numberWithInt:i]];
@@ -1694,9 +1729,9 @@ bool debugRecord = false;
     // post the audio
     
     [urlRequest setHTTPBody:postData];
-     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-   // NSLog(@"posting to %@",_url);
+    // NSLog(@"posting to %@",_url);
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          dispatch_async(dispatch_get_main_queue(), ^{
@@ -1704,8 +1739,8 @@ bool debugRecord = false;
              [_recoFeedbackImage stopAnimating];
          });
          
-       //  NSLog(@"Got back error %@",error);
-       //  NSLog(@"Got back response %@",response);
+         //  NSLog(@"Got back error %@",error);
+         //  NSLog(@"Got back response %@",response);
          
          //    NSLog(@"response to post of audio...");
          if (error != nil) {
@@ -1862,7 +1897,7 @@ bool debugRecord = false;
     CFAbsoluteTime millis = diff * 1000;
     int iMillis = (int) millis;
     
-  //  NSLog(@"connectionDidFinishLoading - round trip time was %f %d ",diff, iMillis);
+    //  NSLog(@"connectionDidFinishLoading - round trip time was %f %d ",diff, iMillis);
     
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
     double durationInSeconds = CMTimeGetSeconds(asset.duration);
@@ -1920,8 +1955,8 @@ bool debugRecord = false;
     
     //    NSLog(@"got back %@",reqid);
     if ([reqid intValue] < _reqid-1) {
-           NSLog(@"json was %@",json);
-
+        NSLog(@"json was %@",json);
+        
         NSLog(@"discarding old response - got back %@ latest %d",reqid ,_reqid);
         return;
     }
@@ -2416,8 +2451,8 @@ BOOL addSpaces = false;
                 
                 NSMutableString *mu = [NSMutableString stringWithString:refPath];
                 [mu insertString:urlWithSlash atIndex:0];
-              //  NSLog(@"cacheAudio %@ %@",mu,urlWithSlash);
-
+                //  NSLog(@"cacheAudio %@ %@",mu,urlWithSlash);
+                
                 [paths addObject:mu];
                 [rawPaths addObject:refPath];
             }
@@ -2490,6 +2525,7 @@ BOOL addSpaces = false;
     NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
     @try {
         EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
+        tabBarController.url = _url;
         
         EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
         wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong_26h-unselected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
@@ -2542,6 +2578,5 @@ BOOL addSpaces = false;
         NSLog( @"Reason: %@", exception.reason );
         return;
     }
-    
 }
 @end

@@ -11,6 +11,7 @@
 #import "MyTableViewCell.h"
 #import "EAFAudioPlayer.h"
 #import "EAFAudioCache.h"
+#import "EAFEventPoster.h"
 #import "SSKeychain.h"
 
 @interface EAFWordScoreTableViewController ()
@@ -271,6 +272,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *exid = [_exList objectAtIndex:row];
     NSArray *answers = [_exToHistory objectForKey:exid];
     NSArray *scores = [_exToHistoryScores objectForKey:exid];
+
     
     // NSDictionary *scoreHistory = [_exToJson objectForKey:exid];
     //   NSLog(@"scoreHistory %@ %@",exid,scores);
@@ -510,6 +512,9 @@ NSString *myCurrentTitle;
     NSInteger row = indexPath.row;
     NSString *exid = [_exList objectAtIndex:row];
     
+    
+    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
+    [poster postEvent:@"tapOnItem" exid:exid widget:@"WordScoreTableCell" widgetType:@"Table"];
     //   NSLog(@"exid selection %@",exid);
     
     for (NSDictionary *jsonObject in _jsonItems) {
