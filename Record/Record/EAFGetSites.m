@@ -31,6 +31,9 @@
 //
 //  EAFGetSites.m
 //  Record
+//  Talk to the server to get a json file that lists the set of available languages/websites.
+//  Cache the result so that if later we don't have connectivity, we'll work normally until we do.
+//  Keeps track of which languages are RTL languages.
 //
 //  Created by Vidaver, Gordon - 0552 - MITLL on 2/12/16.
 //  Copyright © 2016 MIT Lincoln Laboratory. All rights reserved.
@@ -49,9 +52,10 @@
 
 @implementation EAFGetSites
 
+// do an async get request to the server to get the json defining the set of languages we can practice and their properties
 - (void) getSites {
     _languagesLocal = [[NSMutableArray alloc] init];
-    _rtlLanguages = [[NSMutableSet alloc] init];
+    _rtlLanguages   = [[NSMutableSet alloc] init];
     _languages =_languagesLocal;
     
     NSString *baseurl = @"https://np.ll.mit.edu/sites.json";
@@ -66,14 +70,8 @@
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
-         //      NSLog(@"Got response %@",error);
-         //     NSLog(@"Got data %@",data);
-         
          if (error != nil) {
              NSLog(@"\tgetSites Got error %@",error);
-             //             dispatch_async(dispatch_get_main_queue(), ^{
-             //                 [self connection:nil didFailWithError:error];
-             //             });
              [self getCacheOrDefault];
          }
          else {
@@ -85,6 +83,7 @@
      }];
 }
 
+// cache the file as sites.json
 - (NSString *)getCachePath {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -92,6 +91,8 @@
     return filePath;
 }
 
+
+// Fall back to a canned set of sites if we've never been able to talk to the server.
 - (void)getCacheOrDefault {
     if ([[NSFileManager defaultManager] fileExistsAtPath:[self getCachePath]]) {
         NSLog(@"getCacheOrDefault reading from %@",[self getCachePath]);
@@ -135,6 +136,7 @@
     [_delegate sitesReady];
 }
 
+// only include languages whose showOnIOS flag is set
 - (void)parseJSON:(NSDictionary *)json {
     NSArray *fetchedArr = [json objectForKey:@"sites"];
     
@@ -166,6 +168,7 @@
     [self setLanguagesGivenData];
 }
 
+// tell the delegate the site list is ready
 - (void)useJsonSitesData {
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
@@ -180,16 +183,15 @@
         [self getCacheOrDefault];
     }
     else {
-        
         [self parseJSON:json];
         //  NSLog(@"name to url now %@",_nameToURL);
         //  NSLog(@"_languages now %@",_languages);
-        
         [self writeSitesDataToCacheAt:[self getCachePath] mp3AudioData:_sitesData];
         [_delegate sitesReady];
     }
 }
 
+// sort the language names
 - (void)setLanguagesGivenData {
     NSMutableArray *languagesLocal = [[NSMutableArray alloc] init];
     
@@ -205,6 +207,7 @@
     _languages = languagesLocal;
 }
 
+// write the json we get back from the server to a local file
 - (void)writeSitesDataToCacheAt:(NSString *)destFileName mp3AudioData:(NSData *)mp3AudioData {
     NSLog(@"writeSitesDataToCacheAt : writing to      %@",destFileName);
     NSString *parent = [destFileName stringByDeletingLastPathComponent];

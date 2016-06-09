@@ -29,8 +29,8 @@
  */
 
 //
-//  EAFLoginViewController.m
-//  Record
+//  EAFForgotPasswordViewController.m
+//  Invalidate the password on the server for this user and email.
 //
 //  Created by Vidaver, Gordon - 0552 - MITLL on 11/14/14.
 //  Copyright (c) 2011-2016 Massachusetts Institute of Technology, Lincoln Laboratory
@@ -91,7 +91,7 @@
     }
 
     if (valid) {
-        [self forgotUsername:_email.text language:_language];
+        [self resetPassword:_email.text language:_language];
     }
 }
 
@@ -134,7 +134,7 @@
 
 #pragma mark NSURLConnection Delegate Methods
 
-- (void) forgotUsername:(NSString *)email language:(NSString *)lang {
+- (void) resetPassword:(NSString *)email language:(NSString *)lang {
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?resetPassword=%@&email=%@", _url, _username.text, email];
     
     NSLog(@"url %@",baseurl);

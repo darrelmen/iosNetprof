@@ -30,7 +30,7 @@
 
 //
 //  EAFEventPoster.m
-//  Record
+//  Post an event to the server so we can understand user activity on the iPad/iPhone.
 //
 //  Created by Vidaver, Gordon - 0552 - MITLL on 11/20/14.
 //  Copyright (c) 2011-2016 Massachusetts Institute of Technology, Lincoln Laboratory
@@ -69,6 +69,8 @@
     _urlToUse = url;
 }
 
+// send back lots of data - which device this is, the user, the context, the exercise id if applicable, which widget was
+// touched and its type
 - (void) postEvent:(NSString *)context exid:(NSString *)exid widget:(NSString *)widget  widgetType:(NSString *)widgetType {
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
@@ -106,11 +108,11 @@
          }
          else {
            //  NSLog(@"postEvent : reply %@",data);
-
          }
      }];
 }
 
+// Post round trip info so we can record how long it takes from recording audio to seeing a score 
 - (void) postRT:(NSString *)resultID rtDur:(NSString *)rtDur {
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _urlToUse];
     
@@ -143,10 +145,6 @@
      }];
 }
 
-//- (NSString *)getURL:(NSString *) lang
-//{
-//    return  [_siteGetter.nameToURL objectForKey:lang];
-//}
 #pragma mark NSURLConnection Delegate Methods
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {

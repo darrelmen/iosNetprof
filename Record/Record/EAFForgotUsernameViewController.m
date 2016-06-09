@@ -29,8 +29,8 @@
  */
 
 //
-//  EAFLoginViewController.m
-//  Record
+//  EAFForgotUsernameViewController.m
+//  Send username to the email specified, if it's a known email address.
 //
 //  Created by Vidaver, Gordon - 0552 - MITLL on 11/14/14.
 //  Copyright (c) 2011-2016 Massachusetts Institute of Technology, Lincoln Laboratory

@@ -29,8 +29,10 @@
  */
 
 //
-//  EAFLoginViewController.m
-//  Record
+//  EAFSetPasswordViewController.m
+//  Talks to the score servlet on the NetProF site to set the password for a userid.
+//  Only the hash of the password is sent.
+//  Gives feedback if we can't connect to the server.
 //
 //  Created by Vidaver, Gordon - 0552 - MITLL on 11/14/14.
 //  Copyright (c) 2011-2016 Massachusetts Institute of Technology, Lincoln Laboratory
@@ -73,8 +75,7 @@
         valid = false;
     }
     if (valid) {
-        
-        [self forgotUsername:[self MD5:_password.text] language:_language];
+        [self setPassword:[self MD5:_password.text] language:_language];
     }
 }
 
@@ -114,11 +115,10 @@
 
 #pragma mark NSURLConnection Delegate Methods
 
-
-- (void) forgotUsername:(NSString *)passwordH language:(NSString *)lang {
+- (void) setPassword:(NSString *)passwordH language:(NSString *)lang {
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?setPassword=%@&email=%@", _url, _token, passwordH];
-    
-    NSLog(@"url %@",baseurl);
+   
+//    NSLog(@"url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];

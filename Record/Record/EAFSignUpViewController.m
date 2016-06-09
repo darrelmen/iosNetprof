@@ -29,8 +29,9 @@
  */
 
 //
-//  EAFLoginViewController.m
-//  Record
+//  EAFSignUpViewController
+//  Do initial sign up, if there's any cache data from previous attempts, use that to fill
+//  in fields in the form.
 //
 //  Created by Vidaver, Gordon - 0552 - MITLL on 11/14/14.
 //  Copyright (c) 2011-2016 Massachusetts Institute of Technology, Lincoln Laboratory
@@ -146,13 +147,13 @@
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     
     [urlRequest setValue:@"addUser"    forHTTPHeaderField:@"request"];
-    
-  //  NSLog(@"addUser request %@",urlRequest);
-
-    
+   
     [[NSURLConnection connectionWithRequest:urlRequest delegate:self] start];
 }
 
+// Only condition on username is that it's longer than 4 characters
+// Only condition on password is that it's longer than 4 characters
+// Checks email for validity.
 - (IBAction)onClick:(id)sender {
     _signUp.enabled = false;
     
@@ -393,7 +394,6 @@
     NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
     [chapterController setLanguage:chosenLanguage];
     chapterController.url = [_siteGetter.nameToURL objectForKey:chosenLanguage];
-    
     [chapterController setTitle:chosenLanguage];
 }
 

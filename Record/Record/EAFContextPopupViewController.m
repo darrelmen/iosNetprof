@@ -30,7 +30,9 @@
 
 //
 //  EAFLoginViewController.m
-//  Record
+//  Shows a context sentence and its translation.
+//  Plays male or female audio for the sentence.
+//  Highlights the item term in the context sentence.
 //
 //  Created by Vidaver, Gordon - 0552 - MITLL on 11/14/14.
 //  Copyright (c) 2011-2016 Massachusetts Institute of Technology, Lincoln Laboratory

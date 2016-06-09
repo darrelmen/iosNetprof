@@ -131,7 +131,6 @@
     gestureRecognizer.cancelsTouchesInView = NO;
     gestureRecognizer.delegate = self;
     [_languagePicker addGestureRecognizer:gestureRecognizer];
-    
 }
 
 
