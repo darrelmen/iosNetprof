@@ -29,7 +29,7 @@
  */
 
 //
-//  EAFLoginViewController.h
+//  EAFContextPopupViewController
 //  Record
 //
 //  Created by Vidaver, Gordon - 0552 - MITLL on 11/14/14.
@@ -49,11 +49,11 @@
 @property (strong, nonatomic) IBOutlet UISegmentedControl *maleFemale;
 @property (strong, nonatomic) IBOutlet UILabel *itemFL;
 
-@property  NSString *item;
-@property  NSString *fl;
-@property  NSString *en;
-@property  NSString *mref;
-@property  NSString *fref;
+@property NSString *item;
+@property NSString *fl;
+@property NSString *en;
+@property NSString *mref;
+@property NSString *fref;
 @property NSString *url;
 @property NSString *language;
 
