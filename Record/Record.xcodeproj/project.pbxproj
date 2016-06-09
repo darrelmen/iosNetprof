@@ -104,7 +104,6 @@
 		B6D001761970ACD3009554D5 /* record.png in Resources */ = {isa = PBXBuildFile; fileRef = B6D001751970ACD3009554D5 /* record.png */; };
 		B6D001781970AD28009554D5 /* record24.png in Resources */ = {isa = PBXBuildFile; fileRef = B6D001771970AD28009554D5 /* record24.png */; };
 		B6D0017A1970ADAC009554D5 /* squareStop.png in Resources */ = {isa = PBXBuildFile; fileRef = B6D001791970ADAC009554D5 /* squareStop.png */; };
-		B6D0017D1970B091009554D5 /* EAFExercise.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D0017C1970B091009554D5 /* EAFExercise.m */; };
 		B6D999C91A7AD4E0007045C2 /* EAFPopoverViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D999C81A7AD4E0007045C2 /* EAFPopoverViewController.m */; };
 		B6D9AF8E1A37C15200911A36 /* EAFContextPopupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D9AF8D1A37C15200911A36 /* EAFContextPopupViewController.m */; };
 		B6DABE3C1A5CCC1300E7540E /* playBigger.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DABE3B1A5CCC1300E7540E /* playBigger.png */; };
@@ -278,8 +277,6 @@
 		B6D001751970ACD3009554D5 /* record.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record.png; sourceTree = "<group>"; };
 		B6D001771970AD28009554D5 /* record24.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = record24.png; sourceTree = "<group>"; };
 		B6D001791970ADAC009554D5 /* squareStop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = squareStop.png; sourceTree = "<group>"; };
-		B6D0017B1970B091009554D5 /* EAFExercise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFExercise.h; sourceTree = "<group>"; };
-		B6D0017C1970B091009554D5 /* EAFExercise.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFExercise.m; sourceTree = "<group>"; };
 		B6D999C71A7AD4E0007045C2 /* EAFPopoverViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFPopoverViewController.h; sourceTree = "<group>"; };
 		B6D999C81A7AD4E0007045C2 /* EAFPopoverViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFPopoverViewController.m; sourceTree = "<group>"; };
 		B6D9AF8C1A37C15200911A36 /* EAFContextPopupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFContextPopupViewController.h; sourceTree = "<group>"; };
@@ -565,8 +562,6 @@
 				F6A5682418ECA98A00B844C6 /* Supporting Files */,
 				B66BACB6197094C000E28ECC /* EAFItemTableViewController.h */,
 				B66BACB7197094C000E28ECC /* EAFItemTableViewController.m */,
-				B6D0017B1970B091009554D5 /* EAFExercise.h */,
-				B6D0017C1970B091009554D5 /* EAFExercise.m */,
 				B636FFC61A09549E00C3B62E /* EAFScoreReportTabBarController.m */,
 				B636FFC81A0954C200C3B62E /* EAFScoreReportTabBarController.h */,
 				B636FFD51A0993A100C3B62E /* MyTableViewCell.h */,
@@ -803,7 +798,6 @@
 				F6A5682A18ECA98A00B844C6 /* main.m in Sources */,
 				B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */,
 				B6252AAB1A1EB53B0083AE7A /* EAFAudioCache.m in Sources */,
-				B6D0017D1970B091009554D5 /* EAFExercise.m in Sources */,
 				B60466431A38B540000B5464 /* MZFormSheetBackgroundWindow.m in Sources */,
 				B642BAD01A0DD3A500D939F2 /* PhoneTableViewCell.m in Sources */,
 				B610C00A19D2240800CA9D8A /* EAFRecoFlashcardController.m in Sources */,
