@@ -29,7 +29,7 @@
  */
 
 //
-//  EAFViewController.h
+//  EAFRecoFlashcardController
 //  Record
 //
 //  Created by Ferme, Elizabeth - 0553 - MITLL on 4/2/14.

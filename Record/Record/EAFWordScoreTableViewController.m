@@ -29,7 +29,7 @@
  */
 
 //
-//  EAFLanguageTableViewController.m
+//  EAFWordScoreTableViewController
 //  Record
 //
 //  Created by Vidaver, Gordon - 0552 - MITLL on 7/16/14.
