@@ -143,6 +143,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A60E76C91DB8261D004B48AB /* Record.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Record.entitlements; sourceTree = "<group>"; };
 		B60466341A38B540000B5464 /* MZFormSheetBackgroundWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZFormSheetBackgroundWindow.h; sourceTree = "<group>"; };
 		B60466351A38B540000B5464 /* MZFormSheetBackgroundWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZFormSheetBackgroundWindow.m; sourceTree = "<group>"; };
 		B60466361A38B540000B5464 /* MZFormSheetBackgroundWindowViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZFormSheetBackgroundWindowViewController.h; sourceTree = "<group>"; };
@@ -517,6 +518,7 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
+				A60E76C91DB8261D004B48AB /* Record.entitlements */,
 				B6D9AF8C1A37C15200911A36 /* EAFContextPopupViewController.h */,
 				B6D9AF8D1A37C15200911A36 /* EAFContextPopupViewController.m */,
 				B69CBD131C6E7CA900651D5F /* EAFGetSites.h */,
@@ -661,6 +663,11 @@
 				TargetAttributes = {
 					F6A5681918ECA98A00B844C6 = {
 						DevelopmentTeam = 2C83Y973FA;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 					F6A5683A18ECA98B00B844C6 = {
 						TestTargetID = F6A5681918ECA98A00B844C6;
@@ -948,9 +955,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = Record/Record.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				DEVELOPMENT_TEAM = 2C83Y973FA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/go22670/Projects,
@@ -978,9 +987,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_ENTITLEMENTS = Record/Record.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				DEVELOPMENT_TEAM = 2C83Y973FA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/go22670/Projects,
