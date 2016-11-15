@@ -48,9 +48,28 @@
 @interface EAFGetSites ()
 @property (strong, nonatomic) NSData *sitesData;
 @property (strong, nonatomic) NSMutableArray *languagesLocal;
+
+@property NSString *server;
+
+@end
+
+@interface NSURLRequest(Private)
++(void)setAllowsAnyHTTPSCertificate:(BOOL)inAllow forHost:(NSString *)inHost;
 @end
 
 @implementation EAFGetSites
+
+// Set the NetProf server here!
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+     //   _server = @"https://np.ll.mit.edu/";
+        _server = @"https://129.55.210.144/";
+        NSLog(@"EAFGetSites server now %@",_server);
+    }
+    return self;
+}
 
 // do an async get request to the server to get the json defining the set of languages we can practice and their properties
 - (void) getSites {
@@ -58,12 +77,17 @@
     _rtlLanguages   = [[NSMutableSet alloc] init];
     _languages =_languagesLocal;
     
-    NSString *baseurl = @"https://np.ll.mit.edu/sites.json";
+    NSString *baseurl = [NSString stringWithFormat:@"%@/sites.json", _server];
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSLog(@"EAFGetSites getSites url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    
+    // TODO : REMOVE ME - TEMPORARY HACK FOR BAD CERTS ON DEV MACHINE
+    [NSMutableURLRequest setAllowsAnyHTTPSCertificate:YES forHost:[url host]];
+    
+    
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setTimeoutInterval:10];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
@@ -92,7 +116,7 @@
 }
 
 
-// Fall back to a canned set of sites if we've never been able to talk to the server.
+// Consider falling back to a canned set of sites if we've never been able to talk to the server.
 - (void)getCacheOrDefault {
     if ([[NSFileManager defaultManager] fileExistsAtPath:[self getCachePath]]) {
         NSLog(@"getCacheOrDefault reading from %@",[self getCachePath]);
@@ -111,27 +135,6 @@
         else {
             [self parseJSON:json];
         }
-    }
-    else {
-        _nameToURL = [NSDictionary dictionaryWithObjectsAndKeys:
-                      @"Dari",	@"https://np.ll.mit.edu/npfClassroomDari/"
-                      @"Egyptian",	@"https://np.ll.mit.edu/npfClassroomEgyptian/"
-                      @"English",	@"https://np.ll.mit.edu/npfClassroomEnglish/"
-                      @"Farsi",	@"https://np.ll.mit.edu/npfClassroomFarsi/"
-                      @"Korean",	@"https://np.ll.mit.edu/npfClassroomKorean/"
-                      @"Levantine",	@"https://np.ll.mit.edu/npfClassroomLevantine/"
-                      @"Mandarin",	@"https://np.ll.mit.edu/npfClassroomCM/"
-                      @"MSA",	@"https://np.ll.mit.edu/npfClassroomMSA/"
-                      @"Pashto1",	@"https://np.ll.mit.edu/npfClassroomPashto1/"
-                      @"Pashto2",	@"https://np.ll.mit.edu/npfClassroomPashto2/"
-                      @"Pashto3",	@"https://np.ll.mit.edu/npfClassroomPashto3/"
-                      @"Russian",	@"https://np.ll.mit.edu/npfClassroomRussian/"
-                      @"Spanish",	@"https://np.ll.mit.edu/npfClassroomSpanish/"
-                      @"Sudanese",	@"https://np.ll.mit.edu/npfClassroomSudanese/"
-                      @"Tagalog",	@"https://np.ll.mit.edu/npfClassroomTagalog/"
-                      @"Urdu",@"https://np.ll.mit.edu/npfClassroomUrdu/",
-                      nil                                      ];
-        [self setLanguagesGivenData];
     }
     [_delegate sitesReady];
 }

@@ -46,18 +46,11 @@
 
 @implementation EAFAppDelegate
 
-//- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions  {
-//  
-//    return YES;
-//}
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
     // [SSKeychain deletePasswordForService:@"mitll.proFeedback.device" account:@"userid"];
-  //  [[Mint sharedInstance] initAndStartSession:@"1cad0755"];
-  //  [[Mint sharedInstance] addURLToBlackList:@"np.ll.mit.edu"];
-    
+   
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     if (retrieveuuid == NULL) {
         NSString *UUID = [EAFAppDelegate GetUUID];
@@ -70,9 +63,6 @@
     
     //NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     [[NSUserDefaults standardUserDefaults] setObject:[self appNameAndVersionNumberDisplayString] forKey:@"version_preference"];
-
-  //  [self getSites];
-    
     return YES;
 }
 
