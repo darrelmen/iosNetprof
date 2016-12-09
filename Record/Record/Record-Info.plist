@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>NetProF needs to record you saying voacabulary to give you pronunciation feedback.</string>
-	<key>NSHumanReadableCopyright</key>
-	<string>Copyright &amp;copy; 2011-2016 Massachusetts Institute of Technology, Lincoln Laboratory</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -27,7 +23,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.1.2</string>
+	<string>1.1.4</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.education</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -37,6 +33,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright &amp;copy; 2011-2016 Massachusetts Institute of Technology, Lincoln Laboratory</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>NetProF needs to record you saying voacabulary to give you pronunciation feedback.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>FontAwesome.ttf</string>
