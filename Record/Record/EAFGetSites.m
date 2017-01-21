@@ -64,8 +64,8 @@
 {
     self = [super init];
     if (self) {
-     //   _server = @"https://np.ll.mit.edu/";
-        _server = @"https://129.55.210.144/";
+        _server = @"https://np.ll.mit.edu/";
+     //   _server = @"https://129.55.210.144/";
         NSLog(@"EAFGetSites server now %@",_server);
     }
     return self;
@@ -86,7 +86,6 @@
     
     // TODO : REMOVE ME - TEMPORARY HACK FOR BAD CERTS ON DEV MACHINE
     [NSMutableURLRequest setAllowsAnyHTTPSCertificate:YES forHost:[url host]];
-    
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setTimeoutInterval:10];
@@ -115,7 +114,7 @@
     return filePath;
 }
 
-
+// only in the case where we have no connectivity and can't talk to the server.
 // Consider falling back to a canned set of sites if we've never been able to talk to the server.
 - (void)getCacheOrDefault {
     if ([[NSFileManager defaultManager] fileExistsAtPath:[self getCachePath]]) {

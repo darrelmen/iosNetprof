@@ -143,6 +143,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A60E76C91DB8261D004B48AB /* Record.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Record.entitlements; sourceTree = "<group>"; };
 		B60466341A38B540000B5464 /* MZFormSheetBackgroundWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZFormSheetBackgroundWindow.h; sourceTree = "<group>"; };
 		B60466351A38B540000B5464 /* MZFormSheetBackgroundWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZFormSheetBackgroundWindow.m; sourceTree = "<group>"; };
 		B60466361A38B540000B5464 /* MZFormSheetBackgroundWindowViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZFormSheetBackgroundWindowViewController.h; sourceTree = "<group>"; };
@@ -269,7 +270,6 @@
 		B6A8D97619770C2100E8F1D5 /* Icon-Small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small@2x.png"; sourceTree = "<group>"; };
 		B6AB39BA19FACF4300B250C1 /* checkmark32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkmark32.png; sourceTree = "<group>"; };
 		B6AB39BC19FACF4D00B250C1 /* redx32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redx32.png; sourceTree = "<group>"; };
-		B6B2B91D1DDA8931000AA9B2 /* Record.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Record.entitlements; sourceTree = "<group>"; };
 		B6B94F0F1A7C1265004AFFE8 /* LICENCE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENCE.txt; sourceTree = "<group>"; };
 		B6B94F101A7C1265004AFFE8 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		B6B94F111A7C1265004AFFE8 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
@@ -518,7 +518,7 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
-				B6B2B91D1DDA8931000AA9B2 /* Record.entitlements */,
+				A60E76C91DB8261D004B48AB /* Record.entitlements */,
 				B6D9AF8C1A37C15200911A36 /* EAFContextPopupViewController.h */,
 				B6D9AF8D1A37C15200911A36 /* EAFContextPopupViewController.m */,
 				B69CBD131C6E7CA900651D5F /* EAFGetSites.h */,
@@ -658,7 +658,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = EAF;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "MIT Lincoln Laboratory";
 				TargetAttributes = {
 					F6A5681918ECA98A00B844C6 = {
@@ -889,19 +889,14 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -914,7 +909,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -934,25 +929,20 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -969,6 +959,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				DEVELOPMENT_TEAM = 2C83Y973FA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/go22670/Projects,
@@ -977,7 +968,7 @@
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
 				"INSTALL_OWNER[sdk=*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -1000,6 +991,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				DEVELOPMENT_TEAM = 2C83Y973FA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/go22670/Projects,
@@ -1008,7 +1000,7 @@
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
 				"INSTALL_OWNER[sdk=*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
