@@ -45,5 +45,5 @@
 - (id) initWithURL:(NSString *) url;
 - (void) postEvent:(NSString *)context exid:(NSString *)exid widget:(NSString *)widget  widgetType:(NSString *)widgetType ;
 - (void) postRT:(NSString *)resultID rtDur:(NSString *)rtDur;
-- (void) setURL:(NSString *) url;
+- (void) setURL:(NSString *) url projid:(NSString *) projid;
 @end

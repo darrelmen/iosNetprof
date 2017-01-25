@@ -237,7 +237,7 @@
         [_activityIndicator startAnimating];
         _logIn.enabled = false;
         
-        [_poster setURL:urlForLanguage];
+        [_poster setURL:urlForLanguage projid:[_siteGetter.nameToProjectID objectForKey:chosenLanguage]];
         
         [_poster postEvent:@"login" exid:@"N/A" widget:@"LogIn" widgetType:@"Button"];
     }

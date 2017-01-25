@@ -47,9 +47,15 @@
 
 @interface EAFGetSites ()
 @property (strong, nonatomic) NSData *sitesData;
-@property (strong, nonatomic) NSMutableArray *languagesLocal;
 
-@property NSString *server;
+@property (strong, nonatomic) NSMutableOrderedSet *languagesLocal;
+@property (strong, nonatomic) NSMutableSet *mutableRTLLanguages;
+
+@property (strong, nonatomic) NSMutableDictionary *mutableNameToURL;
+@property (strong, nonatomic) NSMutableDictionary *mutableNameToProjectID;
+
+@property (strong, nonatomic) NSString *oldServer;
+@property (strong, nonatomic) NSString *nServer;
 
 @end
 
@@ -64,21 +70,43 @@
 {
     self = [super init];
     if (self) {
-        _server = @"https://np.ll.mit.edu/";
-     //   _server = @"https://129.55.210.144/";
-        NSLog(@"EAFGetSites server now %@",_server);
+        _oldServer = @"https://np.ll.mit.edu/";
+        //   _oldServer = @"https://129.55.210.144/";
+        NSLog(@"EAFGetSites server now %@",_oldServer);
+        
+        _nServer = @"https://netprof1-dev/netprof";
     }
     return self;
 }
 
+// PUBLIC
 // do an async get request to the server to get the json defining the set of languages we can practice and their properties
 - (void) getSites {
-    _languagesLocal = [[NSMutableArray alloc] init];
-    _rtlLanguages   = [[NSMutableSet alloc] init];
+    _languagesLocal = [[NSMutableOrderedSet alloc] init];
     _languages =_languagesLocal;
     
-    NSString *baseurl = [NSString stringWithFormat:@"%@/sites.json", _server];
+    _mutableRTLLanguages = [[NSMutableSet alloc] init];
+    _rtlLanguages = _mutableRTLLanguages;
     
+    _mutableNameToURL  = [[NSMutableDictionary alloc] init];
+    _nameToURL = _mutableNameToURL;
+    
+    _mutableNameToProjectID = [[NSMutableDictionary alloc] init];
+    _nameToProjectID = _mutableNameToProjectID;
+    
+    [self getSitesFromServer:_oldServer];
+}
+
+- (void)getSitesFromServer:(NSString *) theServer {
+    NSString *baseurl;
+    
+    if ([theServer isEqualToString:_oldServer]) {
+        baseurl = [NSString stringWithFormat:@"%@/sites.json", theServer];
+    }
+    else {
+        baseurl = [NSString stringWithFormat:@"%@/scoreServlet?projects", theServer];
+    }
+
     NSURL *url = [NSURL URLWithString:baseurl];
     NSLog(@"EAFGetSites getSites url %@",url);
     
@@ -95,31 +123,41 @@
      {
          if (error != nil) {
              NSLog(@"\tgetSites Got error %@",error);
-             [self getCacheOrDefault];
+             [self getCacheOrDefault:theServer];
          }
          else {
              _sitesData = data;
-             [self performSelectorOnMainThread:@selector(useJsonSitesData)
-                                    withObject:nil
+             [self performSelectorOnMainThread:@selector(useJsonSitesData:)
+                                    withObject:theServer
                                  waitUntilDone:YES];
          }
      }];
 }
 
+
 // cache the file as sites.json
-- (NSString *)getCachePath {
+- (NSString *)getCachePath:(NSString *) theServer {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"sites.json"];
+    
+    NSString *fileToGet;
+    if ([theServer isEqualToString:_oldServer]) {
+        fileToGet = @"oldSites.json";
+    }
+    else {
+        fileToGet = @"newSites.json";
+    }
+    
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:fileToGet];
     return filePath;
 }
 
 // only in the case where we have no connectivity and can't talk to the server.
 // Consider falling back to a canned set of sites if we've never been able to talk to the server.
-- (void)getCacheOrDefault {
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[self getCachePath]]) {
-        NSLog(@"getCacheOrDefault reading from %@",[self getCachePath]);
-        _sitesData = [NSData dataWithContentsOfFile:[self getCachePath]];
+- (void)getCacheOrDefault:(NSString *) theServer {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[self getCachePath:theServer]]) {
+        NSLog(@"getCacheOrDefault reading from %@",[self getCachePath:theServer]);
+        _sitesData = [NSData dataWithContentsOfFile:[self getCachePath:theServer]];
         
         NSError * error;
         NSDictionary* json = [NSJSONSerialization
@@ -129,7 +167,7 @@
         
         if (error) {
             NSLog(@"getCacheOrDefault got error %@",error);
-            NSLog(@"getCacheOrDefault error %@",error.description);
+            NSLog(@"getCacheOrDefault error     %@",error.description);
         }
         else {
             [self parseJSON:json];
@@ -142,20 +180,21 @@
 - (void)parseJSON:(NSDictionary *)json {
     NSArray *fetchedArr = [json objectForKey:@"sites"];
     
-    NSMutableDictionary *nameToURLLocal = [[NSMutableDictionary alloc] init];
-    _nameToURL =nameToURLLocal;
-    
     NSMutableSet *localRTL = [[NSMutableSet alloc] init];
     _rtlLanguages = localRTL;
     
     for (int i = 0; i<fetchedArr.count; i++) {
         NSDictionary* site = fetchedArr[i];
-        //   NSLog(@"got %@",site);
+        
+     //   NSLog(@"got %@",site);
         
         BOOL showOnIOS = [[site valueForKey:@"showOnIOS"] boolValue];
         if (showOnIOS) {
             NSString *name = [site objectForKey:@"name"];
             NSString *url  = [site objectForKey:@"url"];
+            if (url == NULL) {
+                url = _nServer;
+            }
             if (![url hasSuffix:@"/"]) {
                 url = [NSString stringWithFormat:@"%@/",url];
             }
@@ -163,7 +202,12 @@
             
             if (isRTL) [localRTL addObject:name];
             
-            [nameToURLLocal setObject:url forKey:name];
+            NSString *id  = [site objectForKey:@"id"];
+            
+            [_mutableNameToURL   setObject:url     forKey:name];
+            if (id != NULL) {
+            [_mutableNameToProjectID  setObject:id forKey:name];
+            }
         }
     }
     
@@ -171,7 +215,7 @@
 }
 
 // tell the delegate the site list is ready
-- (void)useJsonSitesData {
+- (void)useJsonSitesData:(NSString *) theServer {
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_sitesData
@@ -182,31 +226,42 @@
         NSLog(@"useJsonSitesData got error %@",error);
         NSLog(@"useJsonChapterData error %@",error.description);
         
-        [self getCacheOrDefault];
+        [self getCacheOrDefault:theServer];
     }
     else {
         [self parseJSON:json];
         //  NSLog(@"name to url now %@",_nameToURL);
         //  NSLog(@"_languages now %@",_languages);
-        [self writeSitesDataToCacheAt:[self getCachePath] mp3AudioData:_sitesData];
-        [_delegate sitesReady];
+        [self writeSitesDataToCacheAt:[self getCachePath:theServer] mp3AudioData:_sitesData];
+        if ([theServer isEqualToString:_oldServer]) {
+            [self getSitesFromServer:_nServer];
+        }
+        else {
+            for(id key in _nameToURL)
+                NSLog(@"key=%@ value=%@", key, [_nameToURL objectForKey:key]);
+            
+            for(id key in _nameToProjectID)
+                NSLog(@"key=%@ value=%@", key, [_nameToProjectID objectForKey:key]);
+            
+            [_delegate sitesReady];
+        }
     }
 }
 
 // sort the language names
 - (void)setLanguagesGivenData {
-    NSMutableArray *languagesLocal = [[NSMutableArray alloc] init];
+    // NSMutableArray *languagesLocal = [[NSMutableArray alloc] init];
     
     for (NSString *name in _nameToURL.allKeys) {
-        [languagesLocal addObject:name];
+        [_languagesLocal addObject:name];
     }
     
     //sorting
-    [languagesLocal sortUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
+    [_languagesLocal sortUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
         return [str1 compare:str2 options:(NSNumericSearch)];
     }];
     
-    _languages = languagesLocal;
+    // _languages = languagesLocal;
 }
 
 // write the json we get back from the server to a local file

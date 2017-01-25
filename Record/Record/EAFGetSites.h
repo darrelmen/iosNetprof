@@ -49,7 +49,8 @@
 @interface EAFGetSites : NSObject
 
 @property (strong, nonatomic) NSDictionary *nameToURL;
-@property (strong, nonatomic) NSArray *languages;
+@property (strong, nonatomic) NSDictionary *nameToProjectID;
+@property (strong, nonatomic) NSOrderedSet *languages;
 @property (strong, nonatomic) NSSet *rtlLanguages;
 - (void) getSites;
 

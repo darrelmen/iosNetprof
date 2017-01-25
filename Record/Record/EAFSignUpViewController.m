@@ -199,7 +199,7 @@
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
             [_activityIndicator startAnimating];
             
-            [_poster setURL:[_siteGetter.nameToURL objectForKey:chosenLanguage]];
+            [_poster setURL:[_siteGetter.nameToURL objectForKey:chosenLanguage] projid:[_siteGetter.nameToProjectID objectForKey:chosenLanguage]];
             [_poster postEvent:[NSString stringWithFormat:@"signUp by %@",_username.text] exid:@"N/A" widget:@"SignIn" widgetType:@"Button"];
        // }
     }

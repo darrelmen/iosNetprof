@@ -43,6 +43,7 @@
 @interface EAFEventPoster ()
 
 @property NSString *urlToUse;
+@property NSString *projid;
 
 @end
 
@@ -65,8 +66,9 @@
         return nil;
 }
 
-- (void) setURL:(NSString *) url {
+- (void) setURL:(NSString *) url projid:(NSString *) projid {
     _urlToUse = url;
+    _projid = projid;
 }
 
 // send back lots of data - which device this is, the user, the context, the exercise id if applicable, which widget was
@@ -75,9 +77,9 @@
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     
-    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)0];   
+    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)0];
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _urlToUse];
-
+    
     NSLog(@"postEvent post %@ to %@ or %@",context,_urlToUse,baseurl);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
@@ -89,6 +91,7 @@
     // add request parameters
     
     [urlRequest setValue:userid forHTTPHeaderField:@"user"];
+    [urlRequest setValue:_projid forHTTPHeaderField:@"projid"];
     
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     [urlRequest setValue:context forHTTPHeaderField:@"context"];
@@ -107,12 +110,12 @@
              NSLog(@"postEvent : Got error %@",error);
          }
          else {
-           //  NSLog(@"postEvent : reply %@",data);
+             //  NSLog(@"postEvent : reply %@",data);
          }
      }];
 }
 
-// Post round trip info so we can record how long it takes from recording audio to seeing a score 
+// Post round trip info so we can record how long it takes from recording audio to seeing a score
 - (void) postRT:(NSString *)resultID rtDur:(NSString *)rtDur {
     NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _urlToUse];
     
