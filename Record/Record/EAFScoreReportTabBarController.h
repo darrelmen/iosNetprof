@@ -40,4 +40,5 @@
 
 @interface EAFScoreReportTabBarController : UITabBarController<UITabBarControllerDelegate>
 @property NSString *url;
+@property NSNumber *projid;
 @end

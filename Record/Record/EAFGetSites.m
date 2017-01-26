@@ -72,8 +72,7 @@
     if (self) {
         _oldServer = @"https://np.ll.mit.edu/";
         //   _oldServer = @"https://129.55.210.144/";
-        NSLog(@"EAFGetSites server now %@",_oldServer);
-        
+        //NSLog(@"EAFGetSites server now %@",_oldServer);
         _nServer = @"https://netprof1-dev/netprof";
     }
     return self;
@@ -106,7 +105,7 @@
     else {
         baseurl = [NSString stringWithFormat:@"%@/scoreServlet?projects", theServer];
     }
-
+    
     NSURL *url = [NSURL URLWithString:baseurl];
     NSLog(@"EAFGetSites getSites url %@",url);
     
@@ -118,22 +117,39 @@
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setTimeoutInterval:10];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+
+    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:Nil];
     
-    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-     {
-         if (error != nil) {
-             NSLog(@"\tgetSites Got error %@",error);
-             [self getCacheOrDefault:theServer];
-         }
-         else {
-             _sitesData = data;
-             [self performSelectorOnMainThread:@selector(useJsonSitesData:)
-                                    withObject:theServer
-                                 waitUntilDone:YES];
-         }
-     }];
+    
+    NSURLSessionDataTask *downloadTask = [session
+                                          dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                    
+                                              [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+                                              if (error != nil) {
+                                                  NSLog(@"\tgetSites Got error %@",error);
+                                                  [self getCacheOrDefault:theServer];
+                                              }
+                                              else {
+                                                //  NSLog(@"\tgetSites Got response %@",response);
+
+                                                  _sitesData = data;
+                                                  [self performSelectorOnMainThread:@selector(useJsonSitesData:)
+                                                                         withObject:theServer
+                                                                      waitUntilDone:YES];
+                                              }
+                                          }];
+    [downloadTask resume];
 }
 
+- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential *))completionHandler{
+    if([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]){
+       // if([challenge.protectionSpace.host isEqualToString:@"mydomain.com"]){
+            NSURLCredential *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+            completionHandler(NSURLSessionAuthChallengeUseCredential,credential);
+      //  }
+    }
+}
 
 // cache the file as sites.json
 - (NSString *)getCachePath:(NSString *) theServer {
@@ -186,7 +202,7 @@
     for (int i = 0; i<fetchedArr.count; i++) {
         NSDictionary* site = fetchedArr[i];
         
-     //   NSLog(@"got %@",site);
+        //   NSLog(@"got %@",site);
         
         BOOL showOnIOS = [[site valueForKey:@"showOnIOS"] boolValue];
         if (showOnIOS) {
@@ -202,11 +218,15 @@
             
             if (isRTL) [localRTL addObject:name];
             
-            NSString *id  = [site objectForKey:@"id"];
+            NSNumber *id  = [site objectForKey:@"id"];
             
+        
             [_mutableNameToURL   setObject:url     forKey:name];
             if (id != NULL) {
-            [_mutableNameToProjectID  setObject:id forKey:name];
+                [_mutableNameToProjectID  setObject:id forKey:name];
+            }
+            else {
+                [_mutableNameToProjectID  setObject: [NSNumber numberWithInt:-1] forKey:name];
             }
         }
     }
@@ -237,11 +257,11 @@
             [self getSitesFromServer:_nServer];
         }
         else {
-            for(id key in _nameToURL)
-                NSLog(@"key=%@ value=%@", key, [_nameToURL objectForKey:key]);
-            
-            for(id key in _nameToProjectID)
-                NSLog(@"key=%@ value=%@", key, [_nameToProjectID objectForKey:key]);
+//            for(id key in _nameToURL)
+//                NSLog(@"key=%@ value=%@", key, [_nameToURL objectForKey:key]);
+//            
+//            for(id key in _nameToProjectID)
+//                NSLog(@"key=%@ value=%@", key, [_nameToProjectID objectForKey:key]);
             
             [_delegate sitesReady];
         }

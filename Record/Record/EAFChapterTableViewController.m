@@ -79,13 +79,13 @@
     
     _siteGetter = [EAFGetSites new];
     _siteGetter.delegate = self;
-    _poster = [[EAFEventPoster alloc] initWithURL:_url];
     
     if (self.chapters == nil) {
         self.chapters = [[NSMutableArray alloc] init];
     }
     NSString *version = [[UIDevice currentDevice] systemVersion];
     
+    // HACK?
     BOOL isEight = [version hasPrefix:@"8"];
     
     if (isEight) {
@@ -93,6 +93,7 @@
     }
     
     _language = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
+    _poster = [[EAFEventPoster alloc] initWithURL:_url];//] projid:[_siteGetter.nameToProjectID objectForKey:_language]];
 
    [self setTitle:_language];
     

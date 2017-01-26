@@ -43,7 +43,7 @@
 @interface EAFEventPoster ()
 
 @property NSString *urlToUse;
-@property NSString *projid;
+@property NSNumber *projid;
 
 @end
 
@@ -58,17 +58,21 @@
         return nil;
 }
 
-- (id) initWithURL:(NSString *) url {
+- (id) initWithURL:(NSString *) url {//projid:(NSNumber *) projid{
     if ( self = [super init] ) {
         _urlToUse = url;
+//        _projid = projid;
         return self;
     } else
         return nil;
 }
 
-- (void) setURL:(NSString *) url projid:(NSString *) projid {
+- (void) setURL:(NSString *) url projid:(NSNumber *) projid {
     _urlToUse = url;
     _projid = projid;
+    
+    NSLog(@"setURL url %@ project %@",_urlToUse,_projid);
+    
 }
 
 // send back lots of data - which device this is, the user, the context, the exercise id if applicable, which widget was
@@ -91,7 +95,11 @@
     // add request parameters
     
     [urlRequest setValue:userid forHTTPHeaderField:@"user"];
-    [urlRequest setValue:_projid forHTTPHeaderField:@"projid"];
+    
+    if (_projid == NULL) NSLog(@"huh? projid is null");
+    NSLog(@"postEvent post %@ to %@ with %@",context,_urlToUse,_projid);
+
+    [urlRequest setValue:[_projid stringValue] forHTTPHeaderField:@"projid"];
     
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     [urlRequest setValue:context forHTTPHeaderField:@"context"];
@@ -99,6 +107,8 @@
     [urlRequest setValue:widget forHTTPHeaderField:@"widget"];
     [urlRequest setValue:widgetType forHTTPHeaderField:@"widgetType"];
     [urlRequest setValue:@"event" forHTTPHeaderField:@"request"];
+    
+    NSLog(@"req %@",urlRequest);
     
     // post the audio
     

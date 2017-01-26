@@ -42,8 +42,8 @@
 
 @property NSMutableData *response;
 
-- (id) initWithURL:(NSString *) url;
+- (id) initWithURL:(NSString *) url;// projid:(NSNumber *) projid;
 - (void) postEvent:(NSString *)context exid:(NSString *)exid widget:(NSString *)widget  widgetType:(NSString *)widgetType ;
 - (void) postRT:(NSString *)resultID rtDur:(NSString *)rtDur;
-- (void) setURL:(NSString *) url projid:(NSString *) projid;
+- (void) setURL:(NSString *) url projid:(NSNumber *) projid;
 @end
