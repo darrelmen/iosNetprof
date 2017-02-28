@@ -73,9 +73,14 @@
         _oldServer = @"https://np.ll.mit.edu/";
         //   _oldServer = @"https://129.55.210.144/";
         //NSLog(@"EAFGetSites server now %@",_oldServer);
-        _nServer = @"https://netprof1-dev/netprof";
+     //   _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+        _nServer = @"http://127.0.0.1:8888/netprof/";
     }
     return self;
+}
+
+- (NSNumber *) getProject:(NSString*) language {
+    return [_nameToProjectID objectForKey:language];
 }
 
 // PUBLIC
@@ -103,7 +108,7 @@
         baseurl = [NSString stringWithFormat:@"%@/sites.json", theServer];
     }
     else {
-        baseurl = [NSString stringWithFormat:@"%@/scoreServlet?projects", theServer];
+        baseurl = [NSString stringWithFormat:@"%@scoreServlet?projects", theServer];
     }
     
     NSURL *url = [NSURL URLWithString:baseurl];
@@ -131,7 +136,7 @@
                                                   [self getCacheOrDefault:theServer];
                                               }
                                               else {
-                                                //  NSLog(@"\tgetSites Got response %@",response);
+                                                  NSLog(@"\tgetSites Got response %@",response);
 
                                                   _sitesData = data;
                                                   [self performSelectorOnMainThread:@selector(useJsonSitesData:)

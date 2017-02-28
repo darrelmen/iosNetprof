@@ -53,6 +53,7 @@
 @property (strong, nonatomic) NSOrderedSet *languages;
 @property (strong, nonatomic) NSSet *rtlLanguages;
 - (void) getSites;
+- (NSNumber *) getProject:(NSString*) language;
 
 @property(assign) id<SitesNotification> delegate;
 

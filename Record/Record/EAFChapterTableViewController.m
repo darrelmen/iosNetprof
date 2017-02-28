@@ -127,7 +127,11 @@
     _isRefresh = isRefresh;
     
     _reqCount++;
-    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?nestedChapters", [_siteGetter.nameToURL objectForKey:_language]];
+    NSNumber *projid = [_siteGetter getProject:_language];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?nestedChapters",//&projid=%@",
+                         [_siteGetter.nameToURL objectForKey:_language]];
+                         //,                         projid];
+    
     
     NSURL *url = [NSURL URLWithString:baseurl];
     
@@ -138,6 +142,7 @@
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
 

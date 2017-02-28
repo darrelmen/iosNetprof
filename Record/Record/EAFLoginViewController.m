@@ -56,6 +56,10 @@
 @property EAFEventPoster *poster;
 @end
 
+@interface NSURLRequest(Private)
++(void)setAllowsAnyHTTPSCertificate:(BOOL)inAllow forHost:(NSString *)inHost;
+@end
+
 @implementation EAFLoginViewController
 
 // look at cookie value and set the language picker accordingly
@@ -208,76 +212,91 @@
         NSLog(@"onClick password %@",_password.text);
         NSLog(@"onClick md5 password %@",[self MD5:_password.text]);
         
-        NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?hasUser=%@&p=%@",
+        NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?hasUser=%@&p=%@",
                              urlForLanguage,
                              _username.text,
                              [[self MD5:_password.text] uppercaseString]
                              ];
-    
-        NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
-
+        
+        NSURL *url = [NSURL URLWithString:baseurl];
+        
+        NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+        
+        // TODO : REMOVE ME - TEMPORARY HACK FOR BAD CERTS ON DEV MACHINE
+        [NSMutableURLRequest setAllowsAnyHTTPSCertificate:YES forHost:[url host]];
+        
         NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
         if (projid.intValue > -1) {
-//             baseurl = [NSString stringWithFormat:@"%@/scoreServlet?hasUser=%@&p=%@&pass=%@",
-//                        urlForLanguage,
-//                        _username.text,
-//                        [[self MD5:_password.text] uppercaseString],
-//                        _password.text ];
-        
-//           
-//            NSString *getString = [NSString stringWithFormat:@"projid=%@&pass=%@",
-//                                   _password.text,
-//                                   projid];
-//            
-//            NSLog(@"onClick password %@",_password.text);
-//
-//            NSData *getData = [getString dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
-//            
-//            NSString *getLength = [NSString stringWithFormat:@"%lu", (unsigned long)[getData length]];
-//            NSLog(@"onClick getLength %@",getLength);
-            
             [urlRequest setValue:@"hasUser" forHTTPHeaderField:@"request"];
             [urlRequest setValue:_username.text forHTTPHeaderField:@"userid"];
             [urlRequest setValue:_password.text forHTTPHeaderField:@"pass"];
             [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
-            
-//            [urlRequest setValue:getLength forHTTPHeaderField:@"Content-Length"];
- //           [urlRequest setHTTPBody:getData];
-            [urlRequest setHTTPMethod: @"POST"];
+            //  [urlRequest setHTTPMethod: @"POST"];
         }
         else {
-            [urlRequest setHTTPMethod: @"GET"];
+            //    [urlRequest setHTTPMethod: @"GET"];
         }
-       // NSURL *url = [NSURL URLWithString:baseurl];
         
-        //NSLog(@"url %@",url);
+        [urlRequest setHTTPMethod: @"GET"];
         
-        
-//        [urlRequest setHTTPMethod: @"GET"];
-        [urlRequest setValue:@"application/x-www-form-urlencoded"
-          forHTTPHeaderField:@"Content-Type"];
-  //      [urlRequest setValue:_password.text forHTTPHeaderField:@"pass"];
+        [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
         [urlRequest setTimeoutInterval:15];
         
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
         
-        [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-         {
-             if (error != nil) {
-                 NSLog(@"\n\n\n\t1 Got error %@",error);
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     [self connection:nil didFailWithError:error];
-                 });
-             }
-             else {
-                 _responseData = data;
-                 [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
-                                        withObject:nil
-                                     waitUntilDone:YES];
-             }
-         }];
+        if (TRUE) {
+            [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+             {
+                 if (error != nil) {
+                     NSLog(@"\n\n\n\t1 Got error %@",error);
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                         [self connection:nil didFailWithError:error];
+                     });
+                 }
+                 else {
+                     _responseData = data;
+                     [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+                                            withObject:nil
+                                         waitUntilDone:YES];
+                 }
+             }];
+        }
+        else {
+            
+            NSDictionary *dictionary = @{@"key1": @"value1"};
+            NSError *error = nil;
+            NSData *data = [NSJSONSerialization dataWithJSONObject:dictionary
+                                                           options:kNilOptions error:&error];
+            
+            
+            NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+            NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:Nil];
+            
+            
+            NSURLSessionDataTask *downloadTask = [session
+                                                  uploadTaskWithRequest:urlRequest
+                                                  fromData:data
+                                                  completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                                                      
+                                                      //  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+                                                      if (error != nil) {
+                                                          NSLog(@"\n\n\n\t1 Got error %@",error);
+                                                          dispatch_async(dispatch_get_main_queue(), ^{
+                                                              [self connection:nil didFailWithError:error];
+                                                          });
+                                                      }
+                                                      else {
+                                                          //  NSLog(@"\tgetSites Got response %@",response);
+                                                          _responseData = data;
+                                                          [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+                                                                                 withObject:nil
+                                                                              waitUntilDone:YES];
+                                                      }
+                                                  }];
+            [downloadTask resume];
+            
+        }
         
-        [_activityIndicator startAnimating];
         _logIn.enabled = false;
         
         //NSLog(@"got project id %@",[_siteGetter.nameToProjectID objectForKey:chosenLanguage]);
@@ -364,10 +383,10 @@
     
     NSString *existing = [json objectForKey:@"ExistingUserName"];
     
-//    NSLog(@"useJsonChapterData existing %@",existing);
-//    NSLog(@"useJsonChapterData resetToken %@",resetToken);
-//    NSLog(@"useJsonChapterData userIDExisting %@",userIDExisting);
-//    NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
+        NSLog(@"useJsonChapterData existing %@",existing);
+        NSLog(@"useJsonChapterData resetToken %@",resetToken);
+        NSLog(@"useJsonChapterData userIDExisting %@",userIDExisting);
+        NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
     
     if ([userIDExisting integerValue] == -1) {
         NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
