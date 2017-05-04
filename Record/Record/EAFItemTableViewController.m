@@ -56,6 +56,18 @@
 @property NSDictionary *exToJson;
 
 @property EAFRecoFlashcardController *notifyFlashcardController;
+
+@property unsigned long checkMarkPercentage;
+@property unsigned long questionIconPercentage;
+@property unsigned long redXPercentage;
+@property UIButton *ascendSortBtn;
+@property UIButton *descendSortBtn;
+
+@property UIButton *checkMarkBtn;
+@property UIButton *redXBtn;
+
+@property NSArray *temp_jsonItems;
+
 @end
 
 @implementation EAFItemTableViewController
@@ -91,6 +103,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    _temp_jsonItems = [[NSMutableArray alloc] initWithArray:_jsonItems];;
     _audioCache = [[EAFAudioCache alloc] init];
   //  NSLog(@"viewDidLoad made audio cache, url %@ ",_url );
   //  NSLog(@"viewDidLoad - item table controller - %@, count = %lu", _hasModel?@"YES":@"NO",(unsigned long)_jsonItems.count);
@@ -102,11 +115,148 @@
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
+}
+
+- (void)createBtnAndLabelForHeaderView{
     
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 50)];
+    
+    _checkMarkBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+    _checkMarkBtn.frame = CGRectMake(5, 5, 40, 40);
+    [_checkMarkBtn setBackgroundImage:[UIImage imageNamed:@"checkmark32.png"] forState:UIControlStateNormal];
+    [_checkMarkBtn setBackgroundColor:[UIColor lightGrayColor]];
+    [_checkMarkBtn addTarget:self action:@selector(filterBtnTapped:) forControlEvents:UIControlEventTouchUpInside];
+    _checkMarkBtn.tag = 666;
+    [headerView addSubview:_checkMarkBtn];
+    
+    
+    UILabel *checkMarkLabelView = [[UILabel alloc] initWithFrame:CGRectMake(49, 5, 45, 40)];
+    [checkMarkLabelView setBackgroundColor:[UIColor lightGrayColor]];
+    [checkMarkLabelView setText:[NSString stringWithFormat:@"%lu%%",_checkMarkPercentage]];
+    checkMarkLabelView.textAlignment = NSTextAlignmentCenter;
+    [headerView addSubview:checkMarkLabelView];
+    
+    _redXBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+    _redXBtn.frame = CGRectMake(98, 5, 40, 40);
+    [_redXBtn setBackgroundImage:[UIImage imageNamed:@"redx32.png"] forState:UIControlStateNormal];
+    [_redXBtn setBackgroundColor:[UIColor lightGrayColor]];
+    [_redXBtn addTarget:self action:@selector(filterBtnTapped:) forControlEvents:UIControlEventTouchUpInside];
+    _redXBtn.tag = 888;
+    [headerView addSubview:_redXBtn];
+    
+    UILabel *redXLabelView = [[UILabel alloc] initWithFrame:CGRectMake(142, 5, 45, 40)];
+    [redXLabelView setBackgroundColor:[UIColor lightGrayColor]];
+    [redXLabelView setText:[NSString stringWithFormat:@"%lu%%",_redXPercentage]];
+    redXLabelView.textAlignment = NSTextAlignmentCenter;
+    [headerView addSubview:redXLabelView];
+    
+    UIImageView *questionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(191, 5, 40, 40)];
+    questionImageView.image = [UIImage imageNamed:@"questionIcon"];
+    [questionImageView setBackgroundColor:[UIColor lightGrayColor]];
+    [headerView addSubview:questionImageView];
+    UILabel *questionLabelView = [[UILabel alloc] initWithFrame:CGRectMake(235, 5, 45, 40)];
+    [questionLabelView setBackgroundColor:[UIColor lightGrayColor]];
+    [questionLabelView setText:[NSString stringWithFormat:@"%lu%%",_questionIconPercentage]];
+    questionLabelView.textAlignment = NSTextAlignmentCenter;
+    [headerView addSubview:questionLabelView];
+    _ascendSortBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+    _ascendSortBtn.frame = CGRectMake(self.view.frame.size.width - 89, 5, 40, 40);
+    [_ascendSortBtn setBackgroundImage:[UIImage imageNamed:@"ascendSort.png"] forState:UIControlStateNormal];
+  
+    [_ascendSortBtn addTarget:self action:@selector(sortBtnTapped:) forControlEvents:UIControlEventTouchUpInside];
+    _ascendSortBtn.tag = 123;
+    
+    [headerView addSubview:_ascendSortBtn];
+    
+    _descendSortBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    _descendSortBtn.frame = CGRectMake(self.view.frame.size.width - 45, 5, 40, 40);
+   // NSLog(@"***************  %f", self.view.frame.size.width);
+    [_descendSortBtn setBackgroundImage:[UIImage imageNamed:@"descendSort.png"] forState:UIControlStateNormal];
+    [_descendSortBtn addTarget:self action:@selector(sortBtnTapped:) forControlEvents:UIControlEventTouchUpInside];
+    _descendSortBtn.tag = 456;
+    [headerView addSubview:_descendSortBtn];
+    
+    
+    [headerView setBackgroundColor:[UIColor colorWithRed:213/255.0 green:213/255.0 blue:213/255.0 alpha:1.0]];
+    self.tableView.tableHeaderView = headerView;
+}
+
+- (void)sortBtnTapped:(id)sender{
+   
+    [sender tag];
+    
+    NSSortDescriptor *leadNameDescriptor;
+    if([sender tag] == 123){
+        _ascendSortBtn.selected = !_ascendSortBtn.selected;
+        _ascendSortBtn.backgroundColor = _ascendSortBtn.selected ?[UIColor cyanColor]:[UIColor lightGrayColor];
+        leadNameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"en" ascending:YES selector:@selector(localizedStandardCompare:)];
+    } else if([sender tag] == 456){
+       _descendSortBtn.selected = !_descendSortBtn.selected;
+       _descendSortBtn.backgroundColor = _descendSortBtn.selected ?[UIColor cyanColor]:[UIColor lightGrayColor];
+
+       leadNameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"en" ascending:NO selector:@selector(localizedStandardCompare:)];
+         NSLog(@"Sort are DONE!!!!!----- %ld", (long)[sender tag]);
+    }
+    
+    NSArray *sortDescriptor = [NSArray arrayWithObject:leadNameDescriptor];
+    NSArray *sortedArray = [_jsonItems sortedArrayUsingDescriptors:sortDescriptor];
+    
+    if(_ascendSortBtn.selected || _descendSortBtn.selected){
+    _jsonItems = [[NSMutableArray alloc] initWithArray:sortedArray];
+        
+    } else {
+        [self useJsonChapterData];
+    }
+   
+     [[self tableView] reloadData];
+}
+
+- (void)filterBtnTapped:(id)sender{
+    
+     [sender tag];
+    
+    NSMutableArray *checkMarkArray = [[NSMutableArray alloc] init];
+    NSMutableArray *redXArray = [[NSMutableArray alloc] init];
+    for(NSDictionary *entry in _jsonItems){
+        
+        NSString *exid = [entry objectForKey:@"id"];
+        NSArray *answers = [_exToHistory objectForKey:exid];
+        
+        if(answers != nil && answers.count != 0){
+            BOOL isCorrect;
+            BOOL isIncorrect;
+            for(NSString *correct in answers){
+                isCorrect = [correct isEqualToString:@"Y"];
+                isIncorrect = [correct isEqualToString:@"N"];
+            }
+            if(isCorrect){
+                [checkMarkArray addObject:entry];
+            } else if(isIncorrect){
+                [redXArray addObject:entry];
+            }
+        }
+    }
+
+    
+    if([sender tag] == 666){
+        _checkMarkBtn.selected = !_checkMarkBtn.selected;
+        _checkMarkBtn.backgroundColor = _checkMarkBtn.selected ?[UIColor cyanColor]:[UIColor lightGrayColor];
+    } else if([sender tag] == 888){
+        _redXBtn.selected = !_redXBtn.selected;
+        _redXBtn.backgroundColor = _redXBtn.selected ?[UIColor cyanColor]:[UIColor lightGrayColor];
+    }
+    
+    if(_checkMarkBtn.selected){
+        _jsonItems = checkMarkArray;
+    } else if(_redXBtn.selected){
+        _jsonItems = redXArray;
+    } else {
+        _jsonItems = _temp_jsonItems;
+     //   NSLog(@"TOTALLLLLLL--- %lu", _temp_jsonItems.count);
+    }
+    
+    [[self tableView] reloadData];
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -226,9 +376,7 @@
 {
     static NSString *CellIdentifier = @"WordListPrototype";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-    
-    NSDictionary *jsonObject =[_jsonItems objectAtIndex:indexPath.row];
-    
+    NSDictionary *jsonObject=[_jsonItems objectAtIndex:indexPath.row];
     NSString *exercise = [jsonObject objectForKey:@"fl"];
     NSString *englishPhrases = [jsonObject objectForKey:@"en"];
     NSString *exid = [jsonObject objectForKey:@"id"];
@@ -250,7 +398,6 @@
     
     [self colorEachWord:exid cell:cell exercise:exercise scoreHistory:scoreHistory];
     cell.detailTextLabel.text = englishPhrases;
-    
     return cell;
 }
 
@@ -293,43 +440,6 @@
     return [UIColor colorWithRed:red green:green blue:blue alpha:1];
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 #pragma mark - Navigation
 
@@ -349,7 +459,7 @@
     flashcardController.jsonItems = _jsonItems;
     flashcardController.index = row;
     flashcardController.language = _language;
-    [flashcardController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,_currentChapter]];
+    [flashcardController setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,_chapterTitle, _currentChapter]];
     
     flashcardController.hasModel=_hasModel;
     flashcardController.chapterTitle = _chapterTitle;
@@ -414,13 +524,26 @@
     }
     
     NSMutableDictionary *exToEntry = [[NSMutableDictionary alloc] init];
+    
     for (NSDictionary *entry in _jsonItems) {
         NSString *ex = [entry objectForKey:@"id"];
        [exToEntry setObject:entry forKey:ex];
     }
+    
     NSMutableArray *newOrder = [[NSMutableArray alloc] init];
     
     NSArray *jsonArray = [json objectForKey:@"scores"];
+    NSString *lastCorrect = [json objectForKey:@"lastCorrect"];
+    NSString *lastIncorrect = [json objectForKey:@"lastIncorrect"];
+    NSNumberFormatter * formatter = [[NSNumberFormatter alloc] init];
+    unsigned long checkMarkTotal = [[formatter numberFromString:lastCorrect] unsignedLongValue];
+    unsigned long redXTotal = [[formatter numberFromString:lastIncorrect] unsignedLongValue];
+    unsigned long questionIconTotal = (unsigned long)_jsonItems.count - (checkMarkTotal + redXTotal);
+    _checkMarkPercentage = (roundf) (100 * ((float)checkMarkTotal/(float)(_jsonItems.count)));
+   
+    _redXPercentage = (roundf)(100 * ((float)redXTotal/(float)_jsonItems.count));
+    _questionIconPercentage = (roundf)(100 * ((float)questionIconTotal/(float)_jsonItems.count));
+   
     if (jsonArray != nil) {
         _exToScore   = [[NSMutableDictionary alloc] init];
         _exToHistory = [[NSMutableDictionary alloc] init];
@@ -448,9 +571,9 @@
             [[self tableView] reloadData];
         }
     }
-
+    
     [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
-
+    [self createBtnAndLabelForHeaderView];
     return true;
 }
 

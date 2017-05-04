@@ -343,8 +343,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     else {
         NSDictionary *scoreHistory = [_exToJson objectForKey:exid];
         [self colorEachWord:exid cell:cell exercise:fl scoreHistory:scoreHistory];
-        
+     //    cell.fl.font=[UIFont systemFontOfSize:12.0];
         cell.english.text = [_exToEnglish objectForKey:exid];
+        
+      //  cell.english.font=[UIFont systemFontOfSize:12.0];
     }
     return cell;
 }

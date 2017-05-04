@@ -86,6 +86,7 @@
 // cache the file as sites.json
 - (NSString *)getCachePath {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSLog(@"HTTTTTUUUU___: %@", paths);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"sites.json"];
     return filePath;

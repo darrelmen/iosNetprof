@@ -85,6 +85,8 @@
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender;
 @property (strong, nonatomic) IBOutlet UIProgressView *progressThroughItems;
 
+@property (weak, nonatomic) IBOutlet UILabel *progressNum;
+
 @property (strong) NSTimer *repeatingTimer;
 
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;

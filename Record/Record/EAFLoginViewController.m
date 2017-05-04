@@ -255,10 +255,30 @@
     return _siteGetter.languages.count;
 }
 
--(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
-{
-    //set item per row
-    return [_siteGetter.languages objectAtIndex:row];
+//-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
+//{
+//    //set item per row
+//    return [_siteGetter.languages objectAtIndex:row];
+//}
+
+-(UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(nullable UIView *)view{
+    UILabel *pView = (UILabel *)view;
+    if(!pView){
+        pView = [[UILabel alloc] init];
+//        CGRect frame = CGRectMake(0.0, 0.0, 80, 32);
+//        pView = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        [pView setFont:[UIFont boldSystemFontOfSize: 46]];
+         [pView setBackgroundColor:[UIColor clearColor]];
+//        [pView setTextColor:[UIColor greenColor]];
+        [pView setTextColor:[UIColor colorWithRed:181/255.0 green:10/255.0 blue:10/255.0 alpha:1.0]];
+        [pView setTextAlignment: NSTextAlignmentCenter];
+    }
+   [pView setText:[_siteGetter.languages objectAtIndex: row]];
+    return pView;
+}
+
+-(CGFloat)pickerView: (UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component{
+    return 50;
 }
 
 - (void) textFieldText:(id)notification {

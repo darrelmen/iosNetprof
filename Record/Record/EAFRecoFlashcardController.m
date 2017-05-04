@@ -102,13 +102,12 @@
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     NSString *showedID = [NSString stringWithFormat:@"showedIntro_%@",userid];
     NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
-    
     if (showedIntro == nil) {
         UIAlertView *info = [[UIAlertView alloc] initWithTitle:@"Swipe left/right/up/down to advance, tap to flip.\n\nPress and hold to record.\n\nTouch a word to hear audio or yourself.\n\nTouch Scores to see answers and sounds to work on." message:nil delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
         [info show];
         
         [SSKeychain setPassword:@"Yes"
-                     forService:@"mitll.proFeedback.device" account:showedID];
+                forService:@"mitll.proFeedback.device" account:showedID];
         _preventPlayAudio = true;
     }
     else {
@@ -301,6 +300,12 @@
                               icon:FAPlay
                           fontSize:20.0f];
     
+    
+    
+    UIFont *font = [UIFont boldSystemFontOfSize:18.0f];
+    NSDictionary *attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+    [_whatToShow setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    [_genderMaleSelector setTitleTextAttributes:attributes forState:UIControlStateNormal];
     
     _speedButton.layer.cornerRadius = 3.f;
     _speedButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
@@ -527,7 +532,8 @@
     scale = fmin(1,scale);
     float newFont = smallest + floor((largest-smallest)*scale);
     //  NSLog(@"scaleFont font is %f",newFont);
-    [labelToScale setFont:[UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue]];
+   // [labelToScale setFont:[UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue]];
+    [labelToScale setFont:[UIFont fontWithName:@"Arial" size:[NSNumber numberWithFloat:newFont].intValue]];
 }
 
 - (NSString *)trim:(NSString *)exercise
@@ -559,16 +565,15 @@
     _english.minimumScaleFactor=0.1;
     
     if ([self isiPad]) {
-        [_foreignLang setFont:[UIFont systemFontOfSize:52]];
+        [_foreignLang setFont:[UIFont fontWithName:@"Arial" size:52]];
+       // [_foreignLang setFont:[UIFont systemFontOfSize:52]];
         //        NSLog(@"font size is %@",_foreignLang.font);
     }
 }
 
 - (unsigned long)getItemIndex {
     unsigned long toUse = _index;
-    if (
-        _shuffleButton.selected
-        ) {
+    if (_shuffleButton.selected) {
         toUse = [[_randSequence objectAtIndex:_index] integerValue];
     }
     return toUse;
@@ -597,7 +602,24 @@
 
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
-    _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
+    long index = (long) _index + 1.0;
+    long jsonItemCount = (long) _jsonItems.count;
+
+    _progressThroughItems.progress = ((float) _index + 1.0) /(float) _jsonItems.count;
+    
+    NSString *jsonItemCountStr = [NSString stringWithFormat:@"%ld",jsonItemCount];
+    _progressNum.text = [NSString stringWithFormat:@"%ld  / %ld", index, jsonItemCount];
+//    _progressNum.textColor = [UIColor colorWithRed:(0/255.f) green:(0/255.f) blue:(255/255.f) alpha:1.0];
+    
+//    _progressNum.textColor = [UIColor redColor];
+    
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:_progressNum.text];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(0,[jsonItemCountStr length])];
+    _progressNum.attributedText = str;
+
+   
+    [_progressNum setFont:[UIFont fontWithName:@"Arial" size:16]];
+    
     [self hideAndShowText];
     
     //   [self removePlayObserver];
@@ -722,6 +744,7 @@
                     refAudio = [jsonObject objectForKey:@"frr"];
                 }
             }
+ 
         }
         else {
             if (hasMaleReg) {
@@ -808,6 +831,7 @@
     NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
     
     BOOL showEnglish = _whatToShow.selectedSegmentIndex == 0;
+
     // complicated...
     // _myAudioPlayer.audioPaths = _audioRefs;
     if (_audioOnButton.selected &&   // volume on
@@ -817,14 +841,27 @@
         //         NSLog(@"respondToSwipe first");
         if (showEnglish) {
             //   NSLog(@"respondToSwipe first - %ld", (long)_whatToShow.selectedSegmentIndex);
-            if (_autoPlayButton.selected) {
+        //    if (_autoPlayButton.selected) {
                 
                 [self speakEnglish:false];
-            }
+                
+        //    }
         }
         else {
+          //  [self stopPlayingAudio];
             [self playRefAudioIfAvailable];
         }
+//        else if (showBoth){
+//            if (!_foreignLang.hidden){
+//                [self playRefAudioIfAvailable];
+//            } else if ( !_english.hidden){
+//            
+//                  [self speakEnglish:false];
+//            }
+//        } else {
+//            
+//            [self playRefAudioIfAvailable];
+//        }
     }
     else {
         _preventPlayAudio = false;
@@ -889,6 +926,10 @@
     _autoPlayButton.color = _autoPlayButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
     
     if (_autoPlayButton.selected) {
+//        if(_shuffleButton.selected){
+//            _shuffleButton.selected = false;
+//            _shuffleButton.color = _shuffleButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+//        }
         NSError *activationError = nil;
         BOOL success = [[AVAudioSession sharedInstance] setActive:YES error:&activationError];
         if (!success) { /* handle the error condition */ }
@@ -899,7 +940,7 @@
         if (_audioRefs.count > 1) {
             [_audioRefs removeLastObject];
         }
-        [self playRefAudioIfAvailable];
+         [self playRefAudioIfAvailable];
         // Turn on remote control event delivery
         
         NSLog(@"beginReceivingRemoteControlEvents ----\n");
@@ -1019,6 +1060,7 @@
             _autoAdvanceTimer = [NSTimer scheduledTimerWithTimeInterval:_autoAdvanceInterval target:self selector:@selector(doAutoAdvance) userInfo:nil repeats:NO];
         }
     }
+
 }
 - (void) beginBackgroundUpdateTask
 {
@@ -1114,6 +1156,10 @@
 - (IBAction)whatToShowSelection:(id)sender {
     [self hideAndShowText];
     
+    if (_audioOnButton.selected){
+        [self playRefAudioIfAvailable];
+    }
+
     long selected = [_whatToShow selectedSegmentIndex];
     
     if (selected == 0) { // english
@@ -1201,7 +1247,7 @@
 }
 
 - (void) playGotToEnd {
-    if (_autoPlayButton.selected) {
+//    if (_autoPlayButton.selected) {
         // doing autoplay!
         // skip english if lang is english
         if ([_english.text isEqualToString:_foreignLang.text]) {
@@ -1210,17 +1256,26 @@
         else {
             // OK move on to english part of card, automatically
             NSLog(@"playGotToEnd - speak english");
-            if (_whatToShow.selectedSegmentIndex == 0) { // already played english, so now at end of fl, go to next
+            if (_whatToShow.selectedSegmentIndex == 0 ){
+         //   if (_whatToShow.selectedSegmentIndex == 0 || _whatToShow.selectedSegmentIndex == 1 || _whatToShow.selectedSegmentIndex == 3) { // already played english, so now at end of fl, go to next
+            
                 [self doAutoAdvance];
+              
+            } else if (_whatToShow.selectedSegmentIndex == 1) {
+
+                if (_autoPlayButton.selected){
+                    [self doAutoAdvance];
+                }
             }
             else { // haven't played english yet, so play it
                 [self speakEnglish:false];
+            
             }
         }
-    }
-    else {
-        //  NSLog(@"playGotToEnd - no op");
-    }
+//    }
+//    else {
+//        //  NSLog(@"playGotToEnd - no op");
+//    }
 }
 
 // set the text color of all the labels in the scoreDisplayContainer
@@ -1691,11 +1746,18 @@ bool debugRecord = false;
     _shuffleButton.color = _shuffleButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
     
     if (_shuffleButton.selected) {
+//        if (_autoPlayButton.selected) {
+//            [self unselectAutoPlay];
+////            _autoPlayButton.selected = !_shuffleButton.selected;
+//        }
         [self doShuffle];
+        [self respondToSwipe];
     }
-    [self respondToSwipe];
+//    [self respondToSwipe];
     
     [self postEvent:@"shuffle" widget:@"shuffle" type:@"UIButton"];
+   
+
 }
 
 - (void)doShuffle {
@@ -1705,15 +1767,20 @@ bool debugRecord = false;
         [_randSequence addObject:[NSNumber numberWithUnsignedLong:i]];
     }
     
-    unsigned int max = _jsonItems.count-1;
-    
+//    unsigned int max = _jsonItems.count - 1;
+    unsigned int max = (int)_jsonItems.count;
+    unsigned int firstIndex;
     for (unsigned int ii = 0; ii < max; ++ii) {
         unsigned int remainingCount = max - ii;
         unsigned int r = arc4random_uniform(remainingCount)+ii;
+        if (ii == 0){
+            firstIndex = r;
+        }
         [_randSequence exchangeObjectAtIndex:ii withObjectAtIndex:r];
+     
     }
     
-    _index = 0;
+    _index = firstIndex;
 }
 
 // Posts audio with current fl field
