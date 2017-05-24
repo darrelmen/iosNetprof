@@ -816,7 +816,7 @@
         
         //         NSLog(@"respondToSwipe first");
         if (showEnglish) {
-            //   NSLog(@"respondToSwipe first - %ld", (long)_whatToShow.selectedSegmentIndex);
+               NSLog(@"respondToSwipe first - %ld", (long)_whatToShow.selectedSegmentIndex);
             if (_autoPlayButton.selected) {
                 
                 [self speakEnglish:false];
@@ -1040,7 +1040,7 @@
     // NSLog(@"play ref if avail");
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     if ([self hasRefAudio]) {
-        //  NSLog(@"\tplay ref if avail");
+        NSLog(@"\tplay ref if avail");
         [_myAudioPlayer playRefAudio];
     }
     else {
@@ -1214,7 +1214,12 @@
                 [self doAutoAdvance];
             }
             else { // haven't played english yet, so play it
-                [self speakEnglish:false];
+               if (_whatToShow.selectedSegmentIndex != 1) {
+                    [self speakEnglish:false];
+                }
+                else {
+                    [self doAutoAdvance];
+                }
             }
         }
     }
