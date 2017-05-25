@@ -123,7 +123,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     //    NSLog(@"RecoFlashcard - viewWillAppear --->");
-   // [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
+    // [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
     
     [self respondToSwipe];
 }
@@ -667,9 +667,9 @@
     _audioRefs = [[NSMutableArray alloc] init];
     BOOL isSlow = _speedButton.selected;
     
-        NSLog(@"speed is %@",isSlow ? @"SLOW" :@"REGULAR");
-        NSLog(@"male slow %@",hasMaleSlow ? @"YES" :@"NO");
-        NSLog(@"male reg  %@",hasMaleReg ? @"YES" :@"NO");
+    NSLog(@"speed is %@",isSlow ? @"SLOW" :@"REGULAR");
+    NSLog(@"male slow %@",hasMaleSlow ? @"YES" :@"NO");
+    NSLog(@"male reg  %@",hasMaleReg ? @"YES" :@"NO");
     NSLog(@"selected gender is %ld",selectedGender);
     NSLog(@"ref is %@",refAudio);
     NSLog(@"msr is %@",test);
@@ -787,7 +787,7 @@
     if (_autoPlayButton.selected && _audioRefs.count > 1) {
         [_audioRefs removeLastObject];
     }
-      NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
+    NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
     
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
@@ -1762,8 +1762,7 @@ bool debugRecord = false;
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
     [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
-    [urlRequest setValue:@"application/x-www-form-urlencoded"
-      forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded"      forHTTPHeaderField:@"Content-Type"];
     [urlRequest setTimeoutInterval:15];
     
     // add request parameters
@@ -1771,9 +1770,10 @@ bool debugRecord = false;
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     
     [urlRequest setValue:userid forHTTPHeaderField:@"user"];
-    [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
-    NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     
+    [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
+    
+    NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     
     NSString *id = [[self getCurrentJson] objectForKey:@"id"];
@@ -1781,10 +1781,15 @@ bool debugRecord = false;
     if ([[[self getCurrentJson] objectForKey:@"id"] isKindOfClass:[NSNumber class]]) {
         NSNumber *nid = [[self getCurrentJson] objectForKey:@"id"];
         id = [NSString stringWithFormat:@"%@",nid];
+        NSLog(@"got number %@ = %@",nid,id);
     }
     
     [urlRequest setValue:id        forHTTPHeaderField:@"exercise"];
+   
     [urlRequest setValue:@"decode" forHTTPHeaderField:@"request"];
+    
+    NSString *projid = [NSString stringWithFormat:@"%@",[_siteGetter.nameToProjectID objectForKey:_language]];
+    [urlRequest setValue:projid forHTTPHeaderField:@"projid"];
     
     //NSString *req = ;
     //   NSLog(@"Req id %@ %d",req, _reqid);
@@ -1796,7 +1801,7 @@ bool debugRecord = false;
     [urlRequest setHTTPBody:postData];
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    // NSLog(@"posting to %@",_url);
+    NSLog(@"posting to %@",_url);
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          dispatch_async(dispatch_get_main_queue(), ^{
@@ -1988,6 +1993,13 @@ bool debugRecord = false;
     //     NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
     //     NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSString *exid = [json objectForKey:@"exid"];
+    
+    
+    // so netprof v2 has number ids - hard to know what type json is returning...
+    if ([[json objectForKey:@"exid"] isKindOfClass:[NSNumber class]]) {
+        NSNumber *nid = [json objectForKey:@"exid"];
+        exid = [NSString stringWithFormat:@"%@",nid];
+    }
     
     NSNumber *resultID = [json objectForKey:@"resultID"];
     
@@ -2504,21 +2516,21 @@ BOOL addSpaces = false;
     NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"msr",@"frr",@"fsr",@"ctmref",@"ctfref",@"ctref",nil];
     
     NSLog(@"cacheAudio cache for %lu",(unsigned long)[items count]);
-
+    
     NSString *urlWithSlash = _url;
     for (NSDictionary *object in items) {
         for (NSString *id in fields) {
             NSString *refPath = [object objectForKey:id];
             
             if (refPath && refPath.length > 2) { //i.e. not NO
-              //  NSLog(@"cacheAudio adding %@ %@",id,refPath);
+                //  NSLog(@"cacheAudio adding %@ %@",id,refPath);
                 
                 refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
                                                              withString:@".mp3"];
                 
                 NSMutableString *mu = [NSMutableString stringWithString:refPath];
                 [mu insertString:urlWithSlash atIndex:0];
-//                NSLog(@"cacheAudio %@ %@",mu,urlWithSlash);
+                //                NSLog(@"cacheAudio %@ %@",mu,urlWithSlash);
                 
                 [paths addObject:mu];
                 [rawPaths addObject:refPath];

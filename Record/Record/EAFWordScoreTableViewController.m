@@ -302,7 +302,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *exid = [_exList objectAtIndex:row];
     NSArray *answers = [_exToHistory objectForKey:exid];
     NSArray *scores = [_exToHistoryScores objectForKey:exid];
-
+    
     
     // NSDictionary *scoreHistory = [_exToJson objectForKey:exid];
     //   NSLog(@"scoreHistory %@ %@",exid,scores);
@@ -534,28 +534,41 @@ NSString *myCurrentTitle;
     //  NSLog(@"Got point %f %f",p.x,p.y);
     
     CGPoint p = [sender locationInView:self.tableView];
-    //    NSLog(@"Got point %f %f",p.x,p.y);
+    NSLog(@"gotTapGesture Got point %f %f",p.x,p.y);
     
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
-    //     NSLog(@"Got path %@",indexPath);
+    NSLog(@"gotTapGesture Got path %@",indexPath);
     
     NSInteger row = indexPath.row;
     NSString *exid = [_exList objectAtIndex:row];
     
+    if ([exid isKindOfClass:[NSNumber class]]) {
+        NSNumber *nid = [_exList objectAtIndex:row];
+        exid = [NSString stringWithFormat:@"%@",nid];
+        NSLog(@"gotTapGesture got number %@ = %@",nid,exid);
+    }
     
-//    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
-//    [poster postEvent:@"tapOnItem" exid:exid widget:@"WordScoreTableCell" widgetType:@"Table"];
+    //    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
+    //    [poster postEvent:@"tapOnItem" exid:exid widget:@"WordScoreTableCell" widgetType:@"Table"];
     //   NSLog(@"exid selection %@",exid);
     
     for (NSDictionary *jsonObject in _jsonItems) {
         //     NSLog(@"comparing to %@",[jsonObject objectForKey:@"id"]);
-        if ([[jsonObject objectForKey:@"id"] isEqualToString:exid]) {
-            //   NSLog(@"got it %@",jsonObject);
+        NSString *id =  [jsonObject objectForKey:@"id"];
+        
+        if ([id isKindOfClass:[NSNumber class]]) {  // deal with netprof v2 ids
+            NSNumber *nid = [_exList objectAtIndex:row];
+            id = [NSString stringWithFormat:@"%@",nid];
+            //NSLog(@"got number %@ = %@",nid,id);
+        }
+        
+        if ([id isEqualToString:exid]) {
+              NSLog(@"gotTapGesture got it %@",jsonObject);
             // NSString *refAudio = [jsonObject objectForKey:@"ref"];
             NSMutableArray *toPlay = [[NSMutableArray alloc] init];
             NSString *refAudioPath = [jsonObject objectForKey:@"ref"];
             if (refAudioPath == nil) {
-                NSLog(@"ERROR : no ref audio in %@",jsonObject);
+                NSLog(@"gotTapGesture ERROR : no ref audio in %@",jsonObject);
             }
             else {
                 [toPlay addObject:refAudioPath];
@@ -565,7 +578,6 @@ NSString *myCurrentTitle;
                 
                 for (UIView *subview in [cell.contentView subviews]) {
                     // NSLog(@"subview %@",subview);
-                    
                     if ([subview isKindOfClass:[UILabel class]]) {
                         //   NSLog(@"found label %@, %@", subview, ((UILabel *) subview).text);
                         if ([ fl isEqualToString:((UILabel *) subview).text]) {

@@ -104,20 +104,20 @@
     
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     
-    NSLog(@"postEvent device %@",retrieveuuid);
+   // NSLog(@"postEvent device %@",retrieveuuid);
     
     [urlRequest setValue:context forHTTPHeaderField:@"context"];
-    NSLog(@"postEvent context %@",context);
+   // NSLog(@"postEvent context %@",context);
     [urlRequest setValue:exid forHTTPHeaderField:@"exid"];
-    NSLog(@"postEvent exid %@",exid);
+  //  NSLog(@"postEvent exid %@",exid);
     [urlRequest setValue:widget forHTTPHeaderField:@"widget"];
-    NSLog(@"postEvent widget %@",widget);
+  //  NSLog(@"postEvent widget %@",widget);
     [urlRequest setValue:widgetType forHTTPHeaderField:@"widgetType"];
-    NSLog(@"postEvent widgetType %@",widgetType);
+  //  NSLog(@"postEvent widgetType %@",widgetType);
     [urlRequest setValue:@"event" forHTTPHeaderField:@"request"];
-    NSLog(@"postEvent event %@",@"event");
+  //  NSLog(@"postEvent event %@",@"event");
     
-    NSLog(@"postEvent req %@",urlRequest);
+  //  NSLog(@"postEvent req %@",urlRequest);
     
     // post the audio
     
