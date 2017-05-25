@@ -129,7 +129,7 @@
 }
 
 - (void)askServerForJson {
-    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     NSLog(@"askServerForJson url %@",baseurl);
@@ -543,8 +543,8 @@ NSString *myCurrentTitle;
     NSString *exid = [_exList objectAtIndex:row];
     
     
-    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
-    [poster postEvent:@"tapOnItem" exid:exid widget:@"WordScoreTableCell" widgetType:@"Table"];
+//    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
+//    [poster postEvent:@"tapOnItem" exid:exid widget:@"WordScoreTableCell" widgetType:@"Table"];
     //   NSLog(@"exid selection %@",exid);
     
     for (NSDictionary *jsonObject in _jsonItems) {

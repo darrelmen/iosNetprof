@@ -73,9 +73,10 @@
         _oldServer = @"https://np.ll.mit.edu/";
         //   _oldServer = @"https://129.55.210.144/";
         //NSLog(@"EAFGetSites server now %@",_oldServer);
-     //   _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
-        _nServer = @"http://127.0.0.1:8888/netprof/";
+        _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+     //   _nServer = @"http://127.0.0.1:8888/netprof/";
     }
+    
     return self;
 }
 
@@ -101,6 +102,7 @@
     [self getSitesFromServer:_oldServer];
 }
 
+// we talk to the old server, then the new server...
 - (void)getSitesFromServer:(NSString *) theServer {
     NSString *baseurl;
     
@@ -207,7 +209,7 @@
     for (int i = 0; i<fetchedArr.count; i++) {
         NSDictionary* site = fetchedArr[i];
         
-        //   NSLog(@"got %@",site);
+       // NSLog(@"parseJSON got %@",site);
         
         BOOL showOnIOS = [[site valueForKey:@"showOnIOS"] boolValue];
         if (showOnIOS) {
@@ -215,6 +217,10 @@
             NSString *url  = [site objectForKey:@"url"];
             if (url == NULL) {
                 url = _nServer;
+            }
+            if ([name isEqualToString:@"Spanish"]) {
+                url = _nServer;
+                 NSLog(@"parseJSON using %@",url);
             }
             if (![url hasSuffix:@"/"]) {
                 url = [NSString stringWithFormat:@"%@/",url];

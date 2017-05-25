@@ -40,10 +40,14 @@
 
 #import "EAFScoreReportTabBarController.h"
 #import "EAFEventPoster.h"
+#import "EAFGetSites.h"
 
 @interface EAFScoreReportTabBarController ()
 
+@property EAFGetSites *siteGetter;
+
 @end
+
 
 @implementation EAFScoreReportTabBarController
 
@@ -52,6 +56,9 @@
 {
     [super viewDidLoad];
     self.delegate = self;
+    
+//    _siteGetter = [EAFGetSites new];
+//    [_siteGetter getSites];
 
     //[self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.
@@ -65,14 +72,19 @@
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
    // NSLog(@"tabBarController got selection event %@",viewController);
     
-    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
-    [poster postEvent:NSStringFromClass([viewController class]) exid:@"n/a" widget:@"Choice" widgetType:@"Button"];
+//    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
+//    [poster postEvent:NSStringFromClass([viewController class]) exid:@"n/a" widget:@"Choice" widgetType:@"Button"];
     
     if ( [viewController respondsToSelector:@selector(setCurrentTitle)] )
     {
         [viewController performSelector:@selector(setCurrentTitle)];
     }
 }
+
+//- (EAFEventPoster*)getPoster {
+//    return [[EAFEventPoster alloc] initWithURL:_url projid:[_siteGetter.nameToProjectID objectForKey:_language]];
+//}
+
 
 #pragma mark - Navigation
 

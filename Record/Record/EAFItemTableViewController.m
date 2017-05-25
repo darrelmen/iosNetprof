@@ -364,7 +364,7 @@
 //
 - (void)askServerForJson {
     _requestPending = true;
-    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _url, _user, _unitTitle, _unit, _chapterTitle, _currentChapter];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _url, _user, _unitTitle, _unit, _chapterTitle, _currentChapter];
     
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 

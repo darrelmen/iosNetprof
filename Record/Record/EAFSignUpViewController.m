@@ -129,7 +129,7 @@
 // POST request
 - (void)addUser:(NSString *)chosenLanguage username:(NSString *)username password:(NSString *)password email:(NSString *)email {
     
-    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet",[_siteGetter.nameToURL objectForKey:chosenLanguage]];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet",[_siteGetter.nameToURL objectForKey:chosenLanguage]];
     NSURL *url = [NSURL URLWithString:baseurl];
 
     NSLog(@"addUser url %@",url);

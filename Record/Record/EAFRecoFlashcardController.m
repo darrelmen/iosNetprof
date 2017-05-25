@@ -53,6 +53,8 @@
 #import "EAFAudioPlayer.h"
 #import "EAFAppDelegate.h"
 #import "EAFPopoverViewController.h"
+#import "EAFGetSites.h"
+
 #import <sys/utsname.h> // import it in your header or implementation file.
 
 @implementation UIProgressView (customView)
@@ -90,6 +92,7 @@
 @property NSMutableArray *wordLabels;
 @property NSMutableArray *phoneLabels;
 @property BOOL preventPlayAudio;
+@property EAFGetSites *siteGetter;
 
 - (void)postAudio;
 
@@ -120,7 +123,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     //    NSLog(@"RecoFlashcard - viewWillAppear --->");
-    [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
+   // [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
     
     [self respondToSwipe];
 }
@@ -160,6 +163,9 @@
     //    NSLog(@"RecoFlashcardController.viewDidLoad --->");
     [super viewDidLoad];
     _audioCache = [[EAFAudioCache alloc] init];
+    
+    _siteGetter = [EAFGetSites new];
+    [_siteGetter getSites];
     
     [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
     
@@ -401,9 +407,29 @@
 }
 
 - (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
-    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-    [poster postEvent:message exid:[jsonObject objectForKey:@"id"] widget:widget widgetType:type];
+    
+    NSLog(@"postEvent language %@", _language);
+    NSLog(@"postEvent message  %@", message);
+    
+    NSString *id = [jsonObject objectForKey:@"id"];
+    
+    // so netprof v2 has number ids - hard to know what type json is returning...
+    if ([[jsonObject objectForKey:@"id"] isKindOfClass:[NSNumber class]]) {
+        NSNumber *nid = [jsonObject objectForKey:@"id"];
+        id = [NSString stringWithFormat:@"%@",nid];
+    }
+    
+    NSLog(@"postEvent id       %@", id);
+    NSLog(@"postEvent widget   %@", widget);
+    NSLog(@"postEvent type     %@", type);
+    
+    EAFEventPoster *poster = [self getPoster];
+    [poster postEvent:message exid:id widget:widget widgetType:type];
+}
+
+- (EAFEventPoster*)getPoster {
+    return [[EAFEventPoster alloc] initWithURL:_url projid:[_siteGetter.nameToProjectID objectForKey:_language]];
 }
 
 - (IBAction)showScoresClick:(id)sender {
@@ -641,11 +667,14 @@
     _audioRefs = [[NSMutableArray alloc] init];
     BOOL isSlow = _speedButton.selected;
     
-    //    NSLog(@"speed is %@",isSlow ? @"SLOW" :@"REGULAR");
-    //    NSLog(@"male slow %@",hasMaleSlow ? @"YES" :@"NO");
-    //    NSLog(@"male reg  %@",hasMaleReg ? @"YES" :@"NO");
-    //    NSLog(@"selected gender is %ld",selectedGender);
-    //    NSLog(@"dict  %@",jsonObject);
+        NSLog(@"speed is %@",isSlow ? @"SLOW" :@"REGULAR");
+        NSLog(@"male slow %@",hasMaleSlow ? @"YES" :@"NO");
+        NSLog(@"male reg  %@",hasMaleReg ? @"YES" :@"NO");
+    NSLog(@"selected gender is %ld",selectedGender);
+    NSLog(@"ref is %@",refAudio);
+    NSLog(@"msr is %@",test);
+    NSLog(@"dict  %@",jsonObject);
+    
     BOOL hasTwoGenders = (hasMaleReg || hasMaleSlow) && (hasFemaleReg || hasFemaleSlow);
     
     if (hasTwoGenders) {
@@ -758,7 +787,7 @@
     if (_autoPlayButton.selected && _audioRefs.count > 1) {
         [_audioRefs removeLastObject];
     }
-    //  NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
+      NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
     
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
@@ -1142,7 +1171,7 @@
     
     
     [self postEvent:speed widget:@"speed" type:@"UIButton"];
-
+    
     _speedButton.backgroundColor = _speedButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
     if (!_autoPlayButton.selected) {
         [self respondToSwipe];
@@ -1555,7 +1584,7 @@ bool debugRecord = false;
 - (IBAction)playAudio:(id)sender {
     if (!_audioRecorder.recording)
     {
-        NSLog(@"playAudio %@",_audioRecorder.url);
+        NSLog(@"playAudio playAudio %@",_audioRecorder.url);
         [self stopPlayingAudio];
         
         NSError *error;
@@ -1727,7 +1756,7 @@ bool debugRecord = false;
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
     
     // NSLog(@"file length %@",postLength);
-    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _url];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet", _url];
     NSLog(@"postAudio talking to %@",baseurl);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
@@ -1746,14 +1775,20 @@ bool debugRecord = false;
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
-    [urlRequest setValue:[[self getCurrentJson] objectForKey:@"id"]
-      forHTTPHeaderField:@"exercise"];
+    
+    NSString *id = [[self getCurrentJson] objectForKey:@"id"];
+    // so netprof v2 has number ids - hard to know what type json is returning...
+    if ([[[self getCurrentJson] objectForKey:@"id"] isKindOfClass:[NSNumber class]]) {
+        NSNumber *nid = [[self getCurrentJson] objectForKey:@"id"];
+        id = [NSString stringWithFormat:@"%@",nid];
+    }
+    
+    [urlRequest setValue:id        forHTTPHeaderField:@"exercise"];
     [urlRequest setValue:@"decode" forHTTPHeaderField:@"request"];
     
-    NSString *req = [NSString stringWithFormat:@"%d",_reqid];
-    
+    //NSString *req = ;
     //   NSLog(@"Req id %@ %d",req, _reqid);
-    [urlRequest setValue:req forHTTPHeaderField:@"reqid"];
+    [urlRequest setValue:[NSString stringWithFormat:@"%d",_reqid] forHTTPHeaderField:@"reqid"];
     _reqid++;
     
     // post the audio
@@ -1957,11 +1992,11 @@ bool debugRecord = false;
     NSNumber *resultID = [json objectForKey:@"resultID"];
     
     // Post a RT value for the result id
-    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
+    // EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
     NSString * roundTrip =[NSString stringWithFormat:@"%d",iMillis];
     //NSLog(@"connectionDidFinishLoading - roundTrip  %@",roundTrip);
     
-    [poster postRT:[resultID stringValue] rtDur:roundTrip];
+    [[self getPoster] postRT:[resultID stringValue] rtDur:roundTrip];
     
     //   NSLog(@"exid was %@",exid);
     NSNumber *score = [json objectForKey:@"score"];
@@ -2468,20 +2503,22 @@ BOOL addSpaces = false;
     
     NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"msr",@"frr",@"fsr",@"ctmref",@"ctfref",@"ctref",nil];
     
-    NSString *urlWithSlash = _url; //[NSString stringWithFormat:@"%@/",_url];
+    NSLog(@"cacheAudio cache for %lu",(unsigned long)[items count]);
+
+    NSString *urlWithSlash = _url;
     for (NSDictionary *object in items) {
         for (NSString *id in fields) {
             NSString *refPath = [object objectForKey:id];
             
             if (refPath && refPath.length > 2) { //i.e. not NO
-                //NSLog(@"adding %@ %@",id,refPath);
+              //  NSLog(@"cacheAudio adding %@ %@",id,refPath);
                 
                 refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
                                                              withString:@".mp3"];
                 
                 NSMutableString *mu = [NSMutableString stringWithString:refPath];
                 [mu insertString:urlWithSlash atIndex:0];
-                //  NSLog(@"cacheAudio %@ %@",mu,urlWithSlash);
+//                NSLog(@"cacheAudio %@ %@",mu,urlWithSlash);
                 
                 [paths addObject:mu];
                 [rawPaths addObject:refPath];

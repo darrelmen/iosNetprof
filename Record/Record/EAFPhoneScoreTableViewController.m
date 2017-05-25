@@ -43,6 +43,8 @@
 #import "EAFAudioCache.h"
 #import "EAFAudioPlayer.h"
 #import "EAFEventPoster.h"
+#import "EAFGetSites.h"
+
 #import <AudioToolbox/AudioServices.h>
 #import "SSKeychain.h"
 
@@ -54,6 +56,7 @@
 @property EAFAudioView * currentAudioSelection;
 @property EAFAudioPlayer *myAudioPlayer;
 @property (strong, nonatomic) NSData *responseData;
+@property EAFGetSites *siteGetter;
 
 @end
 
@@ -74,6 +77,9 @@
     _myAudioPlayer.url = _url;
     _myAudioPlayer.language = _language;
     _myAudioPlayer.delegate = self;
+    
+    _siteGetter = [EAFGetSites new];
+    _siteGetter.delegate = self;
     
     [self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.
@@ -112,7 +118,7 @@
 }
 
 - (void)askServerForJson {
-    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     NSLog(@"EAFPhoneScoreTableViewController url %@",baseurl);
@@ -703,7 +709,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     else {
         [audioRefs addObject:sender.refAudio];
-        EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
+        EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url projid:[_siteGetter.nameToProjectID objectForKey:_language]];
+
         [poster postEvent:sender.refAudio exid:@"n/a" widget:@"refAudio" widgetType:@"PhoneScoreTableCell"];
     }
     if (sender.answer == nil) {

@@ -111,7 +111,7 @@
 
 
 - (void) forgotUsername:(NSString *)email language:(NSString *)lang {
-    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?forgotUsername=%@", _url, email];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?forgotUsername=%@", _url, email];
     
     NSLog(@"url %@",baseurl);
     

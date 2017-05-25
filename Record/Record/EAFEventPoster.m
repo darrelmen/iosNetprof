@@ -58,10 +58,10 @@
         return nil;
 }
 
-- (id) initWithURL:(NSString *) url {//projid:(NSNumber *) projid{
+- (id) initWithURL:(NSString *) url projid:(NSNumber *) projid{
     if ( self = [super init] ) {
         _urlToUse = url;
-//        _projid = projid;
+        _projid = projid;
         return self;
     } else
         return nil;
@@ -82,9 +82,9 @@
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)0];
-    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _urlToUse];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet", _urlToUse];
     
-    NSLog(@"postEvent post %@ to %@ or %@",context,_urlToUse,baseurl);
+    NSLog(@"postEvent post context %@ to url %@ or %@",context,_urlToUse,baseurl);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
@@ -97,18 +97,27 @@
     [urlRequest setValue:userid forHTTPHeaderField:@"user"];
     
     if (_projid == NULL) NSLog(@"huh? projid is null");
-    NSLog(@"postEvent post %@ to %@ with %@",context,_urlToUse,_projid);
-
+    
+    NSLog(@"postEvent post %@ to %@ with project %@",context,_urlToUse,_projid);
+    
     [urlRequest setValue:[_projid stringValue] forHTTPHeaderField:@"projid"];
     
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
-    [urlRequest setValue:context forHTTPHeaderField:@"context"];
-    [urlRequest setValue:exid forHTTPHeaderField:@"exid"];
-    [urlRequest setValue:widget forHTTPHeaderField:@"widget"];
-    [urlRequest setValue:widgetType forHTTPHeaderField:@"widgetType"];
-    [urlRequest setValue:@"event" forHTTPHeaderField:@"request"];
     
-    NSLog(@"req %@",urlRequest);
+    NSLog(@"postEvent device %@",retrieveuuid);
+    
+    [urlRequest setValue:context forHTTPHeaderField:@"context"];
+    NSLog(@"postEvent context %@",context);
+    [urlRequest setValue:exid forHTTPHeaderField:@"exid"];
+    NSLog(@"postEvent exid %@",exid);
+    [urlRequest setValue:widget forHTTPHeaderField:@"widget"];
+    NSLog(@"postEvent widget %@",widget);
+    [urlRequest setValue:widgetType forHTTPHeaderField:@"widgetType"];
+    NSLog(@"postEvent widgetType %@",widgetType);
+    [urlRequest setValue:@"event" forHTTPHeaderField:@"request"];
+    NSLog(@"postEvent event %@",@"event");
+    
+    NSLog(@"postEvent req %@",urlRequest);
     
     // post the audio
     
@@ -127,7 +136,7 @@
 
 // Post round trip info so we can record how long it takes from recording audio to seeing a score
 - (void) postRT:(NSString *)resultID rtDur:(NSString *)rtDur {
-    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet", _urlToUse];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet", _urlToUse];
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];

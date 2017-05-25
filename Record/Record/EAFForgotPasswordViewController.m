@@ -135,7 +135,7 @@
 #pragma mark NSURLConnection Delegate Methods
 
 - (void) resetPassword:(NSString *)email language:(NSString *)lang {
-    NSString *baseurl = [NSString stringWithFormat:@"%@/scoreServlet?resetPassword=%@&email=%@", _url, _username.text, email];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?resetPassword=%@&email=%@", _url, _username.text, email];
     
     NSLog(@"url %@",baseurl);
     

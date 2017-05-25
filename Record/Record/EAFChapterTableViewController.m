@@ -93,7 +93,7 @@
     }
     
     _language = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
-    _poster = [[EAFEventPoster alloc] initWithURL:_url];//] projid:[_siteGetter.nameToProjectID objectForKey:_language]];
+    _poster = [[EAFEventPoster alloc] initWithURL:_url projid:[_siteGetter.nameToProjectID objectForKey:_language]];
 
    [self setTitle:_language];
     
