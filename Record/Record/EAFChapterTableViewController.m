@@ -127,10 +127,7 @@
     _isRefresh = isRefresh;
     
     _reqCount++;
-    NSNumber *projid = [_siteGetter getProject:_language];
-    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?nestedChapters",//&projid=%@",
-                         [_siteGetter.nameToURL objectForKey:_language]];
-                         //,                         projid];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?nestedChapters", [_siteGetter.nameToURL objectForKey:_language]];
     
     
     NSURL *url = [NSURL URLWithString:baseurl];
@@ -140,8 +137,11 @@
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
     [urlRequest setHTTPMethod: @"GET"];
-    [urlRequest setValue:@"application/x-www-form-urlencoded"
-      forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    NSNumber *projid = [_siteGetter getProject:_language];
+    
+    NSLog(@"ChapterTableViewController - askServerForJson projid %@",projid);
+
     [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
@@ -531,6 +531,10 @@ UIAlertView *loadingContentAlert;
     itemController.chapterTitle = _chapterName;
     itemController.currentChapter =_currentChapter;
     [itemController setLanguage:_language];
+    
+    NSNumber *projid = [_siteGetter getProject:_language];
+    itemController.projid = projid;
+    
     itemController.hasModel=_hasModel;
     itemController.unitTitle = _unitTitle;
     itemController.unit = _unit;

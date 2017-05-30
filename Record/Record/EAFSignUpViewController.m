@@ -141,6 +141,7 @@
     
     [urlRequest setValue:username forHTTPHeaderField:@"user"];
     [urlRequest setValue:[[self MD5:password] uppercaseString] forHTTPHeaderField:@"passwordH"];
+    [urlRequest setValue:[password uppercaseString] forHTTPHeaderField:@"password"];
     [urlRequest setValue:[[self MD5:email]    uppercaseString] forHTTPHeaderField:@"emailH"];
     [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];

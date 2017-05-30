@@ -114,7 +114,7 @@
     }
     
     NSURL *url = [NSURL URLWithString:baseurl];
-    NSLog(@"EAFGetSites getSites url %@",url);
+   // NSLog(@"EAFGetSites getSites url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     

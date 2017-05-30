@@ -46,6 +46,7 @@
 @property NSString *currentChapter;
 @property NSString *chapterTitle;
 @property NSString *language;
+@property NSNumber *projid;
 @property NSString *unitTitle;
 @property NSString *unit;
 @property long user;

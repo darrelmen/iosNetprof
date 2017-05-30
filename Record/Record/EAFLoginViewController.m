@@ -383,10 +383,10 @@
     
     NSString *existing = [json objectForKey:@"ExistingUserName"];
     
-        NSLog(@"useJsonChapterData existing %@",existing);
-        NSLog(@"useJsonChapterData resetToken %@",resetToken);
-        NSLog(@"useJsonChapterData userIDExisting %@",userIDExisting);
-        NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
+    NSLog(@"useJsonChapterData existing %@",existing);
+    NSLog(@"useJsonChapterData resetToken %@",resetToken);
+    NSLog(@"useJsonChapterData userIDExisting %@",userIDExisting);
+    NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
     
     if ([userIDExisting integerValue] == -1) {
         NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
@@ -409,11 +409,13 @@
     } else if (passCorrect) {
         // OK store info and segue
         NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];
-        [SSKeychain setPassword:converted forService:@"mitll.proFeedback.device" account:@"userid"];
+        
+        [SSKeychain setPassword:converted      forService:@"mitll.proFeedback.device" account:@"userid"];
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
         NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
+        
         [self performSegueWithIdentifier:@"goToChapter" sender:self];
     } else {
         // password is bad

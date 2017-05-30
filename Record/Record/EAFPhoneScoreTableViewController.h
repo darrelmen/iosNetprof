@@ -43,6 +43,7 @@
 @interface EAFPhoneScoreTableViewController : UITableViewController<AVAudioPlayerDelegate, UIGestureRecognizerDelegate,AudioPlayerNotification>
 
 @property NSString *language;
+@property NSNumber *projid;
 
 @property NSString *chapterName;
 @property NSString *chapterSelection;

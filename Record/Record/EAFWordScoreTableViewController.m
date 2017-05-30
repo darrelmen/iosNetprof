@@ -132,7 +132,7 @@
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
-    NSLog(@"askServerForJson url %@",baseurl);
+    NSLog(@"wordScoreTable: askServerForJson url %@ %@",baseurl, _projid);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -140,6 +140,9 @@
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
+    
+    [urlRequest setValue:[NSString stringWithFormat:@"%@",_projid] forHTTPHeaderField:@"projid"];
+    
     [urlRequest setTimeoutInterval:10];
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];

@@ -99,8 +99,7 @@
     self.clearsSelectionOnViewWillAppear = NO;
     [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,_chapterTitle,_currentChapter]];
     
-    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
-    _user = [userid intValue];
+    _user = [[SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"] intValue];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -378,9 +377,10 @@
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+    [urlRequest setValue:[_projid stringValue] forHTTPHeaderField:@"projid"];
+    NSLog(@"projid = %@",_projid);
     
-   // [[Mint sharedInstance] leaveBreadcrumb:@"sendingAsyncItemController"];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {

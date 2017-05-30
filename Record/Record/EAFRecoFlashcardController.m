@@ -409,8 +409,8 @@
 - (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
     NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
     
-    NSLog(@"postEvent language %@", _language);
-    NSLog(@"postEvent message  %@", message);
+//    NSLog(@"postEvent language %@", _language);
+//    NSLog(@"postEvent message  %@", message);
     
     NSString *id = [jsonObject objectForKey:@"id"];
     
@@ -420,9 +420,9 @@
         id = [NSString stringWithFormat:@"%@",nid];
     }
     
-    NSLog(@"postEvent id       %@", id);
-    NSLog(@"postEvent widget   %@", widget);
-    NSLog(@"postEvent type     %@", type);
+//    NSLog(@"postEvent id       %@", id);
+//    NSLog(@"postEvent widget   %@", widget);
+//    NSLog(@"postEvent type     %@", type);
     
     EAFEventPoster *poster = [self getPoster];
     [poster postEvent:message exid:id widget:widget widgetType:type];
@@ -2038,6 +2038,11 @@ bool debugRecord = false;
         return;
     }
     NSString *current = [[self getCurrentJson] objectForKey:@"id"];
+    
+    if ([current isKindOfClass:[NSNumber class]]) {
+       current = [NSString stringWithFormat:@"%@",current];
+    }
+    
     if (![exid isEqualToString:current]) {
         NSLog(@"response exid not same as current - got %@ vs expecting %@",exid,current );
         return;
@@ -2610,7 +2615,7 @@ BOOL addSpaces = false;
         wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong_26h-unselected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         wordReport.tabBarItem.selectedImage = [[UIImage imageNamed:@"rightAndWrong_26h-selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         wordReport.language = _language;
-        
+        wordReport.projid = [_siteGetter.nameToProjectID objectForKey:_language];
         wordReport.chapterName = _chapterTitle;
         wordReport.chapterSelection = _currentChapter;
         
@@ -2619,6 +2624,7 @@ BOOL addSpaces = false;
         
         wordReport.jsonItems = _jsonItems;
         wordReport.url = _url;
+        
         
         NSMutableDictionary *exToFL = [[NSMutableDictionary alloc] init];
         NSMutableDictionary *exToEnglish = [[NSMutableDictionary alloc] init];
@@ -2640,6 +2646,8 @@ BOOL addSpaces = false;
         phoneReport.tabBarItem.image = [[UIImage imageNamed:@"ear-unselected_32.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         
         phoneReport.language = _language;
+        phoneReport.projid = [_siteGetter.nameToProjectID objectForKey:_language];
+
         phoneReport.chapterName = _chapterTitle;
         phoneReport.chapterSelection = _currentChapter;
         
