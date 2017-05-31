@@ -148,7 +148,11 @@
     [urlRequest setValue:username forHTTPHeaderField:@"user"];
   //  [urlRequest setValue:[[self MD5:password] uppercaseString] forHTTPHeaderField:@"passwordH"];
   //  [urlRequest setValue:[password uppercaseString] forHTTPHeaderField:@"password"];
+    
     [urlRequest setValue:[[self MD5:email]    uppercaseString] forHTTPHeaderField:@"emailH"];
+    
+    [urlRequest setValue:email forHTTPHeaderField:@"email"];
+    
     [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
@@ -169,7 +173,7 @@
         _usernameFeedback.text = @"Please enter a username.";
         valid = false;
     }
-    if (_username.text.length < 4) {
+    if (_username.text.length < 4) {   // TODO : what's the domino length?
         _usernameFeedback.text = @"Please enter a longer username.";
         valid = false;
     }
@@ -186,6 +190,7 @@
         _emailFeedback.textColor = [UIColor redColor];
         valid = false;
     }
+    
     if (![self validateEmail:_email.text]) {
         _emailFeedback.text = @"Please enter a valid email.";
         _emailFeedback.textColor = [UIColor redColor];
@@ -200,7 +205,7 @@
 //        NSString *password = _password.text;
         NSString *email = _email.text;
         
-       // [self addUser:chosenLanguage username:username password:password email:email];
+        [self addUser:_chosenLanguage username:username password:@"" email:email];
         
         //  if (FALSE) {
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];

@@ -60,6 +60,7 @@
 //@property (strong, nonatomic) NSArray *languages;
 @property (strong, nonatomic) NSMutableData *responseData;
 @property (strong, nonatomic) NSString *userFromLogin;
+@property (strong, nonatomic) NSString *chosenLanguage;
 //@property (strong, nonatomic) NSString *passFromLogin;
     @property long languageIndex;
 @property (nonatomic, assign) id currentResponder;

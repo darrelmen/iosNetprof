@@ -604,6 +604,8 @@
         signUp.languageIndex = selection;
         signUp.siteGetter = _siteGetter;
         
+        signUp.chosenLanguage = chosenLanguage;
+        
         [self textFieldText:nil];
     }
 }
