@@ -1,3 +1,5 @@
+
+
 /*
  * DISTRIBUTION STATEMENT C. Distribution authorized to U.S. Government Agencies
  * and their contractors; 2015. Other request for this document shall be referred
@@ -28,22 +30,40 @@
  *
  */
 
-//
-//  EAFAppDelegate.h
+//  EAFNewSignUpViewController.h
 //  Record
 //
-//  Created by Ferme, Elizabeth - 0553 - MITLL on 4/2/14.
-//  Copyright (c) 2011-2016 Massachusetts Institute of Technology, Lincoln Laboratory
+//  Created by Vidaver, Gordon - 0552 - MITLL on 5/31/17.
+//  Copyright © 2017 MIT Lincoln Laboratory. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
-#import "EAFRecoFlashcardController.h"
+#import "EAFGetSites.h"
 
-@interface EAFAppDelegate : UIResponder <UIApplicationDelegate>
+#ifndef EAFNewSignUpViewController_h
+#define EAFNewSignUpViewController_h
 
-// required!
-@property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) EAFRecoFlashcardController *recoController;
-@property (strong, nonatomic) NSDictionary *nameToURL;
+
+#endif /* EAFNewSignUpViewController_h */
+
+
+@interface EAFNewSignUpViewController : UIViewController<NSURLConnectionDelegate,UITextFieldDelegate,UIGestureRecognizerDelegate>
+@property (strong, nonatomic) IBOutlet UITextField *username;
+@property (strong, nonatomic) IBOutlet UITextField *password;
+@property (strong, nonatomic) IBOutlet UITextField *email;
+@property (strong, nonatomic) IBOutlet UIButton *signUp;
+@property (strong, nonatomic) IBOutlet UILabel *usernameFeedback;
+//@property (strong, nonatomic) IBOutlet UILabel *passwordFeedback;
+@property (strong, nonatomic) IBOutlet UILabel *emailFeedback;
+
+//@property (strong, nonatomic) IBOutlet UIPickerView *languagePicker;
+//@property (strong, nonatomic) NSArray *languages;
+@property (strong, nonatomic) NSMutableData *responseData;
+@property (strong, nonatomic) NSString *userFromLogin;
+//@property (strong, nonatomic) NSString *passFromLogin;
+    @property long languageIndex;
+@property (nonatomic, assign) id currentResponder;
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+@property EAFGetSites *siteGetter;
 
 @end

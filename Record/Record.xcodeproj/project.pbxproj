@@ -47,6 +47,7 @@
 		B642BAD01A0DD3A500D939F2 /* PhoneTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B642BACF1A0DD3A500D939F2 /* PhoneTableViewCell.m */; };
 		B649198B1A1A59BC0054CA13 /* mitllLogo2.png in Resources */ = {isa = PBXBuildFile; fileRef = B649198A1A1A59BC0054CA13 /* mitllLogo2.png */; };
 		B649198E1A1A5CE00054CA13 /* EAFSignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B649198D1A1A5CE00054CA13 /* EAFSignUpViewController.m */; };
+		B65771A21EDF538000D18696 /* EAFNewSignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B65771A11EDF538000D18696 /* EAFNewSignUpViewController.m */; };
 		B66175A61C46FF21005A501F /* ear-unselected.png in Resources */ = {isa = PBXBuildFile; fileRef = B66175A51C46FF21005A501F /* ear-unselected.png */; };
 		B66175A81C470002005A501F /* ear-unselected_32.png in Resources */ = {isa = PBXBuildFile; fileRef = B66175A71C470002005A501F /* ear-unselected_32.png */; };
 		B6629E411A440192008EAC75 /* audioOff_smaller.png in Resources */ = {isa = PBXBuildFile; fileRef = B6629E3D1A440192008EAC75 /* audioOff_smaller.png */; };
@@ -212,6 +213,8 @@
 		B649198A1A1A59BC0054CA13 /* mitllLogo2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mitllLogo2.png; sourceTree = "<group>"; };
 		B649198C1A1A5CE00054CA13 /* EAFSignUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAFSignUpViewController.h; sourceTree = "<group>"; };
 		B649198D1A1A5CE00054CA13 /* EAFSignUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFSignUpViewController.m; sourceTree = "<group>"; };
+		B65771A01EDF532700D18696 /* EAFNewSignUpViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EAFNewSignUpViewController.h; sourceTree = "<group>"; };
+		B65771A11EDF538000D18696 /* EAFNewSignUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFNewSignUpViewController.m; sourceTree = "<group>"; };
 		B66175A51C46FF21005A501F /* ear-unselected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ear-unselected.png"; path = "../ear-unselected.png"; sourceTree = "<group>"; };
 		B66175A71C470002005A501F /* ear-unselected_32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ear-unselected_32.png"; path = "../ear-unselected_32.png"; sourceTree = "<group>"; };
 		B6629E3D1A440192008EAC75 /* audioOff_smaller.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = audioOff_smaller.png; sourceTree = "<group>"; };
@@ -532,7 +535,9 @@
 				B61B946B1A1FA1210049462E /* EAFForgotUsernameViewController.h */,
 				B61B946C1A1FA1210049462E /* EAFForgotUsernameViewController.m */,
 				B649198C1A1A5CE00054CA13 /* EAFSignUpViewController.h */,
+				B65771A01EDF532700D18696 /* EAFNewSignUpViewController.h */,
 				B649198D1A1A5CE00054CA13 /* EAFSignUpViewController.m */,
+				B65771A11EDF538000D18696 /* EAFNewSignUpViewController.m */,
 				B62624651A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.h */,
 				B62624661A0D592D00B1FE33 /* EAFPhoneScoreTableViewController.m */,
 				B636FFD21A098FD200C3B62E /* UIFont+FontAwesome2.h */,
@@ -804,6 +809,7 @@
 				B636FFCE1A098D8500C3B62E /* UIFont+FontAwesome.m in Sources */,
 				F6A5682A18ECA98A00B844C6 /* main.m in Sources */,
 				B636FFC51A09397200C3B62E /* EAFWordScoreTableViewController.m in Sources */,
+				B65771A21EDF538000D18696 /* EAFNewSignUpViewController.m in Sources */,
 				B6252AAB1A1EB53B0083AE7A /* EAFAudioCache.m in Sources */,
 				B60466431A38B540000B5464 /* MZFormSheetBackgroundWindow.m in Sources */,
 				B642BAD01A0DD3A500D939F2 /* PhoneTableViewCell.m in Sources */,

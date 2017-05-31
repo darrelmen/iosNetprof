@@ -41,6 +41,7 @@
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
 #import "EAFSignUpViewController.h"
+#import "EAFNewSignUpViewController.h"
 #import "EAFForgotUserNameViewController.h"
 #import "EAFForgotPasswordViewController.h"
 #import "EAFSetPasswordViewController.h"
@@ -189,7 +190,26 @@
 }
 
 - (IBAction)onClick:(id)sender {
-    // NSLog(@"Got click");
+    NSLog(@"onClick Got click from %@", sender);
+    
+    UIButton* button = (UIButton *)sender;
+    
+    BOOL isLogin = ([[button restorationIdentifier] isEqualToString:@"logIn"]);
+    
+    NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+    
+    if (!isLogin) {
+        NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
+        if (projid.intValue == -1) {
+            [self performSegueWithIdentifier:@"goToSignUp" sender:self];
+        }
+        else {
+            [self performSegueWithIdentifier:@"goToNewSignUp" sender:self];
+            
+        }
+        return;
+    }
+    
     BOOL valid = true;
     if (_username.text.length == 0) {
         _usernameFeedback.text = @"Please enter a username";
@@ -200,7 +220,6 @@
         valid = false;
     }
     
-    NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
     
     NSLog(@"onClick language %@",chosenLanguage);
     
@@ -562,14 +581,26 @@
         [chapterController setTitle:chosenLanguage];
         [self textFieldText:nil];
     }
-    else {
+    else if ([segue.identifier isEqualToString:@"goToSignUp"]) {
         long selection = [_languagePicker selectedRowInComponent:0];
         //NSString *chosenLanguage = [_languages objectAtIndex:selection];
-        //NSLog(@"language %@ %@ %@",chosenLanguage,_username.text,_password.text);
+        NSLog(@"old identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
         
         EAFSignUpViewController *signUp = [segue destinationViewController];
         signUp.userFromLogin = _username.text;
         signUp.passFromLogin = _password.text;
+        signUp.languageIndex = selection;
+        signUp.siteGetter = _siteGetter;
+        
+        [self textFieldText:nil];
+    } else {
+        long selection = [_languagePicker selectedRowInComponent:0];
+        //NSString *chosenLanguage = [_languages objectAtIndex:selection];
+        NSLog(@"new identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
+        
+        EAFNewSignUpViewController *signUp = [segue destinationViewController];
+        signUp.userFromLogin = _username.text;
+        //signUp.passFromLogin = _password.text;
         signUp.languageIndex = selection;
         signUp.siteGetter = _siteGetter;
         
