@@ -189,8 +189,10 @@
     [self gotSingleTap:nil];
 }
 
+// both login and sign up button clicks come here
 - (IBAction)onClick:(id)sender {
     NSLog(@"onClick Got click from %@", sender);
+    
     
     UIButton* button = (UIButton *)sender;
     
@@ -198,14 +200,16 @@
     
     NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
     
+    NSLog(@"onClick chosenLanguage %@", chosenLanguage);
+
     if (!isLogin) {
         NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
+        NSLog(@"onClick projid %@", projid);
         if (projid.intValue == -1) {
             [self performSegueWithIdentifier:@"goToSignUp" sender:self];
         }
         else {
             [self performSegueWithIdentifier:@"goToNewSignUp" sender:self];
-            
         }
         return;
     }

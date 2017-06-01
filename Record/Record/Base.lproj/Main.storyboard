@@ -2301,10 +2301,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="sounds.png" translatesAutoresizingMaskIntoConstraints="NO" id="nWR-Ss-PQR">
-                                <rect key="frame" x="16" y="15" width="24" height="24"/>
+                                <rect key="frame" x="16" y="10" width="24" height="24"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="netprof" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SgL-gU-V2V">
-                                <rect key="frame" x="115" y="13" width="90" height="29"/>
+                                <rect key="frame" x="115" y="8" width="90" height="29"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="90" id="PcF-pT-DYf">
                                         <variation key="heightClass=regular-widthClass=regular" constant="95"/>
@@ -2344,7 +2344,7 @@
                                 </variation>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="firstName" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="first name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Las-wc-Ner">
-                                <rect key="frame" x="35" y="95" width="250" height="30"/>
+                                <rect key="frame" x="35" y="102" width="250" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="250" id="KEW-vy-15m">
                                         <variation key="heightClass=regular-widthClass=regular" constant="350"/>
@@ -2360,13 +2360,16 @@
                                 </variation>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" restorationIdentifier="usernameFeedback" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O84-7c-kq8">
-                                <rect key="frame" x="35" y="81" width="250" height="0.0"/>
+                                <rect key="frame" x="35" y="81" width="250" height="16"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="16" id="AzQ-GT-Ifm"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="lastName" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="last name" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="TKu-zS-FXB">
-                                <rect key="frame" x="35" y="140" width="250" height="30"/>
+                                <rect key="frame" x="35" y="142" width="250" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="250" id="9hQ-06-nRd">
                                         <variation key="heightClass=regular-widthClass=regular" constant="350"/>
@@ -2382,7 +2385,7 @@
                                 </variation>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="email" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="email" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="NkK-X7-fUg">
-                                <rect key="frame" x="35" y="185" width="250" height="30"/>
+                                <rect key="frame" x="35" y="182" width="250" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="1hk-fW-x39">
                                         <variation key="heightClass=regular-widthClass=regular" constant="40"/>
@@ -2398,10 +2401,10 @@
                                 </variation>
                             </textField>
                             <pickerView tag="6" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="v2n-0E-7Mf">
-                                <rect key="frame" x="35" y="256" width="250" height="216"/>
+                                <rect key="frame" x="35" y="245" width="250" height="205"/>
                             </pickerView>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="DO7-6N-0eI">
-                                <rect key="frame" x="102" y="223" width="117" height="29"/>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="DO7-6N-0eI">
+                                <rect key="frame" x="102" y="215" width="117" height="29"/>
                                 <segments>
                                     <segment title="Male"/>
                                     <segment title="Female"/>
@@ -2411,9 +2414,10 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstItem="O84-7c-kq8" firstAttribute="top" secondItem="Pdn-FV-Eq0" secondAttribute="bottom" constant="1" id="0yk-hU-2KN"/>
                             <constraint firstItem="v2n-0E-7Mf" firstAttribute="leading" secondItem="NkK-X7-fUg" secondAttribute="leading" id="2gS-uk-KPE"/>
                             <constraint firstItem="nWR-Ss-PQR" firstAttribute="leading" secondItem="Fvg-s5-L6P" secondAttribute="leadingMargin" id="2nS-4D-PtW"/>
-                            <constraint firstItem="TKu-zS-FXB" firstAttribute="top" secondItem="Las-wc-Ner" secondAttribute="bottom" constant="15" id="4vm-YD-ECP"/>
+                            <constraint firstItem="TKu-zS-FXB" firstAttribute="top" secondItem="Las-wc-Ner" secondAttribute="bottom" constant="10" id="4vm-YD-ECP"/>
                             <constraint firstItem="Pdn-FV-Eq0" firstAttribute="height" secondItem="NkK-X7-fUg" secondAttribute="height" id="55V-gS-pgM"/>
                             <constraint firstItem="O84-7c-kq8" firstAttribute="leading" secondItem="Pdn-FV-Eq0" secondAttribute="leading" id="8d4-QR-mLG"/>
                             <constraint firstItem="Las-wc-Ner" firstAttribute="leading" secondItem="Pdn-FV-Eq0" secondAttribute="leading" id="8ge-Ja-KOq"/>
@@ -2423,19 +2427,18 @@
                             <constraint firstAttribute="centerX" secondItem="ysa-If-RjO" secondAttribute="centerX" id="Cm5-bS-tUK"/>
                             <constraint firstItem="ysa-If-RjO" firstAttribute="centerY" secondItem="v6d-aa-QnJ" secondAttribute="centerY" id="JMO-Lz-Jpi"/>
                             <constraint firstItem="v6d-aa-QnJ" firstAttribute="leading" secondItem="ysa-If-RjO" secondAttribute="trailing" constant="14" id="LW2-jN-Sin"/>
-                            <constraint firstItem="Las-wc-Ner" firstAttribute="top" secondItem="Pdn-FV-Eq0" secondAttribute="bottom" constant="15" id="NNf-73-3jn"/>
                             <constraint firstItem="TKu-zS-FXB" firstAttribute="leading" secondItem="Las-wc-Ner" secondAttribute="leading" id="NaX-J2-cDS"/>
                             <constraint firstItem="Pdn-FV-Eq0" firstAttribute="top" secondItem="a6C-1U-DrU" secondAttribute="bottom" constant="50" id="Nm7-nI-lXG"/>
                             <constraint firstItem="jjv-ya-HxB" firstAttribute="top" relation="greaterThanOrEqual" secondItem="ysa-If-RjO" secondAttribute="bottom" constant="8" symbolic="YES" id="RAd-WH-hMY"/>
                             <constraint firstItem="DO7-6N-0eI" firstAttribute="centerX" secondItem="Fvg-s5-L6P" secondAttribute="centerX" id="RuE-VC-iJu"/>
-                            <constraint firstItem="DO7-6N-0eI" firstAttribute="top" secondItem="NkK-X7-fUg" secondAttribute="bottom" constant="8" id="RxZ-he-ZnT"/>
+                            <constraint firstItem="DO7-6N-0eI" firstAttribute="top" secondItem="NkK-X7-fUg" secondAttribute="bottom" constant="3" id="RxZ-he-ZnT"/>
                             <constraint firstItem="SgL-gU-V2V" firstAttribute="centerY" secondItem="nWR-Ss-PQR" secondAttribute="centerY" id="WcA-O9-4VY"/>
-                            <constraint firstItem="nWR-Ss-PQR" firstAttribute="top" secondItem="a6C-1U-DrU" secondAttribute="bottom" constant="15" id="aBG-0F-0w7"/>
+                            <constraint firstItem="nWR-Ss-PQR" firstAttribute="top" secondItem="a6C-1U-DrU" secondAttribute="bottom" constant="10" id="aBG-0F-0w7"/>
                             <constraint firstItem="O84-7c-kq8" firstAttribute="height" secondItem="Pdn-FV-Eq0" secondAttribute="height" id="cgc-fh-6de"/>
-                            <constraint firstItem="ysa-If-RjO" firstAttribute="top" secondItem="v2n-0E-7Mf" secondAttribute="bottom" priority="250" constant="33" id="ePm-hH-ET6"/>
-                            <constraint firstItem="O84-7c-kq8" firstAttribute="top" secondItem="Pdn-FV-Eq0" secondAttribute="bottom" constant="1" id="fGE-3c-jhK"/>
-                            <constraint firstItem="v2n-0E-7Mf" firstAttribute="top" secondItem="DO7-6N-0eI" secondAttribute="bottom" constant="5" id="jhx-72-Yse"/>
-                            <constraint firstItem="NkK-X7-fUg" firstAttribute="top" secondItem="TKu-zS-FXB" secondAttribute="bottom" constant="15" id="jqp-0u-Koo"/>
+                            <constraint firstItem="ysa-If-RjO" firstAttribute="top" secondItem="v2n-0E-7Mf" secondAttribute="bottom" constant="5" id="ePm-hH-ET6"/>
+                            <constraint firstItem="v2n-0E-7Mf" firstAttribute="top" secondItem="DO7-6N-0eI" secondAttribute="bottom" constant="2" id="jhx-72-Yse"/>
+                            <constraint firstItem="NkK-X7-fUg" firstAttribute="top" secondItem="TKu-zS-FXB" secondAttribute="bottom" constant="10" id="jqp-0u-Koo"/>
+                            <constraint firstItem="Las-wc-Ner" firstAttribute="top" secondItem="O84-7c-kq8" secondAttribute="bottom" constant="5" id="m12-B2-4H6"/>
                             <constraint firstAttribute="centerX" secondItem="Pdn-FV-Eq0" secondAttribute="centerX" id="qaR-E7-Efa"/>
                             <constraint firstItem="NkK-X7-fUg" firstAttribute="leading" secondItem="TKu-zS-FXB" secondAttribute="leading" id="y0w-KX-Ly0"/>
                         </constraints>
@@ -2459,8 +2462,11 @@
                     <navigationItem key="navigationItem" id="4OS-oR-58b"/>
                     <connections>
                         <outlet property="activityIndicator" destination="v6d-aa-QnJ" id="gyo-gh-5oW"/>
-                        <outlet property="affiliation" destination="v2n-0E-7Mf" id="v5j-mJ-pC8"/>
+                        <outlet property="affiliation" destination="v2n-0E-7Mf" id="kl7-nu-O2Z"/>
                         <outlet property="email" destination="NkK-X7-fUg" id="r0O-Cg-do2"/>
+                        <outlet property="first" destination="Las-wc-Ner" id="4Yn-Ra-Mmc"/>
+                        <outlet property="gender" destination="DO7-6N-0eI" id="vsP-mP-o8Z"/>
+                        <outlet property="last" destination="TKu-zS-FXB" id="BKu-ww-b5N"/>
                         <outlet property="username" destination="Pdn-FV-Eq0" id="BDj-P7-AOd"/>
                         <outlet property="usernameFeedback" destination="O84-7c-kq8" id="h9c-cc-bnJ"/>
                     </connections>
