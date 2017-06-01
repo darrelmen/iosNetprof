@@ -161,9 +161,14 @@
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     
+    long sel = [_gender selectedSegmentIndex];
+    NSString *gender = @"male";
+    if (sel == 1) gender = @"female";
+    
     [urlRequest setValue:first  forHTTPHeaderField:@"first"];
     [urlRequest setValue:last  forHTTPHeaderField:@"last"];
     [urlRequest setValue:aff  forHTTPHeaderField:@"affiliation"];
+    [urlRequest setValue:gender forHTTPHeaderField:@"gender"];
     [urlRequest setValue:@"addUser"    forHTTPHeaderField:@"request"];
     
     [[NSURLConnection connectionWithRequest:urlRequest delegate:self] start];
@@ -360,13 +365,8 @@
         NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];  // huh? why is this necessary?
         [SSKeychain setPassword:converted      forService:@"mitll.proFeedback.device" account:@"userid"];
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
-        //   //     [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
         [SSKeychain setPassword:_email.text    forService:@"mitll.proFeedback.device" account:@"chosenEmail"];
-        // NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
-        //   //     [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
-        //
-        //        [self performSegueWithIdentifier:@"goToChapterFromSignUp" sender:self];
-        
+ 
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Please Check Email"
                                                         message:@"Check your email to set your password."
                                                        delegate:nil
