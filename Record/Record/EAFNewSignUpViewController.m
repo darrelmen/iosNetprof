@@ -121,21 +121,6 @@
     return true;
 }
 
-//- (void)pickerViewTapGestureRecognized:(UITapGestureRecognizer*)gestureRecognizer
-//{
-//    CGPoint touchPoint = [gestureRecognizer locationInView:gestureRecognizer.view.superview];
-//
-//    CGRect frame = _languagePicker.frame;
-//    CGRect selectorFrame = CGRectInset( frame, 0.0, _languagePicker.bounds.size.height * 0.85 / 2.0 );
-//    // NSLog( @"Got tap -- Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
-//
-//    if( CGRectContainsPoint( selectorFrame, touchPoint) )
-//    {
-//        //  NSLog( @"Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
-//        [self onClick:nil];
-//    }
-//}
-
 // POST request
 - (void)addUser:(NSString *)chosenLanguage username:(NSString *)username first:(NSString *)first last:(NSString *)last email:(NSString *)email aff:(NSString *)aff {
     
@@ -175,7 +160,6 @@
 }
 
 // Only condition on username is that it's longer than 4 characters
-// Only condition on password is that it's longer than 4 characters
 // Checks email for validity.
 - (IBAction)onClick:(id)sender {
     _signUp.enabled = false;
@@ -185,32 +169,31 @@
         _usernameFeedback.text = @"Please enter a username.";
         valid = false;
     }
-    if (_username.text.length < 4) {   // TODO : what's the domino length?
+    else if (_username.text.length < 5) {
         _usernameFeedback.text = @"Please enter a longer username.";
         valid = false;
     }
-    //    if (_password.text.length == 0) {
-    //        _passwordFeedback.text = @"Please enter a password.";
-    //        valid = false;
-    //    }
-    //    if (_password.text.length < 4) {
-    //        _passwordFeedback.text = @"Please enter a longer password.";
-    //        valid = false;
-    //    }
-    if (_email.text.length == 0) {
-        _emailFeedback.text = @"Please enter your email.";
-        _emailFeedback.textColor = [UIColor redColor];
+    else if (_first.text.length == 0) {
+        _usernameFeedback.text = @"Please enter a first name.";
         valid = false;
     }
-    
-    if (![self validateEmail:_email.text]) {
-        _emailFeedback.text = @"Please enter a valid email.";
-        _emailFeedback.textColor = [UIColor redColor];
+    else if (_last.text.length == 0) {
+        _usernameFeedback.text = @"Please enter a last name.";
+        valid = false;
+    }
+    else if (_email.text.length == 0) {
+        _usernameFeedback.text = @"Please enter your email.";
+        _usernameFeedback.textColor = [UIColor redColor];
+        valid = false;
+    }
+    else if (![self validateEmail:_email.text]) {
+        _usernameFeedback.text = @"Please enter a valid email.";
+        _usernameFeedback.textColor = [UIColor redColor];
         valid = false;
     }
     
     if (valid) {
-        _emailFeedback.textColor = [UIColor blackColor];
+        _usernameFeedback.textColor = [UIColor blackColor];
         
         NSString *username = _username.text;
         NSString *email = _email.text;
@@ -220,13 +203,8 @@
         
         [self addUser:_chosenLanguage username:username first:_first.text last:_last.text email:email aff:affAbbrev];
         
-        //  if (FALSE) {
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
         [_activityIndicator startAnimating];
-        
-        //[_poster setURL:[_siteGetter.nameToURL objectForKey:chosenLanguage] projid:[_siteGetter.nameToProjectID objectForKey:chosenLanguage]];
-        //[_poster postEvent:[NSString stringWithFormat:@"signUp by %@",_username.text] exid:@"N/A" widget:@"SignIn" widgetType:@"Button"];
-        // }
     }
 }
 
@@ -254,7 +232,7 @@
 - (void) emailChanged:(id)notification {
     _usernameFeedback.text = @"";
     //   _passwordFeedback.text = @"";
-    _emailFeedback.text = @"";
+   // _emailFeedback.text = @"";
 }
 
 - (IBAction)gotSingleTap:(id)sender {
@@ -366,7 +344,7 @@
         [SSKeychain setPassword:converted      forService:@"mitll.proFeedback.device" account:@"userid"];
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_email.text    forService:@"mitll.proFeedback.device" account:@"chosenEmail"];
- 
+        
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Please Check Email"
                                                         message:@"Check your email to set your password."
                                                        delegate:nil

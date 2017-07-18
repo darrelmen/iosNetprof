@@ -74,13 +74,14 @@
         //   _oldServer = @"https://129.55.210.144/";
         //NSLog(@"EAFGetSites server now %@",_oldServer);
         _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
-     //   _nServer = @"http://127.0.0.1:8888/netprof/";
+        //   _nServer = @"http://127.0.0.1:8888/netprof/";
     }
     
     return self;
 }
 
 - (NSNumber *) getProject:(NSString*) language {
+    //if ([language isEqualToString:@"Russian"]) return [NSNumber numberWithInt:-1];
     return [_nameToProjectID objectForKey:language];
 }
 
@@ -105,7 +106,6 @@
 // we talk to the old server, then the new server...
 - (void)getSitesFromServer:(NSString *) theServer {
     NSString *baseurl;
-    
     if ([theServer isEqualToString:_oldServer]) {
         baseurl = [NSString stringWithFormat:@"%@/sites.json", theServer];
     }
@@ -114,7 +114,7 @@
     }
     
     NSURL *url = [NSURL URLWithString:baseurl];
-   // NSLog(@"EAFGetSites getSites url %@",url);
+    // NSLog(@"EAFGetSites getSites url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
@@ -124,14 +124,14 @@
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setTimeoutInterval:10];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-
+    
     NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:Nil];
     
     
     NSURLSessionDataTask *downloadTask = [session
                                           dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                                    
+                                              
                                               [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
                                               if (error != nil) {
                                                   NSLog(@"\tgetSites Got error %@",error);
@@ -139,7 +139,7 @@
                                               }
                                               else {
                                                   NSLog(@"\tgetSites Got response %@",response);
-
+                                                  
                                                   _sitesData = data;
                                                   [self performSelectorOnMainThread:@selector(useJsonSitesData:)
                                                                          withObject:theServer
@@ -151,10 +151,10 @@
 
 - (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential *))completionHandler{
     if([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]){
-       // if([challenge.protectionSpace.host isEqualToString:@"mydomain.com"]){
-            NSURLCredential *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
-            completionHandler(NSURLSessionAuthChallengeUseCredential,credential);
-      //  }
+        // if([challenge.protectionSpace.host isEqualToString:@"mydomain.com"]){
+        NSURLCredential *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+        completionHandler(NSURLSessionAuthChallengeUseCredential,credential);
+        //  }
     }
 }
 
@@ -209,7 +209,7 @@
     for (int i = 0; i<fetchedArr.count; i++) {
         NSDictionary* site = fetchedArr[i];
         
-       // NSLog(@"parseJSON got %@",site);
+        // NSLog(@"parseJSON got %@",site);
         
         BOOL showOnIOS = [[site valueForKey:@"showOnIOS"] boolValue];
         if (showOnIOS) {
@@ -218,10 +218,10 @@
             if (url == NULL) {
                 url = _nServer;
             }
-            if ([name isEqualToString:@"Spanish"]) {
-                url = _nServer;
-                 NSLog(@"parseJSON using %@",url);
-            }
+            //            if ([name isEqualToString:@"Spanish"]) {
+            //                url = _nServer;
+            //                 NSLog(@"parseJSON using %@",url);
+            //            }
             if (![url hasSuffix:@"/"]) {
                 url = [NSString stringWithFormat:@"%@/",url];
             }
@@ -231,7 +231,6 @@
             
             NSNumber *id  = [site objectForKey:@"id"];
             
-        
             [_mutableNameToURL   setObject:url     forKey:name];
             if (id != NULL) {
                 [_mutableNameToProjectID  setObject:id forKey:name];
@@ -252,7 +251,6 @@
                           JSONObjectWithData:_sitesData
                           options:NSJSONReadingAllowFragments
                           error:&error];
-    
     if (error) {
         NSLog(@"useJsonSitesData got error %@",error);
         NSLog(@"useJsonChapterData error %@",error.description);
@@ -268,12 +266,29 @@
             [self getSitesFromServer:_nServer];
         }
         else {
-//            for(id key in _nameToURL)
-//                NSLog(@"key=%@ value=%@", key, [_nameToURL objectForKey:key]);
-//            
+            for(id key in _nameToURL)
+                NSLog(@"name=%@ url=%@", key, [_nameToURL objectForKey:key]);
 //            for(id key in _nameToProjectID)
 //                NSLog(@"key=%@ value=%@", key, [_nameToProjectID objectForKey:key]);
+//            
             
+            NSArray *allNew = [_nameToProjectID allKeys];
+            NSLog(@"all New %@",allNew);
+            
+            NSMutableOrderedSet *copy = [_languages mutableCopy];
+            NSLog(@"copy %@",copy);
+            
+            for(id key in _nameToProjectID) {
+                NSLog(@"key=%@ project id=%@", key, [_nameToProjectID objectForKey:key]);
+                if ([[_nameToProjectID objectForKey:key] intValue] > -1) {
+                    [copy removeObject:key];
+                }
+            }
+            
+            _oldSites = copy;
+            
+            NSLog(@"_oldSites %@",_oldSites);
+
             [_delegate sitesReady];
         }
     }
@@ -281,8 +296,6 @@
 
 // sort the language names
 - (void)setLanguagesGivenData {
-    // NSMutableArray *languagesLocal = [[NSMutableArray alloc] init];
-    
     for (NSString *name in _nameToURL.allKeys) {
         [_languagesLocal addObject:name];
     }
@@ -291,8 +304,6 @@
     [_languagesLocal sortUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
         return [str1 compare:str2 options:(NSNumericSearch)];
     }];
-    
-    // _languages = languagesLocal;
 }
 
 // write the json we get back from the server to a local file

@@ -51,6 +51,7 @@
 @property (strong, nonatomic) NSDictionary *nameToURL;
 @property (strong, nonatomic) NSDictionary *nameToProjectID;
 @property (strong, nonatomic) NSOrderedSet *languages;
+@property (strong, nonatomic) NSOrderedSet *oldSites;
 @property (strong, nonatomic) NSSet *rtlLanguages;
 - (void) getSites;
 - (NSNumber *) getProject:(NSString*) language;

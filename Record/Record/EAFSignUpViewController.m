@@ -189,7 +189,7 @@
     if (valid) {
         _emailFeedback.textColor = [UIColor blackColor];
         
-        NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        NSString *chosenLanguage = [_siteGetter.oldSites objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         NSString *username = _username.text;
         NSString *password = _password.text;
         NSString *email = _email.text;
@@ -215,12 +215,13 @@
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
     //set number of rows
-    return _siteGetter.languages.count;
+
+    return _siteGetter.oldSites.count;
 }
 
 -(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
-    return [_siteGetter.languages objectAtIndex:row];
+    return [_siteGetter.oldSites objectAtIndex:row];
 }
 
 - (void) textFieldText:(id)notification {
@@ -347,7 +348,7 @@
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
         [SSKeychain setPassword:_email.text    forService:@"mitll.proFeedback.device" account:@"chosenEmail"];
-        NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+        NSString *chosenLanguage = [_siteGetter.oldSites objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
         
         [self performSegueWithIdentifier:@"goToChapterFromSignUp" sender:self];
@@ -392,7 +393,7 @@
     
     EAFChapterTableViewController *chapterController = [segue destinationViewController];
     
-    NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+    NSString *chosenLanguage = [_siteGetter.oldSites objectAtIndex:[_languagePicker selectedRowInComponent:0]];
     [chapterController setLanguage:chosenLanguage];
     chapterController.url = [_siteGetter.nameToURL objectForKey:chosenLanguage];
     [chapterController setTitle:chosenLanguage];
