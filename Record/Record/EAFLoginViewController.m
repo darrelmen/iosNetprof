@@ -452,7 +452,7 @@
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet",[_siteGetter.nameToURL objectForKey:chosenLanguage]];
     
     NSURL *url = [NSURL URLWithString:baseurl];
-    //NSLog(@"url %@",url);
+    NSLog(@"url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
@@ -555,7 +555,7 @@
     NSString *url= [_siteGetter.nameToURL objectForKey:chosenLanguage];
     BOOL isRTL= [_siteGetter.rtlLanguages containsObject:chosenLanguage];
     
-    //  NSLog(@"prepareForSegue login view %@ url %@",chosenLanguage,url);
+    NSLog(@"prepareForSegue login view %@ url %@",chosenLanguage,url);
     
     if ([segue.identifier isEqualToString:@"goToForgotUsername"]) {
         EAFForgotUsernameViewController *forgotUserName = [segue destinationViewController];
@@ -584,6 +584,7 @@
         chapterController.isRTL = isRTL;
         [chapterController setTitle:chosenLanguage];
         [self textFieldText:nil];
+        [chapterController forceRefreshCache];
     }
     else if ([segue.identifier isEqualToString:@"goToSignUp"]) {
         long selection = [_languagePicker selectedRowInComponent:0];

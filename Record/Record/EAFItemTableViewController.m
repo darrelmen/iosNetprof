@@ -378,7 +378,7 @@
       forHTTPHeaderField:@"Content-Type"];
     
     [urlRequest setValue:[_projid stringValue] forHTTPHeaderField:@"projid"];
-    NSLog(@"projid = %@",_projid);
+    NSLog(@"ItemViewController projid = %@",_projid);
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
@@ -391,6 +391,8 @@
              });
          }
          else {
+             NSLog(@"ItemTableViewController Got normal resp");
+
              _responseData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
@@ -400,7 +402,7 @@
 }
 
 - (BOOL)useJsonChapterData {
-  //  NSLog(@"ITemTableViewController - useJsonChapterData --- num json %lu ",(unsigned long)_jsonItems.count);
+    NSLog(@"ITemTableViewController - useJsonChapterData --- num json %lu ",(unsigned long)_jsonItems.count);
 
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
@@ -416,7 +418,8 @@
     NSMutableDictionary *exToEntry = [[NSMutableDictionary alloc] init];
     for (NSDictionary *entry in _jsonItems) {
         NSString *ex = [entry objectForKey:@"id"];
-       [exToEntry setObject:entry forKey:ex];
+        [exToEntry setObject:entry forKey:ex];
+     //   NSLog(@"item table view : useJsonChapterData %@",ex);
     }
     NSMutableArray *newOrder = [[NSMutableArray alloc] init];
     
@@ -431,6 +434,9 @@
             if (entryForID != nil) {
                 [newOrder addObject:entryForID];
             }
+            else {
+                NSLog(@"WARN : item table view : nothing for %@ ", ex);
+            }
             
             [_exToScore   setValue:[entry objectForKey:@"s"] forKey:ex];
             [_exToHistory setValue:[entry objectForKey:@"h"] forKey:ex];
@@ -443,10 +449,13 @@
                 _notifyFlashcardController.jsonItems = _jsonItems;
             //    [_notifyFlashcardController respondToSwipe ];
             }
-         //   NSLog(@"item table view : reload table ----------- ");
+//            NSLog(@"item table view : reload table ----------- ");
             
             [[self tableView] reloadData];
         }
+        else {
+            NSLog(@"item table view : NOT reloading table ----------- ");
+          }
     }
 
     [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];

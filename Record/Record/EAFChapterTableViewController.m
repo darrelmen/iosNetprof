@@ -216,6 +216,28 @@ UIAlertView *loadingContentAlert;
     return appFile;
 }
 
+-(void)forceRefreshCache {
+    
+    
+    NSString *appFile = [self getCachedJsonFile];
+
+    
+    
+    NSError *error;
+    BOOL success = [[NSFileManager defaultManager]  removeItemAtPath:appFile error:&error];
+    if (success) {
+        NSLog(@"Good - deleted file");
+
+    }
+    else
+    {
+        NSLog(@"Could not delete file -:%@ ",[error localizedDescription]);
+    }
+    
+    
+    
+}
+
 // every 24 hours check with the server for updates
 - (void)refreshCache {
     NSString *appFile = [self getCachedJsonFile];

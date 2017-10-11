@@ -52,4 +52,6 @@
 @property NSString *url;
 @property BOOL isRTL;
 
+-(void)forceRefreshCache;
+
 @end

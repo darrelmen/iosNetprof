@@ -1755,9 +1755,14 @@ bool debugRecord = false;
     
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
     
-    // NSLog(@"file length %@",postLength);
+    NSString *host = [_siteGetter.nameToHost objectForKey:_language];
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet", _url];
-    NSLog(@"postAudio talking to %@",baseurl);
+    if ([host length] != 0) {
+        baseurl = [NSString stringWithFormat:@"%@scoreServlet/%@", _url, host];
+    }
+    // NSLog(@"file length %@",postLength);
+    
+    NSLog(@"Reco : postAudio talking to %@",baseurl);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];

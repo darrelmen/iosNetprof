@@ -53,6 +53,7 @@
 
 @property (strong, nonatomic) NSMutableDictionary *mutableNameToURL;
 @property (strong, nonatomic) NSMutableDictionary *mutableNameToProjectID;
+@property (strong, nonatomic) NSMutableDictionary *mutableNameToHost;
 
 @property (strong, nonatomic) NSString *oldServer;
 @property (strong, nonatomic) NSString *nServer;
@@ -73,7 +74,8 @@
         _oldServer = @"https://np.ll.mit.edu/";
         //   _oldServer = @"https://129.55.210.144/";
         //NSLog(@"EAFGetSites server now %@",_oldServer);
-        _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+      //  _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+        _nServer = @"https://netprof1.ll.mit.edu/netprof/";
         //   _nServer = @"http://127.0.0.1:8888/netprof/";
     }
     
@@ -99,6 +101,9 @@
     
     _mutableNameToProjectID = [[NSMutableDictionary alloc] init];
     _nameToProjectID = _mutableNameToProjectID;
+    
+    _mutableNameToHost = [[NSMutableDictionary alloc] init];
+    _nameToHost = _mutableNameToHost;
     
     [self getSitesFromServer:_oldServer];
 }
@@ -209,7 +214,7 @@
     for (int i = 0; i<fetchedArr.count; i++) {
         NSDictionary* site = fetchedArr[i];
         
-        // NSLog(@"parseJSON got %@",site);
+     //   NSLog(@"parseJSON got %@",site);
         
         BOOL showOnIOS = [[site valueForKey:@"showOnIOS"] boolValue];
         if (showOnIOS) {
@@ -234,9 +239,14 @@
             [_mutableNameToURL   setObject:url     forKey:name];
             if (id != NULL) {
                 [_mutableNameToProjectID  setObject:id forKey:name];
+                NSString *host  = [site objectForKey:@"host"];
+                NSLog(@"parseJSON host %@",host);
+                if (host == NULL) host = @"";
+                [_mutableNameToHost  setObject:host forKey:name];
             }
             else {
                 [_mutableNameToProjectID  setObject: [NSNumber numberWithInt:-1] forKey:name];
+                [_mutableNameToHost  setObject:@"" forKey:name];
             }
         }
     }
@@ -267,19 +277,18 @@
         }
         else {
             for(id key in _nameToURL)
-                NSLog(@"name=%@ url=%@", key, [_nameToURL objectForKey:key]);
+                NSLog(@"useJsonSitesData name=%@ url=%@", key, [_nameToURL objectForKey:key]);
 //            for(id key in _nameToProjectID)
 //                NSLog(@"key=%@ value=%@", key, [_nameToProjectID objectForKey:key]);
 //            
             
-            NSArray *allNew = [_nameToProjectID allKeys];
-            NSLog(@"all New %@",allNew);
+         //   NSLog(@"useJsonSitesData all New %@",[_nameToProjectID allKeys]);
             
             NSMutableOrderedSet *copy = [_languages mutableCopy];
-            NSLog(@"copy %@",copy);
+         //   NSLog(@"useJsonSitesData copy %@",copy);
             
             for(id key in _nameToProjectID) {
-                NSLog(@"key=%@ project id=%@", key, [_nameToProjectID objectForKey:key]);
+           //     NSLog(@"useJsonSitesData key=%@ project id=%@", key, [_nameToProjectID objectForKey:key]);
                 if ([[_nameToProjectID objectForKey:key] intValue] > -1) {
                     [copy removeObject:key];
                 }
@@ -287,7 +296,7 @@
             
             _oldSites = copy;
             
-            NSLog(@"_oldSites %@",_oldSites);
+         //   NSLog(@"useJsonSitesData _oldSites %@",_oldSites);
 
             [_delegate sitesReady];
         }
