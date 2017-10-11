@@ -537,10 +537,10 @@ NSString *myCurrentTitle;
     //  NSLog(@"Got point %f %f",p.x,p.y);
     
     CGPoint p = [sender locationInView:self.tableView];
-    NSLog(@"gotTapGesture Got point %f %f",p.x,p.y);
+    //NSLog(@"gotTapGesture Got point %f %f",p.x,p.y);
     
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
-    NSLog(@"gotTapGesture Got path %@",indexPath);
+    //NSLog(@"gotTapGesture Got path %@",indexPath);
     
     NSInteger row = indexPath.row;
     NSString *exid = [_exList objectAtIndex:row];
@@ -548,25 +548,28 @@ NSString *myCurrentTitle;
     if ([exid isKindOfClass:[NSNumber class]]) {
         NSNumber *nid = [_exList objectAtIndex:row];
         exid = [NSString stringWithFormat:@"%@",nid];
-        NSLog(@"gotTapGesture got number %@ = %@",nid,exid);
+        NSLog(@"gotTapGesture got at row %ld, object id %@ = %@", (long)row, nid, exid);
     }
     
     //    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
     //    [poster postEvent:@"tapOnItem" exid:exid widget:@"WordScoreTableCell" widgetType:@"Table"];
     //   NSLog(@"exid selection %@",exid);
     
+    //NSLog(@"gotTapGesture examining %ld items",[_jsonItems count]);
+
     for (NSDictionary *jsonObject in _jsonItems) {
         //     NSLog(@"comparing to %@",[jsonObject objectForKey:@"id"]);
         NSString *id =  [jsonObject objectForKey:@"id"];
         
         if ([id isKindOfClass:[NSNumber class]]) {  // deal with netprof v2 ids
-            NSNumber *nid = [_exList objectAtIndex:row];
+            NSNumber *nid = [jsonObject objectForKey:@"id"];
             id = [NSString stringWithFormat:@"%@",nid];
-            //NSLog(@"got number %@ = %@",nid,id);
+            //NSLog(@"gotTapGesture got number on item %@ = %@",nid,id);
         }
         
         if ([id isEqualToString:exid]) {
-              NSLog(@"gotTapGesture got it %@",jsonObject);
+            NSLog(@"gotTapGesture got match %@ = %@",id,exid);
+           // NSLog(@"gotTapGesture got it %@",jsonObject);
             // NSString *refAudio = [jsonObject objectForKey:@"ref"];
             NSMutableArray *toPlay = [[NSMutableArray alloc] init];
             NSString *refAudioPath = [jsonObject objectForKey:@"ref"];
@@ -596,6 +599,7 @@ NSString *myCurrentTitle;
                 _audioPlayer.audioPaths = toPlay;
                 [_audioPlayer playRefAudio];
             }
+            break;
         }
     }
     

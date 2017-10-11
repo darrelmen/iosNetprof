@@ -2021,7 +2021,7 @@ bool debugRecord = false;
     NSNumber *minusOne = [NSNumber numberWithInt:-1];
     //   NSLog(@"score was %@ vs %@",score, minusOne);
     if ([score isEqualToNumber:minusOne]) {
-        [self setDisplayMessage:@"Server error, please report."];
+        [self setDisplayMessage:@"Score low, try again."];
         return;
     }
     

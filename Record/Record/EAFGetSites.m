@@ -213,8 +213,8 @@
     
     for (int i = 0; i<fetchedArr.count; i++) {
         NSDictionary* site = fetchedArr[i];
-        
-     //   NSLog(@"parseJSON got %@",site);
+       
+//        NSLog(@"parseJSON got %@",site);
         
         BOOL showOnIOS = [[site valueForKey:@"showOnIOS"] boolValue];
         if (showOnIOS) {
@@ -276,8 +276,10 @@
             [self getSitesFromServer:_nServer];
         }
         else {
-            for(id key in _nameToURL)
-                NSLog(@"useJsonSitesData name=%@ url=%@", key, [_nameToURL objectForKey:key]);
+
+//            for(id key in _nameToURL)
+//                NSLog(@"useJsonSitesData name=%@ url=%@", key, [_nameToURL objectForKey:key]);
+            
 //            for(id key in _nameToProjectID)
 //                NSLog(@"key=%@ value=%@", key, [_nameToProjectID objectForKey:key]);
 //            
