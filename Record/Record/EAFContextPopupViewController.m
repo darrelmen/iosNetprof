@@ -57,7 +57,7 @@
     
     _contextFL.attributedText = [self highlightTerm:_fl refSentence:_item];
     _contextTranslation.text = _en;
-    
+  //  NSLog(@"ContextEnglish===== %@ ", _en);
     if ([_en isEqualToString:_fl]) {  // for english
         _contextTranslation.text = @"";
     }

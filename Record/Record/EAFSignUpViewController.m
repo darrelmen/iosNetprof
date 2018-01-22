@@ -217,10 +217,39 @@
     return _siteGetter.languages.count;
 }
 
--(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
-{
-    return [_siteGetter.languages objectAtIndex:row];
+//-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
+//{
+//    return [_siteGetter.languages objectAtIndex:row];
+//}
+
+-(UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(nullable UIView *)view{
+    UILabel *pView = (UILabel *)view;
+    if(!pView){
+        pView = [[UILabel alloc] init];
+        //        CGRect frame = CGRectMake(0.0, 0.0, 80, 32);
+        //        pView = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        if([self isiPhone]){
+            [pView setFont:[UIFont boldSystemFontOfSize: 38]];
+        } else {
+            [pView setFont:[UIFont boldSystemFontOfSize: 46]];
+        }
+        [pView setBackgroundColor:[UIColor clearColor]];
+        //        [pView setTextColor:[UIColor greenColor]];
+        [pView setTextColor:[UIColor colorWithRed:181/255.0 green:10/255.0 blue:10/255.0 alpha:1.0]];
+        [pView setTextAlignment: NSTextAlignmentCenter];
+    }
+    [pView setText:[_siteGetter.languages objectAtIndex: row]];
+    return pView;
 }
+
+-(CGFloat)pickerView: (UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component{
+    if([self isiPhone]){
+        return 45;
+    } else {
+        return 50;
+    }
+}
+
 
 - (void) textFieldText:(id)notification {
     [self emailChanged:nil];
@@ -395,6 +424,12 @@
     [chapterController setLanguage:chosenLanguage];
     chapterController.url = [_siteGetter.nameToURL objectForKey:chosenLanguage];
     [chapterController setTitle:chosenLanguage];
+}
+
+- (BOOL)isiPhone
+{
+    //  NSLog(@"dev %@",[UIDevice currentDevice].model);
+    return [[UIDevice currentDevice].model rangeOfString:@"iPhone"].location != NSNotFound;
 }
 
 @end

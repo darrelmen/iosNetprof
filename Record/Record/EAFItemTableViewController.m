@@ -60,6 +60,7 @@
 @property unsigned long checkMarkPercentage;
 @property unsigned long questionIconPercentage;
 @property unsigned long redXPercentage;
+@property UIButton *sortBtn;
 @property UIButton *ascendSortBtn;
 @property UIButton *descendSortBtn;
 
@@ -67,6 +68,8 @@
 @property UIButton *redXBtn;
 
 @property NSArray *temp_jsonItems;
+
+@property unsigned long lessonTotalItems;
 
 @end
 
@@ -114,109 +117,138 @@
     
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     _user = [userid intValue];
+  //   [self askServerForJson];
     
+ //   [self createBtnAndLabelForHeaderView];
+    
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(OrientationChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
+    
+     _lessonTotalItems = _jsonItems.count;
+
+}
+
+-(void)OrientationChange:(NSNotification*)notification
+{
+     [self createBtnAndLabelForHeaderView];
+//    UIDeviceOrientation Orientation=[[UIDevice currentDevice]orientation];
+//    
+//    if(Orientation==UIDeviceOrientationLandscapeLeft || Orientation==UIDeviceOrientationLandscapeRight)
+//    {
+//        [self createBtnAndLabelForHeaderView];
+//    }
+//    else if(Orientation==UIDeviceOrientationPortrait)
+//    {
+//         [self createBtnAndLabelForHeaderView];    }
 }
 
 - (void)createBtnAndLabelForHeaderView{
     
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 50)];
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 100)];
+    UIFont *font;
+    if([self isiPhone]){
+        font = [UIFont boldSystemFontOfSize:24.0f];
+    } else {
+        font = [UIFont boldSystemFontOfSize:32.0f];
+    }
     
-    _checkMarkBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-    _checkMarkBtn.frame = CGRectMake(5, 5, 40, 40);
-    [_checkMarkBtn setBackgroundImage:[UIImage imageNamed:@"checkmark32.png"] forState:UIControlStateNormal];
-    [_checkMarkBtn setBackgroundColor:[UIColor lightGrayColor]];
-    [_checkMarkBtn addTarget:self action:@selector(filterBtnTapped:) forControlEvents:UIControlEventTouchUpInside];
-    _checkMarkBtn.tag = 666;
-    [headerView addSubview:_checkMarkBtn];
+   
+    NSDictionary *attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
     
+  //  [[UISegmentedControl appearance] setTintColor:[UIColor grayColor]];
+    UISegmentedControl *segmentedCtrlForList= [[UISegmentedControl alloc] initWithFrame:CGRectMake(5, 5, self.view.frame.size.width - 10, 45)];
+  //  segmentedCtrlForList.backgroundColor = [UIColor colorWithRed:222/255.0 green:230/255.0 blue:242/255.0 alpha:1.0];
+    [segmentedCtrlForList setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    [segmentedCtrlForList insertSegmentWithImage:[UIImage imageNamed:@"checkmark32.png"] atIndex:0 animated:NO];
     
-    UILabel *checkMarkLabelView = [[UILabel alloc] initWithFrame:CGRectMake(49, 5, 45, 40)];
-    [checkMarkLabelView setBackgroundColor:[UIColor lightGrayColor]];
-    [checkMarkLabelView setText:[NSString stringWithFormat:@"%lu%%",_checkMarkPercentage]];
-    checkMarkLabelView.textAlignment = NSTextAlignmentCenter;
-    [headerView addSubview:checkMarkLabelView];
+    [segmentedCtrlForList insertSegmentWithImage:[UIImage imageNamed:@"redx32.png"] atIndex:1 animated:NO];
+    [segmentedCtrlForList insertSegmentWithImage:[UIImage imageNamed:@"questionIcon1.png"] atIndex:2 animated:NO];
+    [segmentedCtrlForList insertSegmentWithTitle:@"All" atIndex:3 animated:NO];
     
-    _redXBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-    _redXBtn.frame = CGRectMake(98, 5, 40, 40);
-    [_redXBtn setBackgroundImage:[UIImage imageNamed:@"redx32.png"] forState:UIControlStateNormal];
-    [_redXBtn setBackgroundColor:[UIColor lightGrayColor]];
-    [_redXBtn addTarget:self action:@selector(filterBtnTapped:) forControlEvents:UIControlEventTouchUpInside];
-    _redXBtn.tag = 888;
-    [headerView addSubview:_redXBtn];
+     [segmentedCtrlForList addTarget:self action:@selector(filterBtnTapped:) forControlEvents:UIControlEventValueChanged];
     
-    UILabel *redXLabelView = [[UILabel alloc] initWithFrame:CGRectMake(142, 5, 45, 40)];
-    [redXLabelView setBackgroundColor:[UIColor lightGrayColor]];
-    [redXLabelView setText:[NSString stringWithFormat:@"%lu%%",_redXPercentage]];
-    redXLabelView.textAlignment = NSTextAlignmentCenter;
-    [headerView addSubview:redXLabelView];
-    
-    UIImageView *questionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(191, 5, 40, 40)];
-    questionImageView.image = [UIImage imageNamed:@"questionIcon"];
-    [questionImageView setBackgroundColor:[UIColor lightGrayColor]];
-    [headerView addSubview:questionImageView];
-    UILabel *questionLabelView = [[UILabel alloc] initWithFrame:CGRectMake(235, 5, 45, 40)];
-    [questionLabelView setBackgroundColor:[UIColor lightGrayColor]];
-    [questionLabelView setText:[NSString stringWithFormat:@"%lu%%",_questionIconPercentage]];
-    questionLabelView.textAlignment = NSTextAlignmentCenter;
-    [headerView addSubview:questionLabelView];
-    _ascendSortBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-    _ascendSortBtn.frame = CGRectMake(self.view.frame.size.width - 89, 5, 40, 40);
-    [_ascendSortBtn setBackgroundImage:[UIImage imageNamed:@"ascendSort.png"] forState:UIControlStateNormal];
-  
-    [_ascendSortBtn addTarget:self action:@selector(sortBtnTapped:) forControlEvents:UIControlEventTouchUpInside];
-    _ascendSortBtn.tag = 123;
-    
-    [headerView addSubview:_ascendSortBtn];
-    
-    _descendSortBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    _descendSortBtn.frame = CGRectMake(self.view.frame.size.width - 45, 5, 40, 40);
-   // NSLog(@"***************  %f", self.view.frame.size.width);
-    [_descendSortBtn setBackgroundImage:[UIImage imageNamed:@"descendSort.png"] forState:UIControlStateNormal];
-    [_descendSortBtn addTarget:self action:@selector(sortBtnTapped:) forControlEvents:UIControlEventTouchUpInside];
-    _descendSortBtn.tag = 456;
-    [headerView addSubview:_descendSortBtn];
+    segmentedCtrlForList.layer.borderWidth = 1.0f;
+    segmentedCtrlForList.layer.borderColor = [UIColor blueColor].CGColor;
+    segmentedCtrlForList.layer.cornerRadius = 5.0;
+    segmentedCtrlForList.clipsToBounds = YES;
     
     
+    [headerView addSubview:segmentedCtrlForList];
+    
+    UISegmentedControl * segmentedCtrlForNumAndSort = [[UISegmentedControl alloc] initWithFrame:CGRectMake(5, 50, self.view.frame.size.width - 10 - (self.view.frame.size.width - 10)/4, 45)];
+    
+    [segmentedCtrlForNumAndSort setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    
+    [segmentedCtrlForNumAndSort insertSegmentWithTitle:[NSString stringWithFormat:@"%lu%%",_checkMarkPercentage] atIndex:0 animated:NO];
+    [segmentedCtrlForNumAndSort setEnabled:NO forSegmentAtIndex:0];
+    [segmentedCtrlForNumAndSort insertSegmentWithTitle:[NSString stringWithFormat:@"%lu%%",_redXPercentage] atIndex:1 animated:NO];
+    [segmentedCtrlForNumAndSort setEnabled:NO forSegmentAtIndex:1];
+
+    [segmentedCtrlForNumAndSort insertSegmentWithTitle:[NSString stringWithFormat:@"%lu%%",_questionIconPercentage] atIndex:2 animated:NO];
+    [segmentedCtrlForNumAndSort setEnabled:NO forSegmentAtIndex:2];
+//    [segmentedCtrlForNumAndSort insertSegmentWithImage:[UIImage imageNamed:@"sort.png"] atIndex:3 animated:NO];
+    segmentedCtrlForNumAndSort.layer.borderWidth = 1.0f;
+    segmentedCtrlForNumAndSort.layer.borderColor = [UIColor blueColor].CGColor;
+    segmentedCtrlForNumAndSort.layer.cornerRadius = 5.0;
+    segmentedCtrlForNumAndSort.clipsToBounds = YES;
+    _sortBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+    _sortBtn.frame = CGRectMake(self.view.frame.size.width - 5 - (self.view.frame.size.width - 10)/4, 50, (self.view.frame.size.width - 10)/4, 45);
+//    [_sortBtn setImage:[UIImage imageNamed:@"sort_big.png"] forState:UIControlStateNormal];
+     [_sortBtn setImage:[UIImage imageNamed:@"ZtoA.png"] forState:UIControlStateNormal];
+     [_sortBtn setImage:[UIImage imageNamed:@"AtoZ.png"] forState:UIControlStateSelected];
+
+    [[_sortBtn layer] setBorderWidth:1.0f];
+    [[_sortBtn layer] setBorderColor:[UIColor blueColor].CGColor];
+    _sortBtn.layer.cornerRadius = 5.0;
+    _sortBtn.clipsToBounds = YES;
+    _sortBtn.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
+    [_sortBtn addTarget:self action:@selector(sortBtnTapped:) forControlEvents:UIControlEventTouchUpInside];
+   
+    
+    [headerView addSubview:segmentedCtrlForNumAndSort];
+    [headerView addSubview:_sortBtn];
+
     [headerView setBackgroundColor:[UIColor colorWithRed:213/255.0 green:213/255.0 blue:213/255.0 alpha:1.0]];
     self.tableView.tableHeaderView = headerView;
 }
 
 - (void)sortBtnTapped:(id)sender{
-   
+    
     [sender tag];
     
     NSSortDescriptor *leadNameDescriptor;
-    if([sender tag] == 123){
-        _ascendSortBtn.selected = !_ascendSortBtn.selected;
-        _ascendSortBtn.backgroundColor = _ascendSortBtn.selected ?[UIColor cyanColor]:[UIColor lightGrayColor];
-        leadNameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"en" ascending:YES selector:@selector(localizedStandardCompare:)];
-    } else if([sender tag] == 456){
-       _descendSortBtn.selected = !_descendSortBtn.selected;
-       _descendSortBtn.backgroundColor = _descendSortBtn.selected ?[UIColor cyanColor]:[UIColor lightGrayColor];
+        _sortBtn.selected = !_sortBtn.selected;
+    _sortBtn.backgroundColor = _sortBtn.selected ?[UIColor colorWithRed:34/255.0 green:128/255.0 blue:229/255.0 alpha:1.0]:[UIColor cyanColor];
+//    if(_sortBtn.backgroundColor == [UIColor cyanColor]){
+//       leadNameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"en" ascending:NO selector:@selector(localizedStandardCompare:)];
+//       _descendSortBtn.selected = !_descendSortBtn.selected;
+//       _descendSortBtn.backgroundColor = _descendSortBtn.selected ?[UIColor cyanColor]:[UIColor lightGrayColor];
+//    } else {
+//       leadNameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"en" ascending:YES selector:@selector(localizedStandardCompare:)];
+//       //  NSLog(@"Sort are DONE!!!!!----- %ld", (long)[sender tag]);
+//    }
+    
 
-       leadNameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"en" ascending:NO selector:@selector(localizedStandardCompare:)];
-         NSLog(@"Sort are DONE!!!!!----- %ld", (long)[sender tag]);
-    }
-    
-    NSArray *sortDescriptor = [NSArray arrayWithObject:leadNameDescriptor];
-    NSArray *sortedArray = [_jsonItems sortedArrayUsingDescriptors:sortDescriptor];
-    
-    if(_ascendSortBtn.selected || _descendSortBtn.selected){
-    _jsonItems = [[NSMutableArray alloc] initWithArray:sortedArray];
-        
+    if(_sortBtn.selected){
+        leadNameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"en" ascending:YES selector:@selector(localizedStandardCompare:)];
     } else {
-        [self useJsonChapterData];
+        leadNameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"en" ascending:NO selector:@selector(localizedStandardCompare:)];
+        _descendSortBtn.selected = !_descendSortBtn.selected;
+        _descendSortBtn.backgroundColor = _descendSortBtn.selected ?[UIColor cyanColor]:[UIColor lightGrayColor];
     }
-   
+        
+        NSArray *sortDescriptor = [NSArray arrayWithObject:leadNameDescriptor];
+        NSArray *sortedArray = [_jsonItems sortedArrayUsingDescriptors:sortDescriptor];
+        _jsonItems = [[NSMutableArray alloc] initWithArray:sortedArray];
+    
      [[self tableView] reloadData];
 }
 
-- (void)filterBtnTapped:(id)sender{
+- (void)filterBtnTapped:(UISegmentedControl *)segment{
     
-     [sender tag];
-    
+    _jsonItems = _temp_jsonItems;
     NSMutableArray *checkMarkArray = [[NSMutableArray alloc] init];
     NSMutableArray *redXArray = [[NSMutableArray alloc] init];
+    NSMutableArray *questionMarkArray = [[NSMutableArray alloc] init];
     for(NSDictionary *entry in _jsonItems){
         
         NSString *exid = [entry objectForKey:@"id"];
@@ -234,22 +266,17 @@
             } else if(isIncorrect){
                 [redXArray addObject:entry];
             }
+        } else {
+            [questionMarkArray addObject:entry];
         }
     }
-
     
-    if([sender tag] == 666){
-        _checkMarkBtn.selected = !_checkMarkBtn.selected;
-        _checkMarkBtn.backgroundColor = _checkMarkBtn.selected ?[UIColor cyanColor]:[UIColor lightGrayColor];
-    } else if([sender tag] == 888){
-        _redXBtn.selected = !_redXBtn.selected;
-        _redXBtn.backgroundColor = _redXBtn.selected ?[UIColor cyanColor]:[UIColor lightGrayColor];
-    }
-    
-    if(_checkMarkBtn.selected){
+    if(segment.selectedSegmentIndex == 0){
         _jsonItems = checkMarkArray;
-    } else if(_redXBtn.selected){
+    } else if(segment.selectedSegmentIndex == 1){
         _jsonItems = redXArray;
+    } else if(segment.selectedSegmentIndex == 2){
+        _jsonItems = questionMarkArray;
     } else {
         _jsonItems = _temp_jsonItems;
      //   NSLog(@"TOTALLLLLLL--- %lu", _temp_jsonItems.count);
@@ -267,8 +294,8 @@
 
 -(void)viewWillAppear:(BOOL)animated {
     NSLog(@"ItemViewController : viewWillAppear ");
+     [super viewWillAppear:animated];
     [self askServerForJson];
-    [super viewWillAppear:animated];
 }
 
 #pragma mark - Table view data source
@@ -282,7 +309,9 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
+    
     return _requestPending ? 0:[_jsonItems count];
+   
 }
 
 - (void)colorWholeString:(NSMutableAttributedString *)result scoreString:(NSString *)scoreString
@@ -398,6 +427,7 @@
     
     [self colorEachWord:exid cell:cell exercise:exercise scoreHistory:scoreHistory];
     cell.detailTextLabel.text = englishPhrases;
+    
     return cell;
 }
 
@@ -511,13 +541,16 @@
 
 - (BOOL)useJsonChapterData {
   //  NSLog(@"ITemTableViewController - useJsonChapterData --- num json %lu ",(unsigned long)_jsonItems.count);
-
+    
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_responseData
                           options:NSJSONReadingAllowFragments
                           error:&error];
     _requestPending = false;
+    
+   
+    
     if (error) {
         NSLog(@"useJsonChapterData error %@",error.description);
         return false;
@@ -538,11 +571,11 @@
     NSNumberFormatter * formatter = [[NSNumberFormatter alloc] init];
     unsigned long checkMarkTotal = [[formatter numberFromString:lastCorrect] unsignedLongValue];
     unsigned long redXTotal = [[formatter numberFromString:lastIncorrect] unsignedLongValue];
-    unsigned long questionIconTotal = (unsigned long)_jsonItems.count - (checkMarkTotal + redXTotal);
-    _checkMarkPercentage = (roundf) (100 * ((float)checkMarkTotal/(float)(_jsonItems.count)));
+    unsigned long questionIconTotal = (unsigned long)_lessonTotalItems - (checkMarkTotal + redXTotal);
+    _checkMarkPercentage = (roundf) (100 * ((float)checkMarkTotal/(float)(_lessonTotalItems)));
    
-    _redXPercentage = (roundf)(100 * ((float)redXTotal/(float)_jsonItems.count));
-    _questionIconPercentage = (roundf)(100 * ((float)questionIconTotal/(float)_jsonItems.count));
+    _redXPercentage = (roundf)(100 * ((float)redXTotal/(float)_lessonTotalItems));
+    _questionIconPercentage = (roundf)(100 * ((float)questionIconTotal/(float)_lessonTotalItems));
    
     if (jsonArray != nil) {
         _exToScore   = [[NSMutableDictionary alloc] init];
@@ -573,7 +606,7 @@
     }
     
     [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
-    [self createBtnAndLabelForHeaderView];
+  //  [self createBtnAndLabelForHeaderView];
     return true;
 }
 
@@ -581,6 +614,7 @@
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
     [self useJsonChapterData];
+    [self createBtnAndLabelForHeaderView];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 
@@ -591,6 +625,16 @@
     _requestPending = false;
     [[self tableView] reloadData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+}
+
+- (BOOL)isiPhone
+{
+    return [[UIDevice currentDevice].model rangeOfString:@"iPhone"].location != NSNotFound;
+}
+
+- (BOOL)isiPad
+{
+    return ![self isiPhone];
 }
 
 @end

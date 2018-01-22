@@ -43,12 +43,12 @@
 
 
 @interface EAFLoginViewController : UIViewController<UITextFieldDelegate,UIGestureRecognizerDelegate,SitesNotification>
+@property (weak, nonatomic) IBOutlet UILabel *usernameFeedback;
+@property (weak, nonatomic) IBOutlet UILabel *passwordFeedback;
 @property (strong, nonatomic) IBOutlet UITextField *username;
 @property (strong, nonatomic) IBOutlet UITextField *password;
 @property (strong, nonatomic) IBOutlet UIButton *logIn;
 @property (strong, nonatomic) IBOutlet UIButton *signUp;
-@property (strong, nonatomic) IBOutlet UILabel *usernameFeedback;
-@property (strong, nonatomic) IBOutlet UILabel *passwordFeedback;
 @property (strong, nonatomic) IBOutlet UILabel *signUpFeedback;
 @property (strong, nonatomic) IBOutlet UIPickerView *languagePicker;
 @property (strong, nonatomic) NSData *responseData;
