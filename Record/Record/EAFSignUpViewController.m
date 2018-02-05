@@ -43,6 +43,7 @@
 #import "EAFChapterTableViewController.h"
 #import "EAFEventPoster.h"
 #import "EAFGetSites.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFSignUpViewController ()
 
@@ -96,11 +97,14 @@
     if (_passFromLogin == nil && rememberedPass != nil) {
         _password.text = rememberedPass;
     }
-    
     UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
     gestureRecognizer.cancelsTouchesInView = NO;
     gestureRecognizer.delegate = self;
     [self.languagePicker addGestureRecognizer:gestureRecognizer];
+    [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
+    [_titleLabel setTextColor:[UIColor npDarkBlue]];
+    [_signUp setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
+    [_signUp setTitleColor:[UIColor npDarkBlue] forState:UIControlStateApplication];
 }
 
 - (void) sitesReady {
@@ -235,7 +239,7 @@
         }
         [pView setBackgroundColor:[UIColor clearColor]];
         //        [pView setTextColor:[UIColor greenColor]];
-        [pView setTextColor:[UIColor colorWithRed:181/255.0 green:10/255.0 blue:10/255.0 alpha:1.0]];
+        [pView setTextColor:[UIColor npDarkBlue]];
         [pView setTextAlignment: NSTextAlignmentCenter];
     }
     [pView setText:[_siteGetter.languages objectAtIndex: row]];

@@ -39,6 +39,7 @@
 #import "EAFAppDelegate.h"
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFAppDelegate ()
 @property (strong, nonatomic) NSData *sitesData;
@@ -53,10 +54,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
-    // [SSKeychain deletePasswordForService:@"mitll.proFeedback.device" account:@"userid"];
-  //  [[Mint sharedInstance] initAndStartSession:@"1cad0755"];
-  //  [[Mint sharedInstance] addURLToBlackList:@"np.ll.mit.edu"];
+    [UINavigationBar appearance].barTintColor = [UIColor npLightBlue];
+    [UINavigationBar appearance].translucent = YES;
     
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     if (retrieveuuid == NULL) {
@@ -72,7 +71,7 @@
     [[NSUserDefaults standardUserDefaults] setObject:[self appNameAndVersionNumberDisplayString] forKey:@"version_preference"];
 
   //  [self getSites];
-    
+    [UITextView appearance].linkTextAttributes = @{ NSForegroundColorAttributeName : [UIColor npMedPurple] };
     return YES;
 }
 

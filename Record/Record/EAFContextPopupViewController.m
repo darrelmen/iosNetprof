@@ -42,6 +42,7 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "MZFormSheetController.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFContextPopupViewController ()
 @property EAFAudioPlayer *audioPlayer;
@@ -184,7 +185,7 @@
 
 - (void)highlightFLWhilePlaying
 {
-    _contextFL.textColor = [UIColor blueColor];
+    _contextFL.textColor = [UIColor npMedPurple];
 }
 
 - (void)removePlayingAudioHighlight {

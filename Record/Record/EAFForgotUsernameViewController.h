@@ -42,6 +42,7 @@
 
 @property (strong, nonatomic) IBOutlet UITextField *email;
 @property (strong, nonatomic) IBOutlet UIButton *sendEmail;
+@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 
 @property (strong, nonatomic) IBOutlet UILabel *emailFeedback;
 @property (strong, nonatomic) NSMutableData *responseData;

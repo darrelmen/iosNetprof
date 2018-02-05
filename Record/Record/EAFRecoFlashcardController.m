@@ -55,6 +55,8 @@
 #import "EAFPopoverViewController.h"
 #import "EAFMoreSelectionPopupViewController.h"
 #import <sys/utsname.h> // import it in your header or implementation file.
+#import <QuartzCore/QuartzCore.h>
+#import "UIColor_netprofColors.h"
 
 @implementation UIProgressView (customView)
 - (CGSize)sizeThatFits:(CGSize)size {
@@ -207,11 +209,13 @@
     _cardBackground.layer.cornerRadius = 15.f;
     _cardBackground.layer.borderColor = [UIColor grayColor].CGColor;
     _cardBackground.layer.borderWidth = 2.0f;
-    
+    _cardBackground.layer.backgroundColor = [UIColor whiteColor].CGColor;
+    [self view].backgroundColor = [UIColor npDarkBlue];
     _recordButtonContainer.layer.cornerRadius = 15.f;
     _recordButtonContainer.layer.borderWidth = 2.0f;
-    _recordButtonContainer.layer.borderColor = [UIColor colorWithRed:0 green:0.5 blue:1 alpha:1].CGColor;
-    
+    _recordButtonContainer.layer.borderColor = [UIColor npDarkBlue].CGColor;
+    _recordButton.tintColor = [UIColor npDarkBlue];
+    _pageControl.tintColor = [UIColor npDarkBlue];
     // Set the audio file
     NSArray *pathComponents = [NSArray arrayWithObjects:
                                [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
@@ -264,7 +268,7 @@
     [self checkAvailableMics];
     [self configureTextFields];
     
-    [_scoreProgress setTintColor:[UIColor blueColor]];
+    [_scoreProgress setTintColor:[UIColor npLightBlue]];
     [_scoreProgress setTrackTintColor:[UIColor whiteColor]];
     [_scoreProgress setProgressTintColor:[UIColor greenColor]];
     
@@ -282,7 +286,7 @@
     }
     
     _scoreProgress.hidden = true;
-    
+    _progressThroughItems.progressTintColor = [UIColor npLightYellow];
  /*
        [self configureWhatToShow];
   */
@@ -294,15 +298,11 @@
                             style:BButtonStyleBootstrapV3
                              icon:FAQuoteLeft
                          fontSize:20.0f];
-    
     if ([self isiPad]) {
         _contextButton.titleLabel.text = @"sentence";
         [_contextButton addAwesomeIcon:FAQuoteLeft beforeTitle:true];
     }
-    
-    _speedButton.layer.cornerRadius = 3.f;
-    _speedButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    _speedButton.layer.borderWidth = 1.0f;
+    _contextButton.color = [UIColor npLightBlue];
     
     NSString *ct = [[self getCurrentJson] objectForKey:@"ct"];
     _contextButton.hidden = (ct == nil || ct.length == 0);
@@ -392,33 +392,38 @@
  //   [self updateOrientation];
 //}
 
+
 -(void)setupToolBar {
-  
-    _selectionToolbar.backgroundColor = [UIColor colorWithRed:57/255.0 green:230/255.0 blue:0/255.0 alpha:1];
+    _selectionToolbar.layer.backgroundColor =  [UIColor whiteColor].CGColor;
     [_selectionToolbar setTranslatesAutoresizingMaskIntoConstraints: NO];
-      [self.view addSubview:_selectionToolbar];
-
+    [self.view addSubview:_selectionToolbar];
+    _selectionToolbar.barTintColor = [UIColor whiteColor];
+    
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-
-    _shuffleBtn = [BButton awesomeButtonWithOnlyIcon:FARandom color:[UIColor colorWithRed:222/255.0 green:230/255.0 blue:242/255.0 alpha:1.0] style:BButtonStyleBootstrapV3];
+    
+    _shuffleBtn = [BButton awesomeButtonWithOnlyIcon:FARandom color:[UIColor npLightBlue] style:BButtonStyleBootstrapV3];
     [self createButtonForiPhoneiPad:_shuffleBtn];
    
     [_shuffleBtn addTarget:self action:@selector(shuffle:) forControlEvents:UIControlEventTouchUpInside];
  //   [_shuffleBtn sizeToFit];
    UIBarButtonItem *shuffleBarItem = [[UIBarButtonItem alloc]	initWithCustomView:_shuffleBtn];
 
-    _autoPlayButton = [BButton awesomeButtonWithOnlyIcon:FAPlay color:[UIColor colorWithRed:222/255.0 green:230/255.0 blue:242/255.0 alpha:1.0] style:BButtonStyleBootstrapV3];
+    _autoPlayButton = [BButton awesomeButtonWithOnlyIcon:FAPlay color:[UIColor npLightBlue] style:BButtonStyleBootstrapV3];
      [self createButtonForiPhoneiPad:_autoPlayButton];
 
     [_autoPlayButton addTarget:self action:@selector(autoPlaySelected:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *playBarItem = [[UIBarButtonItem alloc] initWithCustomView:_autoPlayButton];
     
     _speedButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _speedButton.layer.cornerRadius = 4;
+    _speedButton.clipsToBounds = YES;
+    _speedButton.layer.borderColor = [UIColor npLightBlueBorder].CGColor;
+    _speedButton.layer.borderWidth = 1.0f;
     [_speedButton setImage:[UIImage imageNamed:@"turtle"] forState:UIControlStateNormal];
     [_speedButton setImage:[UIImage imageNamed:@"turtle_selected"] forState:UIControlStateSelected];
+    [_speedButton setBackgroundColor:[UIColor npLightBlue]];
     
-    
-    
+     
     if([self isiPhone]){
         _speedButton.frame=CGRectMake(0.0, 0.0, self.view.bounds.size.height * 0.1, self.view.bounds.size.height * 0.1);
               // _speedButton.frame=CGRectMake(0.0, 0.0, 55, 55);
@@ -431,7 +436,7 @@
        [_speedButton addTarget:self action:@selector(speedSelection:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *speedBarItem = [[UIBarButtonItem alloc] initWithCustomView:_speedButton];
     
-    _moreSelectButton = [BButton awesomeButtonWithOnlyIcon:FAEllipsisV color:[UIColor colorWithRed:222/255.0 green:230/255.0 blue:242/255.0 alpha:1.0] style:BButtonStyleBootstrapV3];
+    _moreSelectButton = [BButton awesomeButtonWithOnlyIcon:FAEllipsisV color:[UIColor npLightBlue] style:BButtonStyleBootstrapV3];
      [self createButtonForiPhoneiPad:_moreSelectButton];
     
     [_moreSelectButton addTarget:self action:@selector(ShowMoreSelectPopup:) forControlEvents:UIControlEventTouchUpInside];
@@ -462,7 +467,7 @@
         constData = 180.0;
     }
    NSLayoutConstraint  *height = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:constData];
-   
+   //_selectionToolbar.backgroundColor = [UIColor colorWithRed:3/255.0 green:99/255.0 blue:148/255.0 alpha:1.0];
     [self.view addConstraints:@[left, right, top, bottom, height]];
 
 }
@@ -509,7 +514,7 @@
 */
 - (IBAction)shuffle:(id)sender {
     _shuffleBtn.selected = !_shuffleBtn.selected;
-    _shuffleBtn.color = _shuffleBtn.selected ?[UIColor blueColor]:[UIColor colorWithRed:222/255.0 green:230/255.0 blue:242/255.0 alpha:1.0];
+    _shuffleBtn.color = _shuffleBtn.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
     
     if (_shuffleBtn.selected) {
         [self doShuffle];
@@ -535,7 +540,7 @@
     [self gotGenderSelect];
     [self audioOnSelection];
     _moreSelectButton.selected = !_moreSelectButton.selected;
-     _moreSelectButton.color = _moreSelectButton.selected ?[UIColor blueColor]:[UIColor colorWithRed:222/255.0 green:230/255.0 blue:242/255.0 alpha:1.0];
+    _moreSelectButton.color = _moreSelectButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
 }
 
 // there's a timer that governs the pause between items -- if it's active, invalidate it
@@ -548,7 +553,7 @@
 
 - (void)unselectAutoPlay {
     _autoPlayButton.selected = false;
-    _autoPlayButton.color = _autoPlayButton.selected ?[UIColor blueColor]:[UIColor colorWithRed:222/255.0 green:230/255.0 blue:242/255.0 alpha:1.0];
+    _autoPlayButton.color = _autoPlayButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
     [self stopTimer];
 }
 
@@ -588,7 +593,7 @@
             case UIEventSubtypeRemoteControlPlay:
                 //   NSLog(@"Got play  --->");
                 _autoPlayButton.selected = true;
-                _autoPlayButton.color = _autoPlayButton.selected ?[UIColor blueColor]:[UIColor colorWithRed:222/255.0 green:230/255.0 blue:242/255.0 alpha:1.0];
+                _autoPlayButton.color = _autoPlayButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
                 
                 [self respondToSwipe];
                 break;
@@ -843,12 +848,10 @@
     
     NSString *jsonItemCountStr = [NSString stringWithFormat:@"%ld",jsonItemCount];
     _progressNum.text = [NSString stringWithFormat:@"%ld  / %ld", index, jsonItemCount];
-//    _progressNum.textColor = [UIColor colorWithRed:(0/255.f) green:(0/255.f) blue:(255/255.f) alpha:1.0];
-    
-//    _progressNum.textColor = [UIColor redColor];
+    _progressNum.textColor = [UIColor npLightBlue];
     
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:_progressNum.text];
-    [str addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(0,[jsonItemCountStr length])];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor npLightBlue] range:NSMakeRange(0,[jsonItemCountStr length])];
     _progressNum.attributedText = str;
 
    
@@ -874,7 +877,8 @@
     if (audioSpeed != nil) {
         //   NSLog(@"checking - audio on %@",audioSpeed);
         _speedButton.selected = [audioSpeed isEqualToString:@"Slow"];
-        _speedButton.backgroundColor = _speedButton.selected ?[UIColor blueColor]:[UIColor colorWithRed:222/255.0 green:230/255.0 blue:242/255.0 alpha:1.0];
+        _speedButton.backgroundColor = _speedButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
+        _speedButton.layer.borderColor = _speedButton.selected ? [UIColor npDarkBlueBorder].CGColor : [UIColor npLightBlueBorder].CGColor;
     }
     
     NSDictionary *jsonObject =[self getCurrentJson] ;
@@ -1181,7 +1185,7 @@
 
 - (IBAction)autoPlaySelected:(id)sender {
     _autoPlayButton.selected = !_autoPlayButton.selected;
-    _autoPlayButton.color = _autoPlayButton.selected ?[UIColor blueColor]:[UIColor colorWithRed:222/255.0 green:230/255.0 blue:242/255.0 alpha:1.0];
+    _autoPlayButton.color = _autoPlayButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
     
     if (_autoPlayButton.selected) {
 //        if(_shuffleButton.selected){
@@ -1285,7 +1289,7 @@
     NSLog(@"recoflashcard : didStartSpeechUtterance --- '%@'",utterance.speechString);
     
     //   _pageControl.currentPage = 0;
-    _english.textColor = [UIColor blueColor];
+    _english.textColor = [UIColor npMedPurple];
 }
 
 // when autoplay is active, automatically go to next item...
@@ -1488,8 +1492,8 @@
     
     
     [self postEvent:speed widget:@"speed" type:@"UIButton"];
-
-    _speedButton.backgroundColor = _speedButton.selected ?[UIColor blueColor]:[UIColor colorWithRed:222/255.0 green:230/255.0 blue:242/255.0 alpha:1.0];
+    _speedButton.layer.borderColor = _speedButton.selected ? [UIColor npDarkBlueBorder].CGColor : [UIColor npLightBlueBorder].CGColor;
+    _speedButton.backgroundColor = _speedButton.selected ?[UIColor npLightBlue]:[UIColor npDarkBlue];
     if (!_autoPlayButton.selected) {
         [self respondToSwipe];
     }
@@ -1727,15 +1731,15 @@
 }
 
 - (void)removePlayingAudioHighlight {
-    if (_foreignLang.textColor == [UIColor blueColor]) {
+    //if (_foreignLang.textColor == [UIColor npMedPurple]) {
         _foreignLang.textColor = [UIColor blackColor];
-    }
+    //}
 }
 
 - (void)highlightFLWhilePlaying
 {
     //    NSLog(@" highlightFLWhilePlaying - show fl");
-    _foreignLang.textColor = [UIColor blueColor];
+    _foreignLang.textColor = [UIColor npMedPurple];
     //    _pageControl.currentPage = 1;
 }
 
@@ -1913,7 +1917,7 @@ bool debugRecord = false;
     if (_longPressGesture.state == UIGestureRecognizerStateBegan) {
         _gestureStart = CFAbsoluteTimeGetCurrent();
         
-        _recordButtonContainer.backgroundColor =[UIColor greenColor];
+        _recordButtonContainer.backgroundColor =[UIColor npLightBlue];
         _recordButton.enabled = NO;
         
         [_correctFeedback setHidden:true];
@@ -2934,7 +2938,7 @@ BOOL addSpaces = false;
 }
 - (IBAction)ShowMoreSelectPopup:(id)sender {
     _moreSelectButton.selected = !_moreSelectButton.selected;
-    _moreSelectButton.color = _moreSelectButton.selected ?[UIColor blueColor]:[UIColor colorWithRed:222/255.0 green:230/255.0 blue:242/255.0 alpha:1.0];
+    _moreSelectButton.color = _moreSelectButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
     _moreSelectionPopupView = [[EAFMoreSelectionPopupViewController alloc] init];
     
     [[MZFormSheetController appearance] setCornerRadius:20.0];
@@ -3000,6 +3004,9 @@ BOOL addSpaces = false;
         EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
         wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong_26h-unselected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         wordReport.tabBarItem.selectedImage = [[UIImage imageNamed:@"rightAndWrong_26h-selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        [wordReport.tabBarItem setTitleTextAttributes:@{ NSForegroundColorAttributeName : [UIColor npDarkBlue] }
+                                              forState:UIControlStateSelected];
+
         wordReport.language = _language;
         
         wordReport.chapterName = _chapterTitle;
@@ -3029,6 +3036,9 @@ BOOL addSpaces = false;
         EAFPhoneScoreTableViewController *phoneReport = [[tabBarController viewControllers] objectAtIndex:1];
         phoneReport.tabBarItem.selectedImage = [[UIImage imageNamed:@"checkAndEar.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         phoneReport.tabBarItem.image = [[UIImage imageNamed:@"ear-unselected_32.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        
+        [phoneReport.tabBarItem setTitleTextAttributes:@{ NSForegroundColorAttributeName : [UIColor npDarkBlue] }
+                                                 forState:UIControlStateSelected];
         
         phoneReport.language = _language;
         phoneReport.chapterName = _chapterTitle;

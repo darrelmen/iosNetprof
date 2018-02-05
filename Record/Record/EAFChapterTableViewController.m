@@ -42,6 +42,7 @@
 #import "SSKeychain.h"
 #import "EAFEventPoster.h"
 #import "EAFGetSites.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFChapterTableViewController ()
 
@@ -87,9 +88,6 @@
     
     [self.navigationController.navigationBar setTitleTextAttributes:
      @{NSForegroundColorAttributeName:[UIColor blackColor]}];
- //   [self.navigationController.navigationBar setTintColor: [UIColor blueColor]];
-     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:213/255.0 green:213/255.0 blue:213/255.0 alpha:1.0];
-
     
     if (self.chapters == nil) {
         self.chapters = [[NSMutableArray alloc] init];
@@ -555,13 +553,13 @@ UIAlertView *loadingContentAlert;
     NSRange range = NSMakeRange(n1 + 2, countStr.length+1);
     if([title containsString:@"items"]){
         [title3 addAttribute:NSForegroundColorAttributeName
-                       value:[UIColor blueColor]
+                       value:[UIColor blackColor]
                        range:range];
 
     } else {
  
         [title3 addAttribute:NSForegroundColorAttributeName
-                       value:[UIColor blueColor]
+                       value:[UIColor blackColor]
                        range:range];
         
     }

@@ -40,6 +40,7 @@
 #import "EAFAudioCache.h"
 #import "EAFRecoFlashcardController.h"
 #import "SSKeychain.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFItemTableViewController ()
 
@@ -61,8 +62,6 @@
 @property unsigned long questionIconPercentage;
 @property unsigned long redXPercentage;
 @property UIButton *sortBtn;
-@property UIButton *ascendSortBtn;
-@property UIButton *descendSortBtn;
 
 @property UIButton *checkMarkBtn;
 @property UIButton *redXBtn;
@@ -157,17 +156,19 @@
   //  [[UISegmentedControl appearance] setTintColor:[UIColor grayColor]];
     UISegmentedControl *segmentedCtrlForList= [[UISegmentedControl alloc] initWithFrame:CGRectMake(5, 5, self.view.frame.size.width - 10, 45)];
   //  segmentedCtrlForList.backgroundColor = [UIColor colorWithRed:222/255.0 green:230/255.0 blue:242/255.0 alpha:1.0];
+    segmentedCtrlForList.backgroundColor = [UIColor npLightBlue];
     [segmentedCtrlForList setTitleTextAttributes:attributes forState:UIControlStateNormal];
     [segmentedCtrlForList insertSegmentWithImage:[UIImage imageNamed:@"checkmark32.png"] atIndex:0 animated:NO];
     
     [segmentedCtrlForList insertSegmentWithImage:[UIImage imageNamed:@"redx32.png"] atIndex:1 animated:NO];
     [segmentedCtrlForList insertSegmentWithImage:[UIImage imageNamed:@"questionIcon1.png"] atIndex:2 animated:NO];
     [segmentedCtrlForList insertSegmentWithTitle:@"All" atIndex:3 animated:NO];
-    
-     [segmentedCtrlForList addTarget:self action:@selector(filterBtnTapped:) forControlEvents:UIControlEventValueChanged];
+    [segmentedCtrlForList setSelectedSegmentIndex:3];
+    segmentedCtrlForList.tintColor = [UIColor npDarkBlue];
+    [segmentedCtrlForList addTarget:self action:@selector(filterBtnTapped:) forControlEvents:UIControlEventValueChanged];
     
     segmentedCtrlForList.layer.borderWidth = 1.0f;
-    segmentedCtrlForList.layer.borderColor = [UIColor blueColor].CGColor;
+    segmentedCtrlForList.layer.borderColor = [UIColor npDarkBlue].CGColor;
     segmentedCtrlForList.layer.cornerRadius = 5.0;
     segmentedCtrlForList.clipsToBounds = YES;
     
@@ -182,32 +183,38 @@
     [segmentedCtrlForNumAndSort setEnabled:NO forSegmentAtIndex:0];
     [segmentedCtrlForNumAndSort insertSegmentWithTitle:[NSString stringWithFormat:@"%lu%%",_redXPercentage] atIndex:1 animated:NO];
     [segmentedCtrlForNumAndSort setEnabled:NO forSegmentAtIndex:1];
-
     [segmentedCtrlForNumAndSort insertSegmentWithTitle:[NSString stringWithFormat:@"%lu%%",_questionIconPercentage] atIndex:2 animated:NO];
     [segmentedCtrlForNumAndSort setEnabled:NO forSegmentAtIndex:2];
 //    [segmentedCtrlForNumAndSort insertSegmentWithImage:[UIImage imageNamed:@"sort.png"] atIndex:3 animated:NO];
+    segmentedCtrlForNumAndSort.backgroundColor = [UIColor whiteColor];
+    segmentedCtrlForNumAndSort.tintColor = [UIColor whiteColor];
+    //[segmentedCtrlForNumAndSort setTitleColor:[UIColor npDarkBlue]];
+    [segmentedCtrlForNumAndSort setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor npDarkBlue]}
+                                forState:UIControlStateDisabled];
     segmentedCtrlForNumAndSort.layer.borderWidth = 1.0f;
-    segmentedCtrlForNumAndSort.layer.borderColor = [UIColor blueColor].CGColor;
+   //segmentedCtrlForList.layer.borderColor = [UIColor npDarkBlue].CGColor;
+    segmentedCtrlForNumAndSort.layer.borderColor = [UIColor whiteColor].CGColor;
     segmentedCtrlForNumAndSort.layer.cornerRadius = 5.0;
-    segmentedCtrlForNumAndSort.clipsToBounds = YES;
-    _sortBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+    segmentedCtrlForNumAndSort.clipsToBounds = NO;
+    _sortBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     _sortBtn.frame = CGRectMake(self.view.frame.size.width - 5 - (self.view.frame.size.width - 10)/4, 50, (self.view.frame.size.width - 10)/4, 45);
 //    [_sortBtn setImage:[UIImage imageNamed:@"sort_big.png"] forState:UIControlStateNormal];
-     [_sortBtn setImage:[UIImage imageNamed:@"ZtoA.png"] forState:UIControlStateNormal];
-     [_sortBtn setImage:[UIImage imageNamed:@"AtoZ.png"] forState:UIControlStateSelected];
+     [_sortBtn setImage:[[UIImage imageNamed:@"ZtoA.png"]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+     [_sortBtn setImage:[[UIImage imageNamed:@"AtoZ.png"]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateSelected];
 
     [[_sortBtn layer] setBorderWidth:1.0f];
-    [[_sortBtn layer] setBorderColor:[UIColor blueColor].CGColor];
+    [[_sortBtn layer] setBorderColor:[UIColor npDarkBlue].CGColor];
+    _sortBtn.backgroundColor = [UIColor npLightBlue];
+    _sortBtn.tintColor = [UIColor npDarkBlue];
     _sortBtn.layer.cornerRadius = 5.0;
     _sortBtn.clipsToBounds = YES;
     _sortBtn.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
     [_sortBtn addTarget:self action:@selector(sortBtnTapped:) forControlEvents:UIControlEventTouchUpInside];
    
-    
     [headerView addSubview:segmentedCtrlForNumAndSort];
     [headerView addSubview:_sortBtn];
 
-    [headerView setBackgroundColor:[UIColor colorWithRed:213/255.0 green:213/255.0 blue:213/255.0 alpha:1.0]];
+    //[headerView setBackgroundColor:[UIColor colorWithRed:213/255.0 green:213/255.0 blue:213/255.0 alpha:1.0]];
     self.tableView.tableHeaderView = headerView;
 }
 
@@ -216,24 +223,11 @@
     [sender tag];
     
     NSSortDescriptor *leadNameDescriptor;
-        _sortBtn.selected = !_sortBtn.selected;
-    _sortBtn.backgroundColor = _sortBtn.selected ?[UIColor colorWithRed:34/255.0 green:128/255.0 blue:229/255.0 alpha:1.0]:[UIColor cyanColor];
-//    if(_sortBtn.backgroundColor == [UIColor cyanColor]){
-//       leadNameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"en" ascending:NO selector:@selector(localizedStandardCompare:)];
-//       _descendSortBtn.selected = !_descendSortBtn.selected;
-//       _descendSortBtn.backgroundColor = _descendSortBtn.selected ?[UIColor cyanColor]:[UIColor lightGrayColor];
-//    } else {
-//       leadNameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"en" ascending:YES selector:@selector(localizedStandardCompare:)];
-//       //  NSLog(@"Sort are DONE!!!!!----- %ld", (long)[sender tag]);
-//    }
-    
-
+    _sortBtn.selected = !_sortBtn.selected;
     if(_sortBtn.selected){
         leadNameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"en" ascending:YES selector:@selector(localizedStandardCompare:)];
     } else {
         leadNameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"en" ascending:NO selector:@selector(localizedStandardCompare:)];
-        _descendSortBtn.selected = !_descendSortBtn.selected;
-        _descendSortBtn.backgroundColor = _descendSortBtn.selected ?[UIColor cyanColor]:[UIColor lightGrayColor];
     }
         
         NSArray *sortDescriptor = [NSArray arrayWithObject:leadNameDescriptor];

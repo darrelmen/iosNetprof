@@ -43,6 +43,7 @@
 #import "EAFAudioCache.h"
 #import "EAFEventPoster.h"
 #import "SSKeychain.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFWordScoreTableViewController ()
 @property int rowHeight;
@@ -575,7 +576,7 @@ NSString *myCurrentTitle;
                                 _current.textColor = [UIColor blackColor];
                             }
                             _current = ((UILabel *) subview);
-                            _current.textColor = [UIColor blueColor];
+                            _current.textColor = [UIColor npMedPurple];
                         }
                     }
                 }

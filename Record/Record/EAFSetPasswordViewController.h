@@ -44,7 +44,7 @@
 @property (strong, nonatomic) IBOutlet UITextField *password;
 @property (strong, nonatomic) IBOutlet UIButton *sendEmail;
 @property (strong, nonatomic) IBOutlet UITextField *confirmPassword;
-
+@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (strong, nonatomic) IBOutlet UILabel *passwordFeedback;
 
 @property (strong, nonatomic) IBOutlet UILabel *confirmPasswordFeedback;

@@ -12,6 +12,7 @@
 #import "NSString+FontAwesome.h"
 #import "BButton.h"
 #import "SSKeychain.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFMoreSelectionPopupViewController ()
 
@@ -46,7 +47,11 @@
     NSString *audioOn = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioOn"];
     if (audioOn != nil) {
         _audioOnBtn.selected = [audioOn isEqualToString:@"Yes"] ? 1:0;
-        _audioOnBtn.color = _audioOnBtn.selected ?[UIColor blueColor]:[UIColor whiteColor];
+        _audioOnBtn.color = _audioOnBtn.selected ?[UIColor npAltPressButtonBGOn]:[UIColor whiteColor];
+        _audioOnBtn.tintColor = _audioOnBtn.selected ?[UIColor npAltPressButtonBGOn]:[UIColor whiteColor];
+        [_audioOnBtn setTitleColor:[UIColor npAltPressButtonFGOff] forState:UIControlStateNormal];
+        [_audioOnBtn setTitleColor:[UIColor npAltPressButtonFGOn] forState:UIControlStateSelected];
+        _audioOnBtn.layer.borderColor = [UIColor npAltPressButtonBGOn].CGColor;
     }
      _moreSelection.isAudioSelected = _audioOnBtn.selected;
 }
@@ -90,8 +95,12 @@
 - (IBAction)audioSelection:(id)sender {
     
     _audioOnBtn.selected = !_audioOnBtn.selected;
-    _audioOnBtn.color = _audioOnBtn.selected ?[UIColor blueColor]:[UIColor whiteColor];
-    
+    _audioOnBtn.color = _audioOnBtn.selected ?[UIColor npAltPressButtonBGOn]:[UIColor whiteColor];
+    _audioOnBtn.tintColor = _audioOnBtn.selected ?[UIColor npAltPressButtonBGOn]:[UIColor whiteColor];
+    _audioOnBtn.layer.borderColor = [UIColor npAltPressButtonBGOn].CGColor;
+    [_audioOnBtn setTitleColor:[UIColor npAltPressButtonFGOff] forState:UIControlStateNormal];
+    [_audioOnBtn setTitleColor:[UIColor npAltPressButtonFGOn] forState:UIControlStateSelected];
+    _audioOnBtn.layer.borderColor = [UIColor npAltPressButtonBGOn].CGColor;
     _moreSelection.isAudioSelected = _audioOnBtn.selected;
 
 }

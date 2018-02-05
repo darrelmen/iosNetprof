@@ -41,6 +41,7 @@
 #import "EAFSetPasswordViewController.h"
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFSetPasswordViewController ()
 
@@ -51,6 +52,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setTitle:[NSString stringWithFormat:@"Set new password for %@",_language]];
+    [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
+    [_titleLabel setTextColor:[UIColor npDarkBlue]];
+    [_sendEmail setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
     _confirmPassword.text = _userFromLogin;
 }
 
@@ -58,7 +62,7 @@
     BOOL valid = true;
     
     if (_password.text.length == 0) {
-        _passwordFeedback.text = @"Please enter a password";
+        _passwordFeedback.text = @"Please enter a password.";
         _passwordFeedback.textColor = [UIColor redColor];
         valid = false;
     }

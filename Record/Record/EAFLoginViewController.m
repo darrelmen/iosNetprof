@@ -41,11 +41,12 @@
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
 #import "EAFSignUpViewController.h"
-#import "EAFForgotUserNameViewController.h"
+#import "EAFForgotUsernameViewController.h"
 #import "EAFForgotPasswordViewController.h"
 #import "EAFSetPasswordViewController.h"
 #import "EAFEventPoster.h"
 #import "EAFGetSites.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFLoginViewController ()
 
@@ -87,7 +88,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [_logIn setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
+    [_signUp setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
+    [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
+    [_titleLabel setTextColor:[UIColor npDarkBlue]];
+
     _versionLabel.text = [self appNameAndVersionNumberDisplayString];
     
     _siteGetter = [EAFGetSites new];
@@ -118,14 +123,14 @@
                              style:BButtonStyleBootstrapV3
                               icon:FAQuestion
                           fontSize:20.0f];
-    [_forgotUsername setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-    
+    [_forgotUsername setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
+  
     [_forgotPassword initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
                              color:[UIColor colorWithWhite:1.0f alpha:0.0f]
                              style:BButtonStyleBootstrapV3
                               icon:FAQuestion
                           fontSize:20.0f];
-    [_forgotPassword setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    [_forgotPassword setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
     
     UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
     gestureRecognizer.cancelsTouchesInView = NO;
@@ -270,7 +275,7 @@
         [pView setFont:[UIFont boldSystemFontOfSize: 46]];
          [pView setBackgroundColor:[UIColor clearColor]];
 //        [pView setTextColor:[UIColor greenColor]];
-        [pView setTextColor:[UIColor colorWithRed:181/255.0 green:10/255.0 blue:10/255.0 alpha:1.0]];
+        [pView setTextColor:[UIColor colorWithRed:3/255.0 green:99/255.0 blue:148/255.0 alpha:1.0]];
         [pView setTextAlignment: NSTextAlignmentCenter];
     }
    [pView setText:[_siteGetter.languages objectAtIndex: row]];
