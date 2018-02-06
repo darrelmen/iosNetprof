@@ -87,7 +87,7 @@
     _poster = [[EAFEventPoster alloc] initWithURL:_url];
     
     [self.navigationController.navigationBar setTitleTextAttributes:
-     @{NSForegroundColorAttributeName:[UIColor blackColor]}];
+     @{NSForegroundColorAttributeName:[UIColor npLightYellow]}];
     
     if (self.chapters == nil) {
         self.chapters = [[NSMutableArray alloc] init];

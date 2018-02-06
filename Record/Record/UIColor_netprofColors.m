@@ -29,6 +29,16 @@
     return [UIColor colorWithRed:187/255.0 green:223/255.0 blue:237/255.0 alpha:1.0] ;
 }
 
++ (UIColor *)npRecordBorder {
+    //    return [UIColor colorWithRed:202/255.0 green:238/255.0 blue:252/255.0 alpha:1.0] ;
+    return [UIColor colorWithRed:255/255.0 green:0/255.0 blue:0/255.0 alpha:1.0] ;
+}
+
++ (UIColor *)npRecordBG {
+    //    return [UIColor colorWithRed:202/255.0 green:238/255.0 blue:252/255.0 alpha:1.0] ;
+    return [UIColor colorWithRed:255/255.0 green:167/255.0 blue:167/255.0 alpha:1.0] ;
+}
+
 
 + (UIColor *)npMedPurple {
     return [UIColor colorWithRed:99/255.0 green:109/255.0 blue:201/255.0 alpha:1.0] ;

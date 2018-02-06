@@ -54,9 +54,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [UINavigationBar appearance].barTintColor = [UIColor npLightBlue];
     [UINavigationBar appearance].translucent = YES;
-    
+    [UINavigationBar appearance].barTintColor = [UIColor colorWithRed:(9/255.0)+0.24 green:(65/255.0)+0.24 blue:(105/255.0)+0.24 alpha:1.0];
+    [UINavigationBar appearance].tintColor = [UIColor npLightBlue];
+
+
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     if (retrieveuuid == NULL) {
         NSString *UUID = [EAFAppDelegate GetUUID];

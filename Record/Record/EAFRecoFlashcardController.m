@@ -213,9 +213,12 @@
     [self view].backgroundColor = [UIColor npDarkBlue];
     _recordButtonContainer.layer.cornerRadius = 15.f;
     _recordButtonContainer.layer.borderWidth = 2.0f;
-    _recordButtonContainer.layer.borderColor = [UIColor npDarkBlue].CGColor;
-    _recordButton.tintColor = [UIColor npDarkBlue];
+    _recordButtonContainer.layer.borderColor = [UIColor npRecordBorder].CGColor;
+    _recordButton.tintColor = [UIColor npRecordBorder];
     _pageControl.tintColor = [UIColor npDarkBlue];
+    _foreignLang.textColor = [UIColor npDarkBlue];
+    _english.textColor = [UIColor npDarkBlue];
+    
     // Set the audio file
     NSArray *pathComponents = [NSArray arrayWithObjects:
                                [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
@@ -1267,7 +1270,7 @@
 
 - (void)showSpeechEnded:(BOOL) isEnglish {
     //    if (isEnglish) {
-    _english.textColor = [UIColor blackColor];
+    _english.textColor = [UIColor npDarkBlue];
     //    }
     //    else {
     //        _foreignLang.textColor = [UIColor blackColor];
@@ -1732,7 +1735,7 @@
 
 - (void)removePlayingAudioHighlight {
     //if (_foreignLang.textColor == [UIColor npMedPurple]) {
-        _foreignLang.textColor = [UIColor blackColor];
+        _foreignLang.textColor = [UIColor npDarkBlue];
     //}
 }
 
@@ -1768,7 +1771,7 @@ bool debugRecord = false;
     if (!_audioRecorder.recording)
     {
         if (debugRecord) NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
-        _english.textColor = [UIColor blackColor];
+        _english.textColor = [UIColor npDarkBlue];
         
         for (UIView *v in [_scoreDisplayContainer subviews]) {
             [v removeFromSuperview];
@@ -1917,7 +1920,7 @@ bool debugRecord = false;
     if (_longPressGesture.state == UIGestureRecognizerStateBegan) {
         _gestureStart = CFAbsoluteTimeGetCurrent();
         
-        _recordButtonContainer.backgroundColor =[UIColor npLightBlue];
+        _recordButtonContainer.backgroundColor =[UIColor npRecordBG];
         _recordButton.enabled = NO;
         
         [_correctFeedback setHidden:true];

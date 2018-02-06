@@ -19,4 +19,6 @@
 + (UIColor *) npAltPressButtonBGOn;
 + (UIColor *) npAltPressButtonFGOn;
 + (UIColor *) npAltPressButtonFGOff;
++ (UIColor *) npRecordBorder;
++ (UIColor *) npRecordBG;
 @end
