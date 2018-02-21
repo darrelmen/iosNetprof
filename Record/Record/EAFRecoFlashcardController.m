@@ -667,13 +667,13 @@
     _audioRefs = [[NSMutableArray alloc] init];
     BOOL isSlow = _speedButton.selected;
     
-    NSLog(@"speed is %@",isSlow ? @"SLOW" :@"REGULAR");
-    NSLog(@"male slow %@",hasMaleSlow ? @"YES" :@"NO");
-    NSLog(@"male reg  %@",hasMaleReg ? @"YES" :@"NO");
-    NSLog(@"selected gender is %ld",selectedGender);
-    NSLog(@"ref is %@",refAudio);
-    NSLog(@"msr is %@",test);
-    NSLog(@"dict  %@",jsonObject);
+//    NSLog(@"speed is %@",isSlow ? @"SLOW" :@"REGULAR");
+//    NSLog(@"male slow %@",hasMaleSlow ? @"YES" :@"NO");
+//    NSLog(@"male reg  %@",hasMaleReg ? @"YES" :@"NO");
+//    NSLog(@"selected gender is %ld",selectedGender);
+//    NSLog(@"ref is %@",refAudio);
+//    NSLog(@"msr is %@",test);
+//    NSLog(@"dict  %@",jsonObject);
     
     BOOL hasTwoGenders = (hasMaleReg || hasMaleSlow) && (hasFemaleReg || hasFemaleSlow);
     

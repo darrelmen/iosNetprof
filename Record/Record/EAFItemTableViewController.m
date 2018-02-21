@@ -391,8 +391,7 @@
              });
          }
          else {
-             NSLog(@"ItemTableViewController Got normal resp");
-
+             //NSLog(@"ItemTableViewController Got normal resp");
              _responseData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
@@ -402,7 +401,7 @@
 }
 
 - (BOOL)useJsonChapterData {
-    NSLog(@"ITemTableViewController - useJsonChapterData --- num json %lu ",(unsigned long)_jsonItems.count);
+    NSLog(@"ItemTableViewController - useJsonChapterData --- num json %lu ",(unsigned long)_jsonItems.count);
 
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
@@ -414,6 +413,9 @@
         NSLog(@"useJsonChapterData error %@",error.description);
         return false;
     }
+    
+    //NSLog(@"useJsonChapterData resp %@",_responseData);
+    //NSLog(@"useJsonChapterData resp 2 %@",json);
     
     NSMutableDictionary *exToEntry = [[NSMutableDictionary alloc] init];
     for (NSDictionary *entry in _jsonItems) {

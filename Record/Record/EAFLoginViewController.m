@@ -71,16 +71,16 @@
         NSUInteger toChoose = [_siteGetter.languages indexOfObject:languageRemembered];
         //        NSLog(@"setLanguagePicker language cookie now %@ = %lu among %@",languageRemembered,(unsigned long)toChoose,_siteGetter.languages);
         if (toChoose > [_languagePicker numberOfRowsInComponent:0]) {
-            NSLog(@"setLanguagePicker choose %lu bigger than num selected is %ld",(unsigned long)toChoose,(long)[_languagePicker numberOfRowsInComponent:0]);
+            NSLog(@"LoginViewController : setLanguagePicker choose %lu bigger than num selected is %ld",(unsigned long)toChoose,(long)[_languagePicker numberOfRowsInComponent:0]);
             [_languagePicker selectRow:0 inComponent:0 animated:false];
         }
         else {
             [_languagePicker selectRow:toChoose inComponent:0 animated:false];
-            NSLog(@"setLanguagePicker selected is %ld",(long)[_languagePicker selectedRowInComponent:0]);
+            NSLog(@"LoginViewController : setLanguagePicker selected is %ld",(long)[_languagePicker selectedRowInComponent:0]);
         }
     }
     else {
-        NSLog(@"setLanguagePicker no language cookie");
+        NSLog(@"LoginViewController : setLanguagePicker no language cookie");
     }
 }
 
@@ -146,7 +146,11 @@
     // must come after language picker
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     if (userid != nil) {
-        [self performSegueWithIdentifier:@"goToChapter" sender:self];
+        //  [self performSegueWithIdentifier:@"goToChapter" sender:self];
+        NSString *languageRemembered = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
+        if (languageRemembered != nil) {
+            [self tryToLogIn:languageRemembered];
+        }
     }
 }
 
@@ -191,7 +195,7 @@
 
 // both login and sign up button clicks come here
 - (IBAction)onClick:(id)sender {
-    NSLog(@"onClick Got click from %@", sender);
+    NSLog(@"LoginView : onClick Got click from %@", sender);
     
     
     UIButton* button = (UIButton *)sender;
@@ -200,11 +204,11 @@
     
     NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
     
-    NSLog(@"onClick chosenLanguage %@", chosenLanguage);
-
+    NSLog(@"LoginView : onClick chosenLanguage %@", chosenLanguage);
+    
     if (!isLogin) {
         NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
-        NSLog(@"onClick projid %@", projid);
+        NSLog(@"LoginView : onClick projid %@", projid);
         if (projid.intValue == -1) {
             [self performSegueWithIdentifier:@"goToSignUp" sender:self];
         }
@@ -225,109 +229,131 @@
     }
     
     
-    NSLog(@"onClick language %@",chosenLanguage);
+    NSLog(@"LoginView onClick language %@",chosenLanguage);
     
     if (valid) {
         // make sure multiple events don't occur
-        _languagePicker.userInteractionEnabled = false;
-        NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
+//        _languagePicker.userInteractionEnabled = false;
+//       
+//
+//        
+//        NSString *username =_username.text;
+//        NSString *password =_password.text;
+//        
+//        //NSLog(@"LoginView onClick password '%@'",_password.text);
+//        //NSLog(@"onClick md5 password %@",[self MD5:_password.text]);
+//        
+//        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@scoreServlet?hasUser=%@&p=%@",
+//                                           urlForLanguage,
+//                                           username,
+//                                           [[self MD5:password] uppercaseString]
+//                                           ]];
+//        
+//        NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+//        
+//        NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
+//        if (projid.intValue > -1) {
+//            [urlRequest setValue:@"hasUser" forHTTPHeaderField:@"request"];
+//            [urlRequest setValue:username forHTTPHeaderField:@"userid"];
+//            [urlRequest setValue:password forHTTPHeaderField:@"pass"];
+//            [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
+//        }
+//        else {
+//        }
+//        
+//        [urlRequest setHTTPMethod: @"GET"];
+//        [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+//        [urlRequest setTimeoutInterval:15];
+//        
+//        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+//        
+//        [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+//         {
+//             if (error != nil) {
+//                 NSLog(@"\n\n\n\t1 Got error %@",error);
+//                 dispatch_async(dispatch_get_main_queue(), ^{
+//                     [self connection:nil didFailWithError:error];
+//                 });
+//             }
+//             else {
+//                 _responseData = data;
+//                 [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+//                                        withObject:nil
+//                                     waitUntilDone:YES];
+//             }
+//         }];
         
-        NSLog(@"onClick password %@",_password.text);
-        NSLog(@"onClick md5 password %@",[self MD5:_password.text]);
-        
-        NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?hasUser=%@&p=%@",
-                             urlForLanguage,
-                             _username.text,
-                             [[self MD5:_password.text] uppercaseString]
-                             ];
-        
-        NSURL *url = [NSURL URLWithString:baseurl];
-        
-        NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-        
-        // TODO : REMOVE ME - TEMPORARY HACK FOR BAD CERTS ON DEV MACHINE
-        [NSMutableURLRequest setAllowsAnyHTTPSCertificate:YES forHost:[url host]];
-        
-        NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
-        if (projid.intValue > -1) {
-            [urlRequest setValue:@"hasUser" forHTTPHeaderField:@"request"];
-            [urlRequest setValue:_username.text forHTTPHeaderField:@"userid"];
-            [urlRequest setValue:_password.text forHTTPHeaderField:@"pass"];
-            [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
-            //  [urlRequest setHTTPMethod: @"POST"];
-        }
-        else {
-            //    [urlRequest setHTTPMethod: @"GET"];
-        }
-        
-        [urlRequest setHTTPMethod: @"GET"];
-        
-        [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-        [urlRequest setTimeoutInterval:15];
-        
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-        
-        if (TRUE) {
-            [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-             {
-                 if (error != nil) {
-                     NSLog(@"\n\n\n\t1 Got error %@",error);
-                     dispatch_async(dispatch_get_main_queue(), ^{
-                         [self connection:nil didFailWithError:error];
-                     });
-                 }
-                 else {
-                     _responseData = data;
-                     [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
-                                            withObject:nil
-                                         waitUntilDone:YES];
-                 }
-             }];
-        }
-        else {
-            
-            NSDictionary *dictionary = @{@"key1": @"value1"};
-            NSError *error = nil;
-            NSData *data = [NSJSONSerialization dataWithJSONObject:dictionary
-                                                           options:kNilOptions error:&error];
-            
-            
-            NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-            NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:Nil];
-            
-            
-            NSURLSessionDataTask *downloadTask = [session
-                                                  uploadTaskWithRequest:urlRequest
-                                                  fromData:data
-                                                  completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                                                      
-                                                      //  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-                                                      if (error != nil) {
-                                                          NSLog(@"\n\n\n\t1 Got error %@",error);
-                                                          dispatch_async(dispatch_get_main_queue(), ^{
-                                                              [self connection:nil didFailWithError:error];
-                                                          });
-                                                      }
-                                                      else {
-                                                          //  NSLog(@"\tgetSites Got response %@",response);
-                                                          _responseData = data;
-                                                          [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
-                                                                                 withObject:nil
-                                                                              waitUntilDone:YES];
-                                                      }
-                                                  }];
-            [downloadTask resume];
-            
-        }
+        [self tryToLogIn:chosenLanguage];
         
         _logIn.enabled = false;
         
         //NSLog(@"got project id %@",[_siteGetter.nameToProjectID objectForKey:chosenLanguage]);
-        
+         NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
         [_poster setURL:urlForLanguage projid:[_siteGetter.nameToProjectID objectForKey:chosenLanguage]];
         
         [_poster postEvent:@"login" exid:@"N/A" widget:@"LogIn" widgetType:@"Button"];
     }
+    else {
+        NSLog(@"LoginView not valid.");
+    }
+}
+
+-(void)tryToLogIn:(NSString*) chosenLanguage
+{
+    // make sure multiple events don't occur
+    _languagePicker.userInteractionEnabled = false;
+    
+    NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
+    
+    NSString *username =_username.text;
+    NSString *password =_password.text;
+    
+    //NSLog(@"LoginView onClick password '%@'",_password.text);
+    //NSLog(@"onClick md5 password %@",[self MD5:_password.text]);
+    
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@scoreServlet?hasUser=%@&p=%@",
+                                       urlForLanguage,
+                                       username,
+                                       [[self MD5:password] uppercaseString]
+                                       ]];
+    
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    
+    NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
+    if (projid.intValue > -1) {
+        [urlRequest setValue:@"hasUser" forHTTPHeaderField:@"request"];
+        if ([username length] < 5) {
+            username = [username stringByAppendingString:@"_"];
+            NSLog(@"tryToLogIn user %@ md5 password %@", username, [self MD5:_password.text]);
+        }
+        [urlRequest setValue:username forHTTPHeaderField:@"userid"];
+        [urlRequest setValue:password forHTTPHeaderField:@"pass"];
+        [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
+    }
+    else {
+    }
+    
+    [urlRequest setHTTPMethod: @"GET"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setTimeoutInterval:15];
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+    
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+     {
+         if (error != nil) {
+             NSLog(@"\n\n\n\t1 Got error %@",error);
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 [self connection:nil didFailWithError:error];
+             });
+         }
+         else {
+             _responseData = data;
+             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+                                    withObject:nil
+                                 waitUntilDone:YES];
+         }
+     }];
 }
 
 -(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
@@ -406,9 +432,9 @@
     
     NSString *existing = [json objectForKey:@"ExistingUserName"];
     
-    NSLog(@"useJsonChapterData existing %@",existing);
-    NSLog(@"useJsonChapterData resetToken %@",resetToken);
-    NSLog(@"useJsonChapterData userIDExisting %@",userIDExisting);
+    NSLog(@"useJsonChapterData existing         %@",existing);
+    NSLog(@"useJsonChapterData resetToken       %@",resetToken);
+    NSLog(@"useJsonChapterData userIDExisting   %@",userIDExisting);
     NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
     
     if ([userIDExisting integerValue] == -1) {
@@ -555,7 +581,7 @@
     NSString *url= [_siteGetter.nameToURL objectForKey:chosenLanguage];
     BOOL isRTL= [_siteGetter.rtlLanguages containsObject:chosenLanguage];
     
-    NSLog(@"prepareForSegue login view %@ url %@",chosenLanguage,url);
+    NSLog(@"LoginViewController : prepareForSegue login view %@ url %@ segue %@",chosenLanguage,url,segue.identifier);
     
     if ([segue.identifier isEqualToString:@"goToForgotUsername"]) {
         EAFForgotUsernameViewController *forgotUserName = [segue destinationViewController];
@@ -589,7 +615,7 @@
     else if ([segue.identifier isEqualToString:@"goToSignUp"]) {
         long selection = [_languagePicker selectedRowInComponent:0];
         //NSString *chosenLanguage = [_languages objectAtIndex:selection];
-        NSLog(@"old identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
+        NSLog(@"LoginViewController : old identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
         
         EAFSignUpViewController *signUp = [segue destinationViewController];
         signUp.userFromLogin = _username.text;
@@ -601,7 +627,7 @@
     } else {
         long selection = [_languagePicker selectedRowInComponent:0];
         //NSString *chosenLanguage = [_languages objectAtIndex:selection];
-        NSLog(@"new identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
+        NSLog(@"LoginViewController : new identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
         
         EAFNewSignUpViewController *signUp = [segue destinationViewController];
         signUp.userFromLogin = _username.text;

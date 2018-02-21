@@ -74,8 +74,8 @@
         _oldServer = @"https://np.ll.mit.edu/";
         //   _oldServer = @"https://129.55.210.144/";
         //NSLog(@"EAFGetSites server now %@",_oldServer);
-      //  _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
-        _nServer = @"https://netprof1.ll.mit.edu/netprof/";
+        _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+       _nServer = @"https://netprof.ll.mit.edu/netprof/";
         //   _nServer = @"http://127.0.0.1:8888/netprof/";
     }
     
