@@ -105,10 +105,9 @@
 
 -(NSAttributedString *) highlightTerm:(NSString *) context refSentence:(NSString *)refSentence  {
     NSString *trim = [refSentence stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    
     NSString *toFind = [self removePunct:trim];
     toFind = [toFind stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    
+    NSLog(@"CONTEXT: %@", context);
     //    NSLog(@"looking for '%@' in %@",toFind,context);
     NSRange range = [context rangeOfString:toFind];
     if (range.length > 0) {
@@ -122,7 +121,6 @@
          //   NSLog(@"  token  %@",token);
             
             NSRange trange = [context rangeOfString:token options:NSCaseInsensitiveSearch range:NSMakeRange(endToken, context.length-endToken)];
-            
             if (trange.length > 0) {
                 [result addAttribute:NSBackgroundColorAttributeName
                                value:[UIColor greenColor]
@@ -149,7 +147,7 @@
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:_regex options:NSRegularExpressionCaseInsensitive error:&error];
     sentence = [regex stringByReplacingMatchesInString:sentence options:0 range:NSMakeRange(0, [sentence length]) withTemplate:@" "];
-    
+   NSLog(@"Sentence %@", sentence);
     for (NSString *untrimedToken in [sentence componentsSeparatedByString:@" "]) { // split on spaces
         NSString *token = [untrimedToken stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         
@@ -157,7 +155,7 @@
             [all addObject:token];
         }
     }
-    //  NSLog(@"tokens %@", all);
+   //   NSLog(@"tokens %@", all);
     
     return all;
 }
@@ -166,7 +164,7 @@
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:_regex options:NSRegularExpressionCaseInsensitive error:&error];
     NSString *modifiedString = [regex stringByReplacingMatchesInString:t options:0 range:NSMakeRange(0, [t length]) withTemplate:@""];
-    // NSLog(@"removePunct %@", modifiedString);
+   //  NSLog(@"removePunct %@", modifiedString);
     return modifiedString;
 }
 
