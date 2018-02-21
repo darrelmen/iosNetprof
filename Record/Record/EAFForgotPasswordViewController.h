@@ -43,7 +43,7 @@
 @property (strong, nonatomic) IBOutlet UITextField *email;
 @property (strong, nonatomic) IBOutlet UIButton *sendEmail;
 @property (strong, nonatomic) IBOutlet UITextField *username;
-
+@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (strong, nonatomic) IBOutlet UILabel *usernameFeedback;
 
 @property (strong, nonatomic) IBOutlet UILabel *emailFeedback;

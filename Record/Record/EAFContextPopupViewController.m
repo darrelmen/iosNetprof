@@ -42,6 +42,7 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "MZFormSheetController.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFContextPopupViewController ()
 @property EAFAudioPlayer *audioPlayer;
@@ -57,7 +58,7 @@
     
     _contextFL.attributedText = [self highlightTerm:_fl refSentence:_item];
     _contextTranslation.text = _en;
-    
+  //  NSLog(@"ContextEnglish===== %@ ", _en);
     if ([_en isEqualToString:_fl]) {  // for english
         _contextTranslation.text = @"";
     }
@@ -184,7 +185,7 @@
 
 - (void)highlightFLWhilePlaying
 {
-    _contextFL.textColor = [UIColor blueColor];
+    _contextFL.textColor = [UIColor npMedPurple];
 }
 
 - (void)removePlayingAudioHighlight {

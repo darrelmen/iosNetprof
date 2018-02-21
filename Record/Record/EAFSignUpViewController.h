@@ -47,6 +47,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *usernameFeedback;
 @property (strong, nonatomic) IBOutlet UILabel *passwordFeedback;
 @property (strong, nonatomic) IBOutlet UILabel *emailFeedback;
+@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 
 @property (strong, nonatomic) IBOutlet UIPickerView *languagePicker;
 //@property (strong, nonatomic) NSArray *languages;

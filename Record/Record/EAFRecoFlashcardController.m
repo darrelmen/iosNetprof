@@ -53,7 +53,10 @@
 #import "EAFAudioPlayer.h"
 #import "EAFAppDelegate.h"
 #import "EAFPopoverViewController.h"
+#import "EAFMoreSelectionPopupViewController.h"
 #import <sys/utsname.h> // import it in your header or implementation file.
+#import <QuartzCore/QuartzCore.h>
+#import "UIColor_netprofColors.h"
 
 @implementation UIProgressView (customView)
 - (CGSize)sizeThatFits:(CGSize)size {
@@ -91,6 +94,17 @@
 @property NSMutableArray *phoneLabels;
 @property BOOL preventPlayAudio;
 
+@property NSInteger languageSegmentIndex;
+@property NSInteger voiceSegmentIndex;
+
+@property BButton *shuffleBtn;
+@property BButton *autoPlayButton;
+@property UIButton *speedButton;
+@property BButton *moreSelectButton;
+
+@property UIInterfaceOrientation interfaceOrientation;
+
+
 - (void)postAudio;
 
 @end
@@ -102,13 +116,12 @@
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     NSString *showedID = [NSString stringWithFormat:@"showedIntro_%@",userid];
     NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
-    
     if (showedIntro == nil) {
         UIAlertView *info = [[UIAlertView alloc] initWithTitle:@"Swipe left/right/up/down to advance, tap to flip.\n\nPress and hold to record.\n\nTouch a word to hear audio or yourself.\n\nTouch Scores to see answers and sounds to work on." message:nil delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
         [info show];
         
         [SSKeychain setPassword:@"Yes"
-                     forService:@"mitll.proFeedback.device" account:showedID];
+                forService:@"mitll.proFeedback.device" account:showedID];
         _preventPlayAudio = true;
     }
     else {
@@ -119,10 +132,12 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    //    NSLog(@"RecoFlashcard - viewWillAppear --->");
+        NSLog(@"RecoFlashcard --- viewWillAppear --->");
+    
     [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
     
     [self respondToSwipe];
+ 
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
@@ -134,6 +149,7 @@
     //NSLog(@"popoverControllerDidDismissPopover --->");
 }
 
+/*
 - (void)configureWhatToShow
 {
     [_whatToShow setSelectedSegmentIndex:2];
@@ -154,18 +170,21 @@
         [_whatToShow setTitle:@"Eng" forSegmentAtIndex:0];
     }
 }
+*/
+
 
 - (void)viewDidLoad
 {
-    //    NSLog(@"RecoFlashcardController.viewDidLoad --->");
+  
     [super viewDidLoad];
+    
+    
     _audioCache = [[EAFAudioCache alloc] init];
     
     [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
     
     _showPhonesLTRAlways = true;
     _exToScore = [[NSMutableDictionary alloc] init];
-    //   _exToResponse = [[NSMutableDictionary alloc] init];
     
     // Turn on remote control event delivery
     EAFAppDelegate *myDelegate = [UIApplication sharedApplication].delegate;
@@ -190,10 +209,15 @@
     _cardBackground.layer.cornerRadius = 15.f;
     _cardBackground.layer.borderColor = [UIColor grayColor].CGColor;
     _cardBackground.layer.borderWidth = 2.0f;
-    
+    _cardBackground.layer.backgroundColor = [UIColor whiteColor].CGColor;
+    [self view].backgroundColor = [UIColor npDarkBlue];
     _recordButtonContainer.layer.cornerRadius = 15.f;
     _recordButtonContainer.layer.borderWidth = 2.0f;
-    _recordButtonContainer.layer.borderColor = [UIColor colorWithRed:0 green:0.5 blue:1 alpha:1].CGColor;
+    _recordButtonContainer.layer.borderColor = [UIColor npRecordBorder].CGColor;
+    _recordButton.tintColor = [UIColor npRecordBorder];
+    _pageControl.tintColor = [UIColor npDarkBlue];
+    _foreignLang.textColor = [UIColor npDarkBlue];
+    _english.textColor = [UIColor npDarkBlue];
     
     // Set the audio file
     NSArray *pathComponents = [NSArray arrayWithObjects:
@@ -247,7 +271,7 @@
     [self checkAvailableMics];
     [self configureTextFields];
     
-    [_scoreProgress setTintColor:[UIColor blueColor]];
+    [_scoreProgress setTintColor:[UIColor npLightBlue]];
     [_scoreProgress setTrackTintColor:[UIColor whiteColor]];
     [_scoreProgress setProgressTintColor:[UIColor greenColor]];
     
@@ -265,8 +289,10 @@
     }
     
     _scoreProgress.hidden = true;
-    
-    [self configureWhatToShow];
+    _progressThroughItems.progressTintColor = [UIColor npLightYellow];
+ /*
+       [self configureWhatToShow];
+  */
     
     _pageControl.transform = CGAffineTransformMakeRotation(M_PI_2);
     
@@ -275,51 +301,249 @@
                             style:BButtonStyleBootstrapV3
                              icon:FAQuoteLeft
                          fontSize:20.0f];
-    
     if ([self isiPad]) {
         _contextButton.titleLabel.text = @"sentence";
         [_contextButton addAwesomeIcon:FAQuoteLeft beforeTitle:true];
     }
-    [_shuffleButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
-     //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
-                            color:[UIColor whiteColor]
-                            style:BButtonStyleBootstrapV3
-                             icon:FARandom
-                         fontSize:20.0f];
-    
-    [_audioOnButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
-     //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
-                            color:[UIColor whiteColor]
-                            style:BButtonStyleBootstrapV3
-                             icon:FAVolumeUp
-                         fontSize:20.0f];
-    
-    [_autoPlayButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
-     //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
-                             color:[UIColor whiteColor]
-                             style:BButtonStyleBootstrapV3
-                              icon:FAPlay
-                          fontSize:20.0f];
-    
-    
-    _speedButton.layer.cornerRadius = 3.f;
-    _speedButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    _speedButton.layer.borderWidth = 1.0f;
+    _contextButton.color = [UIColor npLightBlue];
     
     NSString *ct = [[self getCurrentJson] objectForKey:@"ct"];
     _contextButton.hidden = (ct == nil || ct.length == 0);
-    
-    NSString *audioOn = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioOn"];
-    if (audioOn != nil) {
-        _audioOnButton.selected = [audioOn isEqualToString:@"Yes"] ? 0:1;
-        _audioOnButton.color = _audioOnButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
-    }
-    
-    _myAudioPlayer.volume = _audioOnButton.selected ? 1: 0;
+
+    _isAudioOnSelected = YES;
+     _myAudioPlayer.volume = _isAudioOnSelected ? 1: 0;
     
     [self respondToSwipe];
     
     [self checkAndShowIntro];
+    
+    
+    _languageSegmentIndex = 2;
+    _voiceSegmentIndex = 0;
+     _moreSelection = [[MoreSelection alloc]initWithLanguageIndex:_languageSegmentIndex withVoiceIndex:_voiceSegmentIndex];
+    
+    
+    UIBarButtonItem *scoreShow = [[UIBarButtonItem alloc]
+                                   initWithTitle:@"Score"
+                                   style:UIBarButtonItemStyleBordered
+                                   target:self
+                                   action:@selector(showScores:)];
+    self.navigationItem.rightBarButtonItem = scoreShow;
+
+    
+    _selectionToolbar=[[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 10, 10)];
+    
+    [self setupToolBar];
+    
+//    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                             selector:@selector(orientationChanged:)
+//                            name:UIDeviceOrientationDidChangeNotification
+//                            object:[UIDevice currentDevice]];
+}
+
+
+//-(void)orientationChanged:(NSNotification*)notification{
+//   
+//    NSLayoutConstraint *height;
+//    CGFloat constData = 0.0;
+//    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+//    if (UIDeviceOrientationIsLandscape(deviceOrientation) &&
+//        !self.isShowingLandscapeView)
+//    {
+//        self.isShowingLandscapeView = YES;
+//    }
+//    else if (UIDeviceOrientationIsPortrait(deviceOrientation) &&
+//             self.isShowingLandscapeView)
+//    {
+//        self.isShowingLandscapeView = NO;
+//    }
+//    
+//    if (self.previousOrientation != self.isShowingLandscapeView){
+//        if (self.isShowingLandscapeView){
+//            NSLog(@"Orientation Change Occur: Landscape Mode");
+//            constData = self.view.bounds.size.height * 0.2;
+//        }
+//        else {
+//            NSLog(@"Orientation Change Occur: Portrait Mode");
+//            constData = self.view.bounds.size.height * 0.4;
+//        }
+//        
+//    }
+//    
+//    self.previousOrientation = self.isShowingLandscapeView;
+    
+  
+ //   [_selectionToolbar setTranslatesAutoresizingMaskIntoConstraints: NO];
+   
+ 
+//    if(CGRectGetWidth(self.view.bounds) < CGRectGetHeight(self.view.bounds))
+//    {
+//       CGFloat  constData = self.view.bounds.size.height * 0.2;
+//         height = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:constData];
+//        [self setupToolBar:height];
+//        NSLog(@"Portrait is -- %@", height);
+//   
+//    } else {
+//       CGFloat  constData = self.view.bounds.size.height * 0.1;
+//         height = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:25];
+//         [self setupToolBar:height];
+//         NSLog(@"Landscape is -- %@", height);
+//    }
+
+   
+ //   [self updateOrientation];
+//}
+
+
+-(void)setupToolBar {
+    _selectionToolbar.layer.backgroundColor =  [UIColor whiteColor].CGColor;
+    [_selectionToolbar setTranslatesAutoresizingMaskIntoConstraints: NO];
+    [self.view addSubview:_selectionToolbar];
+    _selectionToolbar.barTintColor = [UIColor whiteColor];
+    
+    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    
+    _shuffleBtn = [BButton awesomeButtonWithOnlyIcon:FARandom color:[UIColor npLightBlue] style:BButtonStyleBootstrapV3];
+    [self createButtonForiPhoneiPad:_shuffleBtn];
+   
+    [_shuffleBtn addTarget:self action:@selector(shuffle:) forControlEvents:UIControlEventTouchUpInside];
+ //   [_shuffleBtn sizeToFit];
+   UIBarButtonItem *shuffleBarItem = [[UIBarButtonItem alloc]	initWithCustomView:_shuffleBtn];
+
+    _autoPlayButton = [BButton awesomeButtonWithOnlyIcon:FAPlay color:[UIColor npLightBlue] style:BButtonStyleBootstrapV3];
+     [self createButtonForiPhoneiPad:_autoPlayButton];
+
+    [_autoPlayButton addTarget:self action:@selector(autoPlaySelected:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *playBarItem = [[UIBarButtonItem alloc] initWithCustomView:_autoPlayButton];
+    
+    _speedButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _speedButton.layer.cornerRadius = 4;
+    _speedButton.clipsToBounds = YES;
+    _speedButton.layer.borderColor = [UIColor npLightBlueBorder].CGColor;
+    _speedButton.layer.borderWidth = 1.0f;
+    [_speedButton setImage:[UIImage imageNamed:@"turtle"] forState:UIControlStateNormal];
+    [_speedButton setImage:[UIImage imageNamed:@"turtle_selected"] forState:UIControlStateSelected];
+    [_speedButton setBackgroundColor:[UIColor npLightBlue]];
+    
+     
+    if([self isiPhone]){
+        _speedButton.frame=CGRectMake(0.0, 0.0, self.view.bounds.size.height * 0.1, self.view.bounds.size.height * 0.1);
+              // _speedButton.frame=CGRectMake(0.0, 0.0, 55, 55);
+     //   _speedButton.frame=CGRectMake(0.0, 0.0,self.view.bounds.size.height * 0.12 - 5, self.view.bounds.size.height * 0.12 -5);
+        
+    } else {
+        _speedButton.frame=CGRectMake(0.0, 0.0, 160, 160);
+    }
+    
+       [_speedButton addTarget:self action:@selector(speedSelection:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *speedBarItem = [[UIBarButtonItem alloc] initWithCustomView:_speedButton];
+    
+    _moreSelectButton = [BButton awesomeButtonWithOnlyIcon:FAEllipsisV color:[UIColor npLightBlue] style:BButtonStyleBootstrapV3];
+     [self createButtonForiPhoneiPad:_moreSelectButton];
+    
+    [_moreSelectButton addTarget:self action:@selector(ShowMoreSelectPopup:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *moreBarItem = [[UIBarButtonItem alloc] initWithCustomView:_moreSelectButton];
+    
+   
+    
+    NSArray *toolBarItems = [NSArray arrayWithObjects: flexibleSpace, shuffleBarItem, playBarItem, speedBarItem, moreBarItem, flexibleSpace, nil];
+    [_selectionToolbar setItems: toolBarItems animated:NO];
+  
+
+    NSLayoutConstraint *left = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1 constant:0];
+
+    NSLayoutConstraint *right = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1 constant:0];
+
+    NSLayoutConstraint *top = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_cardBackground attribute:NSLayoutAttributeBottom multiplier:1 constant:10];
+
+    
+   NSLayoutConstraint *bottom = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0];
+    CGFloat constData = 0.0;
+  //  _interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+
+    if([self isiPhone]){
+        //    constData = 30;
+        constData = self.view.bounds.size.height * 0.12;
+    } else {
+       // constData = self.view.bounds.size.height * 0.2;
+        constData = 180.0;
+    }
+   NSLayoutConstraint  *height = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:constData];
+   //_selectionToolbar.backgroundColor = [UIColor colorWithRed:3/255.0 green:99/255.0 blue:148/255.0 alpha:1.0];
+    [self.view addConstraints:@[left, right, top, bottom, height]];
+
+}
+-(void)createButtonForiPhoneiPad:(BButton *)button{
+    if([self isiPhone]){
+        //  button.frame=CGRectMake(0.0, 0.0, 55, 55);
+        button.frame=CGRectMake(0.0, 0.0, self.view.bounds.size.height * 0.1, self.view.bounds.size.height * 0.1);
+        button.titleLabel.font = [UIFont fontAwesomeFontOfSize:30];
+        
+    } else {
+        button.frame=CGRectMake(0.0, 0.0, 160, 160);
+        button.titleLabel.font = [UIFont fontAwesomeFontOfSize:80];
+    }
+}
+
+/*
+-(IBAction)shuffleBtnClicked:(id)sender{
+    //   _shuffleButton.superview.tintColor = [UIColor lightGrayColor];
+    
+    //   sender.superview.tintColor = [UIColor whiteColor];
+
+    _shuffleButton.selected = !_shuffleButton.selected;
+        _shuffleButton.color = _shuffleButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+    
+    if (_shuffleButton.selected) {
+
+         _itemForShuffle.enabled = 0;
+         _itemForShuffle.enabled = !_itemForShuffle.enabled;
+         _itemForShuffle.enabled = _itemForShuffle.enabled ?[UIColor blueColor]:[UIColor whiteColor];
+         
+         if (_shuffleButton.enabled) {
+
+        //        if (_autoPlayButton.selected) {
+        //            [self unselectAutoPlay];
+        ////            _autoPlayButton.selected = !_shuffleButton.selected;
+        //        }
+        [self doShuffle];
+        [self respondToSwipe];
+    }
+    //    [self respondToSwipe];
+    
+    [self postEvent:@"shuffle" widget:@"shuffle" type:@"BButton"];
+}
+*/
+- (IBAction)shuffle:(id)sender {
+    _shuffleBtn.selected = !_shuffleBtn.selected;
+    _shuffleBtn.color = _shuffleBtn.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
+    
+    if (_shuffleBtn.selected) {
+        [self doShuffle];
+        [self respondToSwipe];
+    }
+    [self postEvent:@"shuffle" widget:@"shuffle" type:@"BButton"];
+
+}
+
+-(IBAction)showScores:(id)sender{
+    [self stopPlayingAudio];
+    [self postEvent:@"showScoresClick" widget:@"showScores" type:@"Button"];
+    [self performSegueWithIdentifier:@"goToReport" sender:self];
+}
+
+-(void) getSelection:(MoreSelection *)selection{
+    _moreSelection = selection;
+    _languageSegmentIndex = _moreSelection.languageIndex;
+    _voiceSegmentIndex = _moreSelection.voiceIndex;
+    _isAudioOnSelected = _moreSelection.isAudioSelected;
+    _identityRestoreID = _moreSelection.identityRestorationID;
+    [self whatToShowSelect];
+    [self gotGenderSelect];
+    [self audioOnSelection];
+    _moreSelectButton.selected = !_moreSelectButton.selected;
+    _moreSelectButton.color = _moreSelectButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
 }
 
 // there's a timer that governs the pause between items -- if it's active, invalidate it
@@ -332,7 +556,7 @@
 
 - (void)unselectAutoPlay {
     _autoPlayButton.selected = false;
-    _autoPlayButton.color = _autoPlayButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+    _autoPlayButton.color = _autoPlayButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
     [self stopTimer];
 }
 
@@ -372,7 +596,7 @@
             case UIEventSubtypeRemoteControlPlay:
                 //   NSLog(@"Got play  --->");
                 _autoPlayButton.selected = true;
-                _autoPlayButton.color = _autoPlayButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+                _autoPlayButton.color = _autoPlayButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
                 
                 [self respondToSwipe];
                 break;
@@ -410,7 +634,8 @@
     [self stopPlayingAudio];
     [self postEvent:@"showScoresClick" widget:@"showScores" type:@"Button"];
     [self performSegueWithIdentifier:@"goToReport" sender:self];
-}
+} 
+
 
 - (void)checkAvailableMics {
     NSError* theError = nil;
@@ -527,7 +752,8 @@
     scale = fmin(1,scale);
     float newFont = smallest + floor((largest-smallest)*scale);
     //  NSLog(@"scaleFont font is %f",newFont);
-    [labelToScale setFont:[UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue]];
+   // [labelToScale setFont:[UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue]];
+    [labelToScale setFont:[UIFont fontWithName:@"Arial" size:[NSNumber numberWithFloat:newFont].intValue]];
 }
 
 - (NSString *)trim:(NSString *)exercise
@@ -538,8 +764,10 @@
 - (void)configureTextFields
 {
     NSDictionary *jsonObject = [self getCurrentJson];
-    
+/*
     long selected = [_whatToShow selectedSegmentIndex];
+ */
+    long selected = _languageSegmentIndex;
     if (selected == 3) {
         NSString *exercise       = [jsonObject objectForKey:@"fl"];
         [self hideWithDashes:exercise];
@@ -559,21 +787,23 @@
     _english.minimumScaleFactor=0.1;
     
     if ([self isiPad]) {
-        [_foreignLang setFont:[UIFont systemFontOfSize:52]];
+        [_foreignLang setFont:[UIFont fontWithName:@"Arial" size:52]];
+       // [_foreignLang setFont:[UIFont systemFontOfSize:52]];
         //        NSLog(@"font size is %@",_foreignLang.font);
     }
 }
 
 - (unsigned long)getItemIndex {
     unsigned long toUse = _index;
-    if (
-        _shuffleButton.selected
-        ) {
+/*
+    if (_shuffleButton.selected) {
+*/
+     if (_shuffleBtn.selected) {
         toUse = [[_randSequence objectAtIndex:_index] integerValue];
     }
     return toUse;
 }
-
+/*
 - (IBAction)gotGenderSelection:(id)sender {
     NSString *genderSelect = _genderMaleSelector.selectedSegmentIndex == 0 ? @"Male":_genderMaleSelector.selectedSegmentIndex == 1 ? @"Female" : @"Both";
     
@@ -584,6 +814,20 @@
     
     [self respondToSwipe];
 }
+*/
+
+-(void)gotGenderSelect{
+    NSString *genderSelect = _voiceSegmentIndex == 0 ? @"Male":_voiceSegmentIndex == 1 ? @"Female" : @"Both";
+    
+    [SSKeychain setPassword:genderSelect
+                 forService:@"mitll.proFeedback.device" account:@"audioGender"];
+    
+    [self postEvent:genderSelect widget:@"genderSelect" type:@"UIButton"];
+    
+    [self respondToSwipe];
+
+}
+
 
 - (void)setGenderSelector {
     NSString *audioGender = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioGender"];
@@ -592,12 +836,30 @@
                      forService:@"mitll.proFeedback.device" account:@"audioGender"];
     }
     //    NSLog(@"respondToSwipe gender sel %@",audioGender);
+/*
     _genderMaleSelector.selectedSegmentIndex = [audioGender isEqualToString:@"Male"] ? 0:[audioGender isEqualToString:@"Female"]?1:2;
+*/
+    _voiceSegmentIndex = [audioGender isEqualToString:@"Male"] ? 0:[audioGender isEqualToString:@"Female"]?1:2;
 }
 
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
-    _progressThroughItems.progress = (float) _index/(float) _jsonItems.count;
+    long index = (long) _index + 1.0;
+    long jsonItemCount = (long) _jsonItems.count;
+
+    _progressThroughItems.progress = ((float) _index + 1.0) /(float) _jsonItems.count;
+    
+    NSString *jsonItemCountStr = [NSString stringWithFormat:@"%ld",jsonItemCount];
+    _progressNum.text = [NSString stringWithFormat:@"%ld  / %ld", index, jsonItemCount];
+    _progressNum.textColor = [UIColor npLightBlue];
+    
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:_progressNum.text];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor npLightBlue] range:NSMakeRange(0,[jsonItemCountStr length])];
+    _progressNum.attributedText = str;
+
+   
+    [_progressNum setFont:[UIFont fontWithName:@"Arial" size:16]];
+    
     [self hideAndShowText];
     
     //   [self removePlayObserver];
@@ -618,7 +880,8 @@
     if (audioSpeed != nil) {
         //   NSLog(@"checking - audio on %@",audioSpeed);
         _speedButton.selected = [audioSpeed isEqualToString:@"Slow"];
-        _speedButton.backgroundColor = _speedButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+        _speedButton.backgroundColor = _speedButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
+        _speedButton.layer.borderColor = _speedButton.selected ? [UIColor npDarkBlueBorder].CGColor : [UIColor npLightBlueBorder].CGColor;
     }
     
     NSDictionary *jsonObject =[self getCurrentJson] ;
@@ -636,8 +899,11 @@
     
     test =  [jsonObject objectForKey:@"frr"];
     BOOL hasFemaleReg = (test != NULL && ![test isEqualToString:@"NO"]);
-    
+/*
     long selectedGender = _genderMaleSelector.selectedSegmentIndex;
+*/
+    
+    long selectedGender = _voiceSegmentIndex;
     _audioRefs = [[NSMutableArray alloc] init];
     BOOL isSlow = _speedButton.selected;
     
@@ -722,6 +988,7 @@
                     refAudio = [jsonObject objectForKey:@"frr"];
                 }
             }
+ 
         }
         else {
             if (hasMaleReg) {
@@ -742,10 +1009,17 @@
             }
         }
     }
-    _genderMaleSelector.enabled = hasTwoGenders;
+    _moreSelection.hasTwoGenders = hasTwoGenders;
+    _moreSelection.hasMaleReg = hasMaleReg;
+    _moreSelection.hasMaleSlow = hasMaleSlow;
+    _moreSelection.hasFemaleReg = hasFemaleReg;
+    _moreSelection.hasFemaleSlow = hasFemaleSlow;
+/*
+ _genderMaleSelector.enabled = hasTwoGenders;
     [_genderMaleSelector setEnabled:(hasMaleReg || hasMaleSlow) forSegmentAtIndex:0];
     [_genderMaleSelector setEnabled:(hasFemaleReg || hasFemaleSlow) forSegmentAtIndex:1];
     [_genderMaleSelector setEnabled:hasTwoGenders forSegmentAtIndex:2];
+*/
     
     BOOL hasTwoSpeeds = (hasMaleReg || hasFemaleReg) && (hasMaleSlow || hasFemaleSlow);
     _speedButton.enabled = hasTwoSpeeds;
@@ -766,7 +1040,11 @@
     flAtIndex = [self trim:flAtIndex];
     
     // long selected = ;
-    if ([_whatToShow selectedSegmentIndex] == 3) {
+/*
+   if ([_whatToShow selectedSegmentIndex] == 3) {
+ */
+    
+    if (_languageSegmentIndex == 3) {
         [self hideWithDashes:flAtIndex];
     }
     else {
@@ -788,13 +1066,16 @@
             maxFont = 30;
             maxEFont = 30;
         }
-        [self scaleFont:flAtIndex labelToScale:_foreignLang largest:maxFont slen:22 smallest:14];
+        [self scaleFont:flAtIndex labelToScale:_foreignLang largest:maxFont slen:10 smallest:14];
         
         //     CGRect rect = [_english.text boundingRectWithSize:_english.bounds.size options:NSStringDrawingTruncatesLastVisibleLine attributes:nil context:nil];
         //   NSLog(@"Got rect %@",rect);
         //     NSLog(@"%@ vs %@", NSStringFromCGRect(rect), NSStringFromCGRect(_english.bounds));
         
-        [self scaleFont:enAtIndex labelToScale:_english     largest:maxEFont slen:10 smallest:14];
+        [self scaleFont:enAtIndex labelToScale:_english     largest:maxEFont slen:10 smallest:12];
+    } else {
+         int maxFont  = 48;
+         [self scaleFont:enAtIndex labelToScale:_english     largest:maxFont slen:10 smallest:32];
     }
     
     for (UIView *v in [_scoreDisplayContainer subviews]) {
@@ -807,24 +1088,45 @@
     NSString *showedID = [NSString stringWithFormat:@"showedIntro_%@",userid];
     NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
     
-    BOOL showEnglish = _whatToShow.selectedSegmentIndex == 0;
+/*
+  BOOL showEnglish = _whatToShow.selectedSegmentIndex == 0;
+ */
+    
+    BOOL showEnglish = _languageSegmentIndex == 0;
+
     // complicated...
     // _myAudioPlayer.audioPaths = _audioRefs;
+/*
     if (_audioOnButton.selected &&   // volume on
+*/
+     if (_isAudioOnSelected &&   // volume on
         !_preventPlayAudio &&
         showedIntro != nil) {
         
         //         NSLog(@"respondToSwipe first");
         if (showEnglish) {
             //   NSLog(@"respondToSwipe first - %ld", (long)_whatToShow.selectedSegmentIndex);
-            if (_autoPlayButton.selected) {
+        //    if (_autoPlayButton.selected) {
                 
                 [self speakEnglish:false];
-            }
+                
+        //    }
         }
         else {
+          //  [self stopPlayingAudio];
             [self playRefAudioIfAvailable];
         }
+//        else if (showBoth){
+//            if (!_foreignLang.hidden){
+//                [self playRefAudioIfAvailable];
+//            } else if ( !_english.hidden){
+//            
+//                  [self speakEnglish:false];
+//            }
+//        } else {
+//            
+//            [self playRefAudioIfAvailable];
+//        }
     }
     else {
         _preventPlayAudio = false;
@@ -886,9 +1188,13 @@
 
 - (IBAction)autoPlaySelected:(id)sender {
     _autoPlayButton.selected = !_autoPlayButton.selected;
-    _autoPlayButton.color = _autoPlayButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+    _autoPlayButton.color = _autoPlayButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
     
     if (_autoPlayButton.selected) {
+//        if(_shuffleButton.selected){
+//            _shuffleButton.selected = false;
+//            _shuffleButton.color = _shuffleButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+//        }
         NSError *activationError = nil;
         BOOL success = [[AVAudioSession sharedInstance] setActive:YES error:&activationError];
         if (!success) { /* handle the error condition */ }
@@ -899,7 +1205,7 @@
         if (_audioRefs.count > 1) {
             [_audioRefs removeLastObject];
         }
-        [self playRefAudioIfAvailable];
+         [self playRefAudioIfAvailable];
         // Turn on remote control event delivery
         
         NSLog(@"beginReceivingRemoteControlEvents ----\n");
@@ -939,8 +1245,10 @@
     
     utterance.volume = 0.8;
     // [utterance setRate:0.2f];
-    
+/*
     if (!_audioOnButton.selected && !volumnOn) {
+*/
+      if (!_isAudioOnSelected && !volumnOn) {
         utterance.volume = 0;
         NSLog(@"volume %f",utterance.volume);
     }
@@ -962,7 +1270,7 @@
 
 - (void)showSpeechEnded:(BOOL) isEnglish {
     //    if (isEnglish) {
-    _english.textColor = [UIColor blackColor];
+    _english.textColor = [UIColor npDarkBlue];
     //    }
     //    else {
     //        _foreignLang.textColor = [UIColor blackColor];
@@ -984,7 +1292,7 @@
     NSLog(@"recoflashcard : didStartSpeechUtterance --- '%@'",utterance.speechString);
     
     //   _pageControl.currentPage = 0;
-    _english.textColor = [UIColor blueColor];
+    _english.textColor = [UIColor npMedPurple];
 }
 
 // when autoplay is active, automatically go to next item...
@@ -1010,8 +1318,11 @@
     if (_autoPlayButton.selected) {
         NSLog(@"-----> didFinishSpeechUtterance : '%@' is done playing, so advancing to %lu",utterance.speechString,_index);
         [self beginBackgroundUpdateTask];
+/*
+ if (_whatToShow.selectedSegmentIndex == 0) { // english first, so play fl
+ */
         
-        if (_whatToShow.selectedSegmentIndex == 0) { // english first, so play fl
+        if (_languageSegmentIndex == 0) { // english first, so play fl
             _foreignLang.hidden = false;
             [self playRefAudioIfAvailable];
         }
@@ -1019,6 +1330,7 @@
             _autoAdvanceTimer = [NSTimer scheduledTimerWithTimeInterval:_autoAdvanceInterval target:self selector:@selector(doAutoAdvance) userInfo:nil repeats:NO];
         }
     }
+
 }
 - (void) beginBackgroundUpdateTask
 {
@@ -1066,7 +1378,11 @@
 }
 
 - (void)hideAndShowText {
-    long selected = [_whatToShow selectedSegmentIndex];
+/*
+     long selected = [_whatToShow selectedSegmentIndex];
+ */
+    
+    long selected = _languageSegmentIndex;
     // NSLog(@"recoflashcard : hideAndShowText %ld", selected);
     if (selected == 0) { // english
         _foreignLang.hidden = true;
@@ -1110,10 +1426,15 @@
     [_foreignLang setText:[self trim:exercise]];
 }
 
+/*
 // control showing english, fl phrase, or both
 - (IBAction)whatToShowSelection:(id)sender {
     [self hideAndShowText];
     
+    if (_audioOnButton.selected){
+        [self playRefAudioIfAvailable];
+    }
+
     long selected = [_whatToShow selectedSegmentIndex];
     
     if (selected == 0) { // english
@@ -1133,6 +1454,38 @@
         [self doAutoAdvance];
     }
 }
+*/
+
+-(void)whatToShowSelect{
+    [self hideAndShowText];
+/*
+    if (_audioOnButton.selected){
+*/
+        if (_isAudioOnSelected){
+        [self playRefAudioIfAvailable];
+    }
+    
+    long selected = _languageSegmentIndex;
+    
+    if (selected == 0) { // english
+        [self postEvent:@"showOnlyEnglish" widget:@"UIChoice" type:@"Button"];
+    }
+    else if (selected == 1) {  // fl
+        [self postEvent:@"showOnlyForeign" widget:@"UIChoice" type:@"Button"];
+    }
+    else if (selected == 2){
+        [self postEvent:@"showBothEnglishAndForeign" widget:@"UIChoice" type:@"Button"];
+    }
+    else {
+        [self postEvent:@"hideBoth" widget:@"UIChoice" type:@"Button"];
+    }
+    
+    if (_autoPlayButton.selected) {
+        [self doAutoAdvance];
+    }
+
+}
+
 
 - (IBAction)speedSelection:(id)sender {
     _speedButton.selected = !_speedButton.selected;
@@ -1142,13 +1495,14 @@
     
     
     [self postEvent:speed widget:@"speed" type:@"UIButton"];
-
-    _speedButton.backgroundColor = _speedButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+    _speedButton.layer.borderColor = _speedButton.selected ? [UIColor npDarkBlueBorder].CGColor : [UIColor npLightBlueBorder].CGColor;
+    _speedButton.backgroundColor = _speedButton.selected ?[UIColor npLightBlue]:[UIColor npDarkBlue];
     if (!_autoPlayButton.selected) {
         [self respondToSwipe];
     }
 }
 
+/*
 // remember selection in keychain cache
 - (IBAction)audioOnSelection:(id)sender {
     [SSKeychain setPassword:(_audioOnButton.selected ? @"Yes":@"No")
@@ -1173,6 +1527,34 @@
         [self respondToSwipe];
     }
 }
+*/
+
+- (void)audioOnSelection {
+    [SSKeychain setPassword:(_isAudioOnSelected ? @"Yes":@"No")
+                 forService:@"mitll.proFeedback.device" account:@"audioOn"];
+    /*
+    _audioOnButton.selected = !_audioOnButton.selected;
+    _audioOnButton.color = _audioOnButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
+     */
+    
+    _myAudioPlayer.volume = _isAudioOnSelected ? 1: 0;
+    
+    if (_isAudioOnSelected) {
+        [self postEvent:@"turnOnAudio" widget:@"_identityRestoreID" type:@"Button"];
+    }
+    else {
+        [self postEvent:@"turnOffAudio" widget:@"_identityRestoreID" type:@"Button"];
+        
+    }
+    
+    if (!_autoPlayButton.selected) {
+        if (!_isAudioOnSelected) {
+            [self stopPlayingAudio];
+        }
+        [self respondToSwipe];
+    }
+}
+
 
 - (BOOL) hasRefAudio
 {
@@ -1201,7 +1583,7 @@
 }
 
 - (void) playGotToEnd {
-    if (_autoPlayButton.selected) {
+//    if (_autoPlayButton.selected) {
         // doing autoplay!
         // skip english if lang is english
         if ([_english.text isEqualToString:_foreignLang.text]) {
@@ -1210,17 +1592,26 @@
         else {
             // OK move on to english part of card, automatically
             NSLog(@"playGotToEnd - speak english");
-            if (_whatToShow.selectedSegmentIndex == 0) { // already played english, so now at end of fl, go to next
+            if (_languageSegmentIndex == 0 ){
+         //   if (_whatToShow.selectedSegmentIndex == 0 || _whatToShow.selectedSegmentIndex == 1 || _whatToShow.selectedSegmentIndex == 3) { // already played english, so now at end of fl, go to next
+            
                 [self doAutoAdvance];
+              
+            } else if (_languageSegmentIndex == 1) {
+
+                if (_autoPlayButton.selected){
+                    [self doAutoAdvance];
+                }
             }
             else { // haven't played english yet, so play it
                 [self speakEnglish:false];
+            
             }
         }
-    }
-    else {
-        //  NSLog(@"playGotToEnd - no op");
-    }
+//    }
+//    else {
+//        //  NSLog(@"playGotToEnd - no op");
+//    }
 }
 
 // set the text color of all the labels in the scoreDisplayContainer
@@ -1289,7 +1680,10 @@
     // NSLog(@" gotTapInSuperview");
     [self stopAutoPlay];
     
+/*
     long selected = [_whatToShow selectedSegmentIndex];
+*/
+    long selected = _languageSegmentIndex;
     if (selected == 0 || selected == 1 || selected == 3) {
         [self flipCard];
     }
@@ -1340,15 +1734,15 @@
 }
 
 - (void)removePlayingAudioHighlight {
-    if (_foreignLang.textColor == [UIColor blueColor]) {
-        _foreignLang.textColor = [UIColor blackColor];
-    }
+    //if (_foreignLang.textColor == [UIColor npMedPurple]) {
+        _foreignLang.textColor = [UIColor npDarkBlue];
+    //}
 }
 
 - (void)highlightFLWhilePlaying
 {
     //    NSLog(@" highlightFLWhilePlaying - show fl");
-    _foreignLang.textColor = [UIColor blueColor];
+    _foreignLang.textColor = [UIColor npMedPurple];
     //    _pageControl.currentPage = 1;
 }
 
@@ -1377,7 +1771,7 @@ bool debugRecord = false;
     if (!_audioRecorder.recording)
     {
         if (debugRecord) NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
-        _english.textColor = [UIColor blackColor];
+        _english.textColor = [UIColor npDarkBlue];
         
         for (UIView *v in [_scoreDisplayContainer subviews]) {
             [v removeFromSuperview];
@@ -1410,8 +1804,10 @@ bool debugRecord = false;
     [self stopPlayingAudio];
     
     _pageControl.currentPage = _pageControl.currentPage == 0 ? 1 : 0;
+/*
     long selected = [_whatToShow selectedSegmentIndex];
-    
+*/
+    long selected = _languageSegmentIndex;
     //  NSLog(@"flipCard initially selected %ld fl hidden %@",selected, _foreignLang.hidden  ? @"YES" :@"NO");
     
     _foreignLang.hidden = !_foreignLang.hidden;
@@ -1456,7 +1852,7 @@ bool debugRecord = false;
         }
     }
     
-    if (_audioOnButton.selected) {
+    if (_isAudioOnSelected) {
         if (!_preventPlayAudio) {
             if (!_foreignLang.hidden) {
                 [self playRefAudioIfAvailable];
@@ -1486,7 +1882,10 @@ bool debugRecord = false;
         NSLog(@"Got swipe IGNORING SWIPE, since control center swipe %f, %f",screenWidth,screenHeight);
     }
     else {
+/*
         long selected = [_whatToShow selectedSegmentIndex];
+*/
+        long selected = _languageSegmentIndex;
         if (selected == 0 || selected == 1 || selected == 3) { // eng or fl
             [self flipCard];
         }
@@ -1506,7 +1905,10 @@ bool debugRecord = false;
 }
 
 - (IBAction)swipeDown:(id)sender {
+/*
     if ([_whatToShow selectedSegmentIndex] == 2) {
+ */
+   if(_languageSegmentIndex == 2){
         [self swipeRightDetected:sender];
     }
     else {
@@ -1518,7 +1920,7 @@ bool debugRecord = false;
     if (_longPressGesture.state == UIGestureRecognizerStateBegan) {
         _gestureStart = CFAbsoluteTimeGetCurrent();
         
-        _recordButtonContainer.backgroundColor =[UIColor greenColor];
+        _recordButtonContainer.backgroundColor =[UIColor npRecordBG];
         _recordButton.enabled = NO;
         
         [_correctFeedback setHidden:true];
@@ -1686,18 +2088,6 @@ bool debugRecord = false;
                                     repeats:NO];
 }
 
-- (IBAction)shuffleChange:(id)sender {
-    _shuffleButton.selected = !_shuffleButton.selected;
-    _shuffleButton.color = _shuffleButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
-    
-    if (_shuffleButton.selected) {
-        [self doShuffle];
-    }
-    [self respondToSwipe];
-    
-    [self postEvent:@"shuffle" widget:@"shuffle" type:@"UIButton"];
-}
-
 - (void)doShuffle {
     _randSequence = [[NSMutableArray alloc] initWithCapacity:_jsonItems.count];
     
@@ -1705,15 +2095,20 @@ bool debugRecord = false;
         [_randSequence addObject:[NSNumber numberWithUnsignedLong:i]];
     }
     
-    unsigned int max = _jsonItems.count-1;
-    
+//    unsigned int max = _jsonItems.count - 1;
+    unsigned int max = (int)_jsonItems.count;
+    unsigned int firstIndex;
     for (unsigned int ii = 0; ii < max; ++ii) {
         unsigned int remainingCount = max - ii;
         unsigned int r = arc4random_uniform(remainingCount)+ii;
+        if (ii == 0){
+            firstIndex = r;
+        }
         [_randSequence exchangeObjectAtIndex:ii withObjectAtIndex:r];
+     
     }
     
-    _index = 0;
+    _index = firstIndex;
 }
 
 // Posts audio with current fl field
@@ -2523,6 +2918,7 @@ BOOL addSpaces = false;
     }
     popupController.fref  = [[self getCurrentJson] objectForKey:@"ctfref"];
     
+     NSLog(@"ContextEnglish===== %@ ", popupController.fl);
     //    BOOL isIPhone;
     //  isIPhone = [self isiPhone];
     
@@ -2543,7 +2939,58 @@ BOOL addSpaces = false;
         
     };
 }
+- (IBAction)ShowMoreSelectPopup:(id)sender {
+    _moreSelectButton.selected = !_moreSelectButton.selected;
+    _moreSelectButton.color = _moreSelectButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
+    _moreSelectionPopupView = [[EAFMoreSelectionPopupViewController alloc] init];
+    
+    [[MZFormSheetController appearance] setCornerRadius:20.0];
+    EAFMoreSelectionPopupViewController *selectionPopupController = [self.storyboard instantiateViewControllerWithIdentifier:@"SelectionPopover"];
+    _moreSelectionPopupView = selectionPopupController;
+    _moreSelectionPopupView.language = _language;
+    _moreSelectionPopupView.fl = [[self getCurrentJson] objectForKey:@"fl"];
+    
+    _moreSelectionPopupView.customDelegate = self;
+    _moreSelection.languageIndex = _languageSegmentIndex;
+    _moreSelection.voiceIndex = _voiceSegmentIndex;
+    [_moreSelectionPopupView setMoreSelection:_moreSelection];
+    
+    //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didDismissPopupViewController) name:@"PopupSelectionViewDissmissed" object:nil];
+    
+    MZFormSheetController *formSheet = [self isiPhone] ?
+    //        [[MZFormSheetController alloc] initWithViewController:popupController] :
+    [[MZFormSheetController alloc] initWithSize:CGSizeMake(300, 300) viewController:selectionPopupController] :
+    [[MZFormSheetController alloc] initWithSize:CGSizeMake(500, 500) viewController:selectionPopupController];
+    
+    formSheet.transitionStyle = MZFormSheetTransitionStyleSlideFromTop;
+    formSheet.shouldDismissOnBackgroundViewTap = YES;
+    
+    [formSheet presentAnimated:YES completionHandler:^(UIViewController *presentedFSViewController) {
+        
+    }];
+    
+    formSheet.didTapOnBackgroundViewCompletionHandler = ^(CGPoint location)
+    {
+        
+    };
+}
 
+//-(void)dealloc{
+//    [[NSNotificationCenter defaultCenter] removeObserver:self];
+//}
+//
+//-(void)didDismissPopupViewController{
+//    
+//    NSLog(@"Dismissed Popup View Controller");
+//    NSLog(@"Language Selection+++: %lu", _moreSelection.languageIndex);
+//    NSLog(@"Voice Selection+++: %lu", _moreSelection.voiceIndex);
+////    _languageSegmentIndex = _moreSelection.languageIndex;
+////    _voiceSegmentIndex = _moreSelection.voiceIndex;
+//    
+// 
+//    
+//
+//}
 
 #pragma mark - Navigation
 
@@ -2560,6 +3007,9 @@ BOOL addSpaces = false;
         EAFWordScoreTableViewController *wordReport = [[tabBarController viewControllers] objectAtIndex:0];
         wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong_26h-unselected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         wordReport.tabBarItem.selectedImage = [[UIImage imageNamed:@"rightAndWrong_26h-selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        [wordReport.tabBarItem setTitleTextAttributes:@{ NSForegroundColorAttributeName : [UIColor npDarkBlue] }
+                                              forState:UIControlStateSelected];
+
         wordReport.language = _language;
         
         wordReport.chapterName = _chapterTitle;
@@ -2589,6 +3039,9 @@ BOOL addSpaces = false;
         EAFPhoneScoreTableViewController *phoneReport = [[tabBarController viewControllers] objectAtIndex:1];
         phoneReport.tabBarItem.selectedImage = [[UIImage imageNamed:@"checkAndEar.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         phoneReport.tabBarItem.image = [[UIImage imageNamed:@"ear-unselected_32.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        
+        [phoneReport.tabBarItem setTitleTextAttributes:@{ NSForegroundColorAttributeName : [UIColor npDarkBlue] }
+                                                 forState:UIControlStateSelected];
         
         phoneReport.language = _language;
         phoneReport.chapterName = _chapterTitle;

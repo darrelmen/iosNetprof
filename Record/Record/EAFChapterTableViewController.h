@@ -52,4 +52,5 @@
 @property NSString *url;
 @property BOOL isRTL;
 
+
 @end
