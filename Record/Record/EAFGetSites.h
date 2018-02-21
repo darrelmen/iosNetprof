@@ -51,11 +51,13 @@
 @property (strong, nonatomic) NSDictionary *nameToURL;
 @property (strong, nonatomic) NSDictionary *nameToProjectID;
 @property (strong, nonatomic) NSDictionary *nameToHost;
+@property (strong, nonatomic) NSDictionary *nameToLanguage;
 @property (strong, nonatomic) NSOrderedSet *languages;
 @property (strong, nonatomic) NSOrderedSet *oldSites;
 @property (strong, nonatomic) NSSet *rtlLanguages;
 - (void) getSites;
 - (NSNumber *) getProject:(NSString*) language;
+- (NSString *) getProjectLanguage:(NSString*) projectName;
 
 @property(assign) id<SitesNotification> delegate;
 

@@ -348,6 +348,7 @@
     flashcardController.jsonItems = _jsonItems;
     flashcardController.index = row;
     flashcardController.language = _language;
+    flashcardController.projectLanguage = _projectLanguage;
     [flashcardController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,_currentChapter]];
     
     flashcardController.hasModel=_hasModel;

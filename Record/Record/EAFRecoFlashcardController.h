@@ -73,6 +73,7 @@
 @property NSString *currentUnit;
 @property NSString *unitTitle;
 @property NSString *language;
+@property NSString *projectLanguage;
 
 @property (weak, nonatomic) IBOutlet UIView *scoreDisplayContainer;
 @property (strong, nonatomic) IBOutlet UIProgressView *scoreProgress;

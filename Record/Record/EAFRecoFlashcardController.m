@@ -141,7 +141,7 @@
 {
     [_whatToShow setSelectedSegmentIndex:2];
     
-    [_whatToShow setTitle:_language forSegmentAtIndex:1];
+    [_whatToShow setTitle:[self getProjectLanguage] forSegmentAtIndex:1];
     
     if ([_language isEqualToString:@"English"]) {
         [_whatToShow setTitle:@"Def." forSegmentAtIndex:0];
@@ -160,12 +160,13 @@
 
 - (void)viewDidLoad
 {
-    //    NSLog(@"RecoFlashcardController.viewDidLoad --->");
+    NSLog(@"RecoFlashcardController.viewDidLoad --->");
     [super viewDidLoad];
     _audioCache = [[EAFAudioCache alloc] init];
     
     _siteGetter = [EAFGetSites new];
     [_siteGetter getSites];
+    NSLog(@"RecoFlashcardController.viewDidLoad : getSites...");
     
     [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
     
@@ -429,7 +430,21 @@
 }
 
 - (EAFEventPoster*)getPoster {
-    return [[EAFEventPoster alloc] initWithURL:_url projid:[_siteGetter.nameToProjectID objectForKey:_language]];
+    return [[EAFEventPoster alloc] initWithURL:_url projid:[self getProjectID]];
+}
+
+- (id) getProjectID {
+    return [_siteGetter.nameToProjectID objectForKey:_language];
+}
+
+- (id) getProjectLanguage {
+//    NSLog(@"getProjectLanguage lang %@",_language);
+//    NSLog(@"getProjectLanguage map  %@",_siteGetter.nameToLanguage);
+    NSString *actualLang = [_siteGetter.nameToLanguage objectForKey:_language];
+ //   NSLog(@"getProjectLanguage actualLang  %@",actualLang);
+ //   NSLog(@"getProjectLanguage projectLang %@",_projectLanguage);
+
+    return _projectLanguage;
 }
 
 - (IBAction)showScoresClick:(id)sender {
@@ -1793,7 +1808,7 @@ bool debugRecord = false;
    
     [urlRequest setValue:@"decode" forHTTPHeaderField:@"request"];
     
-    NSString *projid = [NSString stringWithFormat:@"%@",[_siteGetter.nameToProjectID objectForKey:_language]];
+    NSString *projid = [NSString stringWithFormat:@"%@",[self getProjectID]];
     [urlRequest setValue:projid forHTTPHeaderField:@"projid"];
     
     //NSString *req = ;
@@ -2187,17 +2202,6 @@ BOOL addSpaces = false;
     }
     return coloredPhones;
 }
-
-//- (BOOL)isRTL {
-//    NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
-//                    @"Egyptian",
-//                    @"EgyptianCandidate",
-//                    @"Farsi",
-//                    @"Levantine",
-//                    @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
-//    BOOL isRTL = [rtl containsObject:_language];
-//    return isRTL;
-//}
 
 - (void)addSingleTap:(UIView *)exampleView {
     UITapGestureRecognizer *singleFingerTap =
@@ -2620,7 +2624,7 @@ BOOL addSpaces = false;
         wordReport.tabBarItem.image = [[UIImage imageNamed:@"rightAndWrong_26h-unselected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         wordReport.tabBarItem.selectedImage = [[UIImage imageNamed:@"rightAndWrong_26h-selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         wordReport.language = _language;
-        wordReport.projid = [_siteGetter.nameToProjectID objectForKey:_language];
+        wordReport.projid = [self getProjectID];
         wordReport.chapterName = _chapterTitle;
         wordReport.chapterSelection = _currentChapter;
         
@@ -2651,7 +2655,7 @@ BOOL addSpaces = false;
         phoneReport.tabBarItem.image = [[UIImage imageNamed:@"ear-unselected_32.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         
         phoneReport.language = _language;
-        phoneReport.projid = [_siteGetter.nameToProjectID objectForKey:_language];
+        phoneReport.projid = [self getProjectID];
 
         phoneReport.chapterName = _chapterTitle;
         phoneReport.chapterSelection = _currentChapter;

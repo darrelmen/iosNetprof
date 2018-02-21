@@ -552,6 +552,7 @@ UIAlertView *loadingContentAlert;
     [itemController setJsonItems:_currentItems];
     itemController.chapterTitle = _chapterName;
     itemController.currentChapter =_currentChapter;
+    itemController.projectLanguage =[_siteGetter getProjectLanguage:_language];
     [itemController setLanguage:_language];
     
     NSNumber *projid = [_siteGetter getProject:_language];

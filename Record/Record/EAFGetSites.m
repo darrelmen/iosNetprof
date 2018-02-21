@@ -54,6 +54,7 @@
 @property (strong, nonatomic) NSMutableDictionary *mutableNameToURL;
 @property (strong, nonatomic) NSMutableDictionary *mutableNameToProjectID;
 @property (strong, nonatomic) NSMutableDictionary *mutableNameToHost;
+@property (strong, nonatomic) NSMutableDictionary *mutableNameToLanguage;
 
 @property (strong, nonatomic) NSString *oldServer;
 @property (strong, nonatomic) NSString *nServer;
@@ -72,11 +73,10 @@
     self = [super init];
     if (self) {
         _oldServer = @"https://np.ll.mit.edu/";
-        //   _oldServer = @"https://129.55.210.144/";
         //NSLog(@"EAFGetSites server now %@",_oldServer);
-        _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
-       _nServer = @"https://netprof.ll.mit.edu/netprof/";
         //   _nServer = @"http://127.0.0.1:8888/netprof/";
+        //   _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+        _nServer = @"https://netprof.ll.mit.edu/netprof/";
     }
     
     return self;
@@ -85,6 +85,11 @@
 - (NSNumber *) getProject:(NSString*) language {
     //if ([language isEqualToString:@"Russian"]) return [NSNumber numberWithInt:-1];
     return [_nameToProjectID objectForKey:language];
+}
+
+- (NSNumber *) getProjectLanguage:(NSString*) projectName {
+    //if ([language isEqualToString:@"Russian"]) return [NSNumber numberWithInt:-1];
+    return [_nameToLanguage objectForKey:projectName];
 }
 
 // PUBLIC
@@ -104,6 +109,9 @@
     
     _mutableNameToHost = [[NSMutableDictionary alloc] init];
     _nameToHost = _mutableNameToHost;
+    
+    _mutableNameToLanguage = [[NSMutableDictionary alloc] init];
+    _nameToLanguage = _mutableNameToLanguage;
     
     [self getSitesFromServer:_oldServer];
 }
@@ -223,20 +231,20 @@
             if (url == NULL) {
                 url = _nServer;
             }
-            //            if ([name isEqualToString:@"Spanish"]) {
-            //                url = _nServer;
-            //                 NSLog(@"parseJSON using %@",url);
-            //            }
+   
             if (![url hasSuffix:@"/"]) {
                 url = [NSString stringWithFormat:@"%@/",url];
             }
+            [_mutableNameToURL   setObject:url     forKey:name];
+
+            
             BOOL isRTL = [[site valueForKey:@"rtl"] boolValue];
             
             if (isRTL) [localRTL addObject:name];
             
+            
             NSNumber *id  = [site objectForKey:@"id"];
             
-            [_mutableNameToURL   setObject:url     forKey:name];
             if (id != NULL) {
                 [_mutableNameToProjectID  setObject:id forKey:name];
                 NSString *host  = [site objectForKey:@"host"];
@@ -244,12 +252,16 @@
                 if (host == NULL) host = @"";
                 [_mutableNameToHost  setObject:host forKey:name];
             }
-            else {
+            else { // how can this ever happen?
                 [_mutableNameToProjectID  setObject: [NSNumber numberWithInt:-1] forKey:name];
                 [_mutableNameToHost  setObject:@"" forKey:name];
             }
+            [_mutableNameToLanguage  setObject:[site objectForKey:@"language"] forKey:name];
+
         }
     }
+    
+    NSLog(@"EAFGetSites : name->lang %@",_mutableNameToLanguage);
     
     [self setLanguagesGivenData];
 }
