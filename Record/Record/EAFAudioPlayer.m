@@ -56,7 +56,7 @@
 }
 
 - (IBAction)stopAudio {
-    NSLog(@"EAFAudioPlayer : stopAudio ---- %@",self);
+   // NSLog(@"EAFAudioPlayer : stopAudio ---- %@",self);
     _currentIndex = _audioPaths.count;
     if (_player != nil) {
         [_player pause];
@@ -73,10 +73,13 @@
 
 // @see #makePlayerGivenURL
 - (void)makeAVPlayer:(NSURL *)url {
-    _player = [AVPlayer playerWithURL:url];
-    NSString *PlayerStatusContext;
-    [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
-    _player.volume = _volume;
+    NSLog(@"EAFAudioPlayer : makeAVPlayer ---- %@",url);
+    if (url != nil) {
+        _player = [AVPlayer playerWithURL:url];
+        NSString *PlayerStatusContext;
+        [_player addObserver:self forKeyPath:@"status" options:0 context:&PlayerStatusContext];
+        _player.volume = _volume;
+    }
 }
 
 // Maybe this is overkill, but try to read from the url and if it fails, try the waveURL
