@@ -39,6 +39,7 @@
 #import "EAFAppDelegate.h"
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFAppDelegate ()
 @property (strong, nonatomic) NSData *sitesData;
@@ -46,11 +47,18 @@
 
 @implementation EAFAppDelegate
 
+//- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions  {
+//  
+//    return YES;
+//}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
-    // [SSKeychain deletePasswordForService:@"mitll.proFeedback.device" account:@"userid"];
-   
+    [UINavigationBar appearance].translucent = YES;
+    [UINavigationBar appearance].barTintColor = [UIColor colorWithRed:(9/255.0)+0.24 green:(65/255.0)+0.24 blue:(105/255.0)+0.24 alpha:1.0];
+    [UINavigationBar appearance].tintColor = [UIColor npLightBlue];
+
+
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     if (retrieveuuid == NULL) {
         NSString *UUID = [EAFAppDelegate GetUUID];
@@ -63,6 +71,9 @@
     
     //NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     [[NSUserDefaults standardUserDefaults] setObject:[self appNameAndVersionNumberDisplayString] forKey:@"version_preference"];
+
+  //  [self getSites];
+    [UITextView appearance].linkTextAttributes = @{ NSForegroundColorAttributeName : [UIColor npMedPurple] };
     return YES;
 }
 
