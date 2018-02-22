@@ -61,6 +61,8 @@
 
 @property (strong, nonatomic) IBOutlet UILabel *foreignLang;
 @property (strong, nonatomic) IBOutlet UILabel *english;
+@property (strong, nonatomic) IBOutlet UILabel *tl;
+
 @property (strong, nonatomic) IBOutlet UILabel *shuffle;
 @property unsigned long index;
 
@@ -85,6 +87,10 @@
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender;
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender;
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender;
+- (IBAction)tapOnEnglishDetected:(id)sender;
+
+- (IBAction)tapOnTlDetected:(id)sender;
+
 @property (strong, nonatomic) IBOutlet UIProgressView *progressThroughItems;
 
 @property (weak, nonatomic) IBOutlet UILabel *progressNum;

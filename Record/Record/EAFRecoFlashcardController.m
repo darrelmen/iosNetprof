@@ -104,6 +104,8 @@
 
 @property UIInterfaceOrientation interfaceOrientation;
 
+@property NSString *tlAtIndex;
+
 
 - (void)postAudio;
 
@@ -322,6 +324,10 @@
     _voiceSegmentIndex = 0;
      _moreSelection = [[MoreSelection alloc]initWithLanguageIndex:_languageSegmentIndex withVoiceIndex:_voiceSegmentIndex];
     
+//    self.navigationController.navigationBar.barTintColor=[UIColor yellowColor];
+//    self.navigationController.navigationBar.tintColor=[UIColor blueColor];
+//    self.navigationController.navigationBar.translucent=NO;
+    
     
     UIBarButtonItem *scoreShow = [[UIBarButtonItem alloc]
                                    initWithTitle:@"Score"
@@ -329,7 +335,6 @@
                                    target:self
                                    action:@selector(showScores:)];
     self.navigationItem.rightBarButtonItem = scoreShow;
-
     
     _selectionToolbar=[[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 10, 10)];
     
@@ -786,8 +791,12 @@
     _english.adjustsFontSizeToFitWidth=YES;
     _english.minimumScaleFactor=0.1;
     
+    _tl.adjustsFontSizeToFitWidth=YES;
+    _tl.minimumScaleFactor=0.1;
+    
     if ([self isiPad]) {
         [_foreignLang setFont:[UIFont fontWithName:@"Arial" size:52]];
+  //      [_tl setFont:[UIFont fontWithName:@"Arial" size:44]];
        // [_foreignLang setFont:[UIFont systemFontOfSize:52]];
         //        NSLog(@"font size is %@",_foreignLang.font);
     }
@@ -1036,8 +1045,12 @@
     
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
+   // NSString *tlAtIndex = [jsonObject objectForKey:@"tl"];
+    
+    _tlAtIndex = [jsonObject objectForKey:@"tl"];
     
     flAtIndex = [self trim:flAtIndex];
+    _tlAtIndex = [self trim:_tlAtIndex];
     
     // long selected = ;
 /*
@@ -1049,6 +1062,11 @@
     }
     else {
         [_foreignLang setText:flAtIndex];
+        if([_tlAtIndex length] != 0){
+            [_tl setText:_tlAtIndex];
+        } else {
+            _tl.hidden = YES;
+        }
     }
     
     [_english setText:enAtIndex];
@@ -1067,6 +1085,7 @@
             maxEFont = 30;
         }
         [self scaleFont:flAtIndex labelToScale:_foreignLang largest:maxFont slen:10 smallest:14];
+        [self scaleFont:_tlAtIndex labelToScale:_tl largest:maxFont slen:10 smallest:14];
         
         //     CGRect rect = [_english.text boundingRectWithSize:_english.bounds.size options:NSStringDrawingTruncatesLastVisibleLine attributes:nil context:nil];
         //   NSLog(@"Got rect %@",rect);
@@ -1096,37 +1115,23 @@
 
     // complicated...
     // _myAudioPlayer.audioPaths = _audioRefs;
-/*
-    if (_audioOnButton.selected &&   // volume on
-*/
-     if (_isAudioOnSelected &&   // volume on
-        !_preventPlayAudio &&
+
+    if (_isAudioOnSelected && !_preventPlayAudio &&
         showedIntro != nil) {
         
         //         NSLog(@"respondToSwipe first");
         if (showEnglish) {
             //   NSLog(@"respondToSwipe first - %ld", (long)_whatToShow.selectedSegmentIndex);
-        //    if (_autoPlayButton.selected) {
+            if (_autoPlayButton.selected) {
                 
                 [self speakEnglish:false];
                 
-        //    }
+            }
         }
         else {
-          //  [self stopPlayingAudio];
+         //   [self stopPlayingAudio];
             [self playRefAudioIfAvailable];
         }
-//        else if (showBoth){
-//            if (!_foreignLang.hidden){
-//                [self playRefAudioIfAvailable];
-//            } else if ( !_english.hidden){
-//            
-//                  [self speakEnglish:false];
-//            }
-//        } else {
-//            
-//            [self playRefAudioIfAvailable];
-//        }
     }
     else {
         _preventPlayAudio = false;
@@ -1198,10 +1203,8 @@
         NSError *activationError = nil;
         BOOL success = [[AVAudioSession sharedInstance] setActive:YES error:&activationError];
         if (!success) { /* handle the error condition */ }
-        
         // do autoplay
         [self stopPlayingAudio];
-        
         if (_audioRefs.count > 1) {
             [_audioRefs removeLastObject];
         }
@@ -1212,11 +1215,9 @@
         
         [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
         [self postEvent:@"autoPlaySelected" widget:@"autoPlay" type:@"Button"];
-        
     }
     else {
         [self postEvent:@"autoPlayDeselected" widget:@"autoPlay" type:@"Button"];
-        
         // stop autoplay
         //[[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     }
@@ -1256,11 +1257,6 @@
     //NSLog(@"normal volume %f",utterance.volume);
     //}
     [_synthesizer speakUtterance:utterance];
-}
-
-- (IBAction)tapOnEnglish:(id)sender {
-    [self stopPlayingAudio];
-    [self speakEnglish:true];
 }
 
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didPauseSpeechUtterance:(AVSpeechUtterance *)utterance {
@@ -1363,9 +1359,23 @@
 
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender{
     _myAudioPlayer.volume = 1;
-    
+    NSLog(@"foreign lang taped");
     [self playRefAudioIfAvailable];
     [self postEvent:@"playAudioTouch" widget:_english.text type:@"UILabel"];
+}
+
+- (IBAction)tapOnEnglishDetected:(id)sender {
+    NSLog(@"tap on english---");
+    [self stopPlayingAudio];
+    [self speakEnglish:true];
+}
+
+- (IBAction)tapOnTlDetected:(id)sender {
+    NSLog(@"TL Pinyin taped");
+    if([_tlAtIndex length] != 0){
+        [self playRefAudioIfAvailable];
+        [self postEvent:@"playAudioTouch" widget:_english.text type:@"UILabel"];
+    }
 }
 
 - (void)hideWithDashes:(NSString *)exercise {
@@ -1375,6 +1385,7 @@
     NSString *modifiedString = [regex stringByReplacingMatchesInString:trim options:0 range:NSMakeRange(0, [trim length]) withTemplate:@"-"];
     
     [_foreignLang setText:modifiedString];
+    [_tl setText:@""];
 }
 
 - (void)hideAndShowText {
@@ -1386,6 +1397,7 @@
     // NSLog(@"recoflashcard : hideAndShowText %ld", selected);
     if (selected == 0) { // english
         _foreignLang.hidden = true;
+        _tl.hidden = true;
         _english.hidden = false;
         _pageControl.hidden = false;
         _pageControl.currentPage = 0;
@@ -1395,6 +1407,7 @@
     }
     else if (selected == 1) {  // fl
         _foreignLang.hidden = false;
+        _tl.hidden = false;
         _english.hidden = true;
         _pageControl.hidden = false;
         _pageControl.currentPage = 1;
@@ -1404,6 +1417,7 @@
     }
     else if (selected == 2){
         _foreignLang.hidden = false;
+         _tl.hidden = false;
         _english.hidden = false;
         _pageControl.hidden = true;
         [self setForeignLang];
@@ -1423,7 +1437,9 @@
 - (void)setForeignLang {
     NSDictionary *jsonObject = [self getCurrentJson];
     NSString *exercise       = [jsonObject objectForKey:@"fl"];
+    NSString *tlExercise = [jsonObject objectForKey:@"tl"];
     [_foreignLang setText:[self trim:exercise]];
+ //   [_tl setText:[self trim:tlExercise]];
 }
 
 /*
@@ -1461,9 +1477,9 @@
 /*
     if (_audioOnButton.selected){
 */
-        if (_isAudioOnSelected){
-        [self playRefAudioIfAvailable];
-    }
+//        if (_isAudioOnSelected){
+//        [self playRefAudioIfAvailable];
+//    }
     
     long selected = _languageSegmentIndex;
     
@@ -1583,6 +1599,31 @@
 }
 
 - (void) playGotToEnd {
+    
+    if (_autoPlayButton.selected) {
+        // doing autoplay!
+        // skip english if lang is english
+        if ([_english.text isEqualToString:_foreignLang.text]) {
+            [self doAutoAdvance];
+        }
+        else {
+            // OK move on to english part of card, automatically
+            NSLog(@"playGotToEnd - speak english");
+            if (_languageSegmentIndex == 0 || _languageSegmentIndex == 1) { // already played english, so now at end of fl, go to next
+                [self doAutoAdvance];
+            }
+            else { // haven't played english yet, so play it
+                [self speakEnglish:false];
+            }
+        }
+    }
+    else {
+        //  NSLog(@"playGotToEnd - no op");
+    }
+    
+    
+    
+/*
 //    if (_autoPlayButton.selected) {
         // doing autoplay!
         // skip english if lang is english
@@ -1597,12 +1638,14 @@
             
                 [self doAutoAdvance];
               
-            } else if (_languageSegmentIndex == 1) {
+            }
+            else if (_languageSegmentIndex == 1) {
 
                 if (_autoPlayButton.selected){
                     [self doAutoAdvance];
                 }
             }
+
             else { // haven't played english yet, so play it
                 [self speakEnglish:false];
             
@@ -1612,6 +1655,8 @@
 //    else {
 //        //  NSLog(@"playGotToEnd - no op");
 //    }
+
+   */
 }
 
 // set the text color of all the labels in the scoreDisplayContainer
@@ -2940,6 +2985,8 @@ BOOL addSpaces = false;
     };
 }
 - (IBAction)ShowMoreSelectPopup:(id)sender {
+    [_myAudioPlayer stopAudio];
+    [self stopAutoPlay];
     _moreSelectButton.selected = !_moreSelectButton.selected;
     _moreSelectButton.color = _moreSelectButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
     _moreSelectionPopupView = [[EAFMoreSelectionPopupViewController alloc] init];
@@ -3028,6 +3075,7 @@ BOOL addSpaces = false;
             NSString *id = [jsonObject objectForKey:@"id"];
             NSString *exercise = [jsonObject objectForKey:@"fl"];
             NSString *englishPhrases = [jsonObject objectForKey:@"en"];
+   //         NSString *tlExercise = [jsonObject objectForKey:@"tl"];
             [exToFL setValue:exercise forKey:id];
             [exToEnglish setValue:englishPhrases forKey:id];
         }

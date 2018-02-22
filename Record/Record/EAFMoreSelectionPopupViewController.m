@@ -74,6 +74,7 @@
 // CGRect frame= _languageSelection.frame;
     [_languageSelection setFrame:CGRectMake(0, 90, 300, 50)];
      [_voiceSelection setFrame:CGRectMake(0, 150, 225, 50)];
+  //  [_audioOnBtn setFrame:CGRectMake(230, 150, 70, 50)];
     
     [_audioOnBtn initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
      //        color:[UIColor colorWithWhite:1.0f alpha:0.0f]
@@ -82,7 +83,7 @@
                              icon:FAVolumeUp
                          fontSize:20.0f];
     _moreSelection.identityRestorationID = _audioOnBtn.restorationIdentifier;
-   
+    
      [self configureWhatToShow];
     
     _voiceSelection.enabled = _moreSelection.hasTwoGenders;
