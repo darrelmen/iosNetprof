@@ -40,13 +40,13 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
-#import "EAFSignUpViewController.h"
 #import "EAFNewSignUpViewController.h"
 #import "EAFForgotUserNameViewController.h"
 #import "EAFForgotPasswordViewController.h"
 #import "EAFSetPasswordViewController.h"
 #import "EAFEventPoster.h"
 #import "EAFGetSites.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFLoginViewController ()
 
@@ -92,7 +92,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [_logIn setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
+    [_signUp setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
+    [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
+    [_titleLabel setTextColor:[UIColor npDarkBlue]];
+
     _versionLabel.text = [self appNameAndVersionNumberDisplayString];
     
     _siteGetter = [EAFGetSites new];
@@ -123,14 +127,14 @@
                              style:BButtonStyleBootstrapV3
                               icon:FAQuestion
                           fontSize:20.0f];
-    [_forgotUsername setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-    
+    [_forgotUsername setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
+  
     [_forgotPassword initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
                              color:[UIColor colorWithWhite:1.0f alpha:0.0f]
                              style:BButtonStyleBootstrapV3
                               icon:FAQuestion
                           fontSize:20.0f];
-    [_forgotPassword setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    [_forgotPassword setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
     
     UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
     gestureRecognizer.cancelsTouchesInView = NO;
@@ -368,10 +372,30 @@
     return _siteGetter.languages.count;
 }
 
--(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
-{
-    //set item per row
-    return [_siteGetter.languages objectAtIndex:row];
+//-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
+//{
+//    //set item per row
+//    return [_siteGetter.languages objectAtIndex:row];
+//}
+
+-(UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(nullable UIView *)view{
+    UILabel *pView = (UILabel *)view;
+    if(!pView){
+        pView = [[UILabel alloc] init];
+//        CGRect frame = CGRectMake(0.0, 0.0, 80, 32);
+//        pView = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        [pView setFont:[UIFont boldSystemFontOfSize: 46]];
+         [pView setBackgroundColor:[UIColor clearColor]];
+//        [pView setTextColor:[UIColor greenColor]];
+        [pView setTextColor:[UIColor colorWithRed:3/255.0 green:99/255.0 blue:148/255.0 alpha:1.0]];
+        [pView setTextAlignment: NSTextAlignmentCenter];
+    }
+   [pView setText:[_siteGetter.languages objectAtIndex: row]];
+    return pView;
+}
+
+-(CGFloat)pickerView: (UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component{
+    return 50;
 }
 
 - (void) textFieldText:(id)notification {
@@ -617,9 +641,9 @@
         //NSString *chosenLanguage = [_languages objectAtIndex:selection];
         NSLog(@"LoginViewController : old identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
         
-        EAFSignUpViewController *signUp = [segue destinationViewController];
+        EAFNewSignUpViewController *signUp = [segue destinationViewController];
         signUp.userFromLogin = _username.text;
-        signUp.passFromLogin = _password.text;
+      //  signUp.passFromLogin = _password.text;
         signUp.languageIndex = selection;
         signUp.siteGetter = _siteGetter;
         

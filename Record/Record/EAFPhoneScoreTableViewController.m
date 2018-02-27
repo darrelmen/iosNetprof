@@ -47,6 +47,7 @@
 
 #import <AudioToolbox/AudioServices.h>
 #import "SSKeychain.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFPhoneScoreTableViewController ()
 
@@ -729,7 +730,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (void) playStarted {
-    [self setTextColor:[UIColor blueColor]];
+    [self setTextColor:[UIColor npMedPurple]];
 }
 
 - (void) playStopped {

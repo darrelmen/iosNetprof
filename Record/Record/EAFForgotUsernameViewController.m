@@ -39,6 +39,7 @@
 #import "EAFForgotUsernameViewController.h"
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFForgotUsernameViewController ()
 
@@ -51,6 +52,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setTitle:[NSString stringWithFormat:@"Forgot username for %@",_language]];
+    [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
+    [_titleLabel setTextColor:[UIColor npDarkBlue]];
+    [_sendEmail setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
 }
 
 - (IBAction)gotClick:(id)sender {
@@ -71,7 +75,6 @@
     if (valid) {
         [self forgotUsername:_email.text language:_language];
     }
-    
     [[NSNotificationCenter defaultCenter] addObserver:self
                            selector:@selector (textFieldText:)
                                name:UITextFieldTextDidChangeNotification

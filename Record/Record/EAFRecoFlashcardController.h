@@ -40,9 +40,11 @@
 #import <AVFoundation/AVFoundation.h>
 #import "BButton.h"
 #import "EAFAudioPlayer.h"
+#import "EAFMoreSelectionPopupViewController.h"
+#import "MoreSelection.h"
 
 @interface EAFRecoFlashcardController : UIViewController
-        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,UIGestureRecognizerDelegate,AudioPlayerNotification,AVSpeechSynthesizerDelegate,UIPopoverControllerDelegate>
+        <AVAudioRecorderDelegate, AVAudioPlayerDelegate,UIGestureRecognizerDelegate,AudioPlayerNotification,AVSpeechSynthesizerDelegate,UIPopoverControllerDelegate, PassSelection>
 
 @property (strong, nonatomic) IBOutlet UIView *cardBackground;
 @property (strong, nonatomic) IBOutlet UIView *recordButtonContainer;
@@ -59,6 +61,8 @@
 
 @property (strong, nonatomic) IBOutlet UILabel *foreignLang;
 @property (strong, nonatomic) IBOutlet UILabel *english;
+@property (strong, nonatomic) IBOutlet UILabel *tl;
+
 @property (strong, nonatomic) IBOutlet UILabel *shuffle;
 @property unsigned long index;
 
@@ -84,24 +88,34 @@
 - (IBAction)swipeLeftDetected:(UISwipeGestureRecognizer *)sender;
 - (IBAction)swipeRightDetected:(UISwipeGestureRecognizer *)sender;
 - (IBAction)tapOnForeignDetected:(UITapGestureRecognizer *)sender;
+- (IBAction)tapOnEnglishDetected:(id)sender;
+
+- (IBAction)tapOnTlDetected:(id)sender;
+
 @property (strong, nonatomic) IBOutlet UIProgressView *progressThroughItems;
+
+@property (weak, nonatomic) IBOutlet UILabel *progressNum;
 
 @property (strong) NSTimer *repeatingTimer;
 
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;
 @property (strong, nonatomic) IBOutlet UIImageView *correctFeedback;
-@property (strong, nonatomic) IBOutlet UISegmentedControl *genderMaleSelector;
 
-@property (strong, nonatomic) IBOutlet BButton *audioOnButton;
-@property (strong, nonatomic) IBOutlet BButton *shuffleButton;
-@property (strong, nonatomic) IBOutlet BButton *autoPlayButton;
+//@property (strong, nonatomic) IBOutlet UISegmentedControl *genderMaleSelector;
 
-@property (strong, nonatomic) IBOutlet UIButton *speedButton;
-@property (strong, nonatomic) IBOutlet UISegmentedControl *whatToShow;
-- (IBAction)whatToShowSelection:(id)sender;
 
-- (IBAction)speedSelection:(id)sender;
-- (IBAction)audioOnSelection:(id)sender;
+//@property (strong, nonatomic) IBOutlet BButton *audioOnButton;
+
+//@property (strong, nonatomic) IBOutlet BButton *shuffleButton;
+
+//@property (strong, nonatomic) IBOutlet BButton *moreSelectButton;
+
+//@property (strong, nonatomic) IBOutlet UIButton *speedButton;
+//@property (strong, nonatomic) IBOutlet UISegmentedControl *whatToShow;
+//- (IBAction)whatToShowSelection:(id)sender;
+
+//- (IBAction)speedSelection:(id)sender;
+//- (IBAction)audioOnSelection:(id)sender;
 - (void)respondToSwipe;
 - (void)doAutoAdvance;
 @property (strong, nonatomic) IBOutlet BButton *contextButton;
@@ -110,5 +124,24 @@
 @property (strong, nonatomic) IBOutlet UIPageControl *pageControl;
 - (void) viewBecameActive;
 - (void) applicationWillResignActive;
+
+@property EAFMoreSelectionPopupViewController *moreSelectionPopupView;
+@property MoreSelection *moreSelection;
+
+@property NSString *identityRestoreID;
+@property BOOL isAudioOnSelected;
+
+
+@property (strong, nonatomic) IBOutlet UIToolbar *selectionToolbar;
+
+
+//@property (strong, nonatomic) IBOutlet UIBarButtonItem *itemForShuffle;
+
+//@property (strong, nonatomic) IBOutlet BButton *shuffleButton;
+
+
+
+
+-(IBAction)showScores:(id)sender;
 
 @end

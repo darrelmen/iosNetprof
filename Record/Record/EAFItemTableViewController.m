@@ -40,6 +40,7 @@
 #import "EAFAudioCache.h"
 #import "EAFRecoFlashcardController.h"
 #import "SSKeychain.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFItemTableViewController ()
 
@@ -56,6 +57,20 @@
 @property NSDictionary *exToJson;
 
 @property EAFRecoFlashcardController *notifyFlashcardController;
+
+@property unsigned long checkMarkPercentage;
+@property unsigned long questionIconPercentage;
+@property unsigned long redXPercentage;
+@property UIButton *sortBtn;
+
+@property UIButton *checkMarkBtn;
+@property UIButton *redXBtn;
+
+@property NSArray *temp_jsonItems;
+
+@property unsigned long lessonTotalItems;
+
+@property (strong, nonatomic) UISearchController *searchController;
 @end
 
 @implementation EAFItemTableViewController
@@ -84,28 +99,202 @@
         }
     }
     
- //   NSLog(@"ItemTableViewController.cacheAudio Got get audio -- %@ ",_audioCache);
+    //   NSLog(@"ItemTableViewController.cacheAudio Got get audio -- %@ ",_audioCache);
     [_audioCache goGetAudio:rawPaths paths:paths language:_language];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    _temp_jsonItems = [[NSMutableArray alloc] initWithArray:_jsonItems];;
     _audioCache = [[EAFAudioCache alloc] init];
-  //  NSLog(@"viewDidLoad made audio cache, url %@ ",_url );
-  //  NSLog(@"viewDidLoad - item table controller - %@, count = %lu", _hasModel?@"YES":@"NO",(unsigned long)_jsonItems.count);
-
+    //  NSLog(@"viewDidLoad made audio cache, url %@ ",_url );
+    //  NSLog(@"viewDidLoad - item table controller - %@, count = %lu", _hasModel?@"YES":@"NO",(unsigned long)_jsonItems.count);
+    
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
     [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,_chapterTitle,_currentChapter]];
     
     _user = [[SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"] intValue];
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
+    //   [self createBtnAndLabelForHeaderView];
     
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(OrientationChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
+    
+    _lessonTotalItems = _jsonItems.count;
+    
+}
+
+//- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
+//{
+//    NSString *searchString = searchController.searchBar.text;
+//    [self searchForText:searchString scope:searchController.searchBar.selectedScopeButtonIndex];
+//    [self.tableView reloadData];
+//}
+
+-(void)OrientationChange:(NSNotification*)notification
+{
+    [self createBtnAndLabelForHeaderView];
+    //    UIDeviceOrientation Orientation=[[UIDevice currentDevice]orientation];
+    //
+    //    if(Orientation==UIDeviceOrientationLandscapeLeft || Orientation==UIDeviceOrientationLandscapeRight)
+    //    {
+    //        [self createBtnAndLabelForHeaderView];
+    //    }
+    //    else if(Orientation==UIDeviceOrientationPortrait)
+    //    {
+    //         [self createBtnAndLabelForHeaderView];    }
+}
+
+- (void)createBtnAndLabelForHeaderView{
+    
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 100)];
+    //    self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+    //    self.searchController.searchResultsUpdater = self;
+    //    self.searchController.dimsBackgroundDuringPresentation = NO;
+    //    self.searchController.searchBar.delegate = self;
+    //    [headerView addSubview:self.searchController.searchBar];
+    //    self.definesPresentationContext = YES;
+    
+    UIFont *font;
+    if([self isiPhone]){
+        font = [UIFont boldSystemFontOfSize:24.0f];
+    } else {
+        font = [UIFont boldSystemFontOfSize:32.0f];
+    }
+    
+    
+    NSDictionary *attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+    
+    
+    //  [[UISegmentedControl appearance] setTintColor:[UIColor grayColor]];
+    UISegmentedControl *segmentedCtrlForList= [[UISegmentedControl alloc] initWithFrame:CGRectMake(5, 5, self.view.frame.size.width - 10, 45)];
+    segmentedCtrlForList.backgroundColor = [UIColor npLightBlue];
+    [segmentedCtrlForList setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    [segmentedCtrlForList insertSegmentWithImage:[UIImage imageNamed:@"checkmark32.png"] atIndex:0 animated:NO];
+    [[segmentedCtrlForList.subviews objectAtIndex:0] setTintColor:[UIColor greenColor]];
+    
+    [segmentedCtrlForList insertSegmentWithImage:[UIImage imageNamed:@"redx32.png"] atIndex:1 animated:NO];
+    [[segmentedCtrlForList.subviews objectAtIndex:1] setTintColor:[UIColor redColor]];
+    
+    [segmentedCtrlForList
+     insertSegmentWithImage:[UIImage imageNamed:@"questionIcon1.png"]  atIndex:2 animated:NO] ;
+    [segmentedCtrlForList insertSegmentWithTitle:@"All" atIndex:3 animated:NO];
+    [segmentedCtrlForList setSelectedSegmentIndex:3];
+    segmentedCtrlForList.tintColor = [UIColor npDarkBlue];
+    [segmentedCtrlForList addTarget:self action:@selector(filterBtnTapped:) forControlEvents:UIControlEventValueChanged];
+    
+    segmentedCtrlForList.layer.borderWidth = 1.0f;
+    segmentedCtrlForList.layer.borderColor = [UIColor npDarkBlue].CGColor;
+    segmentedCtrlForList.layer.cornerRadius = 5.0;
+    segmentedCtrlForList.clipsToBounds = YES;
+    
+    
+    [headerView addSubview:segmentedCtrlForList];
+    
+    UISegmentedControl * segmentedCtrlForNumAndSort = [[UISegmentedControl alloc] initWithFrame:CGRectMake(5, 50, self.view.frame.size.width - 10 - (self.view.frame.size.width - 10)/4, 45)];
+    
+    [segmentedCtrlForNumAndSort setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    
+    [segmentedCtrlForNumAndSort insertSegmentWithTitle:[NSString stringWithFormat:@"%lu%%",_checkMarkPercentage] atIndex:0 animated:NO];
+    [segmentedCtrlForNumAndSort setEnabled:NO forSegmentAtIndex:0];
+    [segmentedCtrlForNumAndSort insertSegmentWithTitle:[NSString stringWithFormat:@"%lu%%",_redXPercentage] atIndex:1 animated:NO];
+    
+    [segmentedCtrlForNumAndSort setEnabled:NO forSegmentAtIndex:1];
+    [segmentedCtrlForNumAndSort insertSegmentWithTitle:[NSString stringWithFormat:@"%lu%%",_questionIconPercentage] atIndex:2 animated:NO];
+    [segmentedCtrlForNumAndSort setEnabled:NO forSegmentAtIndex:2];
+//    [segmentedCtrlForNumAndSort insertSegmentWithImage:[UIImage imageNamed:@"sort.png"] atIndex:3 animated:NO];
+    segmentedCtrlForNumAndSort.backgroundColor = [UIColor whiteColor];
+    segmentedCtrlForNumAndSort.tintColor = [UIColor whiteColor];
+    //[segmentedCtrlForNumAndSort setTitleColor:[UIColor npDarkBlue]];
+    [segmentedCtrlForNumAndSort setTitleTextAttributes:@{NSForegroundColorAttributeName:[UIColor npDarkBlue]}
+                                forState:UIControlStateDisabled];
+    segmentedCtrlForNumAndSort.layer.borderWidth = 1.0f;
+   //segmentedCtrlForList.layer.borderColor = [UIColor npDarkBlue].CGColor;
+    segmentedCtrlForNumAndSort.layer.borderColor = [UIColor whiteColor].CGColor;
+    segmentedCtrlForNumAndSort.layer.cornerRadius = 5.0;
+    segmentedCtrlForNumAndSort.clipsToBounds = NO;
+    _sortBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    _sortBtn.frame = CGRectMake(self.view.frame.size.width - 5 - (self.view.frame.size.width - 10)/4, 50, (self.view.frame.size.width - 10)/4, 45);
+//    [_sortBtn setImage:[UIImage imageNamed:@"sort_big.png"] forState:UIControlStateNormal];
+     [_sortBtn setImage:[[UIImage imageNamed:@"ZtoA.png"]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+     [_sortBtn setImage:[[UIImage imageNamed:@"AtoZ.png"]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateSelected];
+
+    [[_sortBtn layer] setBorderWidth:1.0f];
+    [[_sortBtn layer] setBorderColor:[UIColor npDarkBlue].CGColor];
+    _sortBtn.backgroundColor = [UIColor npLightBlue];
+    _sortBtn.tintColor = [UIColor npDarkBlue];
+    _sortBtn.layer.cornerRadius = 5.0;
+    _sortBtn.clipsToBounds = YES;
+    _sortBtn.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5);
+    [_sortBtn addTarget:self action:@selector(sortBtnTapped:) forControlEvents:UIControlEventTouchUpInside];
+   
+    [headerView addSubview:segmentedCtrlForNumAndSort];
+    [headerView addSubview:_sortBtn];
+
+    self.tableView.tableHeaderView = headerView;
+}
+
+- (void)sortBtnTapped:(id)sender{
+    
+    [sender tag];
+    
+    NSSortDescriptor *leadNameDescriptor;
+    _sortBtn.selected = !_sortBtn.selected;
+    if(_sortBtn.selected){
+        leadNameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"en" ascending:YES selector:@selector(localizedStandardCompare:)];
+    } else {
+        leadNameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"en" ascending:NO selector:@selector(localizedStandardCompare:)];
+    }
+    
+    NSArray *sortDescriptor = [NSArray arrayWithObject:leadNameDescriptor];
+    NSArray *sortedArray = [_jsonItems sortedArrayUsingDescriptors:sortDescriptor];
+    _jsonItems = [[NSMutableArray alloc] initWithArray:sortedArray];
+    
+    [[self tableView] reloadData];
+}
+
+- (void)filterBtnTapped:(UISegmentedControl *)segment{
+    
+    _jsonItems = _temp_jsonItems;
+    NSMutableArray *checkMarkArray = [[NSMutableArray alloc] init];
+    NSMutableArray *redXArray = [[NSMutableArray alloc] init];
+    NSMutableArray *questionMarkArray = [[NSMutableArray alloc] init];
+    for(NSDictionary *entry in _jsonItems){
+        
+        NSString *exid = [entry objectForKey:@"id"];
+        NSArray *answers = [_exToHistory objectForKey:exid];
+        
+        if(answers != nil && answers.count != 0){
+            BOOL isCorrect;
+            BOOL isIncorrect;
+            for(NSString *correct in answers){
+                isCorrect = [correct isEqualToString:@"Y"];
+                isIncorrect = [correct isEqualToString:@"N"];
+            }
+            if(isCorrect){
+                [checkMarkArray addObject:entry];
+            } else if(isIncorrect){
+                [redXArray addObject:entry];
+            }
+        } else {
+            [questionMarkArray addObject:entry];
+        }
+    }
+    
+    if(segment.selectedSegmentIndex == 0){
+        _jsonItems = checkMarkArray;
+    } else if(segment.selectedSegmentIndex == 1){
+        _jsonItems = redXArray;
+    } else if(segment.selectedSegmentIndex == 2){
+        _jsonItems = questionMarkArray;
+    } else {
+        _jsonItems = _temp_jsonItems;
+        //   NSLog(@"TOTALLLLLLL--- %lu", _temp_jsonItems.count);
+    }
+    
+    [[self tableView] reloadData];
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -116,8 +305,8 @@
 
 -(void)viewWillAppear:(BOOL)animated {
     NSLog(@"ItemViewController : viewWillAppear ");
-    [self askServerForJson];
     [super viewWillAppear:animated];
+    [self askServerForJson];
 }
 
 #pragma mark - Table view data source
@@ -131,7 +320,9 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
+    
     return _requestPending ? 0:[_jsonItems count];
+    
 }
 
 - (void)colorWholeString:(NSMutableAttributedString *)result scoreString:(NSString *)scoreString
@@ -174,8 +365,8 @@
                 NSArray *tokens = [self getTokens:exercise];
                 BOOL useToken = tokens.count == words.count;
                 
-               // NSLog(@"for %@ got tokens %@",exercise,tokens);
-              //  NSLog(@"for words %lu count ",(unsigned long)tokens.count);
+                // NSLog(@"for %@ got tokens %@",exercise,tokens);
+                //  NSLog(@"for words %lu count ",(unsigned long)tokens.count);
                 
                 if (tokens.count == 1 && words.count > 0) {
                     NSDictionary *entry = [words objectAtIndex:0];
@@ -197,7 +388,7 @@
                         float score = [wscore floatValue];
                         
                         NSString *token = useToken ? [tokens objectAtIndex:i++] : word;
-                    //    NSLog(@"token %@ score %@ vs %@",word,wscore,token);
+                        //    NSLog(@"token %@ score %@ vs %@",word,wscore,token);
                         
                         NSRange trange = [exercise rangeOfString:token options:NSCaseInsensitiveSearch range:NSMakeRange(endToken, exercise.length-endToken)];
                         
@@ -225,25 +416,23 @@
 {
     static NSString *CellIdentifier = @"WordListPrototype";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-    
-    NSDictionary *jsonObject =[_jsonItems objectAtIndex:indexPath.row];
-    
+    NSDictionary *jsonObject=[_jsonItems objectAtIndex:indexPath.row];
     NSString *exercise = [jsonObject objectForKey:@"fl"];
     NSString *englishPhrases = [jsonObject objectForKey:@"en"];
     NSString *exid = [jsonObject objectForKey:@"id"];
     NSArray *answers = [_exToHistory objectForKey:exid];
     NSDictionary *scoreHistory = [_exToJson objectForKey:exid];
-  //  NSLog(@"Scores %@",scoreHistory);
+    //  NSLog(@"Scores %@",scoreHistory);
     
     if (answers == nil || answers.count == 0) {
         cell.imageView.image = [UIImage imageNamed:@"questionIcon"];
     }
     else {
         for (NSString *correct in answers) {
-          BOOL isCorrect = [correct isEqualToString:@"Y"];
-         //   NSLog(@"tableView  : history %@", scoreHistory);
-         //   NSLog(@"tableView  : exid %@ score %@",  exid,[_exToScore objectForKey:exid]);
-          cell.imageView.image = [UIImage imageNamed:isCorrect ? @"checkmark32.png" : @"redx32.png"];
+            BOOL isCorrect = [correct isEqualToString:@"Y"];
+            //   NSLog(@"tableView  : history %@", scoreHistory);
+            //   NSLog(@"tableView  : exid %@ score %@",  exid,[_exToScore objectForKey:exid]);
+            cell.imageView.image = [UIImage imageNamed:isCorrect ? @"checkmark32.png" : @"redx32.png"];
         }
     }
     
@@ -254,7 +443,7 @@
 }
 
 - (NSString *)trim:(NSString *)untrimedToken {
-   return [untrimedToken stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return [untrimedToken stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 -(NSArray *)getTokens:(NSString *)sentence {
@@ -292,43 +481,6 @@
     return [UIColor colorWithRed:red green:green blue:blue alpha:1];
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 #pragma mark - Navigation
 
@@ -342,14 +494,15 @@
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
     NSInteger row = indexPath.row;
     NSLog(@"Item Table - got seque row %ld %@ %@ url %@",(long)indexPath.row, _chapterTitle, _currentChapter, _url );
- 
+    
     flashcardController.url = _url;
     flashcardController.isRTL = _isRTL;
     flashcardController.jsonItems = _jsonItems;
     flashcardController.index = row;
     flashcardController.language = _language;
+ 
     flashcardController.projectLanguage = _projectLanguage;
-    [flashcardController setTitle:[NSString stringWithFormat:@"%@ Chapter %@",_language,_currentChapter]];
+    [flashcardController setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,_chapterTitle, _currentChapter]];
     
     flashcardController.hasModel=_hasModel;
     flashcardController.chapterTitle = _chapterTitle;
@@ -367,13 +520,13 @@
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _url, _user, _unitTitle, _unit, _chapterTitle, _currentChapter];
     
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
+    
     NSLog(@"ItemViewController askServerForJson url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     [urlRequest setTimeoutInterval:10];
-
+    
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
@@ -410,6 +563,9 @@
                           options:NSJSONReadingAllowFragments
                           error:&error];
     _requestPending = false;
+    
+    
+    
     if (error) {
         NSLog(@"useJsonChapterData error %@",error.description);
         return false;
@@ -419,14 +575,35 @@
     //NSLog(@"useJsonChapterData resp 2 %@",json);
     
     NSMutableDictionary *exToEntry = [[NSMutableDictionary alloc] init];
+    
     for (NSDictionary *entry in _jsonItems) {
         NSString *ex = [entry objectForKey:@"id"];
         [exToEntry setObject:entry forKey:ex];
-     //   NSLog(@"item table view : useJsonChapterData %@",ex);
     }
+    
     NSMutableArray *newOrder = [[NSMutableArray alloc] init];
     
     NSArray *jsonArray = [json objectForKey:@"scores"];
+    NSString *lastCorrect = [json objectForKey:@"lastCorrect"];
+    NSString *lastIncorrect = [json objectForKey:@"lastIncorrect"];
+    NSNumberFormatter * formatter = [[NSNumberFormatter alloc] init];
+    unsigned long checkMarkTotal = [[formatter numberFromString:lastCorrect] unsignedLongValue];
+    unsigned long redXTotal = [[formatter numberFromString:lastIncorrect] unsignedLongValue];
+    unsigned long questionIconTotal = (unsigned long)_lessonTotalItems - (checkMarkTotal + redXTotal);
+    _checkMarkPercentage = (roundf) (100 * ((float)checkMarkTotal/(float)(_lessonTotalItems)));
+    
+    _redXPercentage = (roundf)(100 * ((float)redXTotal/(float)_lessonTotalItems));
+    _questionIconPercentage = (roundf)(100 * ((float)questionIconTotal/(float)_lessonTotalItems));
+    if (_checkMarkPercentage + _redXPercentage + _questionIconPercentage<100){
+        if(checkMarkTotal!=0) {_checkMarkPercentage=_checkMarkPercentage+1;
+        }else if (redXTotal!=0){ _redXPercentage =_redXPercentage +1;
+        }
+    }
+    if (_checkMarkPercentage + _redXPercentage + _questionIconPercentage>100){
+        if(checkMarkTotal!=0) {_checkMarkPercentage=_checkMarkPercentage-1;
+        }else if (redXTotal!=0){ _redXPercentage =_redXPercentage -1;
+        }
+    }
     if (jsonArray != nil) {
         _exToScore   = [[NSMutableDictionary alloc] init];
         _exToHistory = [[NSMutableDictionary alloc] init];
@@ -450,8 +627,9 @@
             _jsonItems = newOrder;
             if (_notifyFlashcardController != nil) {
                 _notifyFlashcardController.jsonItems = _jsonItems;
-            //    [_notifyFlashcardController respondToSwipe ];
+                //    [_notifyFlashcardController respondToSwipe ];
             }
+ 
 //            NSLog(@"item table view : reload table ----------- ");
             
             [[self tableView] reloadData];
@@ -460,9 +638,9 @@
             NSLog(@"item table view : NOT reloading table ----------- ");
           }
     }
-
+    
     [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
-
+    //  [self createBtnAndLabelForHeaderView];
     return true;
 }
 
@@ -470,6 +648,7 @@
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // The request is complete and data has been received
     [self useJsonChapterData];
+    [self createBtnAndLabelForHeaderView];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 
@@ -482,4 +661,15 @@
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 
+- (BOOL)isiPhone
+{
+    return [[UIDevice currentDevice].model rangeOfString:@"iPhone"].location != NSNotFound;
+}
+
+- (BOOL)isiPad
+{
+    return ![self isiPhone];
+}
+
 @end
+

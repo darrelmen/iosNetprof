@@ -43,6 +43,7 @@
 #import "EAFChapterTableViewController.h"
 #import "EAFEventPoster.h"
 #import "EAFGetSites.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFSignUpViewController ()
 
@@ -96,11 +97,14 @@
     if (_passFromLogin == nil && rememberedPass != nil) {
         _password.text = rememberedPass;
     }
-    
     UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
     gestureRecognizer.cancelsTouchesInView = NO;
     gestureRecognizer.delegate = self;
     [self.languagePicker addGestureRecognizer:gestureRecognizer];
+    [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
+    [_titleLabel setTextColor:[UIColor npDarkBlue]];
+    [_signUp setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
+    [_signUp setTitleColor:[UIColor npDarkBlue] forState:UIControlStateApplication];
 }
 
 - (void) sitesReady {
@@ -219,10 +223,39 @@
     return _siteGetter.oldSites.count;
 }
 
--(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
-{
-    return [_siteGetter.oldSites objectAtIndex:row];
+//-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
+//{
+//    return [_siteGetter.languages objectAtIndex:row];
+//}
+
+-(UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(nullable UIView *)view{
+    UILabel *pView = (UILabel *)view;
+    if(!pView){
+        pView = [[UILabel alloc] init];
+        //        CGRect frame = CGRectMake(0.0, 0.0, 80, 32);
+        //        pView = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        if([self isiPhone]){
+            [pView setFont:[UIFont boldSystemFontOfSize: 38]];
+        } else {
+            [pView setFont:[UIFont boldSystemFontOfSize: 46]];
+        }
+        [pView setBackgroundColor:[UIColor clearColor]];
+        //        [pView setTextColor:[UIColor greenColor]];
+        [pView setTextColor:[UIColor npDarkBlue]];
+        [pView setTextAlignment: NSTextAlignmentCenter];
+    }
+    [pView setText:[_siteGetter.languages objectAtIndex: row]];
+    return pView;
 }
+
+-(CGFloat)pickerView: (UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component{
+    if([self isiPhone]){
+        return 45;
+    } else {
+        return 50;
+    }
+}
+
 
 - (void) textFieldText:(id)notification {
     [self emailChanged:nil];
@@ -397,6 +430,12 @@
     [chapterController setLanguage:chosenLanguage];
     chapterController.url = [_siteGetter.nameToURL objectForKey:chosenLanguage];
     [chapterController setTitle:chosenLanguage];
+}
+
+- (BOOL)isiPhone
+{
+    //  NSLog(@"dev %@",[UIDevice currentDevice].model);
+    return [[UIDevice currentDevice].model rangeOfString:@"iPhone"].location != NSNotFound;
 }
 
 @end

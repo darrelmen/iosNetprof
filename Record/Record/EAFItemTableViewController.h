@@ -55,6 +55,7 @@
 @property (strong, nonatomic) NSDictionary *chapterToItems;
 @property (strong, nonatomic) NSArray *jsonItems;
 
+
 - (void)askServerForJson;
 @property NSString *url;
 @property BOOL isRTL;

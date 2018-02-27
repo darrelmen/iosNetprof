@@ -39,6 +39,7 @@
 #import "EAFForgotPasswordViewController.h"
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
+#import "UIColor_netprofColors.h"
 
 @interface EAFForgotPasswordViewController ()
 @property (nonatomic, assign) id currentResponder;
@@ -63,6 +64,9 @@
                            selector:@selector (emailChanged:)
                                name:UITextFieldTextDidChangeNotification
                              object:_email];
+    [_sendEmail setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
+    [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
+    [_titleLabel setTextColor:[UIColor npDarkBlue]];
 }
 
 - (void) emailChanged:(id)notification {
