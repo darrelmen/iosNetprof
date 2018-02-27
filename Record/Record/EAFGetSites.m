@@ -59,6 +59,7 @@
 @property (strong, nonatomic) NSString *oldServer;
 @property (strong, nonatomic) NSString *nServer;
 
+
 @end
 
 @interface NSURLRequest(Private)
@@ -66,6 +67,9 @@
 @end
 
 @implementation EAFGetSites
+
+// make sure consistent with netprof 2 website
+NSString* const expectedVersion = @"1.0.1";
 
 // Set the NetProf server here!
 - (instancetype)init
@@ -216,6 +220,8 @@
 // only include languages whose showOnIOS flag is set
 - (void)parseJSON:(NSDictionary *)json {
     NSArray *fetchedArr = [json objectForKey:@"sites"];
+    NSString *iOSVersion = [json objectForKey:@"iOSVersion"];
+    _isCurrent =[iOSVersion isEqualToString:expectedVersion];
     
     NSMutableSet *localRTL = [[NSMutableSet alloc] init];
     _rtlLanguages = localRTL;
@@ -249,7 +255,7 @@
             if (id != NULL) {
                 [_mutableNameToProjectID  setObject:id forKey:name];
                 NSString *host  = [site objectForKey:@"host"];
-                NSLog(@"parseJSON host %@",host);
+               // NSLog(@"parseJSON host %@",host);
                 if (host == NULL) host = @"";
                 [_mutableNameToHost  setObject:host forKey:name];
             }
@@ -262,8 +268,8 @@
         }
     }
     
-    NSLog(@"EAFGetSites : name->lang %@",_mutableNameToLanguage);
-    
+ //   NSLog(@"EAFGetSites : name->lang %@",_mutableNameToLanguage);
+   
     [self setLanguagesGivenData];
 }
 

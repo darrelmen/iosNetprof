@@ -55,6 +55,8 @@
 @property (strong, nonatomic) NSOrderedSet *languages;
 @property (strong, nonatomic) NSOrderedSet *oldSites;
 @property (strong, nonatomic) NSSet *rtlLanguages;
+@property  BOOL isCurrent;
+
 - (void) getSites;
 - (NSNumber *) getProject:(NSString*) language;
 - (NSString *) getProjectLanguage:(NSString*) projectName;

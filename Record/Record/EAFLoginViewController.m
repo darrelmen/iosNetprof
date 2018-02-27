@@ -96,7 +96,7 @@
     [_signUp setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
     [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
     [_titleLabel setTextColor:[UIColor npDarkBlue]];
-
+    
     _versionLabel.text = [self appNameAndVersionNumberDisplayString];
     
     _siteGetter = [EAFGetSites new];
@@ -128,7 +128,7 @@
                               icon:FAQuestion
                           fontSize:20.0f];
     [_forgotUsername setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
-  
+    
     [_forgotPassword initWithFrame:CGRectMake(0.0f, 0.0f, 32.0f, 32.0f)
                              color:[UIColor colorWithWhite:1.0f alpha:0.0f]
                              style:BButtonStyleBootstrapV3
@@ -199,9 +199,7 @@
 
 // both login and sign up button clicks come here
 - (IBAction)onClick:(id)sender {
-    NSLog(@"LoginView : onClick Got click from %@", sender);
-    
-    
+    //NSLog(@"LoginView : onClick Got click from %@", sender);
     UIButton* button = (UIButton *)sender;
     
     BOOL isLogin = ([[button restorationIdentifier] isEqualToString:@"logIn"]);
@@ -209,6 +207,8 @@
     NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
     
     NSLog(@"LoginView : onClick chosenLanguage %@", chosenLanguage);
+    
+    [self checkUpToDate];
     
     if (!isLogin) {
         NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
@@ -232,67 +232,15 @@
         valid = false;
     }
     
-    
     NSLog(@"LoginView onClick language %@",chosenLanguage);
     
     if (valid) {
-        // make sure multiple events don't occur
-//        _languagePicker.userInteractionEnabled = false;
-//       
-//
-//        
-//        NSString *username =_username.text;
-//        NSString *password =_password.text;
-//        
-//        //NSLog(@"LoginView onClick password '%@'",_password.text);
-//        //NSLog(@"onClick md5 password %@",[self MD5:_password.text]);
-//        
-//        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@scoreServlet?hasUser=%@&p=%@",
-//                                           urlForLanguage,
-//                                           username,
-//                                           [[self MD5:password] uppercaseString]
-//                                           ]];
-//        
-//        NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-//        
-//        NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
-//        if (projid.intValue > -1) {
-//            [urlRequest setValue:@"hasUser" forHTTPHeaderField:@"request"];
-//            [urlRequest setValue:username forHTTPHeaderField:@"userid"];
-//            [urlRequest setValue:password forHTTPHeaderField:@"pass"];
-//            [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
-//        }
-//        else {
-//        }
-//        
-//        [urlRequest setHTTPMethod: @"GET"];
-//        [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-//        [urlRequest setTimeoutInterval:15];
-//        
-//        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-//        
-//        [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-//         {
-//             if (error != nil) {
-//                 NSLog(@"\n\n\n\t1 Got error %@",error);
-//                 dispatch_async(dispatch_get_main_queue(), ^{
-//                     [self connection:nil didFailWithError:error];
-//                 });
-//             }
-//             else {
-//                 _responseData = data;
-//                 [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
-//                                        withObject:nil
-//                                     waitUntilDone:YES];
-//             }
-//         }];
+        _logIn.enabled = false;
         
         [self tryToLogIn:chosenLanguage];
         
-        _logIn.enabled = false;
-        
         //NSLog(@"got project id %@",[_siteGetter.nameToProjectID objectForKey:chosenLanguage]);
-         NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
+        NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
         [_poster setURL:urlForLanguage projid:[_siteGetter.nameToProjectID objectForKey:chosenLanguage]];
         
         [_poster postEvent:@"login" exid:@"N/A" widget:@"LogIn" widgetType:@"Button"];
@@ -382,15 +330,15 @@
     UILabel *pView = (UILabel *)view;
     if(!pView){
         pView = [[UILabel alloc] init];
-//        CGRect frame = CGRectMake(0.0, 0.0, 80, 32);
-//        pView = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        //        CGRect frame = CGRectMake(0.0, 0.0, 80, 32);
+        //        pView = [[[UILabel alloc] initWithFrame:frame] autorelease];
         [pView setFont:[UIFont boldSystemFontOfSize: 46]];
-         [pView setBackgroundColor:[UIColor clearColor]];
-//        [pView setTextColor:[UIColor greenColor]];
+        [pView setBackgroundColor:[UIColor clearColor]];
+        //        [pView setTextColor:[UIColor greenColor]];
         [pView setTextColor:[UIColor colorWithRed:3/255.0 green:99/255.0 blue:148/255.0 alpha:1.0]];
         [pView setTextAlignment: NSTextAlignmentCenter];
     }
-   [pView setText:[_siteGetter.languages objectAtIndex: row]];
+    [pView setText:[_siteGetter.languages objectAtIndex: row]];
     return pView;
 }
 
@@ -442,6 +390,8 @@
     [_activityIndicator stopAnimating];
     _logIn.enabled = true;
     _languagePicker.userInteractionEnabled = true;
+    
+    
     
     if (error) {
         NSLog(@"got error %@",error);
@@ -594,6 +544,17 @@
     return YES;
 }
 
+- (void)checkUpToDate {
+    if (!_siteGetter.isCurrent) {
+        UIAlertView *_alert = [[UIAlertView alloc] initWithTitle:@"App is out of date"
+                                                         message:@"Please download from the appstore or netprof.ll.mit.edu"
+                                                        delegate:nil
+                                               cancelButtonTitle:@"OK"
+                                               otherButtonTitles:nil];
+        [_alert show];
+    }
+}
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -643,7 +604,7 @@
         
         EAFNewSignUpViewController *signUp = [segue destinationViewController];
         signUp.userFromLogin = _username.text;
-      //  signUp.passFromLogin = _password.text;
+        //  signUp.passFromLogin = _password.text;
         signUp.languageIndex = selection;
         signUp.siteGetter = _siteGetter;
         
