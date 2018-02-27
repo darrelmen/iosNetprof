@@ -986,7 +986,7 @@
                 <navigationController title="Pronunciation Feedback" automaticallyAdjustsScrollViewInsets="NO" id="gDn-g3-mfX" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="cl3-oY-kQU"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="lOg-37-fGW">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="lOg-37-fGW">
                         <rect key="frame" x="0.0" y="20" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1028,7 +1028,7 @@
                                     <constraint firstAttribute="height" constant="40" id="cbJ-5O-Ck6"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
-                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" enablesReturnKeyAutomatically="YES" secureTextEntry="YES"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" enablesReturnKeyAutomatically="YES"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="247" restorationIdentifier="usernameFeedback" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aTh-Xw-7oD">
                                 <rect key="frame" x="56" y="138" width="263" height="30"/>
@@ -2106,8 +2106,8 @@
         <image name="sounds" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="FlI-iz-r1d"/>
         <segue reference="U5f-EU-68h"/>
+        <segue reference="FlI-iz-r1d"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.21899779089999999" green="0.4041270314" blue="0.65392768320000005" alpha="1" colorSpace="calibratedRGB"/>
 </document>
