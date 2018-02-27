@@ -825,7 +825,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSLog(@"useJsonChapterData error %@",error.description);
         return false;
     }
-    //   NSLog(@"useJsonChapter data ");
+    NSLog(@"PhoneScore: useJsonChapter data json\n%@",json);
     
     NSDictionary *phoneDict = [json objectForKey:@"phones"];
     NSDictionary *resultsDict = [json objectForKey:@"results"];
@@ -845,11 +845,31 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
     
     for (NSString *resultID in resultsDict) {
+        NSLog(@"PhoneScore: resultID %@",resultID);
         NSDictionary *fields = [resultsDict objectForKey:resultID];
-        [_resultToRef setValue:[fields objectForKey:@"ref"] forKey:resultID];
+        NSString *ref = [fields objectForKey:@"ref"];
+        
+        NSLog(@"PhoneScore: ref %@",ref);
+
+        [_resultToRef setValue:ref forKey:resultID];
         NSString *answer = [fields objectForKey:@"answer"];
+        NSLog(@"PhoneScore: answer %@",answer);
+
         [_resultToAnswer setValue:answer forKey:resultID];
-        [_resultToWords setValue:[[fields objectForKey:@"result"] objectForKey:@"words"] forKey:resultID];
+        
+        NSDictionary *resultDict = [fields objectForKey:@"result"];
+        NSLog(@"PhoneScore: resultDict %@",resultDict);
+
+      
+        NSString *theWords = [resultDict objectForKey:@"words"];
+        
+        if (theWords != nil) {
+            [_resultToWords setValue:theWords forKey:resultID];
+        }
+        else {
+            NSLog(@"PhoneScore: no words for %@",answer);
+  
+        }
         
         if (answer && answer.length > 2) { //i.e. not NO
             NSString * refPath = [answer stringByReplacingOccurrencesOfString:@".wav"
