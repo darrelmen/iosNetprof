@@ -846,21 +846,20 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
     
     for (NSString *resultID in resultsDict) {
-        NSLog(@"PhoneScore: resultID %@",resultID);
+     //   NSLog(@"PhoneScore: resultID %@",resultID);
         NSDictionary *fields = [resultsDict objectForKey:resultID];
         NSString *ref = [fields objectForKey:@"ref"];
         
-        NSLog(@"PhoneScore: ref %@",ref);
+       // NSLog(@"PhoneScore: ref %@",ref);
 
         [_resultToRef setValue:ref forKey:resultID];
         NSString *answer = [fields objectForKey:@"answer"];
-        NSLog(@"PhoneScore: answer %@",answer);
+     //   NSLog(@"PhoneScore: answer %@",answer);
 
         [_resultToAnswer setValue:answer forKey:resultID];
         
         NSDictionary *resultDict = [fields objectForKey:@"result"];
-        NSLog(@"PhoneScore: resultDict %@",resultDict);
-
+      //  NSLog(@"PhoneScore: resultDict %@",resultDict);
       
         NSString *theWords = [resultDict objectForKey:@"words"];
         
@@ -869,7 +868,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         else {
             NSLog(@"PhoneScore: no words for %@",answer);
-  
         }
         
         if (answer && answer.length > 2) { //i.e. not NO

@@ -2251,7 +2251,6 @@ bool debugRecord = false;
     if ([[[self getCurrentJson] objectForKey:@"id"] isKindOfClass:[NSNumber class]]) {
         NSNumber *nid = [[self getCurrentJson] objectForKey:@"id"];
         id = [NSString stringWithFormat:@"%@",nid];
-        NSLog(@"got number %@ = %@",nid,id);
     }
     
     [urlRequest setValue:id        forHTTPHeaderField:@"exercise"];
