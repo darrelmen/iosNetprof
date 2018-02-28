@@ -57,7 +57,6 @@
 @property (strong, nonatomic) NSMutableDictionary *mutableNameToLanguage;
 
 @property (strong, nonatomic) NSString *oldServer;
-@property (strong, nonatomic) NSString *nServer;
 
 
 @end

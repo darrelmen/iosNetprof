@@ -40,7 +40,7 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
-#import "EAFNewSignUpViewController.h"
+#import "EAFSignUpViewController.h"
 #import "EAFForgotUserNameViewController.h"
 #import "EAFForgotPasswordViewController.h"
 #import "EAFSetPasswordViewController.h"
@@ -216,9 +216,9 @@
         if (projid.intValue == -1) {
             [self performSegueWithIdentifier:@"goToSignUp" sender:self];
         }
-        else {
-            [self performSegueWithIdentifier:@"goToNewSignUp" sender:self];
-        }
+//        else {
+//            [self performSegueWithIdentifier:@"goToNewSignUp" sender:self];
+//        }
         return;
     }
     
@@ -602,27 +602,35 @@
         //NSString *chosenLanguage = [_languages objectAtIndex:selection];
         NSLog(@"LoginViewController : old identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
         
-        EAFNewSignUpViewController *signUp = [segue destinationViewController];
+        EAFSignUpViewController *signUp = [segue destinationViewController];
+        
+        
+        NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
+        NSLog(@"LoginView : segue to sign up projid %@", projid);
+       
         signUp.userFromLogin = _username.text;
         //  signUp.passFromLogin = _password.text;
         signUp.languageIndex = selection;
         signUp.siteGetter = _siteGetter;
+        signUp.projID = projid.intValue;
         
         [self textFieldText:nil];
-    } else {
-        long selection = [_languagePicker selectedRowInComponent:0];
-        //NSString *chosenLanguage = [_languages objectAtIndex:selection];
-        NSLog(@"LoginViewController : new identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
-        
-        EAFNewSignUpViewController *signUp = [segue destinationViewController];
-        signUp.userFromLogin = _username.text;
-        //signUp.passFromLogin = _password.text;
-        signUp.languageIndex = selection;
-        signUp.siteGetter = _siteGetter;
-        
-        signUp.chosenLanguage = chosenLanguage;
-        
-        [self textFieldText:nil];
+    }
+    else {
+        NSLog(@"LoginViewController : WARN - strange segue new identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
+//        long selection = [_languagePicker selectedRowInComponent:0];
+//        //NSString *chosenLanguage = [_languages objectAtIndex:selection];
+//        NSLog(@"LoginViewController : new identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
+//        
+//        EAFSignUpViewController *signUp = [segue destinationViewController];
+//        signUp.userFromLogin = _username.text;
+//        //signUp.passFromLogin = _password.text;
+//        signUp.languageIndex = selection;
+//        signUp.siteGetter = _siteGetter;
+//        
+//       // signUp.chosenLanguage = chosenLanguage;
+//        
+//        [self textFieldText:nil];
     }
 }
 
