@@ -384,15 +384,16 @@
                           error:&error];
     [_activityIndicator stopAnimating];
     
+    _signUp.enabled = true;
+
     if (error) {
         NSLog(@"EAFSignUpViewController.useJsonChapterData error %@",error.description);
         NSString *myString = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
 
         //NSLog(@"EAFSignUpViewController.useJsonChapterData _responseData %@",_responseData);
         NSLog(@"EAFSignUpViewController.useJsonChapterData myString %@",myString);
-         NSLog(@"EAFSignUpViewController.useJsonChapterData json %@",json);
-        _signUp.enabled = true;
-        
+        NSLog(@"EAFSignUpViewController.useJsonChapterData json %@",json);
+       
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
                                                         message:@"Network problem - please try again."
                                                        delegate:nil

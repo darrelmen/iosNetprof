@@ -682,7 +682,7 @@
  //   NSLog(@"getProjectLanguage actualLang  %@",actualLang);
  //   NSLog(@"getProjectLanguage projectLang %@",_projectLanguage);
 
-    return _projectLanguage;
+    return actualLang;
 }
 
 - (IBAction)showScoresClick:(id)sender {
@@ -3066,7 +3066,12 @@ BOOL addSpaces = false;
     [[MZFormSheetController appearance] setCornerRadius:20.0];
     EAFMoreSelectionPopupViewController *selectionPopupController = [self.storyboard instantiateViewControllerWithIdentifier:@"SelectionPopover"];
     _moreSelectionPopupView = selectionPopupController;
-    _moreSelectionPopupView.language = _language;
+    
+    
+    //_moreSelectionPopupView.language = _language;
+    _moreSelectionPopupView.language = [self getProjectLanguage];
+
+    
     _moreSelectionPopupView.fl = [[self getCurrentJson] objectForKey:@"fl"];
     
     _moreSelectionPopupView.customDelegate = self;
