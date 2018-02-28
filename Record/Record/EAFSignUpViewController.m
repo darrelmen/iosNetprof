@@ -192,18 +192,17 @@
         _usernameFeedback.text = @"Please enter a username.";
         valid = false;
     }
-    if (_username.text.length < 5) {
+    if (_username.text.length < 5) {  // domino user  length is 5
         _usernameFeedback.text = @"Please enter a longer username.";
         valid = false;
     }
     
     if (_projID == -1) {
-        
         if (_password.text.length == 0) {
             _passwordFeedback.text = @"Please enter a password.";
             valid = false;
         }
-        if (_password.text.length < 4) {
+        if (_password.text.length < 8) {  // domino password length is 8
             _passwordFeedback.text = @"Please enter a longer password.";
             valid = false;
         }

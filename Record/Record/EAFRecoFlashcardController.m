@@ -3034,7 +3034,7 @@ BOOL addSpaces = false;
         popupController.mref  = [[self getCurrentJson] objectForKey:@"ctref"];
     }
     popupController.fref  = [[self getCurrentJson] objectForKey:@"ctfref"];
-    
+    popupController.playAudio = _isAudioOnSelected;
      NSLog(@"ContextEnglish===== %@ ", popupController.fl);
     //    BOOL isIPhone;
     //  isIPhone = [self isiPhone];

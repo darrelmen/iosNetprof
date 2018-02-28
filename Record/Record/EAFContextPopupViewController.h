@@ -48,6 +48,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *contextTranslation;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *maleFemale;
 @property (strong, nonatomic) IBOutlet UILabel *itemFL;
+@property BOOL playAudio;
 
 @property NSString *item;
 @property NSString *fl;

@@ -96,6 +96,10 @@
     _audioPlayer.url = _url;
     _audioPlayer.language = _language;
     _audioPlayer.delegate = self;
+    
+    if (_playAudio && audioCuts.count>0) {
+        [self onClick:NULL];
+    }
 }
 
 -(void) viewWillDisappear:(BOOL)animated {

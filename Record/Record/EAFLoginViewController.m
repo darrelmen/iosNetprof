@@ -219,7 +219,7 @@
 //        else {
 //            [self performSegueWithIdentifier:@"goToNewSignUp" sender:self];
 //        }
-        return;
+        //return;
     }
     
     BOOL valid = true;
