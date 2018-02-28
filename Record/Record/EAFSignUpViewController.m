@@ -236,10 +236,11 @@
             
            // [_poster setURL:[_siteGetter.nameToURL objectForKey:chosenLanguage] projid:[_siteGetter.nameToProjectID objectForKey:chosenLanguage]];
           //  [_poster postEvent:[NSString stringWithFormat:@"signUp by %@",_username.text] exid:@"N/A" widget:@"SignIn" widgetType:@"Button"];
-       // }
+        // }
     }
     else {
-     NSLog(@"not valid...");
+        _signUp.enabled = true;
+        NSLog(@"not valid...");
     }
 }
 
