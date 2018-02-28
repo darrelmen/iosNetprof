@@ -254,6 +254,8 @@
 
 -(void)tryToLogIn:(NSString*) chosenLanguage
 {
+    _passwordFeedback.text = @"";
+    
     // make sure multiple events don't occur
     _languagePicker.userInteractionEnabled = false;
     
@@ -415,7 +417,13 @@
     
     if ([userIDExisting integerValue] == -1) {
         NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
-        if (rememberedEmail != nil && existing == nil) {
+        
+        NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+
+        NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
+        int projIDInt = [projid intValue];
+        
+        if (rememberedEmail != nil && existing == nil && projIDInt == -1)  {  // must be old site
             NSLog(@"useJsonChapterData OK, let's sign up!");
             NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
             [self addUser:chosenLanguage username:_username.text password: _password.text email:rememberedEmail];
@@ -601,12 +609,10 @@
     }
     else if ([segue.identifier isEqualToString:@"goToSignUp"]) {
         long selection = [_languagePicker selectedRowInComponent:0];
-        //NSString *chosenLanguage = [_languages objectAtIndex:selection];
         NSLog(@"LoginViewController : old identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
         
         EAFSignUpViewController *signUp = [segue destinationViewController];
-        
-        
+       
         NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
         NSLog(@"LoginView : segue to sign up projid %@", projid);
        

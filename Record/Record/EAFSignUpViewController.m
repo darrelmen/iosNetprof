@@ -74,7 +74,7 @@
         [_password setHidden:true];
         [_languagePicker setHidden:true];
     }
-    
+
     [notificationCenter addObserver:self
                            selector:@selector (emailChanged:)
                                name:UITextFieldTextDidChangeNotification

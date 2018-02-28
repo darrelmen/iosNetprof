@@ -154,7 +154,7 @@ NSString* const expectedVersion = @"1.0.1";
                                                   [self getCacheOrDefault:theServer];
                                               }
                                               else {
-                                                  NSLog(@"\tgetSites Got response %@",response);
+                                                 // NSLog(@"\tgetSites Got response %@",response);
                                                   
                                                   _sitesData = data;
                                                   [self performSelectorOnMainThread:@selector(useJsonSitesData:)
