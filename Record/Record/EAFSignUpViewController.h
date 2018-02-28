@@ -60,5 +60,6 @@
 @property (nonatomic, assign) id currentResponder;
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property EAFGetSites *siteGetter;
+@property (nonatomic, assign) int projID;
 
 @end
