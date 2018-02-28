@@ -224,11 +224,13 @@
     
     BOOL valid = true;
     if (_username.text.length == 0) {
-        _usernameFeedback.text = @"Please enter a username";
+        _usernameFeedback.text = @"Please enter a username.";
+        _usernameFeedback.textColor = [UIColor redColor];
         valid = false;
     }
     if (_password.text.length == 0) {
-        _passwordFeedback.text = @"Please enter a password";
+        _passwordFeedback.text = @"Please enter a password.";
+        _passwordFeedback.textColor = [UIColor redColor];
         valid = false;
     }
     

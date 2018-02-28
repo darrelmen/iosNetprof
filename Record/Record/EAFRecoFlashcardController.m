@@ -320,7 +320,7 @@
                              icon:FAQuoteLeft
                          fontSize:20.0f];
     if ([self isiPad]) {
-        _contextButton.titleLabel.text = @"sentence";
+        _contextButton.titleLabel.text = @" sentence ";
         [_contextButton addAwesomeIcon:FAQuoteLeft beforeTitle:true];
     }
     _contextButton.color = [UIColor npLightBlue];

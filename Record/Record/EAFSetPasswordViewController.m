@@ -77,7 +77,7 @@
     }
 
     if (![_password.text isEqualToString:_confirmPassword.text]) {
-        _confirmPasswordFeedback.text = @"Please enter the same password.";
+        _confirmPasswordFeedback.text = @"Passwords do no match.";
         _confirmPasswordFeedback.textColor = [UIColor redColor];
         valid = false;
     }

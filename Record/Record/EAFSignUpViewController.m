@@ -83,6 +83,12 @@
     _password.delegate = self;
     _email.delegate = self;
     
+    NSLog(@"Height %f", [[UIScreen mainScreen] bounds].size.height);
+    if ([[UIScreen mainScreen] bounds].size.height < 600) {
+        _maxLangPickerHeightConstraint.constant = 150;
+        _bottomOffsetConstraint.constant = 32;
+    }
+    
     NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
     if (rememberedEmail != nil) {
         _email.text = rememberedEmail;

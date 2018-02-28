@@ -78,7 +78,7 @@
     BOOL valid = true;
     
     if (_username.text.length == 0) {
-        _usernameFeedback.text = @"Please enter a username";
+        _usernameFeedback.text = @"Please enter a username.";
         valid = false;
     }
     

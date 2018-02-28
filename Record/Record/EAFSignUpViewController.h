@@ -48,6 +48,8 @@
 @property (strong, nonatomic) IBOutlet UILabel *passwordFeedback;
 @property (strong, nonatomic) IBOutlet UILabel *emailFeedback;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomOffsetConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *maxLangPickerHeightConstraint;
 
 @property (strong, nonatomic) IBOutlet UIPickerView *languagePicker;
 //@property (strong, nonatomic) NSArray *languages;
