@@ -2224,10 +2224,8 @@ bool debugRecord = false;
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet", _url];
     if ([host length] != 0) {
         baseurl = [NSString stringWithFormat:@"%@scoreServlet/%@", _url, host];
-    }
-    // NSLog(@"file length %@",postLength);
-    
-    NSLog(@"Reco : postAudio talking to %@",baseurl);
+    }    
+    NSLog(@"Reco : postAudio talking to %@ file length %@",baseurl, postLength);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
@@ -2501,6 +2499,7 @@ bool debugRecord = false;
     
     //    NSLog(@"got back %@",reqid);
     if ([reqid intValue] < _reqid-1) {
+        NSLog(@"got back reqid %@",reqid);
         NSLog(@"json was %@",json);
         
         NSLog(@"discarding old response - got back %@ latest %d",reqid ,_reqid);

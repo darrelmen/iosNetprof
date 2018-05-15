@@ -826,7 +826,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSLog(@"useJsonChapterData error %@",error.description);
         return false;
     }
-    NSLog(@"PhoneScore: useJsonChapter data json\n%@",json);
+    //NSLog(@"PhoneScore: useJsonChapter data json\n%@",json);
     
     NSDictionary *phoneDict = [json objectForKey:@"phones"];
     NSDictionary *resultsDict = [json objectForKey:@"results"];

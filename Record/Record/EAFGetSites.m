@@ -148,7 +148,11 @@ NSString* const expectedVersion = @"1.0.1";
     NSURLSessionDataTask *downloadTask = [session
                                           dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                                               
-                                              [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                  // add UI related changes here
+                                                  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+                                              });
+                                              
                                               if (error != nil) {
                                                   NSLog(@"\tgetSites Got error %@",error);
                                                   [self getCacheOrDefault:theServer];
@@ -254,7 +258,7 @@ NSString* const expectedVersion = @"1.0.1";
             if (id != NULL) {
                 [_mutableNameToProjectID  setObject:id forKey:name];
                 NSString *host  = [site objectForKey:@"host"];
-               // NSLog(@"parseJSON host %@",host);
+                NSLog(@"parseJSON host %@",host);
                 if (host == NULL) host = @"";
                 [_mutableNameToHost  setObject:host forKey:name];
             }
@@ -287,8 +291,8 @@ NSString* const expectedVersion = @"1.0.1";
     }
     else {
         [self parseJSON:json];
-        //  NSLog(@"name to url now %@",_nameToURL);
-        //  NSLog(@"_languages now %@",_languages);
+          NSLog(@"useJsonSitesData name to url now %@",_nameToURL);
+          NSLog(@"useJsonSitesData _languages now %@",_languages);
         [self writeSitesDataToCacheAt:[self getCachePath:theServer] mp3AudioData:_sitesData];
         if ([theServer isEqualToString:_oldServer]) {
             [self getSitesFromServer:_nServer];

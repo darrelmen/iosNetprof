@@ -144,8 +144,11 @@
 
 
 - (void) sitesReady {
-    [_languagePicker reloadAllComponents ];
-    [self setLanguagePicker];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // add UI related changes here
+        [_languagePicker reloadAllComponents ];
+        [self setLanguagePicker];
+    });
     
     // must come after language picker
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
@@ -153,7 +156,13 @@
         //  [self performSegueWithIdentifier:@"goToChapter" sender:self];
         NSString *languageRemembered = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
         if (languageRemembered != nil) {
-            [self tryToLogIn:languageRemembered];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // add UI related changes here
+                [self tryToLogIn:languageRemembered];
+
+            });
+            
         }
     }
 }
@@ -258,14 +267,13 @@
     
     // make sure multiple events don't occur
     _languagePicker.userInteractionEnabled = false;
-    
-    NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
-    
     NSString *username =_username.text;
     NSString *password =_password.text;
     
     //NSLog(@"LoginView onClick password '%@'",_password.text);
     //NSLog(@"onClick md5 password %@",[self MD5:_password.text]);
+    
+    NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
     
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@scoreServlet?hasUser=%@&p=%@",
                                        urlForLanguage,
@@ -280,7 +288,7 @@
         [urlRequest setValue:@"hasUser" forHTTPHeaderField:@"request"];
         if ([username length] < 5) {
             username = [username stringByAppendingString:@"_"];
-            NSLog(@"tryToLogIn user %@ md5 password %@", username, [self MD5:_password.text]);
+            NSLog(@"tryToLogIn user %@ project %@ md5 password %@", username, projid, [self MD5:_password.text]);
         }
         [urlRequest setValue:username forHTTPHeaderField:@"userid"];
         [urlRequest setValue:password forHTTPHeaderField:@"pass"];
@@ -293,7 +301,10 @@
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     [urlRequest setTimeoutInterval:15];
     
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // add UI related changes here
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+    });
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
