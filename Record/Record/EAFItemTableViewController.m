@@ -42,7 +42,10 @@
 #import "SSKeychain.h"
 #import "UIColor_netprofColors.h"
 
-@interface EAFItemTableViewController ()
+@interface EAFItemTableViewController ()<UISearchBarDelegate>
+
+@property (strong, nonatomic) IBOutlet UISearchBar *searchBar;
+@property (strong, nonatomic) NSArray *searchResultItems;
 
 @property BOOL requestPending;
 @property EAFAudioCache *audioCache;
@@ -63,8 +66,8 @@
 @property unsigned long redXPercentage;
 @property UIButton *sortBtn;
 
-@property UIButton *checkMarkBtn;
-@property UIButton *redXBtn;
+//@property UIButton *checkMarkBtn;
+//@property UIButton *redXBtn;
 
 @property NSArray *temp_jsonItems;
 
@@ -74,6 +77,9 @@
 @end
 
 @implementation EAFItemTableViewController
+{
+    BOOL searchEnabled;
+}
 
 - (void)cacheAudio:(NSArray *)items
 {
@@ -108,8 +114,7 @@
     [super viewDidLoad];
     _temp_jsonItems = [[NSMutableArray alloc] initWithArray:_jsonItems];;
     _audioCache = [[EAFAudioCache alloc] init];
-    //  NSLog(@"viewDidLoad made audio cache, url %@ ",_url );
-    //  NSLog(@"viewDidLoad - item table controller - %@, count = %lu", _hasModel?@"YES":@"NO",(unsigned long)_jsonItems.count);
+    _searchResultItems = [NSMutableArray arrayWithCapacity:[_jsonItems count]];
     
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
@@ -125,12 +130,6 @@
     
 }
 
-//- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
-//{
-//    NSString *searchString = searchController.searchBar.text;
-//    [self searchForText:searchString scope:searchController.searchBar.selectedScopeButtonIndex];
-//    [self.tableView reloadData];
-//}
 
 -(void)OrientationChange:(NSNotification*)notification
 {
@@ -148,13 +147,7 @@
 
 - (void)createBtnAndLabelForHeaderView{
     
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 100)];
-    //    self.searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
-    //    self.searchController.searchResultsUpdater = self;
-    //    self.searchController.dimsBackgroundDuringPresentation = NO;
-    //    self.searchController.searchBar.delegate = self;
-    //    [headerView addSubview:self.searchController.searchBar];
-    //    self.definesPresentationContext = YES;
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 140)];
     
     UIFont *font;
     if([self isiPhone]){
@@ -167,8 +160,16 @@
     NSDictionary *attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
     
     
+    _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
+    _searchBar.showsCancelButton = YES;
+    self.searchBar.delegate = self;
+    _searchBar.barTintColor = [UIColor npLightBlue];
+    [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:[UIColor blackColor]];
+    
+    [headerView addSubview:_searchBar];
+    
     //  [[UISegmentedControl appearance] setTintColor:[UIColor grayColor]];
-    UISegmentedControl *segmentedCtrlForList= [[UISegmentedControl alloc] initWithFrame:CGRectMake(5, 5, self.view.frame.size.width - 10, 45)];
+    UISegmentedControl *segmentedCtrlForList= [[UISegmentedControl alloc] initWithFrame:CGRectMake(5, 44, self.view.frame.size.width - 10, 45)];
     segmentedCtrlForList.backgroundColor = [UIColor npLightBlue];
     [segmentedCtrlForList setTitleTextAttributes:attributes forState:UIControlStateNormal];
     [segmentedCtrlForList insertSegmentWithImage:[UIImage imageNamed:@"checkmark32.png"] atIndex:0 animated:NO];
@@ -192,7 +193,7 @@
     
     [headerView addSubview:segmentedCtrlForList];
     
-    UISegmentedControl * segmentedCtrlForNumAndSort = [[UISegmentedControl alloc] initWithFrame:CGRectMake(5, 50, self.view.frame.size.width - 10 - (self.view.frame.size.width - 10)/4, 45)];
+    UISegmentedControl * segmentedCtrlForNumAndSort = [[UISegmentedControl alloc] initWithFrame:CGRectMake(5, 89, self.view.frame.size.width - 10 - (self.view.frame.size.width - 10)/4, 45)];
     
     [segmentedCtrlForNumAndSort setTitleTextAttributes:attributes forState:UIControlStateNormal];
     
@@ -215,7 +216,7 @@
     segmentedCtrlForNumAndSort.layer.cornerRadius = 5.0;
     segmentedCtrlForNumAndSort.clipsToBounds = NO;
     _sortBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    _sortBtn.frame = CGRectMake(self.view.frame.size.width - 5 - (self.view.frame.size.width - 10)/4, 50, (self.view.frame.size.width - 10)/4, 45);
+    _sortBtn.frame = CGRectMake(self.view.frame.size.width - 5 - (self.view.frame.size.width - 10)/4, 89, (self.view.frame.size.width - 10)/4, 45);
 //    [_sortBtn setImage:[UIImage imageNamed:@"sort_big.png"] forState:UIControlStateNormal];
      [_sortBtn setImage:[[UIImage imageNamed:@"ZtoA.png"]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
      [_sortBtn setImage:[[UIImage imageNamed:@"AtoZ.png"]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateSelected];
@@ -231,7 +232,7 @@
    
     [headerView addSubview:segmentedCtrlForNumAndSort];
     [headerView addSubview:_sortBtn];
-
+    
     self.tableView.tableHeaderView = headerView;
 }
 
@@ -307,6 +308,7 @@
     NSLog(@"ItemViewController : viewWillAppear ");
     [super viewWillAppear:animated];
     [self askServerForJson];
+    [self searchBarCancelButtonClicked: _searchBar];
 }
 
 #pragma mark - Table view data source
@@ -320,9 +322,11 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    
-    return _requestPending ? 0:[_jsonItems count];
-    
+    if(searchEnabled){
+        return [self.searchResultItems count];
+    } else {
+        return _requestPending ? 0:[_jsonItems count];
+    }
 }
 
 - (void)colorWholeString:(NSMutableAttributedString *)result scoreString:(NSString *)scoreString
@@ -416,7 +420,24 @@
 {
     static NSString *CellIdentifier = @"WordListPrototype";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-    NSDictionary *jsonObject=[_jsonItems objectAtIndex:indexPath.row];
+    
+    if(cell == nil){
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+    }
+    
+    if(searchEnabled){
+        [self jsonItem:_searchResultItems forTableViewCell:cell atIndexPath:indexPath];
+    } else {
+        [self jsonItem:_jsonItems forTableViewCell:cell atIndexPath:indexPath];
+    }
+    
+    return cell;
+}
+
+- (void) jsonItem: (NSArray *) jsonItemArr forTableViewCell: (UITableViewCell *) cell atIndexPath: (NSIndexPath *) indexPath{
+    
+//    NSDictionary *jsonObject=[_jsonItems objectAtIndex:indexPath.row];
+    NSDictionary *jsonObject=[jsonItemArr objectAtIndex:indexPath.row];
     NSString *exercise = [jsonObject objectForKey:@"fl"];
     NSString *englishPhrases = [jsonObject objectForKey:@"en"];
     NSString *exid = [jsonObject objectForKey:@"id"];
@@ -439,7 +460,45 @@
     [self colorEachWord:exid cell:cell exercise:exercise scoreHistory:scoreHistory];
     cell.detailTextLabel.text = englishPhrases;
     
-    return cell;
+}
+
+- (void)filterContentForSearchText:(NSString*)searchText{
+    NSPredicate *resultPredicate = [NSPredicate predicateWithFormat:@"self.fl CONTAINS[cd] %@", searchText];
+   
+    _searchResultItems = [_jsonItems filteredArrayUsingPredicate:resultPredicate];
+    
+    if(searchEnabled){
+        _jsonItems = _searchResultItems;
+    } else {
+        _jsonItems = _temp_jsonItems;
+    }
+    
+    [[self tableView] reloadData];
+}
+
+- (void) searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    if(searchBar.text.length == 0){
+        searchEnabled = NO;
+        _jsonItems = _temp_jsonItems;
+        [[self tableView] reloadData];
+    } else {
+        searchEnabled = YES;
+        [self filterContentForSearchText:searchBar.text];
+    }
+}
+
+- (void) searchBarSearchButtonClicked:(UISearchBar *)searchBar{
+    [searchBar resignFirstResponder];
+    searchEnabled = YES;
+    [self filterContentForSearchText:searchBar.text];
+}
+
+- (void) searchBarCancelButtonClicked:(UISearchBar *)searchBar{
+    [searchBar resignFirstResponder];
+    [searchBar setText:@""];
+    searchEnabled = NO;
+    _jsonItems = _temp_jsonItems;
+    [[self tableView] reloadData];
 }
 
 - (NSString *)trim:(NSString *)untrimedToken {
