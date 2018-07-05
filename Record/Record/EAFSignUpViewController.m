@@ -222,12 +222,11 @@
     if (valid) {
         _emailFeedback.textColor = [UIColor blackColor];
         
-        NSString *chosenLanguage = [_siteGetter.oldSites objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         NSString *username = _username.text;
         NSString *password = _password.text;
         NSString *email = _email.text;
         
-        [self addUser:chosenLanguage username:username password:password email:email];
+        [self addUser:@"" username:username password:password email:email];
         
       //  if (FALSE) {
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
