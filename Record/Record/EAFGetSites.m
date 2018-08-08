@@ -78,7 +78,7 @@ NSString* const expectedVersion = @"1.0.1";
         _oldServer = @"https://np.ll.mit.edu/";
         //NSLog(@"EAFGetSites server now %@",_oldServer);
         //   _nServer = @"http://127.0.0.1:8888/netprof/";
-        //   _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+     //      _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
         _nServer = @"https://netprof.ll.mit.edu/netprof/";
     }
     
@@ -258,7 +258,7 @@ NSString* const expectedVersion = @"1.0.1";
             if (id != NULL) {
                 [_mutableNameToProjectID  setObject:id forKey:name];
                 NSString *host  = [site objectForKey:@"host"];
-                NSLog(@"parseJSON host %@",host);
+             //   NSLog(@"parseJSON host %@",host);
                 if (host == NULL) host = @"";
                 [_mutableNameToHost  setObject:host forKey:name];
             }
