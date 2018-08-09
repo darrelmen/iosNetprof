@@ -41,7 +41,7 @@
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
 #import "EAFSignUpViewController.h"
-#import "EAFForgotUserNameViewController.h"
+#import "EAFForgotUsernameViewController.h"
 #import "EAFForgotPasswordViewController.h"
 #import "EAFSetPasswordViewController.h"
 #import "EAFEventPoster.h"
@@ -140,8 +140,8 @@
     gestureRecognizer.cancelsTouchesInView = NO;
     gestureRecognizer.delegate = self;
     [_languagePicker addGestureRecognizer:gestureRecognizer];
+    _languagePicker.delegate=self;
 }
-
 
 - (void) sitesReady {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -341,6 +341,8 @@
 //    return [_siteGetter.languages objectAtIndex:row];
 //}
 
+// scale name to fit - Tamas request 8/9/2018
+// https://gh.ll.mit.edu/DLI-LTEA/Development/issues/1049
 -(UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(nullable UIView *)view{
     UILabel *pView = (UILabel *)view;
     if(!pView){
@@ -352,6 +354,9 @@
         //        [pView setTextColor:[UIColor greenColor]];
         [pView setTextColor:[UIColor colorWithRed:3/255.0 green:99/255.0 blue:148/255.0 alpha:1.0]];
         [pView setTextAlignment: NSTextAlignmentCenter];
+        
+        pView.minimumScaleFactor = 0.2;
+        pView.adjustsFontSizeToFitWidth = YES;
     }
     [pView setText:[_siteGetter.languages objectAtIndex: row]];
     return pView;

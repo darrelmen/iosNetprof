@@ -42,7 +42,7 @@
 #import "EAFGetSites.h"
 
 
-@interface EAFLoginViewController : UIViewController<UITextFieldDelegate,UIGestureRecognizerDelegate,SitesNotification>
+@interface EAFLoginViewController : UIViewController<UITextFieldDelegate,UIGestureRecognizerDelegate,UIPickerViewDelegate,SitesNotification>
 @property (weak, nonatomic) IBOutlet UILabel *usernameFeedback;
 @property (weak, nonatomic) IBOutlet UILabel *passwordFeedback;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;

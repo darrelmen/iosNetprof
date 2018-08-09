@@ -2081,8 +2081,9 @@
         <image name="sounds" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="Rkv-H3-tXt"/>
         <segue reference="FlI-iz-r1d"/>
-        <segue reference="q28-aI-wTP"/>
+        <segue reference="U5f-EU-68h"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.21899779089999999" green="0.4041270314" blue="0.65392768320000005" alpha="1" colorSpace="calibratedRGB"/>
 </document>
