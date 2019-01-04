@@ -66,7 +66,6 @@
     
     _poster = [[EAFEventPoster alloc] init];
     _pickerData = @[@"DLI Foreign Language Center", @"DLI-Washington", @"Language Training Detachment", @"Mobile Training Team", @"Massachusetts Institute of Technology", @"MIT - Lincoln Laboratory", @"Other"];
-    
     _affiliations = @[@"DLIFLC", @"DLI-W", @"LTD", @"MTT", @"MIT", @"MIT-LL", @"OTHER"];
     
     self.affiliation.dataSource = self;

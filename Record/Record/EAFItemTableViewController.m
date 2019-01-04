@@ -433,6 +433,7 @@
             //   NSLog(@"tableView  : history %@", scoreHistory);
             //   NSLog(@"tableView  : exid %@ score %@",  exid,[_exToScore objectForKey:exid]);
             cell.imageView.image = [UIImage imageNamed:isCorrect ? @"checkmark32.png" : @"redx32.png"];
+            break;
         }
     }
     
@@ -525,11 +526,17 @@
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    
+    [urlRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
+   NSURLRequestCachePolicy policy= [urlRequest cachePolicy];
+    
+    
+    NSLog(@"\n\n\nItemViewController policy = %d\n\n\n",policy);
+
     [urlRequest setTimeoutInterval:10];
     
     [urlRequest setHTTPMethod: @"GET"];
-    [urlRequest setValue:@"application/x-www-form-urlencoded"
-      forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     [urlRequest setValue:[_projid stringValue] forHTTPHeaderField:@"projid"];
     NSLog(@"ItemViewController projid = %@",_projid);
@@ -571,7 +578,9 @@
         return false;
     }
     
-    //NSLog(@"useJsonChapterData resp %@",_responseData);
+ //   NSString *string = [NSString stringWithUTF8String:[_responseData bytes]];
+
+   // NSLog(@"ItemTableViewController.useJsonChapterData resp %@",string);
     //NSLog(@"useJsonChapterData resp 2 %@",json);
     
     NSMutableDictionary *exToEntry = [[NSMutableDictionary alloc] init];

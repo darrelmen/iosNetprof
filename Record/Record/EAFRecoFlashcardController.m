@@ -2234,10 +2234,10 @@ bool debugRecord = false;
     [urlRequest setTimeoutInterval:15];
     
     // add request parameters
-    [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
-    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
+   // [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
+  //  NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     
-    [urlRequest setValue:userid forHTTPHeaderField:@"user"];
+   // [urlRequest setValue:userid forHTTPHeaderField:@"user"];
     
     [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
     
@@ -2255,8 +2255,8 @@ bool debugRecord = false;
    
     [urlRequest setValue:@"decode" forHTTPHeaderField:@"request"];
     
-    NSString *projid = [NSString stringWithFormat:@"%@",[self getProjectID]];
-    [urlRequest setValue:projid forHTTPHeaderField:@"projid"];
+//    NSString *projid = [NSString stringWithFormat:@"%@",[self getProjectID]];
+//    [urlRequest setValue:projid forHTTPHeaderField:@"projid"];
     
     //NSString *req = ;
     //   NSLog(@"Req id %@ %d",req, _reqid);
@@ -2449,12 +2449,16 @@ bool debugRecord = false;
                           options:NSJSONReadingMutableContainers
                           error:&error];
     
+    NSString *string = [NSString stringWithUTF8String:[_responseData bytes]];
+    
+    
+      NSLog(@"connectionDidFinishLoading data was \n%@",string);
     if (error != nil) {
         NSLog(@"connectionDidFinishLoading - got error %@",error);
         // NSLog(@"data was %@",_responseData);
     }
     else {
-        //  NSLog(@"JSON was %@",json);
+   //     NSLog(@"JSON was %@",json);
     }
     //  NSLog(@"score was %@",overallScore);
     //     NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);

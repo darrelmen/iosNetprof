@@ -56,7 +56,7 @@
 @property (strong, nonatomic) NSMutableDictionary *mutableNameToHost;
 @property (strong, nonatomic) NSMutableDictionary *mutableNameToLanguage;
 
-@property (strong, nonatomic) NSString *oldServer;
+//@property (strong, nonatomic) NSString *oldServer;
 
 
 @end
@@ -75,11 +75,11 @@ NSString* const expectedVersion = @"1.0.1";
 {
     self = [super init];
     if (self) {
-        _oldServer = @"https://np.ll.mit.edu/";
+      //  _oldServer = @"https://np.ll.mit.edu/";
         //NSLog(@"EAFGetSites server now %@",_oldServer);
         //   _nServer = @"http://127.0.0.1:8888/netprof/";
-     //      _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
-        _nServer = @"https://netprof.ll.mit.edu/netprof/";
+           _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+    //     _nServer = @"https://netprof.ll.mit.edu/netprof/";
     }
     
     return self;
@@ -116,21 +116,21 @@ NSString* const expectedVersion = @"1.0.1";
     _mutableNameToLanguage = [[NSMutableDictionary alloc] init];
     _nameToLanguage = _mutableNameToLanguage;
     
-    [self getSitesFromServer:_oldServer];
+    [self getSitesFromServer:_nServer];
 }
 
 // we talk to the old server, then the new server...
 - (void)getSitesFromServer:(NSString *) theServer {
     NSString *baseurl;
-    if ([theServer isEqualToString:_oldServer]) {
-        baseurl = [NSString stringWithFormat:@"%@/sites.json", theServer];
-    }
-    else {
+//    if ([theServer isEqualToString:_oldServer]) {
+//        baseurl = [NSString stringWithFormat:@"%@/sites.json", theServer];
+//    }
+//    else {
         baseurl = [NSString stringWithFormat:@"%@scoreServlet?projects", theServer];
-    }
+//    }
     
     NSURL *url = [NSURL URLWithString:baseurl];
-    // NSLog(@"EAFGetSites getSites url %@",url);
+  NSLog(@"EAFGetSites getSites url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
@@ -158,7 +158,7 @@ NSString* const expectedVersion = @"1.0.1";
                                                   [self getCacheOrDefault:theServer];
                                               }
                                               else {
-                                                 // NSLog(@"\tgetSites Got response %@",response);
+                                                   NSLog(@"\tgetSites Got response %@",response);
                                                   
                                                   _sitesData = data;
                                                   [self performSelectorOnMainThread:@selector(useJsonSitesData:)
@@ -185,12 +185,12 @@ NSString* const expectedVersion = @"1.0.1";
     NSString *documentsDirectory = [paths objectAtIndex:0];
     
     NSString *fileToGet;
-    if ([theServer isEqualToString:_oldServer]) {
-        fileToGet = @"oldSites.json";
-    }
-    else {
+//    if ([theServer isEqualToString:_oldServer]) {
+//        fileToGet = @"oldSites.json";
+//    }
+//    else {
         fileToGet = @"newSites.json";
-    }
+//    }
     
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:fileToGet];
     return filePath;
@@ -294,36 +294,42 @@ NSString* const expectedVersion = @"1.0.1";
           NSLog(@"useJsonSitesData name to url now %@",_nameToURL);
           NSLog(@"useJsonSitesData _languages now %@",_languages);
         [self writeSitesDataToCacheAt:[self getCachePath:theServer] mp3AudioData:_sitesData];
-        if ([theServer isEqualToString:_oldServer]) {
-            [self getSitesFromServer:_nServer];
-        }
-        else {
+        
+        
+        
+//        if ([theServer isEqualToString:_oldServer]) {
+//            [self getSitesFromServer:_nServer];
+//        }
+//        else {
 
 //            for(id key in _nameToURL)
 //                NSLog(@"useJsonSitesData name=%@ url=%@", key, [_nameToURL objectForKey:key]);
-            
+
 //            for(id key in _nameToProjectID)
 //                NSLog(@"key=%@ value=%@", key, [_nameToProjectID objectForKey:key]);
-//            
-            
+//
+
          //   NSLog(@"useJsonSitesData all New %@",[_nameToProjectID allKeys]);
-            
+
             NSMutableOrderedSet *copy = [_languages mutableCopy];
          //   NSLog(@"useJsonSitesData copy %@",copy);
-            
+
             for(id key in _nameToProjectID) {
            //     NSLog(@"useJsonSitesData key=%@ project id=%@", key, [_nameToProjectID objectForKey:key]);
                 if ([[_nameToProjectID objectForKey:key] intValue] > -1) {
                     [copy removeObject:key];
                 }
             }
-            
-            _oldSites = copy;
-            
+
+           // _oldSites = copy;
+
          //   NSLog(@"useJsonSitesData _oldSites %@",_oldSites);
 
             [_delegate sitesReady];
-        }
+      //  }
+        
+    
+
     }
 }
 

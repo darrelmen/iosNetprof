@@ -172,12 +172,17 @@
     [urlRequest setValue:[[self MD5:email]    uppercaseString] forHTTPHeaderField:@"emailH"];
     [urlRequest setValue:email forHTTPHeaderField:@"email"];
     [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
-   
+    
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     
     [urlRequest setValue:@"addUser"    forHTTPHeaderField:@"request"];
-   
+    
+    [urlRequest setValue:_firstName.text    forHTTPHeaderField:@"first"];
+    [urlRequest setValue:_lastName.text    forHTTPHeaderField:@"last"];
+    [urlRequest setValue:_affiliation.selectedSegmentIndex == 0?@"DLIFLC":@"OTHER"    forHTTPHeaderField:@"affiliation"];
+    [urlRequest setValue:_gender.selectedSegmentIndex == 0?@"male":@"female"    forHTTPHeaderField:@"gender"];
+
     [[NSURLConnection connectionWithRequest:urlRequest delegate:self] start];
 }
 

@@ -42,7 +42,15 @@
 @interface EAFSignUpViewController : UIViewController<NSURLConnectionDelegate,UITextFieldDelegate,UIGestureRecognizerDelegate>
 @property (strong, nonatomic) IBOutlet UITextField *username;
 @property (strong, nonatomic) IBOutlet UITextField *password;
+@property (strong, nonatomic) IBOutlet UITextField *firstName;
+@property (strong, nonatomic) IBOutlet UITextField *lastName;
 @property (strong, nonatomic) IBOutlet UITextField *email;
+
+@property (strong, nonatomic) IBOutlet UISegmentedControl *affiliation;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *gender;
+
+
+
 @property (strong, nonatomic) IBOutlet UIButton *signUp;
 @property (strong, nonatomic) IBOutlet UILabel *usernameFeedback;
 @property (strong, nonatomic) IBOutlet UILabel *passwordFeedback;
