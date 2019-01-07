@@ -121,7 +121,6 @@
     if (_email.text.length > 0) {
         _emailFeedback.text = @"";
     }
-    
     if ([self validateEmail:_email.text]) {
         _emailFeedback.text = @"";
     }

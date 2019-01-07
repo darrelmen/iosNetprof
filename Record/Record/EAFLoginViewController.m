@@ -40,6 +40,7 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
+#import "Record-Swift.h"
 #import "EAFSignUpViewController.h"
 #import "EAFForgotUsernameViewController.h"
 #import "EAFForgotPasswordViewController.h"
@@ -47,6 +48,11 @@
 #import "EAFEventPoster.h"
 #import "EAFGetSites.h"
 #import "UIColor_netprofColors.h"
+
+
+#import "Record-Bridging-Header.h"
+
+//@class ModeChoiceController;
 
 @interface EAFLoginViewController ()
 
@@ -462,10 +468,14 @@
         [SSKeychain setPassword:converted      forService:@"mitll.proFeedback.device" account:@"userid"];
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
+        
+        NSLog(@"\n\n\nuseJsonChapterData set current user id to %@",_username.text);
+        
         NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
         
-        [self performSegueWithIdentifier:@"goToChapter" sender:self];
+      //  [self performSegueWithIdentifier:@"goToChapter" sender:self];
+        [self performSegueWithIdentifier:@"goToChoice" sender:self];
     } else {
         // password is bad
         _passwordFeedback.text = @"Username or password incorrect";
@@ -478,7 +488,7 @@
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet",[_siteGetter.nameToURL objectForKey:chosenLanguage]];
     
     NSURL *url = [NSURL URLWithString:baseurl];
-    NSLog(@"url %@",url);
+    NSLog(@"addUser url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
@@ -499,10 +509,10 @@
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
-         NSLog(@"\n\n\nGot response %@",error);
+         NSLog(@"addUser : Got response %@",error);
          
          if (error != nil) {
-             NSLog(@"\n\n\n\tGot error %@",error);
+             NSLog(@"addUser : Got error %@",error);
              dispatch_async(dispatch_get_main_queue(), ^{
                  [self connection:nil didFailWithError:error];
              });
@@ -603,7 +613,7 @@
         EAFForgotPasswordViewController *forgotUserName = [segue destinationViewController];
         [forgotUserName setLanguage:chosenLanguage];
         // NSLog(@"username %@",_username.text);
-        forgotUserName.url =url;
+        forgotUserName.url = url;
         forgotUserName.userFromLogin = _username.text;
     }
     else if ([segue.identifier isEqualToString:@"goToSetPassword"]) {
@@ -613,6 +623,16 @@
         forgotUserName.url =url;
         [forgotUserName setLanguage:chosenLanguage];
         forgotUserName.token  = _token;
+    }
+    else if ([segue.identifier isEqualToString:@"goToChoice"]) {
+        ModeChoiceController *choiceController = [segue destinationViewController];
+        
+        choiceController.language=chosenLanguage;
+        choiceController.url =url;
+        choiceController.isRTL = isRTL;
+        
+        [choiceController setTitle:chosenLanguage];
+        [self textFieldText:nil];
     }
     else if ([segue.identifier isEqualToString:@"goToChapter"]) {
         EAFChapterTableViewController *chapterController = [segue destinationViewController];

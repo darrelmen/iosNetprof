@@ -51,7 +51,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setTitle:[NSString stringWithFormat:@"Forgot username for %@",_language]];
+   // [self setTitle:[NSString stringWithFormat:@"Forgot username for %@",_language]];
+    [self setTitle: @"Forgot username"];
     [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
     [_titleLabel setTextColor:[UIColor npDarkBlue]];
     [_sendEmail setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];

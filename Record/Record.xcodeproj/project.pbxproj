@@ -123,6 +123,8 @@
 		B6D9AF8E1A37C15200911A36 /* EAFContextPopupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D9AF8D1A37C15200911A36 /* EAFContextPopupViewController.m */; };
 		B6DABE3C1A5CCC1300E7540E /* playBigger.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DABE3B1A5CCC1300E7540E /* playBigger.png */; };
 		B6DABE3E1A5CCC4700E7540E /* play2.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DABE3D1A5CCC4700E7540E /* play2.png */; };
+		B6DDDD2A21E3C5B600B099D3 /* ModeChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DDDD2921E3C5B600B099D3 /* ModeChoiceController.swift */; };
+		B6DDDD2C21E3E3E600B099D3 /* ListChoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DDDD2B21E3E3E600B099D3 /* ListChoice.swift */; };
 		B6DF209B1A25171400CA31B1 /* checkAndEar.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF209A1A25171400CA31B1 /* checkAndEar.png */; };
 		B6DF209D1A2518FB00CA31B1 /* checkAndEar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF209C1A2518FB00CA31B1 /* checkAndEar@2x.png */; };
 		B6DF209F1A25190400CA31B1 /* questionIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF209E1A25190400CA31B1 /* questionIcon@2x.png */; };
@@ -318,6 +320,9 @@
 		B6D9AF8D1A37C15200911A36 /* EAFContextPopupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAFContextPopupViewController.m; sourceTree = "<group>"; };
 		B6DABE3B1A5CCC1300E7540E /* playBigger.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = playBigger.png; sourceTree = "<group>"; };
 		B6DABE3D1A5CCC4700E7540E /* play2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play2.png; sourceTree = "<group>"; };
+		B6DDDD2821E3C5B500B099D3 /* Record-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Record-Bridging-Header.h"; sourceTree = "<group>"; };
+		B6DDDD2921E3C5B600B099D3 /* ModeChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeChoiceController.swift; sourceTree = "<group>"; };
+		B6DDDD2B21E3E3E600B099D3 /* ListChoice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListChoice.swift; sourceTree = "<group>"; };
 		B6DF209A1A25171400CA31B1 /* checkAndEar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkAndEar.png; sourceTree = "<group>"; };
 		B6DF209C1A2518FB00CA31B1 /* checkAndEar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkAndEar@2x.png"; sourceTree = "<group>"; };
 		B6DF209E1A25190400CA31B1 /* questionIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "questionIcon@2x.png"; sourceTree = "<group>"; };
@@ -563,6 +568,7 @@
 		F6A5682318ECA98A00B844C6 /* Record */ = {
 			isa = PBXGroup;
 			children = (
+				B6DDDD2B21E3E3E600B099D3 /* ListChoice.swift */,
 				A60E76C91DB8261D004B48AB /* Record.entitlements */,
 				B6D9AF8C1A37C15200911A36 /* EAFContextPopupViewController.h */,
 				B6D9AF8D1A37C15200911A36 /* EAFContextPopupViewController.m */,
@@ -633,6 +639,8 @@
 				65C1A34E1EC4FBE700CAB1FE /* EAFMoreSelectionPopupViewController.m */,
 				65C1A3CE1EDE0A8200CAB1FE /* MoreSelection.h */,
 				65C1A3CF1EDE0A8200CAB1FE /* MoreSelection.m */,
+				B6DDDD2921E3C5B600B099D3 /* ModeChoiceController.swift */,
+				B6DDDD2821E3C5B500B099D3 /* Record-Bridging-Header.h */,
 			);
 			path = Record;
 			sourceTree = "<group>";
@@ -716,6 +724,7 @@
 				TargetAttributes = {
 					F6A5681918ECA98A00B844C6 = {
 						DevelopmentTeam = 2C83Y973FA;
+						LastSwiftMigration = 1010;
 						SystemCapabilities = {
 							com.apple.Keychain = {
 								enabled = 1;
@@ -880,12 +889,14 @@
 				B636FFD11A098FC700C3B62E /* NSString+FontAwesome2.m in Sources */,
 				B649198E1A1A5CE00054CA13 /* EAFSignUpViewController.m in Sources */,
 				B636FFC71A09549E00C3B62E /* EAFScoreReportTabBarController.m in Sources */,
+				B6DDDD2C21E3E3E600B099D3 /* ListChoice.swift in Sources */,
 				B69821411A029CA500BB9865 /* UIColor+BButton.m in Sources */,
 				B60466461A38B540000B5464 /* MZFormSheetSegue.m in Sources */,
 				B60466491A38B540000B5464 /* UIViewController+TargetViewController.m in Sources */,
 				B6D999C91A7AD4E0007045C2 /* EAFPopoverViewController.m in Sources */,
 				B60466441A38B540000B5464 /* MZFormSheetBackgroundWindowViewController.m in Sources */,
 				B69821441A029F6400BB9865 /* NSString+FontAwesome.m in Sources */,
+				B6DDDD2A21E3C5B600B099D3 /* ModeChoiceController.swift in Sources */,
 				B604664E1A38B559000B5464 /* MZAppearance.m in Sources */,
 				B6DF20A41A2679FC00CA31B1 /* EAFEventPoster.m in Sources */,
 				F6A5682E18ECA98A00B844C6 /* EAFAppDelegate.m in Sources */,
@@ -1023,6 +1034,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Record/Record.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1037,6 +1049,7 @@
 				INFOPLIST_FILE = "Record/Record-Info.plist";
 				"INSTALL_OWNER[sdk=*]" = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -1045,8 +1058,12 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Record/Record-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
+				dude = dude;
 			};
 			name = Debug;
 		};
@@ -1054,6 +1071,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Record/Record.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1068,6 +1086,7 @@
 				INFOPLIST_FILE = "Record/Record-Info.plist";
 				"INSTALL_OWNER[sdk=*]" = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -1076,14 +1095,18 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				STRIP_INSTALLED_PRODUCT = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Record/Record-Bridging-Header.h";
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
+				dude = dude;
 			};
 			name = Release;
 		};
 		F6A5685018ECA98B00B844C6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Record.app/Record";
 				DEVELOPMENT_TEAM = 2C83Y973FA;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1108,6 +1131,7 @@
 		F6A5685118ECA98B00B844C6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Record.app/Record";
 				DEVELOPMENT_TEAM = 2C83Y973FA;
 				FRAMEWORK_SEARCH_PATHS = (

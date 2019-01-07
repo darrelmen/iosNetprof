@@ -2234,11 +2234,7 @@ bool debugRecord = false;
     [urlRequest setTimeoutInterval:15];
     
     // add request parameters
-   // [urlRequest setValue:@"MyAudioMemo.wav" forHTTPHeaderField:@"fileName"];
-  //  NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
-    
-   // [urlRequest setValue:userid forHTTPHeaderField:@"user"];
-    
+
     [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
     
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
@@ -2251,20 +2247,17 @@ bool debugRecord = false;
         id = [NSString stringWithFormat:@"%@",nid];
     }
     
+    id=@"738810";
     [urlRequest setValue:id        forHTTPHeaderField:@"exercise"];
-   
     [urlRequest setValue:@"decode" forHTTPHeaderField:@"request"];
     
-//    NSString *projid = [NSString stringWithFormat:@"%@",[self getProjectID]];
-//    [urlRequest setValue:projid forHTTPHeaderField:@"projid"];
+    NSString *projid = [NSString stringWithFormat:@"%@",[self getProjectID]];
+    [urlRequest setValue:projid forHTTPHeaderField:@"projid"];
     
-    //NSString *req = ;
-    //   NSLog(@"Req id %@ %d",req, _reqid);
     [urlRequest setValue:[NSString stringWithFormat:@"%d",_reqid] forHTTPHeaderField:@"reqid"];
     _reqid++;
     
     // post the audio
-    
     [urlRequest setHTTPBody:postData];
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
