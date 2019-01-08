@@ -119,18 +119,16 @@ NSString* const expectedVersion = @"1.0.1";
     [self getSitesFromServer:_nServer];
 }
 
+- (NSString *) getServerURL {
+    return  [NSString stringWithFormat:@"%@scoreServlet?projects", _nServer];
+}
+
 // we talk to the old server, then the new server...
 - (void)getSitesFromServer:(NSString *) theServer {
-    NSString *baseurl;
-//    if ([theServer isEqualToString:_oldServer]) {
-//        baseurl = [NSString stringWithFormat:@"%@/sites.json", theServer];
-//    }
-//    else {
-        baseurl = [NSString stringWithFormat:@"%@scoreServlet?projects", theServer];
-//    }
-    
-    NSURL *url = [NSURL URLWithString:baseurl];
-  NSLog(@"EAFGetSites getSites url %@",url);
+//    NSString *baseurl;
+//    baseurl = [NSString stringWithFormat:@"%@scoreServlet?projects", theServer];
+    NSURL *url = [NSURL URLWithString:[self getServerURL]];
+    NSLog(@"EAFGetSites getSites url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
@@ -181,7 +179,7 @@ NSString* const expectedVersion = @"1.0.1";
 // cache the file as sites.json
 - (NSString *)getCachePath:(NSString *) theServer {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSLog(@"HTTTTTUUUU___: %@", paths);
+  //  NSLog(@"HTTTTTUUUU___: %@", paths);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     
     NSString *fileToGet;
@@ -291,8 +289,10 @@ NSString* const expectedVersion = @"1.0.1";
     }
     else {
         [self parseJSON:json];
-          NSLog(@"useJsonSitesData name to url now %@",_nameToURL);
-          NSLog(@"useJsonSitesData _languages now %@",_languages);
+
+        //          NSLog(@"useJsonSitesData name to url now %@",_nameToURL);
+        //          NSLog(@"useJsonSitesData _languages now %@",_languages);
+        
         [self writeSitesDataToCacheAt:[self getCachePath:theServer] mp3AudioData:_sitesData];
         
         

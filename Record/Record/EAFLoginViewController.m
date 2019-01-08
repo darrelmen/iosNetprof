@@ -147,6 +147,13 @@
     gestureRecognizer.delegate = self;
     [_languagePicker addGestureRecognizer:gestureRecognizer];
     _languagePicker.delegate=self;
+    
+    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
+
+     if (userid != nil) {
+         NSLog(@"userid %@", userid);
+         NSLog(@"user name field '%@'",_username.text);
+     }
 }
 
 - (void) sitesReady {
@@ -179,6 +186,7 @@
     
     NSString *rememberedUserID = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenUserID"];
     if (rememberedUserID != nil) {
+        NSLog(@"rememberedUserID %@",rememberedUserID);
         _username.text = rememberedUserID;
     }
     NSString *rememberedPass = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenPassword"];
@@ -276,7 +284,7 @@
     NSString *username =_username.text;
     NSString *password =_password.text;
     
-    //NSLog(@"LoginView onClick password '%@'",_password.text);
+    NSLog(@"LoginView onClick password '%@'",_password.text);
     //NSLog(@"onClick md5 password %@",[self MD5:_password.text]);
     
     NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
@@ -291,6 +299,7 @@
     
     NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
     if (projid.intValue > -1) {
+        NSLog(@"LoginView projid  '%@'",projid);
         [urlRequest setValue:@"hasUser" forHTTPHeaderField:@"request"];
         if ([username length] < 5) {
             username = [username stringByAppendingString:@"_"];
@@ -438,6 +447,7 @@
     NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
     
     if ([userIDExisting integerValue] == -1) {
+        NSLog(@"useJsonChapterData userIDExisting %@",userIDExisting);
         NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
         
         NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
@@ -459,7 +469,8 @@
         }
     }
     else if (resetToken.length > 0) {
-        _token = resetToken;
+        NSLog(@"useJsonChapterData resetToken %@",resetToken);
+     _token = resetToken;
         [self performSegueWithIdentifier:@"goToSetPassword" sender:self];
     } else if (passCorrect) {
         // OK store info and segue
@@ -477,7 +488,8 @@
       //  [self performSegueWithIdentifier:@"goToChapter" sender:self];
         [self performSegueWithIdentifier:@"goToChoice" sender:self];
     } else {
-        // password is bad
+        NSLog(@"useJsonChapterData password bad");
+   // password is bad
         _passwordFeedback.text = @"Username or password incorrect";
     }
     return true;

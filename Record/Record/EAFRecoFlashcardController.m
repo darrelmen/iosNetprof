@@ -189,9 +189,7 @@
 
 - (void)viewDidLoad
 {
- 
     [super viewDidLoad];
-    
     
     _audioCache = [[EAFAudioCache alloc] init];
     
@@ -199,6 +197,9 @@
     [_siteGetter getSites];
     NSLog(@"RecoFlashcardController.viewDidLoad : getSites...");
     
+    if (_url == NULL) {
+        _url = [_siteGetter getServerURL];
+    }
     [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
     
     _showPhonesLTRAlways = true;
@@ -2247,7 +2248,6 @@ bool debugRecord = false;
         id = [NSString stringWithFormat:@"%@",nid];
     }
     
-    id=@"738810";
     [urlRequest setValue:id        forHTTPHeaderField:@"exercise"];
     [urlRequest setValue:@"decode" forHTTPHeaderField:@"request"];
     

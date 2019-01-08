@@ -38,9 +38,11 @@ class ModeChoiceController: UITableViewController {
         print("remember \(language)")
         print("remember \(url)")
         print("remember \(isRTL)")
+        print("segue    \(String(describing: segue.identifier))")
+        print("segue dest \(segue.destination)")
 
         
-
+//        if (segue.identifier == 'g)
        
     }
     
