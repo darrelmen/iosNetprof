@@ -120,14 +120,13 @@ NSString* const expectedVersion = @"1.0.1";
 }
 
 - (NSString *) getServerURL {
-    return  [NSString stringWithFormat:@"%@scoreServlet?projects", _nServer];
+    return _nServer;
 }
 
 // we talk to the old server, then the new server...
 - (void)getSitesFromServer:(NSString *) theServer {
-//    NSString *baseurl;
-//    baseurl = [NSString stringWithFormat:@"%@scoreServlet?projects", theServer];
-    NSURL *url = [NSURL URLWithString:[self getServerURL]];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?projects", theServer];
+    NSURL *url = [NSURL URLWithString:baseurl];
     NSLog(@"EAFGetSites getSites url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
