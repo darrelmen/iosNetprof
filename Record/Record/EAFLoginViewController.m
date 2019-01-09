@@ -52,8 +52,6 @@
 
 #import "Record-Bridging-Header.h"
 
-//@class ModeChoiceController;
-
 @interface EAFLoginViewController ()
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
@@ -682,14 +680,13 @@
     else if ([segue.identifier isEqualToString:@"goToChoice"]) {
         ModeChoiceController *choiceController = [segue destinationViewController];
         
-        choiceController.language=chosenLanguage;
-        choiceController.url =url;
-        choiceController.isRTL = isRTL;
+//        choiceController.language=chosenLanguage;
+//        choiceController.url =url;
+//        choiceController.isRTL = isRTL;
         NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
-
         choiceController.projid = projid.intValue;
         
-        [choiceController setTitle:chosenLanguage];
+      //  [choiceController setTitle:chosenLanguage];
         [self textFieldText:nil];
     }
     else if ([segue.identifier isEqualToString:@"goToChapter"]) {

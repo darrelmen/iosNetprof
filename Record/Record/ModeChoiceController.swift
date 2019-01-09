@@ -10,9 +10,9 @@ import Foundation;
 import UIKit;
 
 class ModeChoiceController: UITableViewController {
-    @objc public var language:String = ""
-    @objc public var url:String = ""
-    @objc public var isRTL:Bool = false
+//    @objc public var language:String = ""
+//    @objc public var url:String = ""
+//    @objc public var isRTL:Bool = false
     @objc public var projid = -1
 
     override init(style : UITableView.Style) {
