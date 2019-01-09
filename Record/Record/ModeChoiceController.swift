@@ -13,7 +13,8 @@ class ModeChoiceController: UITableViewController {
     @objc public var language:String = ""
     @objc public var url:String = ""
     @objc public var isRTL:Bool = false
-    
+    @objc public var projid = -1
+
     override init(style : UITableView.Style) {
         // Overriding this method prevents other initializers from being inherited.
         // The super implementation calls init:nibName:bundle:
@@ -41,9 +42,11 @@ class ModeChoiceController: UITableViewController {
         print("segue    \(String(describing: segue.identifier))")
         print("segue dest \(segue.destination)")
 
-        
-//        if (segue.identifier == 'g)
-       
+        if (segue.identifier == "goToListChoice") {
+            let listViewController = segue.destination as? ListViewController
+            listViewController?.projid=projid;
+           
+        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

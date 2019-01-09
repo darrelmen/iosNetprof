@@ -39,6 +39,7 @@
 #import "EAFItemTableViewController.h"
 #import "EAFAudioCache.h"
 #import "EAFRecoFlashcardController.h"
+#import "EAFGetSites.h"
 #import "SSKeychain.h"
 #import "UIColor_netprofColors.h"
 
@@ -47,6 +48,7 @@
 @property BOOL requestPending;
 @property EAFAudioCache *audioCache;
 @property (strong, nonatomic) NSData *responseData;
+@property (strong, nonatomic) NSData *responseListData;
 
 @property NSArray *scores;
 
@@ -82,6 +84,10 @@
     
     NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"msr",@"frr",@"fsr",@"ctmref",@"ctfref",@"ctref",nil];
     
+    if (_url == NULL) {
+        _url = [[EAFGetSites new] getServerURL];
+    }
+    
     for (NSDictionary *object in items) {
         for (NSString *id in fields) {
             NSString *refPath = [object objectForKey:id];
@@ -106,23 +112,31 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    if (_url == NULL) {
+        _url = [[EAFGetSites new] getServerURL];
+    }
+    
     _temp_jsonItems = [[NSMutableArray alloc] initWithArray:_jsonItems];;
     _audioCache = [[EAFAudioCache alloc] init];
-    //  NSLog(@"viewDidLoad made audio cache, url %@ ",_url );
+    NSLog(@"viewDidLoad made audio cache, url %@ listid %@",_url,_listid );
     //  NSLog(@"viewDidLoad - item table controller - %@, count = %lu", _hasModel?@"YES":@"NO",(unsigned long)_jsonItems.count);
     
     // Uncomment the following line to preserve selection between presentations.
     self.clearsSelectionOnViewWillAppear = NO;
-    [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,_chapterTitle,_currentChapter]];
+    
+    if (_listid == NULL) {
+        [self setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,_chapterTitle,_currentChapter]];
+    }
+    else {
+        [self setTitle:_listTitle];
+    }
     
     _user = [[SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"] intValue];
-    
     //   [self createBtnAndLabelForHeaderView];
     
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(OrientationChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
     
     _lessonTotalItems = _jsonItems.count;
-    
 }
 
 //- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
@@ -306,9 +320,54 @@
 -(void)viewWillAppear:(BOOL)animated {
     NSLog(@"ItemViewController : viewWillAppear ");
     [super viewWillAppear:animated];
-    [self askServerForJson];
+    
+    if (_listid != NULL) {
+        [self askServerForJsonForList];
+    }
+    else {
+        [self askServerForJson];
+    }
 }
 
+-(void)askServerForJsonForList {
+    
+    NSString* baseurl =[NSString stringWithFormat:@"%@scoreServlet?request=CONTENT&list=%@", _url, _listid];
+    NSLog(@"ItemViewController askServerForJsonForList url %@",baseurl);
+    
+    NSURL *url = [NSURL URLWithString:baseurl];
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    
+    [urlRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
+    //    NSURLRequestCachePolicy policy= [urlRequest cachePolicy];
+    //    NSLog(@"\n\n\nItemViewController policy = %d\n\n\n",policy);
+    
+    [urlRequest setTimeoutInterval:10];
+    
+    [urlRequest setHTTPMethod: @"GET"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    
+    [urlRequest setValue:[_projid stringValue] forHTTPHeaderField:@"projid"];
+    NSLog(@"ItemViewController projid = %@",_projid);
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+     {
+         if (error != nil) {
+             NSLog(@"ItemTableViewController askServerForJsonForList Got error %@",error);
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 [self connection:nil didFailWithError:error];
+             });
+         }
+         else {
+             //NSLog(@"ItemTableViewController Got normal resp");
+             _responseListData = data;
+             [self performSelectorOnMainThread:@selector(connectionDidFinishLoadingList:)
+                                    withObject:nil
+                                 waitUntilDone:YES];
+         }
+     }];
+
+}
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -501,9 +560,14 @@
     flashcardController.jsonItems = _jsonItems;
     flashcardController.index = row;
     flashcardController.language = _language;
- 
+    
     flashcardController.projectLanguage = _projectLanguage;
-    [flashcardController setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,_chapterTitle, _currentChapter]];
+    if (_listid == NULL) {
+        [flashcardController setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,_chapterTitle, _currentChapter]];
+    }
+    else {
+        [flashcardController setTitle:_listTitle];
+    }
     
     flashcardController.hasModel=_hasModel;
     flashcardController.chapterTitle = _chapterTitle;
@@ -518,7 +582,13 @@
 //
 - (void)askServerForJson {
     _requestPending = true;
+    
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _url, _user, _unitTitle, _unit, _chapterTitle, _currentChapter];
+    
+    if (_listid != NULL) {
+        baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&listid=%@&%@=%@&%@=%@", _url, _user, _listid, _unitTitle, _unit, _chapterTitle, _currentChapter];
+    }
+    
     
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
@@ -528,10 +598,8 @@
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
     [urlRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
-   NSURLRequestCachePolicy policy= [urlRequest cachePolicy];
-    
-    
-    NSLog(@"\n\n\nItemViewController policy = %d\n\n\n",policy);
+//    NSURLRequestCachePolicy policy= [urlRequest cachePolicy];
+//    NSLog(@"\n\n\nItemViewController policy = %d\n\n\n",policy);
 
     [urlRequest setTimeoutInterval:10];
     
@@ -570,8 +638,6 @@
                           options:NSJSONReadingAllowFragments
                           error:&error];
     _requestPending = false;
-    
-    
     
     if (error) {
         NSLog(@"useJsonChapterData error %@",error.description);
@@ -659,6 +725,36 @@
     [self useJsonChapterData];
     [self createBtnAndLabelForHeaderView];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+}
+
+- (void)connectionDidFinishLoadingList:(NSURLConnection *)connection {
+    // The request is complete and data has been received
+    [self useListData];
+    [self createBtnAndLabelForHeaderView];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+}
+
+- (BOOL) useListData {
+    NSLog(@"ItemTableViewController - useListData");
+    
+    NSError * error;
+    NSDictionary* json = [NSJSONSerialization
+                          JSONObjectWithData:_responseListData
+                          options:NSJSONReadingAllowFragments
+                          error:&error];
+    _requestPending = false;
+    
+    if (error) {
+        NSLog(@"useJsonChapterData error %@",error.description);
+        return false;
+    }
+    
+    _jsonItems = [json objectForKey:@"content"];
+    
+    NSLog(@"ItemTableViewController - useListData --- num json %lu ",(unsigned long)_jsonItems.count);
+
+    [self askServerForJson];
+    return true;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {

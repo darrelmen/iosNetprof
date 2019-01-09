@@ -96,7 +96,7 @@
     
     [urlRequest setValue:userid forHTTPHeaderField:@"user"];
     
-    if (_projid == NULL) NSLog(@"huh? projid is null");
+    if (_projid == NULL) NSLog(@"postEvent huh? projid is null");
     
     NSLog(@"postEvent post %@ to %@ with project %@",context,_urlToUse,_projid);
     

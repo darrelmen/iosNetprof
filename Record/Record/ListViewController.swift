@@ -14,6 +14,8 @@ class ListViewController: UITableViewController {
     var ids:[Int]=[]
     var names:[String]=[]
     
+    var projid = -1
+    
     override init(style : UITableView.Style) {
         // Overriding this method prevents other initializers from being inherited.
         // The super implementation calls init:nibName:bundle:
@@ -92,21 +94,31 @@ class ListViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ListPrototypeCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ListPrototypeCell", for: indexPath) as! EAFListChoiceCell
         cell.textLabel?.text = names[indexPath.row]
+        cell.listid = ids[indexPath.row]
         return cell
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print("\n\n\nListViewController got prepare for segue  \(segue)")
+        print("ListViewController got prepare for segue  \(segue)")
         print("ListViewController got prepare for sender \(sender ?? "something undefined")")
         
 //        print("ListViewController remember \(language)")
 //        print("remember \(url)")
-//        print("remember \(isRTL)")
+       
+        print("prepare \(sender)")
         print("segue    \(String(describing: segue.identifier))")
         print("segue dest \(segue.destination)")
         
+        if (segue.identifier == "showList") {
+            let itemTableViewController = segue.destination as? EAFItemTableViewController
+            
+            let cell = sender as! EAFListChoiceCell
+            itemTableViewController?.listid = cell.listid as NSNumber
+            itemTableViewController?.listTitle = cell.textLabel?.text
+            itemTableViewController?.projid = self.projid as NSNumber
+        }
        // _log("This is a log message.")
         //        if (segue.identifier == 'g)
         

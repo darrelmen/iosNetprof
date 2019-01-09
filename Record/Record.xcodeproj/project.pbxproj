@@ -22,6 +22,7 @@
 		65C1A3D21EE715C600CAB1FE /* shuffle.png in Resources */ = {isa = PBXBuildFile; fileRef = 65C1A3D11EE715C600CAB1FE /* shuffle.png */; };
 		65C1A3D41EE9E13400CAB1FE /* ellipsis-V.png in Resources */ = {isa = PBXBuildFile; fileRef = 65C1A3D31EE9E13400CAB1FE /* ellipsis-V.png */; };
 		8EBA779A2025D788002E1138 /* UIColor_netprofColors.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EBA77992025D787002E1138 /* UIColor_netprofColors.m */; };
+		B60233F621E67C7B00705F39 /* EAFListChoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60233F521E67C7B00705F39 /* EAFListChoiceCell.swift */; };
 		B60466431A38B540000B5464 /* MZFormSheetBackgroundWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B60466351A38B540000B5464 /* MZFormSheetBackgroundWindow.m */; };
 		B60466441A38B540000B5464 /* MZFormSheetBackgroundWindowViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B60466371A38B540000B5464 /* MZFormSheetBackgroundWindowViewController.m */; };
 		B60466451A38B540000B5464 /* MZFormSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = B60466391A38B540000B5464 /* MZFormSheetController.m */; };
@@ -180,6 +181,7 @@
 		8EBA77992025D787002E1138 /* UIColor_netprofColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIColor_netprofColors.m; sourceTree = "<group>"; };
 		8EBA779B2025D793002E1138 /* UIColor_netprofColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIColor_netprofColors.h; sourceTree = "<group>"; };
 		A60E76C91DB8261D004B48AB /* Record.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Record.entitlements; sourceTree = "<group>"; };
+		B60233F521E67C7B00705F39 /* EAFListChoiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EAFListChoiceCell.swift; sourceTree = "<group>"; };
 		B60466341A38B540000B5464 /* MZFormSheetBackgroundWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZFormSheetBackgroundWindow.h; sourceTree = "<group>"; };
 		B60466351A38B540000B5464 /* MZFormSheetBackgroundWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MZFormSheetBackgroundWindow.m; sourceTree = "<group>"; };
 		B60466361A38B540000B5464 /* MZFormSheetBackgroundWindowViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MZFormSheetBackgroundWindowViewController.h; sourceTree = "<group>"; };
@@ -643,6 +645,7 @@
 				65C1A3CF1EDE0A8200CAB1FE /* MoreSelection.m */,
 				B6DDDD2921E3C5B600B099D3 /* ModeChoiceController.swift */,
 				B6DDDD2D21E5632F00B099D3 /* ListViewController.swift */,
+				B60233F521E67C7B00705F39 /* EAFListChoiceCell.swift */,
 				B6DDDD2821E3C5B500B099D3 /* Record-Bridging-Header.h */,
 			);
 			path = Record;
@@ -870,6 +873,7 @@
 				B60466451A38B540000B5464 /* MZFormSheetController.m in Sources */,
 				B61B82261A154C36009B00D1 /* EAFAudioView.m in Sources */,
 				B69821301A019A7200BB9865 /* SSKeychain.m in Sources */,
+				B60233F621E67C7B00705F39 /* EAFListChoiceCell.swift in Sources */,
 				B6D9AF8E1A37C15200911A36 /* EAFContextPopupViewController.m in Sources */,
 				B60466471A38B540000B5464 /* MZTransition.m in Sources */,
 				B698213E1A029C9A00BB9865 /* BButton.m in Sources */,

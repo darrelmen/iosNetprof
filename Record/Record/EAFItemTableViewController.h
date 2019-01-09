@@ -50,6 +50,10 @@
 @property NSNumber *projid;
 @property NSString *unitTitle;
 @property NSString *unit;
+
+@property NSNumber *listid;
+@property NSString *listTitle;
+
 @property long user;
 
 @property (strong, nonatomic) NSDictionary *chapterToItems;

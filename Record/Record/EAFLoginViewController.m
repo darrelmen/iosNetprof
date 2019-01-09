@@ -685,6 +685,9 @@
         choiceController.language=chosenLanguage;
         choiceController.url =url;
         choiceController.isRTL = isRTL;
+        NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
+
+        choiceController.projid = projid.intValue;
         
         [choiceController setTitle:chosenLanguage];
         [self textFieldText:nil];

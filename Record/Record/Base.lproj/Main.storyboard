@@ -53,7 +53,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="L7O-uq-Q91" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2188" y="-114"/>
+            <point key="canvasLocation" x="3055" y="-94"/>
         </scene>
         <!--Item List-->
         <scene sceneID="WpU-fD-hqd">
@@ -105,7 +105,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F7G-J3-dF2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3006" y="-114"/>
+            <point key="canvasLocation" x="3898" y="-115"/>
         </scene>
         <!--PopupController-->
         <scene sceneID="iP6-tN-eDg">
@@ -165,7 +165,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="g1C-RT-C1b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3622" y="571"/>
+            <point key="canvasLocation" x="6249" y="619"/>
         </scene>
         <!--RecoFlashcardController-->
         <scene sceneID="ufC-wZ-h7g">
@@ -552,7 +552,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="3754" y="-115"/>
+            <point key="canvasLocation" x="4676" y="-116"/>
         </scene>
         <!--In Context-->
         <scene sceneID="YzQ-rN-OlP">
@@ -690,7 +690,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="3247.826086956522" y="-795.6521739130435"/>
+            <point key="canvasLocation" x="4676" y="-797"/>
         </scene>
         <!--More Selection Popup View Controller-->
         <scene sceneID="zGv-p5-BOl">
@@ -771,7 +771,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gav-v5-9Xl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3898.5507246376815" y="-796.46739130434787"/>
+            <point key="canvasLocation" x="5454" y="-797"/>
         </scene>
         <!--Sound Scores-->
         <scene sceneID="pwF-ue-4Za">
@@ -802,7 +802,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9ca-Yq-0fn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4560" y="620"/>
+            <point key="canvasLocation" x="5454" y="655"/>
         </scene>
         <!--Word Scores-->
         <scene sceneID="1oc-r2-CgG">
@@ -926,7 +926,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KY7-eJ-CCF" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tabBarItem title="Correct/Incorrect" image="rightWrong" id="fih-IT-wyq"/>
             </objects>
-            <point key="canvasLocation" x="5456" y="-115"/>
+            <point key="canvasLocation" x="6250" y="-115"/>
         </scene>
         <!--Word and Sound Scores-->
         <scene sceneID="xoU-C8-mgt">
@@ -948,7 +948,7 @@
                 <tabBarItem tag="1" title="Item2" badgeValue="dude2" id="SDd-0F-APu"/>
                 <tabBarItem title="Item1" badgeValue="dude1" id="TpO-AW-W6Z"/>
             </objects>
-            <point key="canvasLocation" x="4560" y="-114"/>
+            <point key="canvasLocation" x="5454" y="-116"/>
         </scene>
         <!--Pronunciation Feedback-->
         <scene sceneID="foj-1l-cew">
@@ -1629,7 +1629,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1368.8" y="655.32233883058473"/>
+            <point key="canvasLocation" x="1319" y="654"/>
         </scene>
         <!--Forgot Username-->
         <scene sceneID="H8p-LA-vvF">
@@ -1774,7 +1774,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2159" y="657"/>
+            <point key="canvasLocation" x="540" y="1349"/>
         </scene>
         <!--Forgot Password-->
         <scene sceneID="M3k-Pg-1es">
@@ -2174,7 +2174,7 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <segue destination="jeY-0a-JUn" kind="show" id="0Ba-5q-RU0"/>
+                                            <segue destination="jeY-0a-JUn" kind="show" identifier="goToListChoice" id="0Ba-5q-RU0"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ListPrototypeCell" textLabel="HVr-Ek-OxQ" style="IBUITableViewCellStyleDefault" id="sRN-Uh-JTi">
@@ -2211,7 +2211,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NSh-BL-Jz3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2889" y="640"/>
+            <point key="canvasLocation" x="2166" y="-94"/>
         </scene>
         <!--List View Controller-->
         <scene sceneID="tHs-1o-yf9">
@@ -2255,7 +2255,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KES-l6-0Pz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2007" y="1373"/>
+            <point key="canvasLocation" x="4860" y="1544"/>
         </scene>
         <!--List View Controller-->
         <scene sceneID="UIk-bw-uOM">
@@ -2267,7 +2267,7 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <rect key="contentStretch" x="0.0" y="0.0" width="1" height="0.79999999999999982"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ListPrototypeCell" textLabel="Qcp-bP-y84" detailTextLabel="vib-to-raz" style="IBUITableViewCellStyleSubtitle" id="wld-Lp-Mf4">
+                            <tableViewCell contentMode="scaleToFill" restorationIdentifier="ListChoiceCell" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ListPrototypeCell" textLabel="Qcp-bP-y84" detailTextLabel="vib-to-raz" style="IBUITableViewCellStyleSubtitle" id="wld-Lp-Mf4" customClass="EAFListChoiceCell" customModule="Record" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="22" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wld-Lp-Mf4" id="IMY-71-j9U">
@@ -2290,6 +2290,9 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="qBH-0p-qwJ" kind="show" identifier="showList" id="x0d-iN-b5a"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <sections/>
@@ -2305,7 +2308,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1fO-8W-6H9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2889" y="1395"/>
+            <point key="canvasLocation" x="3054" y="675"/>
         </scene>
     </scenes>
     <resources>
@@ -2321,6 +2324,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="cVG-Ak-6vc"/>
+        <segue reference="x0d-iN-b5a"/>
         <segue reference="it6-Rz-Ryn"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.21899779089999999" green="0.4041270314" blue="0.65392768320000005" alpha="1" colorSpace="calibratedRGB"/>
