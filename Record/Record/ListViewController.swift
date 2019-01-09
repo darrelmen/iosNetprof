@@ -15,6 +15,7 @@ class ListViewController: UITableViewController {
     var names:[String]=[]
     
     var projid = -1
+    var isQuiz = false
     
     override init(style : UITableView.Style) {
         // Overriding this method prevents other initializers from being inherited.
@@ -32,7 +33,11 @@ class ListViewController: UITableViewController {
         super.viewDidLoad()
         
         let serverURL = EAFGetSites().getServerURL()
-        let server = serverURL! + "scoreServlet?lists"
+        var server = serverURL! + "scoreServlet?lists"
+        
+        if (isQuiz) {
+            server = serverURL! + "scoreServlet?quiz"
+        }
         
         let request = NSMutableURLRequest(url: NSURL(string: server)! as URL)
         request.httpMethod = "GET"
@@ -58,27 +63,25 @@ class ListViewController: UITableViewController {
             }       
             
         })
-        // Do any additional setup after loading the view, typically from a nib.
     }
     
     func addItems(json : NSDictionary) {
         if let dictionary = json as? [String: Any] {
             if let nestedDictionary = dictionary["lists"] as? [Any] {
                 // access nested dictionary values by key
-                //if let array = nestedDictionary as? [Any] {
-                    for object in nestedDictionary {
-                        // access all objects in array
-                        
-                        if let obj = object as? [String:Any] {
-                            if let id = obj["id"] as? Int {
-                                ids.append(id)
-                            }
-                            if let name = obj["name"] as? String {
-                                names.append(name)
-                            }
+                for object in nestedDictionary {
+                    // access all objects in array
+                    
+                    if let obj = object as? [String:Any] {
+                        if let id = obj["id"] as? Int {
+                            ids.append(id)
+                        }
+                        if let name = obj["name"] as? String {
+                            names.append(name)
                         }
                     }
-                //}
+                }
+                
             }
         }
         tableView.reloadData()
@@ -101,15 +104,15 @@ class ListViewController: UITableViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print("ListViewController got prepare for segue  \(segue)")
-        print("ListViewController got prepare for sender \(sender ?? "something undefined")")
+//        print("ListViewController got prepare for segue  \(segue)")
+//        print("ListViewController got prepare for sender \(sender ?? "something undefined")")
         
 //        print("ListViewController remember \(language)")
 //        print("remember \(url)")
        
-        print("prepare \(sender)")
-        print("segue    \(String(describing: segue.identifier))")
-        print("segue dest \(segue.destination)")
+//        print("prepare \(sender)")
+//        print("segue    \(String(describing: segue.identifier))")
+//        print("segue dest \(segue.destination)")
         
         if (segue.identifier == "showList") {
             let itemTableViewController = segue.destination as? EAFItemTableViewController
@@ -119,8 +122,5 @@ class ListViewController: UITableViewController {
             itemTableViewController?.listTitle = cell.textLabel?.text
             itemTableViewController?.projid = self.projid as NSNumber
         }
-       // _log("This is a log message.")
-        //        if (segue.identifier == 'g)
-        
     }
 }

@@ -3125,7 +3125,7 @@ BOOL addSpaces = false;
 {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    NSLog(@"Reco flashcard - Got segue!!! %@ %@ ", _chapterTitle, _currentChapter);
+    NSLog(@"Reco flashcard - Got segue!!! chapter %@ = %@ ", _chapterTitle, _currentChapter);
     @try {
         EAFScoreReportTabBarController *tabBarController = [segue destinationViewController];
         tabBarController.url = _url;

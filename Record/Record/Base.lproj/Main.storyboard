@@ -2193,6 +2193,9 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="jeY-0a-JUn" kind="show" identifier="chooseQuiz" id="4e8-JE-GlK"/>
+                                        </connections>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -2308,7 +2311,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1fO-8W-6H9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3054" y="675"/>
+            <point key="canvasLocation" x="2166" y="732"/>
         </scene>
     </scenes>
     <resources>
@@ -2323,6 +2326,7 @@
         <image name="sounds" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="4e8-JE-GlK"/>
         <segue reference="cVG-Ak-6vc"/>
         <segue reference="x0d-iN-b5a"/>
         <segue reference="it6-Rz-Ryn"/>

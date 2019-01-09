@@ -27,38 +27,42 @@ class ModeChoiceController: UITableViewController {
 //        fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-    }
+//    override func viewDidLoad() {
+//        super.viewDidLoad()
+//        // Do any additional setup after loading the view, typically from a nib.
+//    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print("\n\n\ngot prepare for segue  \(segue)")
-        print("got prepare for sender \(sender ?? "something undefined")")
+//        print("\n\n\ngot prepare for segue  \(segue)")
+//        print("got prepare for sender \(sender ?? "something undefined")")
+//
+//        print("remember \(language)")
+//        print("remember \(url)")
+//        print("remember \(isRTL)")
+//        print("segue    \(String(describing: segue.identifier))")
+        //        print("segue dest \(segue.destination)")
         
-        print("remember \(language)")
-        print("remember \(url)")
-        print("remember \(isRTL)")
-        print("segue    \(String(describing: segue.identifier))")
-        print("segue dest \(segue.destination)")
-
         if (segue.identifier == "goToListChoice") {
             let listViewController = segue.destination as? ListViewController
             listViewController?.projid=projid;
-           
+        }
+        else if (segue.identifier == "chooseQuiz") {
+            let listViewController = segue.destination as? ListViewController
+            listViewController?.isQuiz=true
+            listViewController?.projid=projid;
         }
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
- 
-        
-        //let indexPath = tableView.indexPathForSelectedRow() //optional, to get from any UIButton for example
-        
-        let currentCell = tableView.cellForRow(at:  indexPath)
-        
-        print("tableView - didSelectRowAt")
-        print(currentCell?.textLabel!.text)
-        
-     //   self.perform(<#T##aSelector: Selector!##Selector!#>)
-    }
+//    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//
+//
+//        //let indexPath = tableView.indexPathForSelectedRow() //optional, to get from any UIButton for example
+//
+//        let currentCell = tableView.cellForRow(at:  indexPath)
+//
+//        print("tableView - didSelectRowAt")
+//        print(currentCell?.textLabel!.text)
+//
+//     //   self.perform(<#T##aSelector: Selector!##Selector!#>)
+//    }
 }
