@@ -70,7 +70,7 @@
 
 @property NSArray *temp_jsonItems;
 
-@property unsigned long lessonTotalItems;
+//@property unsigned long lessonTotalItems;
 
 @property (strong, nonatomic) UISearchController *searchController;
 @end
@@ -136,7 +136,7 @@
     
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(OrientationChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
     
-    _lessonTotalItems = _jsonItems.count;
+ //   _lessonTotalItems = _jsonItems.count;
 }
 
 //- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
@@ -560,7 +560,9 @@
     flashcardController.jsonItems = _jsonItems;
     flashcardController.index = row;
     flashcardController.language = _language;
-    
+    flashcardController.projid = _projid;
+    flashcardController.listid = _listid;
+
     flashcardController.projectLanguage = _projectLanguage;
     if (_listid == NULL) {
         [flashcardController setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,_chapterTitle, _currentChapter]];
@@ -569,7 +571,7 @@
         [flashcardController setTitle:_listTitle];
     }
     
-    flashcardController.hasModel=_hasModel;
+//    flashcardController.hasModel=_hasModel;
     flashcardController.chapterTitle = _chapterTitle;
     flashcardController.currentChapter = _currentChapter;
     flashcardController.unitTitle = _unitTitle;
@@ -630,7 +632,9 @@
 }
 
 - (BOOL)useJsonChapterData {
-    NSLog(@"ItemTableViewController - useJsonChapterData --- num json %lu ",(unsigned long)_jsonItems.count);
+    NSUInteger totalItems = _jsonItems.count;
+    unsigned long total = (unsigned long)totalItems;
+    NSLog(@"ItemTableViewController - useJsonChapterData --- num json %lu",total);
 
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
@@ -661,22 +665,31 @@
     NSArray *jsonArray = [json objectForKey:@"scores"];
     NSString *lastCorrect = [json objectForKey:@"lastCorrect"];
     NSString *lastIncorrect = [json objectForKey:@"lastIncorrect"];
+    
     NSNumberFormatter * formatter = [[NSNumberFormatter alloc] init];
+    
     unsigned long checkMarkTotal = [[formatter numberFromString:lastCorrect] unsignedLongValue];
     unsigned long redXTotal = [[formatter numberFromString:lastIncorrect] unsignedLongValue];
-    unsigned long questionIconTotal = (unsigned long)_lessonTotalItems - (checkMarkTotal + redXTotal);
-    _checkMarkPercentage = (roundf) (100 * ((float)checkMarkTotal/(float)(_lessonTotalItems)));
+    NSLog(@"ItemTableViewController - checkMarkTotal %lu redXTotal %lu",checkMarkTotal,redXTotal);
+
+    unsigned long questionIconTotal = total - (checkMarkTotal + redXTotal);
+    _checkMarkPercentage = (roundf) (100 * ((float)checkMarkTotal/(float)(total)));
     
-    _redXPercentage = (roundf)(100 * ((float)redXTotal/(float)_lessonTotalItems));
-    _questionIconPercentage = (roundf)(100 * ((float)questionIconTotal/(float)_lessonTotalItems));
+    _redXPercentage = (roundf)(100 * ((float)redXTotal/(float)total));
+    _questionIconPercentage = (roundf)(100 * ((float)questionIconTotal/(float)total));
     if (_checkMarkPercentage + _redXPercentage + _questionIconPercentage<100){
-        if(checkMarkTotal!=0) {_checkMarkPercentage=_checkMarkPercentage+1;
-        }else if (redXTotal!=0){ _redXPercentage =_redXPercentage +1;
+        if(checkMarkTotal!=0) {
+            _checkMarkPercentage=_checkMarkPercentage+1;
+        }else if (redXTotal!=0){
+            _redXPercentage =_redXPercentage +1;
         }
     }
+    
     if (_checkMarkPercentage + _redXPercentage + _questionIconPercentage>100){
-        if(checkMarkTotal!=0) {_checkMarkPercentage=_checkMarkPercentage-1;
-        }else if (redXTotal!=0){ _redXPercentage =_redXPercentage -1;
+        if(checkMarkTotal!=0) {
+            _checkMarkPercentage=_checkMarkPercentage-1;
+        }else if (redXTotal!=0){
+            _redXPercentage =_redXPercentage -1;
         }
     }
     if (jsonArray != nil) {

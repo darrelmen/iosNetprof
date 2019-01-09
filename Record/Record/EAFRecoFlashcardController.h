@@ -51,7 +51,6 @@
 
 @property (strong, nonatomic) AVAudioRecorder *audioRecorder;
 
-//@property (strong, nonatomic) IBOutlet UIButton *playRefAudioButton;
 @property (strong, nonatomic) IBOutlet UIButton *recordButton;
 
 - (IBAction)recordAudio:(id)sender;
@@ -71,13 +70,16 @@
 
 @property NSString *url;
 @property BOOL isRTL;
-@property BOOL hasModel;
+//@property BOOL hasModel;
 @property NSString *currentChapter;
 @property NSString *chapterTitle;
 @property NSString *currentUnit;
 @property NSString *unitTitle;
 @property NSString *language;
 @property NSString *projectLanguage;
+
+@property NSNumber *projid;
+@property NSNumber *listid;
 
 @property (weak, nonatomic) IBOutlet UIView *scoreDisplayContainer;
 @property (strong, nonatomic) IBOutlet UIProgressView *scoreProgress;
@@ -101,17 +103,6 @@
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;
 @property (strong, nonatomic) IBOutlet UIImageView *correctFeedback;
 
-//@property (strong, nonatomic) IBOutlet UISegmentedControl *genderMaleSelector;
-//@property (strong, nonatomic) IBOutlet BButton *audioOnButton;
-//@property (strong, nonatomic) IBOutlet BButton *shuffleButton;
-//@property (strong, nonatomic) IBOutlet BButton *moreSelectButton;
-//@property (strong, nonatomic) IBOutlet UIButton *speedButton;
-//@property (strong, nonatomic) IBOutlet UISegmentedControl *whatToShow;
-//- (IBAction)whatToShowSelection:(id)sender;
-
-//- (IBAction)speedSelection:(id)sender;
-//- (IBAction)audioOnSelection:(id)sender;
-
 - (void)respondToSwipe;
 - (void)doAutoAdvance;
 @property (strong, nonatomic) IBOutlet BButton *contextButton;
@@ -128,9 +119,6 @@
 @property BOOL isAudioOnSelected;
 
 @property (strong, nonatomic) IBOutlet UIToolbar *selectionToolbar;
-
-//@property (strong, nonatomic) IBOutlet UIBarButtonItem *itemForShuffle;
-//@property (strong, nonatomic) IBOutlet BButton *shuffleButton;
 
 -(IBAction)showScores:(id)sender;
 

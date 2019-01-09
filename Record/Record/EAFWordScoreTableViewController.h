@@ -56,6 +56,7 @@
 @property NSArray *jsonItems;
 
 @property long user;
+@property NSNumber *listid;
 
 -(void)setCurrentTitle;
 @property NSString *url;

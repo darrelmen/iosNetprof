@@ -299,13 +299,13 @@
     _scoreProgress.layer.borderColor = [UIColor grayColor].CGColor;
     [_correctFeedback setHidden:true];
     
-    if (!_hasModel) {
-        NSLog(@"----> EAFRecoFlashcardController : No model for %@",_language);
-        _recordButtonContainer.hidden = true;
-    }
-    else {
-        _recordButtonContainer.hidden = false;
-    }
+//    if (!_hasModel) {
+//        NSLog(@"----> EAFRecoFlashcardController : No model for %@",_language);
+//        _recordButtonContainer.hidden = true;
+//    }
+//    else {
+//        _recordButtonContainer.hidden = false;
+//    }
     
     _scoreProgress.hidden = true;
     _progressThroughItems.progressTintColor = [UIColor npLightYellow];
@@ -669,11 +669,17 @@
 }
 
 - (EAFEventPoster*)getPoster {
+    
     return [[EAFEventPoster alloc] initWithURL:_url projid:[self getProjectID]];
 }
 
 - (id) getProjectID {
-    return [_siteGetter.nameToProjectID objectForKey:_language];
+    if (_projid == NULL) {
+        return [_siteGetter.nameToProjectID objectForKey:_language];
+    }
+    else {
+        return _projid;
+    }
 }
 
 - (id) getProjectLanguage {
@@ -1751,12 +1757,12 @@
     NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs gesture end %f diff %f",durationInSeconds, (_gestureEnd-_then2), (_gestureEnd-_then2)-durationInSeconds );
     
     if (durationInSeconds > 0.3) {
-        if (_hasModel) {
+        //if (_hasModel) {
             [self postAudio];
-        }
-        else {
-            NSLog(@"audioRecorderDidFinishRecording not posting audio since no model...");
-        }
+      //  }
+      //  else {
+      //      NSLog(@"audioRecorderDidFinishRecording not posting audio since no model...");
+      //  }
     }
     else {
         [self setDisplayMessage:@"Recording too short."];
@@ -3140,7 +3146,8 @@ BOOL addSpaces = false;
         
         wordReport.jsonItems = _jsonItems;
         wordReport.url = _url;
-        
+        wordReport.listid = _listid;
+
         
         NSMutableDictionary *exToFL = [[NSMutableDictionary alloc] init];
         NSMutableDictionary *exToEnglish = [[NSMutableDictionary alloc] init];
