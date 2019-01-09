@@ -336,8 +336,46 @@
                                  waitUntilDone:YES];
          }
      }];
+    
 }
 
+-(void)testLists
+{
+    NSString *urlForLanguage = [_siteGetter getServerURL];
+
+    NSLog(@"test url %@",urlForLanguage);
+    
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@scoreServlet?lists" ,urlForLanguage                                     ]];
+    NSLog(@" url %@",url);
+    
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    
+    [urlRequest setHTTPMethod: @"GET"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setTimeoutInterval:15];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // add UI related changes here
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+    });
+    
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+     {
+         if (error != nil) {
+             NSLog(@"\n\n\n\t1 Got error %@",error);
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 [self connection:nil didFailWithError:error];
+             });
+         }
+         else {
+             _responseData = data;
+             NSLog(@"got %@",data);
+//             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+//                                    withObject:nil
+//                                 waitUntilDone:YES];
+         }
+     }];
+}
 -(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
 {
     //One column
@@ -416,6 +454,11 @@
 // if the user exists and the password is correct, segue to the chapter scene
 - (BOOL)useJsonChapterData {
     NSError * error;
+    
+    
+ //   [self testLists];
+
+    
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_responseData
                           options:NSJSONReadingAllowFragments

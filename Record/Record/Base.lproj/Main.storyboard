@@ -2173,6 +2173,9 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="jeY-0a-JUn" kind="show" id="T2V-n7-aqs"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ListPrototypeCell" textLabel="HVr-Ek-OxQ" style="IBUITableViewCellStyleDefault" id="sRN-Uh-JTi">
                                         <rect key="frame" x="0.0" y="88" width="375" height="44"/>
@@ -2200,7 +2203,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Study Choices" id="j13-vE-DNE">
-                        <barButtonItem key="backBarButtonItem" title="Chapters" id="kgJ-24-vMz"/>
+                        <barButtonItem key="backBarButtonItem" title="Login" id="kgJ-24-vMz"/>
                     </navigationItem>
                     <connections>
                         <outlet property="view" destination="8ed-o1-RnO" id="z7G-3v-dB8"/>
@@ -2208,7 +2211,52 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NSh-BL-Jz3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2859" y="655"/>
+            <point key="canvasLocation" x="2889" y="640"/>
+        </scene>
+        <!--List View Controller-->
+        <scene sceneID="UIk-bw-uOM">
+            <objects>
+                <tableViewController storyboardIdentifier="ListViewController" title="List View Controller" useStoryboardIdentifierAsRestorationIdentifier="YES" id="jeY-0a-JUn" customClass="ListViewController" customModule="Record" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" sectionIndexMinimumDisplayRowCount="1" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="E8M-e4-BaJ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <rect key="contentStretch" x="0.0" y="0.0" width="1" height="0.79999999999999982"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ListPrototypeCell" textLabel="Qcp-bP-y84" style="IBUITableViewCellStyleDefault" id="wld-Lp-Mf4">
+                                <rect key="frame" x="0.0" y="22" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wld-Lp-Mf4" id="IMY-71-j9U">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Qcp-bP-y84">
+                                            <rect key="frame" x="16" y="0.0" width="343" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <sections/>
+                        <connections>
+                            <outlet property="dataSource" destination="jeY-0a-JUn" id="7kY-MS-se1"/>
+                            <outlet property="delegate" destination="jeY-0a-JUn" id="7EI-v1-8b1"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Lists" id="fZI-Th-Mkr">
+                        <barButtonItem key="backBarButtonItem" title="Study Choices" id="h20-Jw-dCg"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="view" destination="E8M-e4-BaJ" id="p7l-aV-XSt"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1fO-8W-6H9" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2889" y="1346"/>
         </scene>
     </scenes>
     <resources>

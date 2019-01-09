@@ -125,6 +125,7 @@
 		B6DABE3E1A5CCC4700E7540E /* play2.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DABE3D1A5CCC4700E7540E /* play2.png */; };
 		B6DDDD2A21E3C5B600B099D3 /* ModeChoiceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DDDD2921E3C5B600B099D3 /* ModeChoiceController.swift */; };
 		B6DDDD2C21E3E3E600B099D3 /* ListChoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DDDD2B21E3E3E600B099D3 /* ListChoice.swift */; };
+		B6DDDD2E21E5632F00B099D3 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6DDDD2D21E5632F00B099D3 /* ListViewController.swift */; };
 		B6DF209B1A25171400CA31B1 /* checkAndEar.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF209A1A25171400CA31B1 /* checkAndEar.png */; };
 		B6DF209D1A2518FB00CA31B1 /* checkAndEar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF209C1A2518FB00CA31B1 /* checkAndEar@2x.png */; };
 		B6DF209F1A25190400CA31B1 /* questionIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6DF209E1A25190400CA31B1 /* questionIcon@2x.png */; };
@@ -323,6 +324,7 @@
 		B6DDDD2821E3C5B500B099D3 /* Record-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Record-Bridging-Header.h"; sourceTree = "<group>"; };
 		B6DDDD2921E3C5B600B099D3 /* ModeChoiceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeChoiceController.swift; sourceTree = "<group>"; };
 		B6DDDD2B21E3E3E600B099D3 /* ListChoice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListChoice.swift; sourceTree = "<group>"; };
+		B6DDDD2D21E5632F00B099D3 /* ListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
 		B6DF209A1A25171400CA31B1 /* checkAndEar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkAndEar.png; sourceTree = "<group>"; };
 		B6DF209C1A2518FB00CA31B1 /* checkAndEar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkAndEar@2x.png"; sourceTree = "<group>"; };
 		B6DF209E1A25190400CA31B1 /* questionIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "questionIcon@2x.png"; sourceTree = "<group>"; };
@@ -640,6 +642,7 @@
 				65C1A3CE1EDE0A8200CAB1FE /* MoreSelection.h */,
 				65C1A3CF1EDE0A8200CAB1FE /* MoreSelection.m */,
 				B6DDDD2921E3C5B600B099D3 /* ModeChoiceController.swift */,
+				B6DDDD2D21E5632F00B099D3 /* ListViewController.swift */,
 				B6DDDD2821E3C5B500B099D3 /* Record-Bridging-Header.h */,
 			);
 			path = Record;
@@ -874,6 +877,7 @@
 				B61B82321A16D223009B00D1 /* EAFLoginViewController.m in Sources */,
 				B636FFD41A098FD200C3B62E /* UIFont+FontAwesome2.m in Sources */,
 				B6B94F131A7C1265004AFFE8 /* Reachability.m in Sources */,
+				B6DDDD2E21E5632F00B099D3 /* ListViewController.swift in Sources */,
 				65C1A3D01EDE0A8200CAB1FE /* MoreSelection.m in Sources */,
 				B69CBD151C6E7CC200651D5F /* EAFGetSites.m in Sources */,
 				B61B946D1A1FA1210049462E /* EAFForgotUsernameViewController.m in Sources */,
