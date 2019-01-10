@@ -13,8 +13,13 @@ import UIKit;
 class ListViewController: UITableViewController {
     var ids:[Int]=[]
     var names:[String]=[]
+    var quizMinutes:[Int]=[]
+    var minScoreToAdvance:[Int]=[]
+    var playAudio:[Bool]=[]
+
     
     var projid = -1
+    public var language = ""
     var isQuiz = false
     
     override init(style : UITableView.Style) {
@@ -79,6 +84,15 @@ class ListViewController: UITableViewController {
                         if let name = obj["name"] as? String {
                             names.append(name)
                         }
+                        if let quizMinute = obj["quizMinutes"] as? Int {
+                            quizMinutes.append(quizMinute)
+                        }
+                        if let minScore = obj["minScoreToAdvance"] as? Int {
+                            minScoreToAdvance.append(minScore)
+                        }
+                        if let play = obj["playAudio"] as? Bool {
+                            playAudio.append(play)
+                        }
                     }
                 }
                 
@@ -101,6 +115,13 @@ class ListViewController: UITableViewController {
         let selectedRow: Int = indexPath.row
         cell.textLabel?.text = names[selectedRow]
         cell.listid = ids[selectedRow]
+        
+        if (!quizMinutes.isEmpty) {
+            cell.quizMinutes =  quizMinutes[selectedRow]
+            cell.minScoreToAdvance = minScoreToAdvance[selectedRow]
+            cell.playAudio   = playAudio[selectedRow]
+        }
+        
         return cell
     }
     
@@ -114,8 +135,8 @@ class ListViewController: UITableViewController {
 //        print("remember \(url)")
        
 //        print("prepare \(sender)")
-        print("segue    \(String(describing: segue.identifier))")
-        print("segue dest \(segue.destination)")
+        print("ListViewController segue    \(String(describing: segue.identifier))")
+        print("ListViewController segue dest \(segue.destination)")
         
         if (segue.identifier == "showList") {
             let itemTableViewController = segue.destination as? EAFItemTableViewController
@@ -124,14 +145,56 @@ class ListViewController: UITableViewController {
             itemTableViewController?.listid = cell.listid as NSNumber
             itemTableViewController?.listTitle = cell.textLabel?.text
             itemTableViewController?.projid = self.projid as NSNumber
+            itemTableViewController?.language = language
+
+//            print("prepare quiz \(isQuiz)")
+//
+//            if (isQuiz) {
+//                itemTableViewController?.quizMinutes = 1;
+//                itemTableViewController?.minScoreToAdvance = 30;
+//                itemTableViewController?.playAudio = false;
+//            }
+        }
+        else if (segue.identifier == "goToQuizFlashcard") {
+            let flashcardController = segue.destination as? EAFRecoFlashcardController
             
             print("prepare quiz \(isQuiz)")
+            
+            let cell = sender as! EAFListChoiceCell
+            
+            flashcardController?.listid = cell.listid as NSNumber
+          //  flashcard?.listTitle = cell.textLabel?.text
+            flashcardController?.projid = self.projid as NSNumber
+            flashcardController?.language = language
 
-            if (isQuiz) {
-                itemTableViewController?.quizMinutes = 1;
-                itemTableViewController?.minScoreToAdvance = 30;
-                itemTableViewController?.playAudio = false;
-            }
+            
+            flashcardController?.quizMinutes = cell.quizMinutes as NSNumber;
+            flashcardController?.minScoreToAdvance = cell.minScoreToAdvance as NSNumber;
+            flashcardController?.playAudio = cell.playAudio;
+            
+           // flashcardController.url = _url;
+           // flashcardController.isRTL = _isRTL;
+           // flashcardController.jsonItems = _jsonItems
+            flashcardController?.index = 0;
+          //  flashcardController.language = _language;
+           // flashcardController?.projid = self.projid
+           // flashcardController.listid = _listid;
+            
+           // if (_quizMinutes != NULL) {
+                //   NSLog(@"Item Table - quiz minutes %@",_quizMinutes);
+                
+             //   flashcardController?.numQuizItems =  _jsonItems.count
+//                flashcardController.quizMinutes = _quizMinutes;
+//                flashcardController.minScoreToAdvance = _minScoreToAdvance;
+//                flashcardController.playAudio = _playAudio;
+           // }
+            
+//            flashcardController.listid = _listid;
+            
+  //          flashcardController.projectLanguage = _projectLanguage;
+          
+            flashcardController?.listtitle = cell.textLabel?.text
+          
         }
     }
 }

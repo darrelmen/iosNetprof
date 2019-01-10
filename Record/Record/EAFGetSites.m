@@ -86,12 +86,10 @@ NSString* const expectedVersion = @"1.0.1";
 }
 
 - (NSNumber *) getProject:(NSString*) language {
-    //if ([language isEqualToString:@"Russian"]) return [NSNumber numberWithInt:-1];
     return [_nameToProjectID objectForKey:language];
 }
 
 - (NSNumber *) getProjectLanguage:(NSString*) projectName {
-    //if ([language isEqualToString:@"Russian"]) return [NSNumber numberWithInt:-1];
     return [_nameToLanguage objectForKey:projectName];
 }
 

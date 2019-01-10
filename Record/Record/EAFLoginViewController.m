@@ -682,7 +682,7 @@
     else if ([segue.identifier isEqualToString:@"goToChoice"]) {
         ModeChoiceController *choiceController = [segue destinationViewController];
         
-//        choiceController.language=chosenLanguage;
+        choiceController.language=chosenLanguage;
 //        choiceController.url =url;
 //        choiceController.isRTL = isRTL;
         NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];

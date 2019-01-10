@@ -115,6 +115,7 @@
 @property BOOL timerStarted;
 @property int timeRemaining;
 @property NSTimer *quizTimer;
+@property (strong, nonatomic) NSData *responseListData;
 
 
 - (void)postAudio;
@@ -141,7 +142,6 @@
     }
 }
 
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
  
@@ -154,8 +154,99 @@
     
    // [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
     
+    //[self respondToSwipe];
+    if (_listid != NULL) {
+        if (_jsonItems == NULL) {
+            [self askServerForJsonForList];
+
+        }
+    }
+}
+
+-(void)askServerForJsonForList {
+    if (_siteGetter == NULL) {
+        
+        _siteGetter = [EAFGetSites new];
+        //[_siteGetter getSites];
+        // NSLog(@"RecoFlashcardController.viewDidLoad : getSites...");
+        
+        if (_url == NULL) {
+            _url = [_siteGetter getServerURL];
+            _isRTL = [_siteGetter.rtlLanguages containsObject:_language];
+        }
+    }
+    NSString* baseurl =[NSString stringWithFormat:@"%@scoreServlet?request=CONTENT&list=%@", _url, _listid];
+    NSLog(@"Reco : askServerForJsonForList url %@",baseurl);
+    
+    NSURL *url = [NSURL URLWithString:baseurl];
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    
+    [urlRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
+    [urlRequest setTimeoutInterval:10];
+    
+    [urlRequest setHTTPMethod: @"GET"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    
+    [urlRequest setValue:[_projid stringValue] forHTTPHeaderField:@"projid"];
+    NSLog(@"Reco projid = %@",_projid);
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+     {
+         if (error != nil) {
+             NSLog(@"ItemTableViewController askServerForJsonForList Got error %@",error);
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 [self connection:nil didFailWithError:error];
+             });
+         }
+         else {
+             self->_responseListData = data;
+             [self performSelectorOnMainThread:@selector(connectionDidFinishLoadingList:)
+                                    withObject:nil
+                                 waitUntilDone:YES];
+         }
+     }];
+    
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    // The request has failed for some reason!
+    // Check the error var
+    NSLog(@"Reco - Download content failed with %@",error);
+   // _requestPending = false;
+   // [[self tableView] reloadData];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+}
+
+- (void)connectionDidFinishLoadingList:(NSURLConnection *)connection {
+    // The request is complete and data has been received
+    [self useListData];
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+}
+
+- (BOOL) useListData {
+    
+    
+    NSError * error;
+    NSDictionary* json = [NSJSONSerialization
+                          JSONObjectWithData:_responseListData
+                          options:NSJSONReadingAllowFragments
+                          error:&error];
+    
+    if (error) {
+        NSLog(@"useListData error %@",error.description);
+        return false;
+    }
+    
+    _jsonItems = [json objectForKey:@"content"];
+    
+    NSLog(@"Reco - useListData --- num json %lu ",(unsigned long)_jsonItems.count);
+    
     [self respondToSwipe];
- 
+    _numQuizItems = [NSNumber numberWithInt:_jsonItems.count];
+    [self showQuizIntro];
+    return true;
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
@@ -176,13 +267,37 @@
     
     _siteGetter = [EAFGetSites new];
     [_siteGetter getSites];
-    NSLog(@"RecoFlashcardController.viewDidLoad : getSites...");
+    // NSLog(@"RecoFlashcardController.viewDidLoad : getSites...");
     
     if (_url == NULL) {
         _url = [_siteGetter getServerURL];
+        //   _language = [_siteGetter getProjectLanguage:_projid];
+        _isRTL = [_siteGetter.rtlLanguages containsObject:_language];
     }
-    [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
+    BOOL noQuiz =(_quizMinutes == NULL);
     
+    if (_quizMinutes != NULL) {
+        NSLog(@"RecoFlashcardController.viewDidLoad : has quiz!");
+        [_timerProgress setHidden:NO];
+        [_timeRemainingLabel setHidden:NO];
+    }
+    else {
+        NSLog(@"RecoFlashcardController.viewDidLoad : NO quiz! ");
+        [_timerProgress setHidden:YES];
+        [_timeRemainingLabel setHidden:YES];
+    }
+    
+    if ([_timerProgress isHidden]) {
+        NSLog(@"RecoFlashcardController.viewDidLoad : _timerProgress hidden");
+    }
+    else {
+        NSLog(@"RecoFlashcardController.viewDidLoad : _timerProgress NOT hidden");
+    }
+
+    
+    if (_jsonItems != NULL) {
+        [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
+    }
     _showPhonesLTRAlways = true;
     _exToScore = [[NSMutableDictionary alloc] init];
     
@@ -302,48 +417,41 @@
     _isAudioOnSelected = YES;
      _myAudioPlayer.volume = _isAudioOnSelected ? 1: 0;
     
-    [self respondToSwipe];
+    _languageSegmentIndex = 2;  // initial value is show both - enum better?
+    _voiceSegmentIndex = 0;
+    
+    if (_jsonItems != NULL) {
+        [self respondToSwipe];
+    }
     
     [self checkAndShowIntro];
     
+    _moreSelection = [[MoreSelection alloc]initWithLanguageIndex:_languageSegmentIndex withVoiceIndex:_voiceSegmentIndex];
     
-    _languageSegmentIndex = 2;
-    _voiceSegmentIndex = 0;
-     _moreSelection = [[MoreSelection alloc]initWithLanguageIndex:_languageSegmentIndex withVoiceIndex:_voiceSegmentIndex];
-    
-//    self.navigationController.navigationBar.barTintColor=[UIColor yellowColor];
-//    self.navigationController.navigationBar.tintColor=[UIColor blueColor];
-//    self.navigationController.navigationBar.translucent=NO;
+    //    self.navigationController.navigationBar.barTintColor=[UIColor yellowColor];
+    //    self.navigationController.navigationBar.tintColor=[UIColor blueColor];
+    //    self.navigationController.navigationBar.translucent=NO;
     
     UIBarButtonItem *scoreShow = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Score"
-                                   style:UIBarButtonItemStyleBordered
-                                   target:self
-                                   action:@selector(showScores:)];
+                                  initWithTitle:@"Score"
+                                  style:UIBarButtonItemStyleBordered
+                                  target:self
+                                  action:@selector(showScores:)];
     self.navigationItem.rightBarButtonItem = scoreShow;
     
     _selectionToolbar=[[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 10, 10)];
     
+    [self setupToolBar];
     if (_quizMinutes == NULL) {
-        [self setupToolBar];
+//        [_timerProgress setHidden:YES];
+//        [_timeRemainingLabel setHidden:YES];
     }
     else {
-        
+        [_selectionToolbar setHidden:true];
         // if timer hasn't started!
         
-        NSString *min = @"minutes";
-        if (_quizMinutes == 1) min = @"minute";
-        NSString *postLength = [NSString stringWithFormat:@"You have %@ %@ to complete %@ items.\nScores above %@ advance automatically.\nIf you finish with time remaining, it's OK to go back.",_quizMinutes,min,_numQuizItems,_minScoreToAdvance];
         
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Quiz Rules"
-                                                                       message:postLength
-                                                                preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                                              handler:^(UIAlertAction * action) {}];
-        
-        [alert addAction:defaultAction];
-        [self presentViewController:alert animated:YES completion:nil];
+       
     }
     
 //    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
@@ -353,6 +461,21 @@
 //                            object:[UIDevice currentDevice]];
 }
 
+- (void) showQuizIntro {
+    NSString *min = @"minutes";
+    if (_quizMinutes == 1) min = @"minute";
+    NSString *postLength = [NSString stringWithFormat:@"You have %@ %@ to complete %@ items.\nScores above %@ advance automatically.\nIf you finish with time remaining, it's OK to go back.",_quizMinutes,min,_numQuizItems,_minScoreToAdvance];
+    
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Quiz Rules"
+                                                                   message:postLength
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {}];
+    
+    [alert addAction:defaultAction];
+    [self presentViewController:alert animated:YES completion:nil];
+}
 
 //-(void)orientationChanged:(NSNotification*)notification{
 //   
@@ -417,14 +540,14 @@
     
     _shuffleBtn = [BButton awesomeButtonWithOnlyIcon:FARandom color:[UIColor npLightBlue] style:BButtonStyleBootstrapV3];
     [self createButtonForiPhoneiPad:_shuffleBtn];
-   
+    
     [_shuffleBtn addTarget:self action:@selector(shuffle:) forControlEvents:UIControlEventTouchUpInside];
- //   [_shuffleBtn sizeToFit];
-   UIBarButtonItem *shuffleBarItem = [[UIBarButtonItem alloc]	initWithCustomView:_shuffleBtn];
-
+    //   [_shuffleBtn sizeToFit];
+    UIBarButtonItem *shuffleBarItem = [[UIBarButtonItem alloc]	initWithCustomView:_shuffleBtn];
+    
     _autoPlayButton = [BButton awesomeButtonWithOnlyIcon:FAPlay color:[UIColor npLightBlue] style:BButtonStyleBootstrapV3];
-     [self createButtonForiPhoneiPad:_autoPlayButton];
-
+    [self createButtonForiPhoneiPad:_autoPlayButton];
+    
     [_autoPlayButton addTarget:self action:@selector(autoPlaySelected:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *playBarItem = [[UIBarButtonItem alloc] initWithCustomView:_autoPlayButton];
     
@@ -437,51 +560,51 @@
     [_speedButton setImage:[UIImage imageNamed:@"turtle_selected"] forState:UIControlStateSelected];
     [_speedButton setBackgroundColor:[UIColor npLightBlue]];
     
-     
+    
     if([self isiPhone]){
         _speedButton.frame=CGRectMake(0.0, 0.0, self.view.bounds.size.height * 0.1, self.view.bounds.size.height * 0.1);
-              // _speedButton.frame=CGRectMake(0.0, 0.0, 55, 55);
-     //   _speedButton.frame=CGRectMake(0.0, 0.0,self.view.bounds.size.height * 0.12 - 5, self.view.bounds.size.height * 0.12 -5);
+        // _speedButton.frame=CGRectMake(0.0, 0.0, 55, 55);
+        //   _speedButton.frame=CGRectMake(0.0, 0.0,self.view.bounds.size.height * 0.12 - 5, self.view.bounds.size.height * 0.12 -5);
         
     } else {
         _speedButton.frame=CGRectMake(0.0, 0.0, 160, 160);
     }
     
-       [_speedButton addTarget:self action:@selector(speedSelection:) forControlEvents:UIControlEventTouchUpInside];
+    [_speedButton addTarget:self action:@selector(speedSelection:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *speedBarItem = [[UIBarButtonItem alloc] initWithCustomView:_speedButton];
     
     _moreSelectButton = [BButton awesomeButtonWithOnlyIcon:FAEllipsisV color:[UIColor npLightBlue] style:BButtonStyleBootstrapV3];
-     [self createButtonForiPhoneiPad:_moreSelectButton];
+    [self createButtonForiPhoneiPad:_moreSelectButton];
     
     [_moreSelectButton addTarget:self action:@selector(ShowMoreSelectPopup:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *moreBarItem = [[UIBarButtonItem alloc] initWithCustomView:_moreSelectButton];
     
-   
+    
     
     NSArray *toolBarItems = [NSArray arrayWithObjects: flexibleSpace, shuffleBarItem, playBarItem, speedBarItem, moreBarItem, flexibleSpace, nil];
     [_selectionToolbar setItems: toolBarItems animated:NO];
-  
-
-    NSLayoutConstraint *left = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1 constant:0];
-
-    NSLayoutConstraint *right = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1 constant:0];
-
-    NSLayoutConstraint *top = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_cardBackground attribute:NSLayoutAttributeBottom multiplier:1 constant:10];
-
     
-   NSLayoutConstraint *bottom = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0];
+    
+    NSLayoutConstraint *left = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1 constant:0];
+    
+    NSLayoutConstraint *right = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1 constant:0];
+    
+    NSLayoutConstraint *top = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_cardBackground attribute:NSLayoutAttributeBottom multiplier:1 constant:10];
+    
+    
+    NSLayoutConstraint *bottom = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0];
     CGFloat constData = 0.0;
-  //  _interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-
+    //  _interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    
     if([self isiPhone]){
         //    constData = 30;
         constData = self.view.bounds.size.height * 0.12;
     } else {
-       // constData = self.view.bounds.size.height * 0.2;
+        // constData = self.view.bounds.size.height * 0.2;
         constData = 180.0;
     }
-   NSLayoutConstraint  *height = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:constData];
-   //_selectionToolbar.backgroundColor = [UIColor colorWithRed:3/255.0 green:99/255.0 blue:148/255.0 alpha:1.0];
+    NSLayoutConstraint  *height = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:constData];
+    //_selectionToolbar.backgroundColor = [UIColor colorWithRed:3/255.0 green:99/255.0 blue:148/255.0 alpha:1.0];
     [self.view addConstraints:@[left, right, top, bottom, height]];
 
 }
@@ -547,6 +670,11 @@
 -(void) getSelection:(MoreSelection *)selection{
     _moreSelection = selection;
     _languageSegmentIndex = _moreSelection.languageIndex;
+    
+    if (_languageSegmentIndex != NULL) {
+        NSLog(@"\n\n\ngetSelection %@",_languageSegmentIndex);
+    }
+    
     _voiceSegmentIndex = _moreSelection.voiceIndex;
     _isAudioOnSelected = _moreSelection.isAudioSelected;
     _identityRestoreID = _moreSelection.identityRestorationID;
@@ -903,6 +1031,8 @@
 
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
+    NSLog(@"respondToSwipe - \n\n");
+    
     long index = (long) _index + 1.0;
     long jsonItemCount = (long) _jsonItems.count;
 
@@ -958,10 +1088,6 @@
     
     test =  [jsonObject objectForKey:@"frr"];
     BOOL hasFemaleReg = (test != NULL && ![test isEqualToString:@"NO"]);
-
-    /*
-    long selectedGender = _genderMaleSelector.selectedSegmentIndex;
-*/
     
     long selectedGender = _voiceSegmentIndex;
     _audioRefs = [[NSMutableArray alloc] init];
@@ -1099,18 +1225,13 @@
     
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
-   // NSString *tlAtIndex = [jsonObject objectForKey:@"tl"];
-    
     _tlAtIndex = [jsonObject objectForKey:@"tl"];
     
     flAtIndex = [self trim:flAtIndex];
     _tlAtIndex = [self trim:_tlAtIndex];
     
-    // long selected = ;
-/*
-   if ([_whatToShow selectedSegmentIndex] == 3) {
- */
-    
+    NSLog(@"respondToSwipe _languageSegmentIndex %ld",(long)_languageSegmentIndex);
+
     if (_languageSegmentIndex == 3) {
         [self hideWithDashes:flAtIndex];
     }
@@ -1160,10 +1281,6 @@
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     NSString *showedID = [NSString stringWithFormat:@"showedIntro_%@",userid];
     NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
-    
-/*
-  BOOL showEnglish = _whatToShow.selectedSegmentIndex == 0;
- */
     
     BOOL showEnglish = _languageSegmentIndex == 0;
 
@@ -1403,7 +1520,9 @@
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     if ([self hasRefAudio]) {
         //  NSLog(@"\tplay ref if avail");
-        [_myAudioPlayer playRefAudio];
+        if (_quizMinutes == NULL || _playAudio) {
+          [_myAudioPlayer playRefAudio];
+        }
     }
     else {
         NSString *current = [[self getCurrentJson] objectForKey:@"id"];
@@ -1493,48 +1612,10 @@
     NSString *exercise       = [jsonObject objectForKey:@"fl"];
     NSString *tlExercise = [jsonObject objectForKey:@"tl"];
     [_foreignLang setText:[self trim:exercise]];
- //   [_tl setText:[self trim:tlExercise]];
 }
-
-/*
-// control showing english, fl phrase, or both
-- (IBAction)whatToShowSelection:(id)sender {
-    [self hideAndShowText];
-    
-    if (_audioOnButton.selected){
-        [self playRefAudioIfAvailable];
-    }
-
-    long selected = [_whatToShow selectedSegmentIndex];
-    
-    if (selected == 0) { // english
-        [self postEvent:@"showOnlyEnglish" widget:@"UIChoice" type:@"Button"];
-    }
-    else if (selected == 1) {  // fl
-        [self postEvent:@"showOnlyForeign" widget:@"UIChoice" type:@"Button"];
-    }
-    else if (selected == 2){
-        [self postEvent:@"showBothEnglishAndForeign" widget:@"UIChoice" type:@"Button"];
-    }
-    else {
-        [self postEvent:@"hideBoth" widget:@"UIChoice" type:@"Button"];
-    }
-    
-    if (_autoPlayButton.selected) {
-        [self doAutoAdvance];
-    }
-}
-*/
 
 -(void)whatToShowSelect{
     [self hideAndShowText];
-/*
-    if (_audioOnButton.selected){
-*/
-//        if (_isAudioOnSelected){
-//        [self playRefAudioIfAvailable];
-//    }
-    
     long selected = _languageSegmentIndex;
     
     if (selected == 0) { // english
@@ -1553,7 +1634,6 @@
     if (_autoPlayButton.selected) {
         [self doAutoAdvance];
     }
-
 }
 
 
@@ -1835,7 +1915,7 @@
 
 - (void)removePlayingAudioHighlight {
     //if (_foreignLang.textColor == [UIColor npMedPurple]) {
-        _foreignLang.textColor = [UIColor npDarkBlue];
+    _foreignLang.textColor = [UIColor npDarkBlue];
     //}
 }
 
@@ -1853,7 +1933,7 @@
     NSLog(@"Reason:      %@", [error localizedFailureReason]);
 }
 
-bool debugRecord = true;
+bool debugRecord = false;
 
 - (IBAction)recordAudio:(id)sender {
     [self stopAutoPlay];
@@ -1888,11 +1968,11 @@ bool debugRecord = true;
                 NSLog(@"recordAudio -recording %f vs begin %f diff %f ",_then2,recordingBegins,(recordingBegins-_then2));
             }
             
-            if (_quizTimer == NULL) {
+            if (_quizTimer == NULL && _quizMinutes != NULL) {  // start the timer!
                 _timeRemaining = _quizMinutes.intValue*60;
-              _quizTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerCalled) userInfo:nil repeats:YES];
+                _quizTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerCalled) userInfo:nil repeats:YES];
             }
-         
+            
         }
         else {
             NSLog(@"recordAudio -DUDE NOT recording");
@@ -1902,10 +1982,41 @@ bool debugRecord = true;
 }
 -(void)timerCalled
 {
-    NSLog(@"Timer Called");
+    NSLog(@"Timer Called %d",_timeRemaining);
     _timeRemaining -=1;
-    
+    if (_timeRemaining <= 0) [_quizTimer invalidate];
     _timeRemainingLabel.text = [NSString stringWithFormat:@"%d", _timeRemaining];
+    
+    int ONE_MIN = 60;
+    
+    int l = _timeRemaining;
+    
+    NSString *value;
+    if (l > 0) {
+        int min = l / ONE_MIN;
+        int sec = (l - (min * ONE_MIN));
+        NSString *prefix = min < 10 ? @"0" : @"";
+        NSString *secSuffix = (sec < 10 ? @"0" : @"");
+        value = [NSString stringWithFormat:@"%@%d:%@%d",prefix,min,secSuffix,sec];
+        
+        
+        //  prefix + min + @":" + (sec < 10 ? @"0" : @"") + sec;
+        //            if (min == 0) {
+        //                if (sec < 30) {
+        //                    timeLeft.setType(LabelType.IMPORTANT);
+        //                } else {
+        //                    timeLeft.setType(LabelType.WARNING);
+        //                }
+        //            } else {
+        //                timeLeft.setType(LabelType.SUCCESS);
+        //            }
+    } else {
+        value = @"";
+    }
+    NSLog(@"Timer value %@",value);
+
+    [_timeRemainingLabel setText:value];
+    
     
 }
 - (void)postRecordAudioStart {
@@ -2031,7 +2142,7 @@ bool debugRecord = true;
 
 - (IBAction)longPressAction:(id)sender {
 
-    if (debugRecord)  NSLog(@"longPressAction   state %ul vs %ul", (long)_longPressGesture.state, (long)UIGestureRecognizerStateBegan);
+  //  if (debugRecord)  NSLog(@"longPressAction   state %ul vs %ul", (long)_longPressGesture.state, (long)UIGestureRecognizerStateBegan);
 
     if (_longPressGesture.state == UIGestureRecognizerStateBegan) {
         if (debugRecord)  NSLog(@"longPressAction got state begin");

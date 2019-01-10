@@ -10,7 +10,10 @@ import UIKit
 
 class EAFListChoiceCell: UITableViewCell {
     var listid:Int = -1
-    
+    var quizMinutes:Int = -1
+    var minScoreToAdvance:Int = -1
+    var playAudio:Bool = false
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style:style,reuseIdentifier:reuseIdentifier)
     }
@@ -20,13 +23,13 @@ class EAFListChoiceCell: UITableViewCell {
         super.init(coder:aDecoder)
     }
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        // Configure the view for the selected state
-    }
+//    override func awakeFromNib() {
+//        super.awakeFromNib()
+//        // Initialization code
+//    }
+//
+//    override func setSelected(_ selected: Bool, animated: Bool) {
+//        super.setSelected(selected, animated: animated)
+//        // Configure the view for the selected state
+//    }
 }

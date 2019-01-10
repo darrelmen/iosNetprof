@@ -76,10 +76,11 @@
 @property NSString *currentUnit;
 @property NSString *unitTitle;
 @property NSString *language;
-@property NSString *projectLanguage;
+//@property NSString *projectLanguage;
 
 @property NSNumber *projid;
 @property NSNumber *listid;
+@property NSString *listtitle;
 
 // quiz slots
 @property NSNumber *numQuizItems;
@@ -101,6 +102,7 @@
 - (IBAction)tapOnTlDetected:(id)sender;
 
 @property (strong, nonatomic) IBOutlet UIProgressView *progressThroughItems;
+@property (strong, nonatomic) IBOutlet UIProgressView *timerProgress;
 
 @property (weak, nonatomic) IBOutlet UILabel *progressNum;
 @property (weak, nonatomic) IBOutlet UILabel *timeRemainingLabel;

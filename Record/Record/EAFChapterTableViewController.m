@@ -687,7 +687,7 @@ UIAlertView *loadingContentAlert;
                 NSString *childType = nil;
                 for (NSDictionary *child in children) {
                     childType = [child objectForKey:@"type"];
-                    NSLog(@"UUUUUUUU------- %@", childType);
+                   // NSLog(@"UUUUUUUU------- %@", childType);
                     [myArray addObject:[child objectForKey:@"name"]];
                     items = [child objectForKey:@"items"];
                     

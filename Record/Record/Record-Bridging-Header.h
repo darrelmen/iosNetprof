@@ -6,3 +6,4 @@
 
 #import "EAFGetSites.h"
 #import "EAFItemTableViewController.h"
+#import "EAFRecoFlashcardController.h"

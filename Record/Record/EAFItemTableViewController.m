@@ -333,16 +333,13 @@
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
     [urlRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
-    //    NSURLRequestCachePolicy policy= [urlRequest cachePolicy];
-    //    NSLog(@"\n\n\nItemViewController policy = %d\n\n\n",policy);
-    
     [urlRequest setTimeoutInterval:10];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     [urlRequest setValue:[_projid stringValue] forHTTPHeaderField:@"projid"];
-  //  NSLog(@"ItemViewController projid = %@",_projid);
+     NSLog(@"ItemViewController projid = %@",_projid);
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
@@ -557,7 +554,7 @@
     
     if (_quizMinutes != NULL) {
      //   NSLog(@"Item Table - quiz minutes %@",_quizMinutes);
-             
+        
         flashcardController.numQuizItems = [NSNumber numberWithInt:_jsonItems.count];
         flashcardController.quizMinutes = _quizMinutes;
         flashcardController.minScoreToAdvance = _minScoreToAdvance;
@@ -566,7 +563,7 @@
     
     flashcardController.listid = _listid;
 
-    flashcardController.projectLanguage = _projectLanguage;
+  //  flashcardController.projectLanguage = _projectLanguage;
     if (_listid == NULL) {
         [flashcardController setTitle:[NSString stringWithFormat:@"%@ %@ %@",_language,_chapterTitle, _currentChapter]];
     }

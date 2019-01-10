@@ -180,10 +180,10 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" verticalHuggingPriority="1" ambiguous="YES" restorationIdentifier="innerCard" translatesAutoresizingMaskIntoConstraints="NO" id="D0k-He-nFx">
-                                <rect key="frame" x="16" y="96" width="343" height="553.5"/>
+                                <rect key="frame" x="16" y="126" width="343" height="533"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" verticalHuggingPriority="750" verticalCompressionResistancePriority="250" ambiguous="YES" restorationIdentifier="recordButtonContainer" translatesAutoresizingMaskIntoConstraints="NO" id="LDy-Lh-sWf">
-                                        <rect key="frame" x="6" y="478.5" width="331" height="70"/>
+                                        <rect key="frame" x="6" y="458" width="331" height="70"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" restorationIdentifier="recordButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="85Q-3i-7cz">
                                                 <rect key="frame" x="132.5" y="5" width="60" height="60"/>
@@ -240,7 +240,7 @@
                                         </connections>
                                     </view>
                                     <pageControl hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="2" translatesAutoresizingMaskIntoConstraints="NO" id="cmF-9c-VKI">
-                                        <rect key="frame" x="320" y="258.5" width="23" height="37"/>
+                                        <rect key="frame" x="320" y="248" width="23" height="37"/>
                                         <color key="pageIndicatorTintColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <color key="currentPageIndicatorTintColor" red="0.21899779089999999" green="0.4041270314" blue="0.65392768320000005" alpha="1" colorSpace="calibratedRGB"/>
                                     </pageControl>
@@ -248,7 +248,7 @@
                                         <rect key="frame" x="264" y="7" width="72" height="40"/>
                                         <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="72" id="9yU-ei-Er0"/>
+                                            <constraint firstAttribute="width" constant="72" id="P81-D9-ADb"/>
                                             <constraint firstAttribute="height" constant="40" id="geC-EU-7sx"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="17"/>
@@ -258,7 +258,7 @@
                                         </connections>
                                     </button>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" ambiguous="YES" restorationIdentifier="correctnessIndicator" image="checkmark32.png" translatesAutoresizingMaskIntoConstraints="NO" id="ZN1-US-MJW">
-                                        <rect key="frame" x="20" y="442.5" width="32" height="32"/>
+                                        <rect key="frame" x="20" y="422" width="32" height="32"/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="24" id="E4Q-kt-ZOb"/>
                                         </constraints>
@@ -309,8 +309,8 @@
                                             <outletCollection property="gestureRecognizers" destination="cKC-E7-J88" appends="YES" id="76e-st-qGa"/>
                                         </connections>
                                     </label>
-                                    <view contentMode="scaleToFill" verticalHuggingPriority="900" verticalCompressionResistancePriority="1000" ambiguous="YES" misplaced="YES" restorationIdentifier="scoreContainer" translatesAutoresizingMaskIntoConstraints="NO" id="vlT-Ea-UA6">
-                                        <rect key="frame" x="14" y="434" width="254" height="10"/>
+                                    <view contentMode="scaleToFill" verticalHuggingPriority="900" verticalCompressionResistancePriority="1000" ambiguous="YES" restorationIdentifier="scoreContainer" translatesAutoresizingMaskIntoConstraints="NO" id="vlT-Ea-UA6">
+                                        <rect key="frame" x="14" y="390" width="309" height="24"/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="24" id="3SS-UD-NHZ"/>
                                         </constraints>
@@ -328,7 +328,7 @@
                                         </connections>
                                     </label>
                                     <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" ambiguous="YES" restorationIdentifier="scoringIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="vmx-bc-B8p" customClass="UIProgressView">
-                                        <rect key="frame" x="60" y="446.5" width="263" height="24"/>
+                                        <rect key="frame" x="60" y="426" width="263" height="24"/>
                                         <color key="backgroundColor" red="1" green="0.1644589393" blue="0.85615095880000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="24" id="eGw-2Z-N2T"/>
@@ -441,14 +441,29 @@
                                 </connections>
                             </view>
                             <progressView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="f4N-q5-bJc">
-                                <rect key="frame" x="112.5" y="75" width="150" height="10"/>
+                                <rect key="frame" x="112.5" y="75" width="150" height="16"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="10" id="EnX-b7-H31"/>
+                                    <constraint firstAttribute="height" constant="16" id="EnX-b7-H31"/>
                                     <constraint firstAttribute="width" constant="150" id="yYh-ku-4mM"/>
                                 </constraints>
                             </progressView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="progressNum" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="udM-ls-vBD">
-                                <rect key="frame" x="270.5" y="72" width="88.5" height="16"/>
+                                <rect key="frame" x="270.5" y="72" width="88.5" height="22"/>
+                                <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="12"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <progressView hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" verticalHuggingPriority="750" restorationIdentifier="countdownTimer" progress="0.40000000596046448" translatesAutoresizingMaskIntoConstraints="NO" id="Kcv-ca-emm">
+                                <rect key="frame" x="112.5" y="99" width="150" height="16"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="16" id="Pgv-0O-5qo"/>
+                                    <constraint firstAttribute="width" constant="150" id="rqO-LI-gO2"/>
+                                </constraints>
+                            </progressView>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" restorationIdentifier="timeRemaining" text="TimeRemaining" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gZ5-Yq-nQn">
+                                <rect key="frame" x="270.5" y="99" width="88.5" height="16"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="12"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -459,14 +474,20 @@
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="mrf-3p-FpD" firstAttribute="top" secondItem="f4N-q5-bJc" secondAttribute="bottom" constant="2" id="0hM-VF-Bsy"/>
+                            <constraint firstItem="gZ5-Yq-nQn" firstAttribute="centerY" secondItem="Kcv-ca-emm" secondAttribute="centerY" id="35d-Tm-mf5"/>
+                            <constraint firstItem="Kcv-ca-emm" firstAttribute="top" secondItem="f4N-q5-bJc" secondAttribute="bottom" constant="8" symbolic="YES" id="AKx-ex-XRX"/>
+                            <constraint firstItem="udM-ls-vBD" firstAttribute="centerY" secondItem="f4N-q5-bJc" secondAttribute="centerY" id="LJa-1w-E8v"/>
+                            <constraint firstItem="Kcv-ca-emm" firstAttribute="trailing" secondItem="f4N-q5-bJc" secondAttribute="trailing" id="Mzd-y6-Nvo"/>
+                            <constraint firstItem="gZ5-Yq-nQn" firstAttribute="leading" secondItem="udM-ls-vBD" secondAttribute="leading" id="RHA-nl-SSr"/>
                             <constraint firstItem="D0k-He-nFx" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="TQH-Gw-Pzg"/>
-                            <constraint firstItem="udM-ls-vBD" firstAttribute="leading" secondItem="f4N-q5-bJc" secondAttribute="trailing" constant="8" id="YRf-1J-Lzf"/>
+                            <constraint firstItem="udM-ls-vBD" firstAttribute="leading" secondItem="f4N-q5-bJc" secondAttribute="trailing" constant="8" symbolic="YES" id="YRf-1J-Lzf"/>
                             <constraint firstItem="D0k-He-nFx" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="YWH-78-0wH"/>
+                            <constraint firstItem="gZ5-Yq-nQn" firstAttribute="trailing" secondItem="udM-ls-vBD" secondAttribute="trailing" id="bKK-KE-6Dr"/>
                             <constraint firstItem="f4N-q5-bJc" firstAttribute="top" secondItem="D0k-He-nFx" secondAttribute="bottom" constant="2" id="gUe-VZ-UED"/>
                             <constraint firstAttribute="centerX" secondItem="f4N-q5-bJc" secondAttribute="centerX" id="gsY-E5-yQU"/>
-                            <constraint firstItem="D0k-He-nFx" firstAttribute="top" secondItem="f4N-q5-bJc" secondAttribute="bottom" constant="11" id="l0o-SA-qf4"/>
+                            <constraint firstItem="gZ5-Yq-nQn" firstAttribute="top" secondItem="Kcv-ca-emm" secondAttribute="top" id="iVY-d0-HAT"/>
+                            <constraint firstItem="D0k-He-nFx" firstAttribute="top" secondItem="Kcv-ca-emm" secondAttribute="bottom" constant="11" id="j4h-41-CBt"/>
                             <constraint firstItem="udM-ls-vBD" firstAttribute="top" secondItem="mrf-3p-FpD" secondAttribute="bottom" constant="8" symbolic="YES" id="rzV-kL-yGg"/>
-                            <constraint firstItem="D0k-He-nFx" firstAttribute="top" secondItem="udM-ls-vBD" secondAttribute="bottom" constant="8" symbolic="YES" id="tEx-zU-gWF"/>
                             <constraint firstItem="f4N-q5-bJc" firstAttribute="top" secondItem="mrf-3p-FpD" secondAttribute="bottom" constant="11" id="v0a-H6-03b"/>
                             <constraint firstItem="udM-ls-vBD" firstAttribute="trailing" secondItem="D0k-He-nFx" secondAttribute="trailing" id="xhw-mp-Sf4"/>
                         </constraints>
@@ -500,6 +521,8 @@
                         <outlet property="recordButtonContainer" destination="LDy-Lh-sWf" id="XGE-r8-Lpv"/>
                         <outlet property="scoreDisplayContainer" destination="vlT-Ea-UA6" id="Ajv-Uc-2C0"/>
                         <outlet property="scoreProgress" destination="vmx-bc-B8p" id="vxl-Oq-iJM"/>
+                        <outlet property="timeRemainingLabel" destination="gZ5-Yq-nQn" id="LCa-lw-Erb"/>
+                        <outlet property="timerProgress" destination="Kcv-ca-emm" id="Ggv-du-Ppi"/>
                         <outlet property="tl" destination="A1W-86-4EI" id="9UC-Av-75H"/>
                         <segue destination="v6I-8h-4xT" kind="show" identifier="goToReport" id="bgE-RJ-Bgu"/>
                     </connections>
@@ -2282,10 +2305,10 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" verticalHuggingPriority="1" restorationIdentifier="innerCard" translatesAutoresizingMaskIntoConstraints="NO" id="iz6-Om-yUM">
-                                <rect key="frame" x="16" y="117" width="343" height="542"/>
+                                <rect key="frame" x="16" y="73" width="343" height="586"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" verticalHuggingPriority="750" verticalCompressionResistancePriority="250" restorationIdentifier="recordButtonContainer" translatesAutoresizingMaskIntoConstraints="NO" id="rsP-Zr-8Ze">
-                                        <rect key="frame" x="20" y="452" width="303" height="70"/>
+                                        <rect key="frame" x="20" y="496" width="303" height="70"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" restorationIdentifier="recordButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9oh-09-EYC">
                                                 <rect key="frame" x="118.5" y="5" width="60" height="60"/>
@@ -2342,7 +2365,7 @@
                                         </connections>
                                     </view>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" restorationIdentifier="correctnessIndicator" image="checkmark32.png" translatesAutoresizingMaskIntoConstraints="NO" id="JKk-4f-YNV">
-                                        <rect key="frame" x="20" y="412" width="32" height="32"/>
+                                        <rect key="frame" x="20" y="456" width="32" height="32"/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="24" id="cEb-fc-HAA"/>
                                         </constraints>
@@ -2394,13 +2417,13 @@
                                         </connections>
                                     </label>
                                     <view contentMode="scaleToFill" verticalHuggingPriority="900" verticalCompressionResistancePriority="1000" restorationIdentifier="scoreContainer" translatesAutoresizingMaskIntoConstraints="NO" id="kVf-NT-Pgg">
-                                        <rect key="frame" x="14" y="380" width="309" height="24"/>
+                                        <rect key="frame" x="14" y="399.5" width="309" height="48.5"/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="24" id="Mf6-U1-rMz"/>
                                         </constraints>
                                     </view>
                                     <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="748" text="Transliteration" textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="HNs-Xn-uwP">
-                                        <rect key="frame" x="20" y="341.5" width="303" height="30.5"/>
+                                        <rect key="frame" x="20" y="341.5" width="303" height="50"/>
                                         <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" priority="748" constant="50" id="5e9-uk-Ymj"/>
@@ -2412,7 +2435,7 @@
                                         </connections>
                                     </label>
                                     <view opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" restorationIdentifier="scoringIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="Sce-jx-qlV" customClass="UIProgressView">
-                                        <rect key="frame" x="60" y="416" width="263" height="24"/>
+                                        <rect key="frame" x="60" y="460" width="263" height="24"/>
                                         <color key="backgroundColor" red="1" green="0.1644589393" blue="0.85615095880000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="24" id="9bs-xu-1Sx"/>
@@ -2509,14 +2532,14 @@
                                 </connections>
                             </view>
                             <progressView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hRV-qA-hbA">
-                                <rect key="frame" x="112.5" y="75" width="150" height="10"/>
+                                <rect key="frame" x="112.5" y="31" width="150" height="10"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="10" id="HZO-eF-8qM"/>
                                     <constraint firstAttribute="width" constant="150" id="QeI-Aw-j9J"/>
                                 </constraints>
                             </progressView>
-                            <progressView opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" verticalHuggingPriority="750" restorationIdentifier="countdownTimer" progress="0.40000000000000002" translatesAutoresizingMaskIntoConstraints="NO" id="WRJ-Xp-1wG">
-                                <rect key="frame" x="112.5" y="96" width="150" height="10"/>
+                            <progressView hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" verticalHuggingPriority="750" restorationIdentifier="countdownTimer" progress="0.40000000000000002" translatesAutoresizingMaskIntoConstraints="NO" id="WRJ-Xp-1wG">
+                                <rect key="frame" x="112.5" y="52" width="150" height="10"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="10" id="2vu-qr-iRo"/>
@@ -2524,13 +2547,13 @@
                                 </constraints>
                             </progressView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="progressNum" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f5b-sg-gnd">
-                                <rect key="frame" x="270.5" y="72" width="88.5" height="15.5"/>
+                                <rect key="frame" x="270.5" y="28" width="88.5" height="15.5"/>
                                 <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="12"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" restorationIdentifier="timeRemaining" text="TimeRemaining" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cg3-mY-01H">
-                                <rect key="frame" x="270.5" y="95.5" width="84" height="13.5"/>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" restorationIdentifier="timeRemaining" text="TimeRemaining" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" enabled="NO" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cg3-mY-01H">
+                                <rect key="frame" x="270.5" y="51.5" width="84" height="13.5"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="12"/>
                                 <nil key="textColor"/>
@@ -2673,7 +2696,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="Da4-7s-WsG" kind="show" id="kEw-EF-rPO"/>
+                                    <segue destination="vXZ-lx-hvc" kind="show" identifier="goToRecoFlashcard" id="zSI-Cy-WCG"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -2726,7 +2749,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="gGQ-gU-FuB" kind="show" identifier="showList" id="6v9-y2-fl8"/>
+                                    <segue destination="vXZ-lx-hvc" kind="show" identifier="goToQuizFlashcard" id="rCo-Ei-peq"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -2759,7 +2782,8 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="cVG-Ak-6vc"/>
-        <segue reference="x0d-iN-b5a"/>
+        <segue reference="rCo-Ei-peq"/>
+        <segue reference="qsY-oz-nvU"/>
         <segue reference="it6-Rz-Ryn"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.21899779089999999" green="0.4041270314" blue="0.65392768320000005" alpha="1" colorSpace="calibratedRGB"/>
