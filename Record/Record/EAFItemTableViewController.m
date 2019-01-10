@@ -70,8 +70,6 @@
 
 @property NSArray *temp_jsonItems;
 
-//@property unsigned long lessonTotalItems;
-
 @property (strong, nonatomic) UISearchController *searchController;
 @end
 
@@ -135,8 +133,6 @@
     //   [self createBtnAndLabelForHeaderView];
     
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(OrientationChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
-    
- //   _lessonTotalItems = _jsonItems.count;
 }
 
 //- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
@@ -330,7 +326,6 @@
 }
 
 -(void)askServerForJsonForList {
-    
     NSString* baseurl =[NSString stringWithFormat:@"%@scoreServlet?request=CONTENT&list=%@", _url, _listid];
     NSLog(@"ItemViewController askServerForJsonForList url %@",baseurl);
     
@@ -347,7 +342,7 @@
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     [urlRequest setValue:[_projid stringValue] forHTTPHeaderField:@"projid"];
-    NSLog(@"ItemViewController projid = %@",_projid);
+  //  NSLog(@"ItemViewController projid = %@",_projid);
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
@@ -359,7 +354,6 @@
              });
          }
          else {
-             //NSLog(@"ItemTableViewController Got normal resp");
              _responseListData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoadingList:)
                                     withObject:nil
@@ -379,9 +373,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    
     return _requestPending ? 0:[_jsonItems count];
-    
 }
 
 - (void)colorWholeString:(NSMutableAttributedString *)result scoreString:(NSString *)scoreString
@@ -565,7 +557,8 @@
     
     if (_quizMinutes != NULL) {
      //   NSLog(@"Item Table - quiz minutes %@",_quizMinutes);
-        
+             
+        flashcardController.numQuizItems = [NSNumber numberWithInt:_jsonItems.count];
         flashcardController.quizMinutes = _quizMinutes;
         flashcardController.minScoreToAdvance = _minScoreToAdvance;
         flashcardController.playAudio = _playAudio;

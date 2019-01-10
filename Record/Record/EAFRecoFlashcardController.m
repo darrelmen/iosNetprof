@@ -112,6 +112,10 @@
 
 @property NSString *tlAtIndex;
 
+@property BOOL timerStarted;
+@property int timeRemaining;
+@property NSTimer *quizTimer;
+
 
 - (void)postAudio;
 
@@ -162,29 +166,6 @@
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
     //NSLog(@"popoverControllerDidDismissPopover --->");
 }
-
-/*
-- (void)configureWhatToShow
-{
-    [_whatToShow setSelectedSegmentIndex:2];
-    
-    [_whatToShow setTitle:[self getProjectLanguage] forSegmentAtIndex:1];
-    
-    if ([_language isEqualToString:@"English"]) {
-        [_whatToShow setTitle:@"Def." forSegmentAtIndex:0];
-    }
-    else if ([_language isEqualToString:@"Sudanese"]) {
-        [_whatToShow setTitle:@"Sudan" forSegmentAtIndex:1];
-    }
-    else if ([_language isEqualToString:@"Pashto1"] || [_language isEqualToString:@"Pashto2"] || [_language isEqualToString:@"Pashto3"]) {
-        [_whatToShow setTitle:@"Pashto" forSegmentAtIndex:1];
-    }
-    
-    if (![self isiPad] && ![_language isEqualToString:@"English"]) {
-        [_whatToShow setTitle:@"Eng" forSegmentAtIndex:0];
-    }
-}
-*/
 
 
 - (void)viewDidLoad
@@ -299,20 +280,9 @@
     _scoreProgress.layer.borderColor = [UIColor grayColor].CGColor;
     [_correctFeedback setHidden:true];
     
-//    if (!_hasModel) {
-//        NSLog(@"----> EAFRecoFlashcardController : No model for %@",_language);
-//        _recordButtonContainer.hidden = true;
-//    }
-//    else {
-//        _recordButtonContainer.hidden = false;
-//    }
-    
     _scoreProgress.hidden = true;
     _progressThroughItems.progressTintColor = [UIColor npLightYellow];
- /*
-       [self configureWhatToShow];
-  */
-    
+ 
     _pageControl.transform = CGAffineTransformMakeRotation(M_PI_2);
     
     [_contextButton initWithFrame:CGRectMake(0.0f, 0.0f, 40.0f, 40.0f)
@@ -356,6 +326,24 @@
     
     if (_quizMinutes == NULL) {
         [self setupToolBar];
+    }
+    else {
+        
+        // if timer hasn't started!
+        
+        NSString *min = @"minutes";
+        if (_quizMinutes == 1) min = @"minute";
+        NSString *postLength = [NSString stringWithFormat:@"You have %@ %@ to complete %@ items.\nScores above %@ advance automatically.\nIf you finish with time remaining, it's OK to go back.",_quizMinutes,min,_numQuizItems,_minScoreToAdvance];
+        
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Quiz Rules"
+                                                                       message:postLength
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {}];
+        
+        [alert addAction:defaultAction];
+        [self presentViewController:alert animated:YES completion:nil];
     }
     
 //    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
@@ -593,6 +581,11 @@
     [super viewWillDisappear:animated];
     
     NSLog(@"- viewWillDisappear - Stop auto play.");
+    
+    if (_quizTimer !=NULL) {
+        [_quizTimer invalidate];
+    }
+    
     [self stopAutoPlay];
     // [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
 }
@@ -892,7 +885,6 @@
     [self postEvent:genderSelect widget:@"genderSelect" type:@"UIButton"];
     
     [self respondToSwipe];
-
 }
 
 
@@ -966,7 +958,8 @@
     
     test =  [jsonObject objectForKey:@"frr"];
     BOOL hasFemaleReg = (test != NULL && ![test isEqualToString:@"NO"]);
-/*
+
+    /*
     long selectedGender = _genderMaleSelector.selectedSegmentIndex;
 */
     
@@ -1860,7 +1853,7 @@
     NSLog(@"Reason:      %@", [error localizedFailureReason]);
 }
 
-bool debugRecord = false;
+bool debugRecord = true;
 
 - (IBAction)recordAudio:(id)sender {
     [self stopAutoPlay];
@@ -1894,6 +1887,12 @@ bool debugRecord = false;
                 CFAbsoluteTime recordingBegins = CFAbsoluteTimeGetCurrent();
                 NSLog(@"recordAudio -recording %f vs begin %f diff %f ",_then2,recordingBegins,(recordingBegins-_then2));
             }
+            
+            if (_quizTimer == NULL) {
+                _timeRemaining = _quizMinutes.intValue*60;
+              _quizTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerCalled) userInfo:nil repeats:YES];
+            }
+         
         }
         else {
             NSLog(@"recordAudio -DUDE NOT recording");
@@ -1901,7 +1900,14 @@ bool debugRecord = false;
         }
     }
 }
-
+-(void)timerCalled
+{
+    NSLog(@"Timer Called");
+    _timeRemaining -=1;
+    
+    _timeRemainingLabel.text = [NSString stringWithFormat:@"%d", _timeRemaining];
+    
+}
 - (void)postRecordAudioStart {
     [self postEvent:@"record audio start" widget:@"record audio" type:@"Button"];
 }
@@ -2024,8 +2030,12 @@ bool debugRecord = false;
 }
 
 - (IBAction)longPressAction:(id)sender {
+
+    if (debugRecord)  NSLog(@"longPressAction   state %ul vs %ul", (long)_longPressGesture.state, (long)UIGestureRecognizerStateBegan);
+
     if (_longPressGesture.state == UIGestureRecognizerStateBegan) {
-        _gestureStart = CFAbsoluteTimeGetCurrent();
+        if (debugRecord)  NSLog(@"longPressAction got state begin");
+       _gestureStart = CFAbsoluteTimeGetCurrent();
         
         _recordButtonContainer.backgroundColor =[UIColor npRecordBG];
         _recordButton.enabled = NO;

@@ -82,6 +82,7 @@
 @property NSNumber *listid;
 
 // quiz slots
+@property NSNumber *numQuizItems;
 @property NSNumber *quizMinutes;
 @property NSNumber *minScoreToAdvance;
 @property BOOL playAudio;
@@ -102,6 +103,7 @@
 @property (strong, nonatomic) IBOutlet UIProgressView *progressThroughItems;
 
 @property (weak, nonatomic) IBOutlet UILabel *progressNum;
+@property (weak, nonatomic) IBOutlet UILabel *timeRemainingLabel;
 
 @property (strong) NSTimer *repeatingTimer;
 

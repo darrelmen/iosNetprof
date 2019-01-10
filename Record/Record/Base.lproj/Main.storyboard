@@ -2586,6 +2586,7 @@
                         <outlet property="recordButtonContainer" destination="rsP-Zr-8Ze" id="IwL-TA-Vcy"/>
                         <outlet property="scoreDisplayContainer" destination="kVf-NT-Pgg" id="gMu-Kn-CTX"/>
                         <outlet property="scoreProgress" destination="Sce-jx-qlV" id="h8u-nI-vWb"/>
+                        <outlet property="timeRemainingLabel" destination="Cg3-mY-01H" id="PRo-1k-bGm"/>
                         <outlet property="tl" destination="HNs-Xn-uwP" id="0pH-WE-3fc"/>
                     </connections>
                 </viewController>
@@ -2637,7 +2638,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="4676" y="743"/>
+            <point key="canvasLocation" x="4676" y="582"/>
         </scene>
         <!--Quiz Item List-->
         <scene sceneID="FsJ-s8-0Ql">
