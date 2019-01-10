@@ -40,7 +40,9 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
-#import "Record-Swift.h"
+
+#import <Record-Swift.h>
+
 #import "EAFSignUpViewController.h"
 #import "EAFForgotUsernameViewController.h"
 #import "EAFForgotPasswordViewController.h"
@@ -482,8 +484,8 @@
     
     NSString *existing = [json objectForKey:@"ExistingUserName"];
     
-    NSLog(@"useJsonChapterData existing         %@",existing);
-    NSLog(@"useJsonChapterData resetToken       %@",resetToken);
+    //NSLog(@"useJsonChapterData existing         %@",existing);
+    //NSLog(@"useJsonChapterData resetToken       %@",resetToken);
     NSLog(@"useJsonChapterData userIDExisting   %@",userIDExisting);
     NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
     
@@ -521,7 +523,7 @@
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
         
-        NSLog(@"\n\n\nuseJsonChapterData set current user id to %@",_username.text);
+       // NSLog(@"useJsonChapterData set current user id to %@",_username.text);
         
         NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];

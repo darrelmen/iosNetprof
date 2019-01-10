@@ -562,6 +562,16 @@
     flashcardController.language = _language;
     flashcardController.projid = _projid;
     flashcardController.listid = _listid;
+    
+    if (_quizMinutes != NULL) {
+     //   NSLog(@"Item Table - quiz minutes %@",_quizMinutes);
+        
+        flashcardController.quizMinutes = _quizMinutes;
+        flashcardController.minScoreToAdvance = _minScoreToAdvance;
+        flashcardController.playAudio = _playAudio;
+    }
+    
+    flashcardController.listid = _listid;
 
     flashcardController.projectLanguage = _projectLanguage;
     if (_listid == NULL) {
@@ -609,7 +619,7 @@
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     [urlRequest setValue:[_projid stringValue] forHTTPHeaderField:@"projid"];
-    NSLog(@"ItemViewController projid = %@",_projid);
+    //NSLog(@"ItemViewController projid = %@",_projid);
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
@@ -748,14 +758,13 @@
 }
 
 - (BOOL) useListData {
-    NSLog(@"ItemTableViewController - useListData");
-    
+    _requestPending = false;
+
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_responseListData
                           options:NSJSONReadingAllowFragments
                           error:&error];
-    _requestPending = false;
     
     if (error) {
         NSLog(@"useJsonChapterData error %@",error.description);
@@ -763,7 +772,7 @@
     }
     
     _jsonItems = [json objectForKey:@"content"];
-    
+
     NSLog(@"ItemTableViewController - useListData --- num json %lu ",(unsigned long)_jsonItems.count);
 
     [self askServerForJson];

@@ -98,11 +98,14 @@ class ListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ListPrototypeCell", for: indexPath) as! EAFListChoiceCell
-        cell.textLabel?.text = names[indexPath.row]
-        cell.listid = ids[indexPath.row]
+        let selectedRow: Int = indexPath.row
+        cell.textLabel?.text = names[selectedRow]
+        cell.listid = ids[selectedRow]
         return cell
     }
     
+    // TODO Notional quiz spec for now - get later from json
+    // TODO add to json sent for quizzes
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 //        print("ListViewController got prepare for segue  \(segue)")
 //        print("ListViewController got prepare for sender \(sender ?? "something undefined")")
@@ -111,8 +114,8 @@ class ListViewController: UITableViewController {
 //        print("remember \(url)")
        
 //        print("prepare \(sender)")
-//        print("segue    \(String(describing: segue.identifier))")
-//        print("segue dest \(segue.destination)")
+        print("segue    \(String(describing: segue.identifier))")
+        print("segue dest \(segue.destination)")
         
         if (segue.identifier == "showList") {
             let itemTableViewController = segue.destination as? EAFItemTableViewController
@@ -121,6 +124,14 @@ class ListViewController: UITableViewController {
             itemTableViewController?.listid = cell.listid as NSNumber
             itemTableViewController?.listTitle = cell.textLabel?.text
             itemTableViewController?.projid = self.projid as NSNumber
+            
+            print("prepare quiz \(isQuiz)")
+
+            if (isQuiz) {
+                itemTableViewController?.quizMinutes = 1;
+                itemTableViewController?.minScoreToAdvance = 30;
+                itemTableViewController?.playAudio = false;
+            }
         }
     }
 }

@@ -345,7 +345,6 @@
 //    self.navigationController.navigationBar.tintColor=[UIColor blueColor];
 //    self.navigationController.navigationBar.translucent=NO;
     
-    
     UIBarButtonItem *scoreShow = [[UIBarButtonItem alloc]
                                    initWithTitle:@"Score"
                                    style:UIBarButtonItemStyleBordered
@@ -355,7 +354,9 @@
     
     _selectionToolbar=[[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 10, 10)];
     
-    [self setupToolBar];
+    if (_quizMinutes == NULL) {
+        [self setupToolBar];
+    }
     
 //    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 //    [[NSNotificationCenter defaultCenter] addObserver:self

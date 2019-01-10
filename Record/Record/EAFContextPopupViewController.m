@@ -42,6 +42,9 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "MZFormSheetController.h"
+
+//#import "MZFormSheetController/MZFormSheetController.h"
+//#import <MZFormSheetController/MZFormSheetController.h>
 #import "UIColor_netprofColors.h"
 
 @interface EAFContextPopupViewController ()
@@ -201,6 +204,12 @@
 - (IBAction)gotOK:(id)sender {
     [self mz_dismissFormSheetControllerAnimated:YES completionHandler:^(MZFormSheetController *formSheetController) {
     }];
+  //  NSLog(@"OK dismiss me!");
+    
+//    [self dismissViewControllerAnimated:YES completion:^{
+//        NSLog(@"OK done!");
+//
+//    }];
 }
 
 - (IBAction)gotTouchInside:(id)sender {

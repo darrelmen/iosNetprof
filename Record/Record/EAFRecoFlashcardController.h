@@ -70,7 +70,7 @@
 
 @property NSString *url;
 @property BOOL isRTL;
-//@property BOOL hasModel;
+
 @property NSString *currentChapter;
 @property NSString *chapterTitle;
 @property NSString *currentUnit;
@@ -80,6 +80,11 @@
 
 @property NSNumber *projid;
 @property NSNumber *listid;
+
+// quiz slots
+@property NSNumber *quizMinutes;
+@property NSNumber *minScoreToAdvance;
+@property BOOL playAudio;
 
 @property (weak, nonatomic) IBOutlet UIView *scoreDisplayContainer;
 @property (strong, nonatomic) IBOutlet UIProgressView *scoreProgress;

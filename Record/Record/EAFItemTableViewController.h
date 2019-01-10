@@ -54,6 +54,11 @@
 @property NSNumber *listid;
 @property NSString *listTitle;
 
+// quiz slots
+@property NSNumber *quizMinutes;
+@property NSNumber *minScoreToAdvance;
+@property BOOL playAudio;
+
 @property long user;
 
 @property (strong, nonatomic) NSDictionary *chapterToItems;
