@@ -76,7 +76,6 @@
 @property NSString *currentUnit;
 @property NSString *unitTitle;
 @property NSString *language;
-//@property NSString *projectLanguage;
 
 @property NSNumber *projid;
 @property NSNumber *listid;

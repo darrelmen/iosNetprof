@@ -516,8 +516,6 @@ NSString *myCurrentTitle;
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    // The request is complete and data has been received
-    
     //[loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
     [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];

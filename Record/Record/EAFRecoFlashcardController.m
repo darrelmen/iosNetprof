@@ -114,6 +114,7 @@
 
 @property BOOL timerStarted;
 @property int timeRemaining;
+@property long sessionTimeStamp;
 @property NSTimer *quizTimer;
 @property (strong, nonatomic) NSData *responseListData;
 
@@ -144,21 +145,9 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
- 
-    //    NSLog(@"RecoFlashcard - viewWillAppear --->");
-    // [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
- 
-    
-    // TODO : is this correct post merge?
-  //      NSLog(@"RecoFlashcard --- viewWillAppear --->");
-    
-   // [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
-    
-    //[self respondToSwipe];
     if (_listid != NULL) {
         if (_jsonItems == NULL) {
             [self askServerForJsonForList];
-
         }
     }
 }
@@ -167,7 +156,7 @@
     if (_siteGetter == NULL) {
         
         _siteGetter = [EAFGetSites new];
-        //[_siteGetter getSites];
+ 
         // NSLog(@"RecoFlashcardController.viewDidLoad : getSites...");
         
         if (_url == NULL) {
@@ -443,15 +432,9 @@
     
     [self setupToolBar];
     if (_quizMinutes == NULL) {
-//        [_timerProgress setHidden:YES];
-//        [_timeRemainingLabel setHidden:YES];
     }
     else {
         [_selectionToolbar setHidden:true];
-        // if timer hasn't started!
-        
-        
-       
     }
     
 //    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
@@ -463,7 +446,7 @@
 
 - (void) showQuizIntro {
     NSString *min = @"minutes";
-    if (_quizMinutes == 1) min = @"minute";
+    if (_quizMinutes.intValue == 1) min = @"minute";
     NSString *postLength = [NSString stringWithFormat:@"You have %@ %@ to complete %@ items.\nScores above %@ advance automatically.\nIf you finish with time remaining, it's OK to go back.",_quizMinutes,min,_numQuizItems,_minScoreToAdvance];
     
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Quiz Rules"
@@ -658,7 +641,6 @@
         [self respondToSwipe];
     }
     [self postEvent:@"shuffle" widget:@"shuffle" type:@"BButton"];
-
 }
 
 -(IBAction)showScores:(id)sender{
@@ -670,11 +652,6 @@
 -(void) getSelection:(MoreSelection *)selection{
     _moreSelection = selection;
     _languageSegmentIndex = _moreSelection.languageIndex;
-    
-    if (_languageSegmentIndex != NULL) {
-        NSLog(@"\n\n\ngetSelection %@",_languageSegmentIndex);
-    }
-    
     _voiceSegmentIndex = _moreSelection.voiceIndex;
     _isAudioOnSelected = _moreSelection.isAudioSelected;
     _identityRestoreID = _moreSelection.identityRestorationID;
@@ -712,6 +689,7 @@
     
     if (_quizTimer !=NULL) {
         [_quizTimer invalidate];
+        _sessionTimeStamp = 0;
     }
     
     [self stopAutoPlay];
@@ -983,26 +961,11 @@
 
 - (unsigned long)getItemIndex {
     unsigned long toUse = _index;
-/*
-    if (_shuffleButton.selected) {
-*/
      if (_shuffleBtn.selected) {
         toUse = [[_randSequence objectAtIndex:_index] integerValue];
     }
     return toUse;
 }
-/*
-- (IBAction)gotGenderSelection:(id)sender {
-    NSString *genderSelect = _genderMaleSelector.selectedSegmentIndex == 0 ? @"Male":_genderMaleSelector.selectedSegmentIndex == 1 ? @"Female" : @"Both";
-    
-    [SSKeychain setPassword:genderSelect
-                 forService:@"mitll.proFeedback.device" account:@"audioGender"];
-    
-    [self postEvent:genderSelect widget:@"genderSelect" type:@"UIButton"];
-    
-    [self respondToSwipe];
-}
-*/
 
 -(void)gotGenderSelect{
     NSString *genderSelect = _voiceSegmentIndex == 0 ? @"Male":_voiceSegmentIndex == 1 ? @"Female" : @"Both";
@@ -1041,7 +1004,8 @@
     NSString *jsonItemCountStr = [NSString stringWithFormat:@"%ld",jsonItemCount];
     _progressNum.text = [NSString stringWithFormat:@"%ld  / %ld", index, jsonItemCount];
     _progressNum.textColor = [UIColor npLightBlue];
-    
+    _timeRemainingLabel.textColor = [UIColor npLightBlue];
+
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:_progressNum.text];
     [str addAttribute:NSForegroundColorAttributeName value:[UIColor npLightBlue] range:NSMakeRange(0,[jsonItemCountStr length])];
     _progressNum.attributedText = str;
@@ -1294,9 +1258,7 @@
         if (showEnglish) {
             //   NSLog(@"respondToSwipe first - %ld", (long)_whatToShow.selectedSegmentIndex);
             if (_autoPlayButton.selected) {
-                
                 [self speakEnglish:false];
-                
             }
         }
         else {
@@ -1485,10 +1447,6 @@
     if (_autoPlayButton.selected) {
         NSLog(@"-----> didFinishSpeechUtterance : '%@' is done playing, so advancing to %lu",utterance.speechString,_index);
         [self beginBackgroundUpdateTask];
-/*
- if (_whatToShow.selectedSegmentIndex == 0) { // english first, so play fl
- */
-        
         if (_languageSegmentIndex == 0) { // english first, so play fl
             _foreignLang.hidden = false;
             [self playRefAudioIfAvailable];
@@ -1831,12 +1789,7 @@
     NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs gesture end %f diff %f",durationInSeconds, (_gestureEnd-_then2), (_gestureEnd-_then2)-durationInSeconds );
     
     if (durationInSeconds > 0.3) {
-        //if (_hasModel) {
-            [self postAudio];
-      //  }
-      //  else {
-      //      NSLog(@"audioRecorderDidFinishRecording not posting audio since no model...");
-      //  }
+       [self postAudio];
     }
     else {
         [self setDisplayMessage:@"Recording too short."];
@@ -1970,6 +1923,8 @@ bool debugRecord = false;
             
             if (_quizTimer == NULL && _quizMinutes != NULL) {  // start the timer!
                 _timeRemaining = _quizMinutes.intValue*60;
+                _sessionTimeStamp= (int) CFAbsoluteTimeGetCurrent() * 1000;
+                
                 _quizTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerCalled) userInfo:nil repeats:YES];
             }
             
@@ -1982,9 +1937,19 @@ bool debugRecord = false;
 }
 -(void)timerCalled
 {
-    NSLog(@"Timer Called %d",_timeRemaining);
+//    NSLog(@"Timer Called %d",_timeRemaining);
     _timeRemaining -=1;
-    if (_timeRemaining <= 0) [_quizTimer invalidate];
+    
+    if (_timeRemaining <= 0) {
+        [_quizTimer invalidate];
+        _sessionTimeStamp = 0;
+        
+        [self showQuizComplete];
+       // [self showScores]
+        // TODO : show times up!
+        // TODO : show summary score
+        // maybe give option of starting over?
+    }
     _timeRemainingLabel.text = [NSString stringWithFormat:@"%d", _timeRemaining];
     
     int ONE_MIN = 60;
@@ -1999,7 +1964,17 @@ bool debugRecord = false;
         NSString *secSuffix = (sec < 10 ? @"0" : @"");
         value = [NSString stringWithFormat:@"%@%d:%@%d",prefix,min,secSuffix,sec];
         
+        float fmin = _quizMinutes.floatValue*60.0;
+        float fremain = (float)_timeRemaining;
+        float percent = fremain/fmin;
+     //   NSLog(@"Timer Called %d total %f  remain %f percent %f",_timeRemaining,fmin,fremain,fremain/fmin);
         
+        if (_timeRemaining > 10) {
+            percent = ((float)((int)(percent*10)))/10.0;
+        }
+        [_timerProgress setProgress:percent];
+        
+        // TODO : consider coloring it
         //  prefix + min + @":" + (sec < 10 ? @"0" : @"") + sec;
         //            if (min == 0) {
         //                if (sec < 30) {
@@ -2011,14 +1986,13 @@ bool debugRecord = false;
         //                timeLeft.setType(LabelType.SUCCESS);
         //            }
     } else {
-        value = @"";
-    }
-    NSLog(@"Timer value %@",value);
+        value = @"Times up!";
+        [_timerProgress setProgress:0];
+  }
 
     [_timeRemainingLabel setText:value];
-    
-    
 }
+
 - (void)postRecordAudioStart {
     [self postEvent:@"record audio start" widget:@"record audio" type:@"Button"];
 }
@@ -2363,10 +2337,15 @@ bool debugRecord = false;
     [urlRequest setTimeoutInterval:15];
     
     // add request parameters
-
-    [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
+    
+    NSString *deviceType = [NSString stringWithFormat:@"%@_%@_%@",[UIDevice currentDevice].model,[UIDevice currentDevice].systemName,[UIDevice currentDevice].systemVersion];
+    [urlRequest setValue:deviceType forHTTPHeaderField:@"deviceType"];
     
     NSString *retrieveuuid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"UUID"];
+    if (_sessionTimeStamp > 0) {
+        retrieveuuid = [NSString stringWithFormat:@"%ld",_sessionTimeStamp] ;
+    }
+    
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     
     NSString *id = [[self getCurrentJson] objectForKey:@"id"];
@@ -2605,9 +2584,9 @@ bool debugRecord = false;
     //   NSLog(@"exid was %@",exid);
     NSNumber *score = [json objectForKey:@"score"];
     //   NSLog(@"score was %@ class %@",[json objectForKey:@"score"], [[json objectForKey:@"score"] class]);
-    NSNumber *minusOne = [NSNumber numberWithInt:-1];
+//    NSNumber *minusOne = [NSNumber numberWithInt:-1];
     //   NSLog(@"score was %@ vs %@",score, minusOne);
-    if ([score isEqualToNumber:minusOne]) {
+    if ([score isEqualToNumber:[NSNumber numberWithInt:-1]]) {
         [self setDisplayMessage:@"Score low, try again."];
         return;
     }
@@ -2616,9 +2595,17 @@ bool debugRecord = false;
     if (exid != nil) {
         previousScore = [_exToScore objectForKey:exid];
         BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
-        NSNumber *overallScore = saidWord ? [json objectForKey:@"score"] : 0;
-        [_exToScore setValue:overallScore forKey:exid];
+        
+ //       NSNumber *overallScore = saidWord ? score : 0;
+        //[_exToScore setValue:overallScore forKey:exid];
+        
+        if (score != nil) {
+            [_exToScore setObject:score forKey:exid];
+            
+            NSLog(@"_exToScore %@ %@ now %lu",exid,score,(unsigned long)[_exToScore count]);
+        }
     }
+    
     
     NSString *reqid = [json objectForKey:@"reqid"];
     
@@ -2642,6 +2629,61 @@ bool debugRecord = false;
     }
     
     [self showScoreToUser:json previousScore:previousScore];
+    
+    if (_quizMinutes != NULL && score.floatValue*100 >= _minScoreToAdvance.floatValue) {
+        BOOL onLast = _index+1 == _jsonItems.count;
+      //  NSLog(@"check got %lu vs total %lu",_index, (unsigned long)_jsonItems.count);
+        if (onLast) {
+        //    NSLog(@"onLast  " );
+            
+            _index = 0;
+            _preventPlayAudio = TRUE;
+            [self showQuizComplete];
+            
+            //  [self showScoresClick:nil];
+        }
+        else {
+          //  NSLog(@"NOT onLast  " );
+
+            _autoAdvanceTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(doAutoAdvance) userInfo:nil repeats:NO];
+        }
+    }
+}
+
+- (void) showQuizComplete {
+    float total=0.0;
+    
+    NSLog(@"showQuizComplete _exToScore now %lu",(unsigned long)[_exToScore count]);
+
+    for(id key in _exToScore) {
+        total+= [[_exToScore objectForKey:key] floatValue];
+        NSLog(@"showQuizComplete got %@ total %f",[_exToScore objectForKey:key], total);
+    }
+    float overall = (100.0f*total)/(float)_jsonItems.count;
+    
+    NSLog(@"showQuizComplete got overall   %f", overall);
+    NSLog(@"showQuizComplete got overall   %d", (int)overall);
+
+    NSString *score = [NSString stringWithFormat:@"Your score was a %d.",(int)overall];
+    
+    
+    
+    
+    
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Quiz Complete!"
+                                                                   message:score
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {
+                                                              [self showScoresClick:nil];
+                                                          }];
+    
+    [alert addAction:defaultAction];
+    [self presentViewController:alert animated:YES completion:^{
+        [self showScoresClick:nil];
+    }];
+    
 }
 
 - (void) showProgressAnimated:(NSNumber *)overallScore {
