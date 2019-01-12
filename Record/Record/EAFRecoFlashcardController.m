@@ -113,10 +113,12 @@
 @property NSString *tlAtIndex;
 
 @property BOOL timerStarted;
-@property int timeRemaining;
+@property int timeRemainingMillis;
 @property long sessionTimeStamp;
 @property NSTimer *quizTimer;
 @property (strong, nonatomic) NSData *responseListData;
+
+@property BOOL isPostingAudio;
 
 
 - (void)postAudio;
@@ -130,7 +132,7 @@
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     NSString *showedID = [NSString stringWithFormat:@"showedIntro_%@",userid];
     NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
-    if (showedIntro == nil) {
+    if (showedIntro == nil && _quizMinutes == NULL) {
         UIAlertView *info = [[UIAlertView alloc] initWithTitle:@"Swipe left/right/up/down to advance, tap to flip.\n\nPress and hold to record.\n\nTouch a word to hear audio or yourself.\n\nTouch Scores to see answers and sounds to work on." message:nil delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
         [info show];
         
@@ -215,8 +217,6 @@
 }
 
 - (BOOL) useListData {
-    
-    
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_responseListData
@@ -232,21 +232,25 @@
     
     NSLog(@"Reco - useListData --- num json %lu ",(unsigned long)_jsonItems.count);
     
+    if (_quizMinutes != NULL) {
+        _timeRemainingMillis = _quizMinutes.intValue*60000;
+        [self setTimeRemainingLabel];
+    }
+    
     [self respondToSwipe];
     _numQuizItems = [NSNumber numberWithInt:_jsonItems.count];
+    
     [self showQuizIntro];
     return true;
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     [self playRefAudioIfAvailable];
-    //  [self checkAndShowPopover];
 };
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
     //NSLog(@"popoverControllerDidDismissPopover --->");
 }
-
 
 - (void)viewDidLoad
 {
@@ -260,7 +264,6 @@
     
     if (_url == NULL) {
         _url = [_siteGetter getServerURL];
-        //   _language = [_siteGetter getProjectLanguage:_projid];
         _isRTL = [_siteGetter.rtlLanguages containsObject:_language];
     }
     BOOL noQuiz =(_quizMinutes == NULL);
@@ -275,14 +278,6 @@
         [_timerProgress setHidden:YES];
         [_timeRemainingLabel setHidden:YES];
     }
-    
-    if ([_timerProgress isHidden]) {
-        NSLog(@"RecoFlashcardController.viewDidLoad : _timerProgress hidden");
-    }
-    else {
-        NSLog(@"RecoFlashcardController.viewDidLoad : _timerProgress NOT hidden");
-    }
-
     
     if (_jsonItems != NULL) {
         [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
@@ -1039,18 +1034,35 @@
     
     NSDictionary *jsonObject =[self getCurrentJson] ;
     
-    NSString *refAudio = [jsonObject objectForKey:@"ref"];
+    NSString *refAudio=@"";
+   
+    if ([[jsonObject objectForKey:@"ref"] isKindOfClass:[NSString class]]) {
+        refAudio = [jsonObject objectForKey:@"ref"];
+    }
+    else {
+        refAudio = [jsonObject objectForKey:@"ctmref"];
+    }
+    
     
     NSString *test =  [jsonObject objectForKey:@"msr"];
     BOOL hasMaleSlow = (test != NULL && ![test isEqualToString:@"NO"]);
     
-    test =  [jsonObject objectForKey:@"mrr"];
+    NSString *maleRegToUse = _showSentences ? @"ctmref":@"mrr";
+    NSString *femaleRegToUse = _showSentences ? @"ctfref":@"frr";
+    
+    test =  [jsonObject objectForKey:maleRegToUse];
     BOOL hasMaleReg = (test != NULL && ![test isEqualToString:@"NO"]);
     
     test =  [jsonObject objectForKey:@"fsr"];
     BOOL hasFemaleSlow = (test != NULL && ![test isEqualToString:@"NO"]);
     
-    test =  [jsonObject objectForKey:@"frr"];
+    if (_showSentences) {
+        test =  [jsonObject objectForKey:@"ctfref"];
+    }
+    else {
+        test =  [jsonObject objectForKey:femaleRegToUse];
+    }
+
     BOOL hasFemaleReg = (test != NULL && ![test isEqualToString:@"NO"]);
     
     long selectedGender = _voiceSegmentIndex;
@@ -1077,7 +1089,7 @@
             }
             else {
                 if (hasMaleReg) {
-                    refAudio = [jsonObject objectForKey:@"mrr"];
+                    refAudio = [jsonObject objectForKey:maleRegToUse];
                     [_audioRefs addObject: refAudio];
                 }
             }
@@ -1094,11 +1106,11 @@
             }
             else {
                 if (hasFemaleReg) {
-                    refAudio =  [jsonObject objectForKey:@"frr"];
+                    refAudio =  [jsonObject objectForKey:femaleRegToUse];
                     [_audioRefs addObject: refAudio];
                 }
                 else if (hasMaleReg && refAudio == nil) { // fall back
-                    refAudio = [jsonObject objectForKey:@"mrr"];
+                    refAudio = [jsonObject objectForKey:maleRegToUse];
                 }
             }
         } else {
@@ -1114,11 +1126,11 @@
             }
             else {
                 if (hasMaleReg) {
-                    refAudio = [jsonObject objectForKey:@"mrr"];
+                    refAudio = [jsonObject objectForKey:maleRegToUse];
                     [_audioRefs addObject: refAudio];
                 }
                 if (hasFemaleReg) {
-                    refAudio =  [jsonObject objectForKey:@"frr"];
+                    refAudio =  [jsonObject objectForKey:femaleRegToUse];
                     [_audioRefs addObject: refAudio];
                 }
             }
@@ -1135,21 +1147,21 @@
             }
             if (!hasMaleSlow && !hasFemaleSlow) {
                 if (hasMaleReg && refAudio == nil) {
-                    refAudio = [jsonObject objectForKey:@"mrr"];
+                    refAudio = [jsonObject objectForKey:maleRegToUse];
                 }
                 else if (hasFemaleReg && refAudio == nil) {
-                    refAudio = [jsonObject objectForKey:@"frr"];
+                    refAudio = [jsonObject objectForKey:femaleRegToUse];
                 }
             }
  
         }
         else {
             if (hasMaleReg) {
-                refAudio = [jsonObject objectForKey:@"mrr"];
+                refAudio = [jsonObject objectForKey:maleRegToUse];
                 [_audioRefs addObject: refAudio];
             }
             if (hasFemaleReg) {
-                refAudio =  [jsonObject objectForKey:@"frr"];
+                refAudio =  [jsonObject objectForKey:femaleRegToUse];
                 [_audioRefs addObject: refAudio];
             }
             if (!hasMaleReg && !hasFemaleReg) {
@@ -1398,13 +1410,7 @@
 }
 
 - (void)showSpeechEnded:(BOOL) isEnglish {
-    //    if (isEnglish) {
     _english.textColor = [UIColor npDarkBlue];
-    //    }
-    //    else {
-    //        _foreignLang.textColor = [UIColor blackColor];
-    //    }
-    //  NSLog(@"Font size %f",_foreignLang.font.pointSize);
 }
 
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didContinueSpeechUtterance:(AVSpeechUtterance *)utterance {
@@ -1419,7 +1425,6 @@
 - (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer didStartSpeechUtterance:(AVSpeechUtterance *)utterance
 {
     NSLog(@"recoflashcard : didStartSpeechUtterance --- '%@'",utterance.speechString);
-    
     //   _pageControl.currentPage = 0;
     _english.textColor = [UIColor npMedPurple];
 }
@@ -1520,10 +1525,6 @@
 }
 
 - (void)hideAndShowText {
-/*
-     long selected = [_whatToShow selectedSegmentIndex];
- */
-    
     long selected = _languageSegmentIndex;
     // NSLog(@"recoflashcard : hideAndShowText %ld", selected);
     if (selected == 0) { // english
@@ -1568,12 +1569,12 @@
 - (void)setForeignLang {
     NSDictionary *jsonObject = [self getCurrentJson];
     NSString *exercise       = [jsonObject objectForKey:@"fl"];
-    NSString *tlExercise = [jsonObject objectForKey:@"tl"];
     [_foreignLang setText:[self trim:exercise]];
 }
 
 -(void)whatToShowSelect{
     [self hideAndShowText];
+    
     long selected = _languageSegmentIndex;
     
     if (selected == 0) { // english
@@ -1593,7 +1594,6 @@
         [self doAutoAdvance];
     }
 }
-
 
 - (IBAction)speedSelection:(id)sender {
     _speedButton.selected = !_speedButton.selected;
@@ -1692,7 +1692,6 @@
 }
 
 - (void) playGotToEnd {
-    
     if (_autoPlayButton.selected) {
         // doing autoplay!
         // skip english if lang is english
@@ -1713,43 +1712,6 @@
     else {
         //  NSLog(@"playGotToEnd - no op");
     }
-    
-    
-    
-/*
-//    if (_autoPlayButton.selected) {
-        // doing autoplay!
-        // skip english if lang is english
-        if ([_english.text isEqualToString:_foreignLang.text]) {
-            [self doAutoAdvance];
-        }
-        else {
-            // OK move on to english part of card, automatically
-            NSLog(@"playGotToEnd - speak english");
-            if (_languageSegmentIndex == 0 ){
-         //   if (_whatToShow.selectedSegmentIndex == 0 || _whatToShow.selectedSegmentIndex == 1 || _whatToShow.selectedSegmentIndex == 3) { // already played english, so now at end of fl, go to next
-            
-                [self doAutoAdvance];
-              
-            }
-            else if (_languageSegmentIndex == 1) {
-
-                if (_autoPlayButton.selected){
-                    [self doAutoAdvance];
-                }
-            }
-
-            else { // haven't played english yet, so play it
-                [self speakEnglish:false];
-            
-            }
-        }
-//    }
-//    else {
-//        //  NSLog(@"playGotToEnd - no op");
-//    }
-
-   */
 }
 
 // set the text color of all the labels in the scoreDisplayContainer
@@ -1922,8 +1884,10 @@ bool debugRecord = false;
             }
             
             if (_quizTimer == NULL && _quizMinutes != NULL) {  // start the timer!
-                _timeRemaining = _quizMinutes.intValue*60;
+                _timeRemainingMillis = _quizMinutes.intValue*60000;
                 _sessionTimeStamp= (int) CFAbsoluteTimeGetCurrent() * 1000;
+                
+                NSLog(@"set new session to %ld",_sessionTimeStamp);
                 
                 _quizTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerCalled) userInfo:nil repeats:YES];
             }
@@ -1935,41 +1899,22 @@ bool debugRecord = false;
         }
     }
 }
--(void)timerCalled
-{
-//    NSLog(@"Timer Called %d",_timeRemaining);
-    _timeRemaining -=1;
-    
-    if (_timeRemaining <= 0) {
-        [_quizTimer invalidate];
-        _sessionTimeStamp = 0;
-        
-        [self showQuizComplete];
-       // [self showScores]
-        // TODO : show times up!
-        // TODO : show summary score
-        // maybe give option of starting over?
-    }
-    _timeRemainingLabel.text = [NSString stringWithFormat:@"%d", _timeRemaining];
-    
-    int ONE_MIN = 60;
-    
-    int l = _timeRemaining;
-    
+- (NSString *)getTimeRemaining:(int)l {
     NSString *value;
     if (l > 0) {
+        int ONE_MIN = 60000;
         int min = l / ONE_MIN;
-        int sec = (l - (min * ONE_MIN));
+        int sec = (l - (min * ONE_MIN))/1000;
         NSString *prefix = min < 10 ? @"0" : @"";
-        NSString *secSuffix = (sec < 10 ? @"0" : @"");
-        value = [NSString stringWithFormat:@"%@%d:%@%d",prefix,min,secSuffix,sec];
+        NSString *secPrefix = (sec < 10 ? @"0" : @"");
+        value = [NSString stringWithFormat:@"%@%d:%@%d",prefix,min,secPrefix,sec];
         
-        float fmin = _quizMinutes.floatValue*60.0;
-        float fremain = (float)_timeRemaining;
-        float percent = fremain/fmin;
-     //   NSLog(@"Timer Called %d total %f  remain %f percent %f",_timeRemaining,fmin,fremain,fremain/fmin);
+        float fminMillis = _quizMinutes.floatValue*60000.0;
+        float fremain = (float)_timeRemainingMillis;
+        float percent = fremain/fminMillis;
+        //   NSLog(@"Timer Called %d total %f  remain %f percent %f",_timeRemaining,fmin,fremain,fremain/fmin);
         
-        if (_timeRemaining > 10) {
+        if (_timeRemainingMillis > 10000) {
             percent = ((float)((int)(percent*10)))/10.0;
         }
         [_timerProgress setProgress:percent];
@@ -1988,9 +1933,34 @@ bool debugRecord = false;
     } else {
         value = @"Times up!";
         [_timerProgress setProgress:0];
-  }
+    }
+    return value;
+}
 
-    [_timeRemainingLabel setText:value];
+- (void)setTimeRemainingLabel {
+    [_timeRemainingLabel setText:[self getTimeRemaining:_timeRemainingMillis]];
+}
+
+-(void)timerCalled
+{
+    //    NSLog(@"Timer Called %d",_timeRemaining);
+    _timeRemainingMillis -=1000;
+    
+    if (!_isPostingAudio) {
+        if (_timeRemainingMillis <= 0) {
+            [_quizTimer invalidate];
+            _sessionTimeStamp = 0;
+            _quizTimer = NULL;
+            
+            [self showQuizComplete];
+            // [self showScores]
+            // TODO : show times up!
+            // TODO : show summary score
+            // maybe give option of starting over?
+        }
+        
+        [self setTimeRemainingLabel];
+    }
 }
 
 - (void)postRecordAudioStart {
@@ -2318,6 +2288,8 @@ bool debugRecord = false;
     // create request
     [_recoFeedbackImage startAnimating];
     
+    _isPostingAudio=TRUE;
+    
     NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
     // NSLog(@"data %d",[postData length]);
     
@@ -2483,6 +2455,7 @@ bool debugRecord = false;
     [self addScoreDisplayConstraints:toShow];
 }
 
+// previous score lets the progress bar grow from old to new score
 - (void)showScoreToUser:(NSDictionary *)json previousScore:(NSNumber *)previousScore {
     //   BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
     BOOL correct = [[json objectForKey:@"isCorrect"] boolValue];
@@ -2528,13 +2501,20 @@ bool debugRecord = false;
     [_correctFeedback setHidden:false];
 }
 
+// TODO : consider how to do streaming audio
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    _isPostingAudio=FALSE;
+    
     CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
     CFAbsoluteTime diff = (now-_startPost);
     CFAbsoluteTime millis = diff * 1000;
     int iMillis = (int) millis;
     
-    //  NSLog(@"connectionDidFinishLoading - round trip time was %f %d ",diff, iMillis);
+    NSLog(@"connectionDidFinishLoading - round trip time was %f %d ",diff, iMillis);
+    
+    if (_quizMinutes != NULL) {
+        _timeRemainingMillis += iMillis;  // put the time back - don't count round trip wait against completion time...
+    }
     
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
     double durationInSeconds = CMTimeGetSeconds(asset.duration);
@@ -2552,14 +2532,14 @@ bool debugRecord = false;
     NSString *string = [NSString stringWithUTF8String:[_responseData bytes]];
     
     
-      NSLog(@"connectionDidFinishLoading data was \n%@",string);
+  // NSLog(@"connectionDidFinishLoading data was \n%@",string);
     if (error != nil) {
         NSLog(@"connectionDidFinishLoading - got error %@",error);
         // NSLog(@"data was %@",_responseData);
     }
-    else {
-   //     NSLog(@"JSON was %@",json);
-    }
+    // else {
+    //     NSLog(@"JSON was %@",json);
+    // }
     //  NSLog(@"score was %@",overallScore);
     //     NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
     //     NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
@@ -2575,9 +2555,8 @@ bool debugRecord = false;
     NSNumber *resultID = [json objectForKey:@"resultID"];
     
     // Post a RT value for the result id
-    // EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
-    NSString * roundTrip =[NSString stringWithFormat:@"%d",iMillis];
-    //NSLog(@"connectionDidFinishLoading - roundTrip  %@",roundTrip);
+    NSString * roundTrip =[NSString stringWithFormat:@"%d",(int) millis];
+    NSLog(@"connectionDidFinishLoading - roundTrip  %@ %@",roundTrip, [resultID stringValue]);
     
     [[self getPoster] postRT:[resultID stringValue] rtDur:roundTrip];
     
@@ -2594,29 +2573,22 @@ bool debugRecord = false;
     NSNumber *previousScore;
     if (exid != nil) {
         previousScore = [_exToScore objectForKey:exid];
-        BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
-        
- //       NSNumber *overallScore = saidWord ? score : 0;
-        //[_exToScore setValue:overallScore forKey:exid];
-        
+        //BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
         if (score != nil) {
             [_exToScore setObject:score forKey:exid];
-            
             NSLog(@"_exToScore %@ %@ now %lu",exid,score,(unsigned long)[_exToScore count]);
         }
     }
     
-    
     NSString *reqid = [json objectForKey:@"reqid"];
     
-    //    NSLog(@"got back %@",reqid);
     if ([reqid intValue] < _reqid-1) {
         NSLog(@"got back reqid %@",reqid);
         NSLog(@"json was %@",json);
-        
         NSLog(@"discarding old response - got back %@ latest %d",reqid ,_reqid);
         return;
     }
+    
     NSString *current = [[self getCurrentJson] objectForKey:@"id"];
     
     if ([current isKindOfClass:[NSNumber class]]) {
@@ -2634,17 +2606,11 @@ bool debugRecord = false;
         BOOL onLast = _index+1 == _jsonItems.count;
       //  NSLog(@"check got %lu vs total %lu",_index, (unsigned long)_jsonItems.count);
         if (onLast) {
-        //    NSLog(@"onLast  " );
-            
             _index = 0;
             _preventPlayAudio = TRUE;
             [self showQuizComplete];
-            
-            //  [self showScoresClick:nil];
         }
         else {
-          //  NSLog(@"NOT onLast  " );
-
             _autoAdvanceTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(doAutoAdvance) userInfo:nil repeats:NO];
         }
     }
@@ -2959,8 +2925,6 @@ BOOL addSpaces = false;
     UIView *leftView  = nil;
     UIView *rightView = nil;
     
-    //BOOL isRTL = [self isRTL];
-    
     if (_isRTL) {
         wordAndScore  = [self reversedArray:wordAndScore];
         if (!_showPhonesLTRAlways) {
@@ -3149,23 +3113,26 @@ BOOL addSpaces = false;
     NSString *urlWithSlash = _url;
     for (NSDictionary *object in items) {
         for (NSString *id in fields) {
-            NSString *refPath = [object objectForKey:id];
             
-            if (refPath && refPath.length > 2) { //i.e. not NO
-                //  NSLog(@"cacheAudio adding %@ %@",id,refPath);
+            if ([[object objectForKey:id] isKindOfClass:[NSString class]]) {
+                NSString *refPath = [object objectForKey:id];
                 
-                refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
-                                                             withString:@".mp3"];
-                
-                NSMutableString *mu = [NSMutableString stringWithString:refPath];
-                [mu insertString:urlWithSlash atIndex:0];
-                //                NSLog(@"cacheAudio %@ %@",mu,urlWithSlash);
-                
-                [paths addObject:mu];
-                [rawPaths addObject:refPath];
-            }
-            else {
-                //NSLog(@"skipping %@ %@",id,refPath);
+                if (refPath && refPath.length > 2) { //i.e. not NO
+                    //  NSLog(@"cacheAudio adding %@ %@",id,refPath);
+                    
+                    refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+                                                                 withString:@".mp3"];
+                    
+                    NSMutableString *mu = [NSMutableString stringWithString:refPath];
+                    [mu insertString:urlWithSlash atIndex:0];
+                    //                NSLog(@"cacheAudio %@ %@",mu,urlWithSlash);
+                    
+                    [paths addObject:mu];
+                    [rawPaths addObject:refPath];
+                }
+                else {
+                    //NSLog(@"skipping %@ %@",id,refPath);
+                }
             }
         }
     }
@@ -3311,6 +3278,7 @@ BOOL addSpaces = false;
         wordReport.jsonItems = _jsonItems;
         wordReport.url = _url;
         wordReport.listid = _listid;
+        wordReport.showSentences = _showSentences;
 
         
         NSMutableDictionary *exToFL = [[NSMutableDictionary alloc] init];

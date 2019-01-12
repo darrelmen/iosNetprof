@@ -125,6 +125,7 @@
 
 @property NSString *identityRestoreID;
 @property BOOL isAudioOnSelected;
+@property BOOL showSentences;
 
 @property (strong, nonatomic) IBOutlet UIToolbar *selectionToolbar;
 

@@ -31,16 +31,20 @@ class ModeChoiceController: UITableViewController {
         print("segue    \(String(describing: segue.identifier))")
         print("segue dest \(segue.destination)")
         
-        if (segue.identifier == "goToListChoice") {
+        let identifier: String? = segue.identifier
+        if (identifier == "goToListChoice") {
             let listViewController = segue.destination as? ListViewController
             listViewController?.projid=projid;
             listViewController?.language=language;
         }
-        else if (segue.identifier == "goToQuizChoice") {
+        else if (identifier == "goToQuizChoice") {
             let listViewController = segue.destination as? ListViewController
             listViewController?.isQuiz=true
             listViewController?.projid=projid;
             listViewController?.language=language;
+        } else if (identifier == "showSentences") {
+            let chapterView = segue.destination as? EAFChapterTableViewController
+            chapterView?.showSentences=true
         }
     }
 }

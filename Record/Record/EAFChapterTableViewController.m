@@ -132,6 +132,9 @@
     _reqCount++;
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?nestedChapters", [_siteGetter.nameToURL objectForKey:_language]];
     
+    if (_showSentences) {
+       baseurl = [NSString stringWithFormat:@"%@&context=true", baseurl];
+    }
     
     NSURL *url = [NSURL URLWithString:baseurl];
     
@@ -215,6 +218,9 @@ UIAlertView *loadingContentAlert;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *fileName = [NSString stringWithFormat:@"%@_chapters.json",_language];
+    if (_showSentences) {
+        fileName = [NSString stringWithFormat:@"sentences_%@",fileName];
+    }
     NSString *appFile = [documentsDirectory stringByAppendingPathComponent:fileName];
     return appFile;
 }
@@ -657,6 +663,8 @@ UIAlertView *loadingContentAlert;
     itemController.unit = _unit;
     itemController.url = _url;
     itemController.isRTL = _isRTL;
+    itemController.showSentences=_showSentences;
+    if (_showSentences) NSLog(@"Chapter show sentences!");
 }
 
 #pragma mark - Table view delegate
@@ -710,7 +718,8 @@ UIAlertView *loadingContentAlert;
                 myController.hasModel = _hasModel;
                 myController.url = _url;
                 myController.isRTL = _isRTL;
-                
+                myController.showSentences = _showSentences;
+
                 [self.navigationController pushViewController: myController animated:YES];
                 break;
             }

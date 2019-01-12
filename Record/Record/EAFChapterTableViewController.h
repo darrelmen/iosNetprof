@@ -51,6 +51,7 @@
 @property NSString *language;
 @property NSString *url;
 @property BOOL isRTL;
+@property BOOL showSentences;
 
 -(void)forceRefreshCache;
 

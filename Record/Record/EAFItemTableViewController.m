@@ -88,17 +88,22 @@
     
     for (NSDictionary *object in items) {
         for (NSString *id in fields) {
-            NSString *refPath = [object objectForKey:id];
-            
-            if (refPath && refPath.length > 2) { //i.e. not NO
-                //NSLog(@"adding %@ %@",id,refPath);
-                refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
-                                                             withString:@".mp3"];
+            if ([[object objectForKey:id] isKindOfClass:[NSString class]]) {
+                NSString *refPath = [object objectForKey:id];
                 
-                NSMutableString *mu = [NSMutableString stringWithString:refPath];
-                [mu insertString:_url atIndex:0];
-                [paths addObject:mu];
-                [rawPaths addObject:refPath];
+                if (refPath != NULL && refPath.length > 2) { //i.e. not NO
+                    //NSLog(@"adding %@ %@",id,refPath);
+                    refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+                                                                 withString:@".mp3"];
+                    
+                    NSMutableString *mu = [NSMutableString stringWithString:refPath];
+                    [mu insertString:_url atIndex:0];
+                    [paths addObject:mu];
+                    [rawPaths addObject:refPath];
+                }
+            }
+            else {
+                NSLog(@"skip %@",id);
             }
         }
     }
@@ -571,11 +576,12 @@
         [flashcardController setTitle:_listTitle];
     }
     
-//    flashcardController.hasModel=_hasModel;
+    //    flashcardController.hasModel=_hasModel;
     flashcardController.chapterTitle = _chapterTitle;
     flashcardController.currentChapter = _currentChapter;
     flashcardController.unitTitle = _unitTitle;
     flashcardController.currentUnit = _unit;
+    flashcardController.showSentences  = _showSentences;
     
     flashcardController.itemViewController = self;
     _notifyFlashcardController = flashcardController;
@@ -591,9 +597,17 @@
         baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&listid=%@&%@=%@&%@=%@", _url, _user, _listid, _unitTitle, _unit, _chapterTitle, _currentChapter];
     }
     
+    if (_showSentences) {
+        baseurl = [NSString stringWithFormat:@"%@&context=true", baseurl];
+        NSLog(@"showing sentences");
+    }
+    else NSLog(@"not showing sentences");
+    
     
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
+  //  baseurl =[baseurl stringByAddingPercentEncodingWithAllowedCharacters:URLHostAllowedCharacterSet];
+  //let encodedHost = unencodedHost.stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())
+
     NSLog(@"ItemViewController askServerForJson url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];

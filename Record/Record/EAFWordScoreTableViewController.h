@@ -60,5 +60,6 @@
 
 -(void)setCurrentTitle;
 @property NSString *url;
+@property BOOL showSentences;
 
 @end

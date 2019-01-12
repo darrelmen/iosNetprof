@@ -15,6 +15,7 @@ class ListViewController: UITableViewController {
     var names:[String]=[]
     var quizMinutes:[Int]=[]
     var minScoreToAdvance:[Int]=[]
+    var numItems:[Int]=[]
     var playAudio:[Bool]=[]
 
     
@@ -93,6 +94,9 @@ class ListViewController: UITableViewController {
                         if let play = obj["playAudio"] as? Bool {
                             playAudio.append(play)
                         }
+                        if let num = obj["numItems"] as? Int {
+                            numItems.append(num)
+                        }
                     }
                 }
                 
@@ -110,60 +114,49 @@ class ListViewController: UITableViewController {
         return names.count
     }
     
+    // TODO : get number of items on each quiz too
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ListPrototypeCell", for: indexPath) as! EAFListChoiceCell
         let selectedRow: Int = indexPath.row
         cell.textLabel?.text = names[selectedRow]
         cell.listid = ids[selectedRow]
         
-        if (!quizMinutes.isEmpty) {
+        if (quizMinutes.isEmpty) {
+            cell.detailTextLabel?.text = "\(numItems[selectedRow]) items"
+        }
+        else {
             cell.quizMinutes =  quizMinutes[selectedRow]
             cell.minScoreToAdvance = minScoreToAdvance[selectedRow]
             cell.playAudio   = playAudio[selectedRow]
+            cell.detailTextLabel?.text = "\(cell.quizMinutes) minute quiz on \(numItems[selectedRow]) items"
         }
         
         return cell
     }
     
-    // TODO Notional quiz spec for now - get later from json
-    // TODO add to json sent for quizzes
+    // quiz spec for now - get later from json
+    // add to json sent for quizzes
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        print("ListViewController got prepare for segue  \(segue)")
-//        print("ListViewController got prepare for sender \(sender ?? "something undefined")")
-        
-//        print("ListViewController remember \(language)")
-//        print("remember \(url)")
-       
-//        print("prepare \(sender)")
         print("ListViewController segue    \(String(describing: segue.identifier))")
         print("ListViewController segue dest \(segue.destination)")
         
         if (segue.identifier == "showList") {
             let itemTableViewController = segue.destination as? EAFItemTableViewController
-            
+        
             let cell = sender as! EAFListChoiceCell
             itemTableViewController?.listid = cell.listid as NSNumber
             itemTableViewController?.listTitle = cell.textLabel?.text
             itemTableViewController?.projid = self.projid as NSNumber
             itemTableViewController?.language = language
-
-//            print("prepare quiz \(isQuiz)")
-//
-//            if (isQuiz) {
-//                itemTableViewController?.quizMinutes = 1;
-//                itemTableViewController?.minScoreToAdvance = 30;
-//                itemTableViewController?.playAudio = false;
-//            }
         }
         else if (segue.identifier == "goToQuizFlashcard") {
             let flashcardController = segue.destination as? EAFRecoFlashcardController
             
-            print("prepare quiz \(isQuiz)")
+           // print("prepare quiz \(isQuiz)")
             
             let cell = sender as! EAFListChoiceCell
             
             flashcardController?.listid = cell.listid as NSNumber
-          //  flashcard?.listTitle = cell.textLabel?.text
             flashcardController?.projid = self.projid as NSNumber
             flashcardController?.language = language
 
@@ -171,30 +164,8 @@ class ListViewController: UITableViewController {
             flashcardController?.quizMinutes = cell.quizMinutes as NSNumber;
             flashcardController?.minScoreToAdvance = cell.minScoreToAdvance as NSNumber;
             flashcardController?.playAudio = cell.playAudio;
-            
-           // flashcardController.url = _url;
-           // flashcardController.isRTL = _isRTL;
-           // flashcardController.jsonItems = _jsonItems
             flashcardController?.index = 0;
-          //  flashcardController.language = _language;
-           // flashcardController?.projid = self.projid
-           // flashcardController.listid = _listid;
-            
-           // if (_quizMinutes != NULL) {
-                //   NSLog(@"Item Table - quiz minutes %@",_quizMinutes);
-                
-             //   flashcardController?.numQuizItems =  _jsonItems.count
-//                flashcardController.quizMinutes = _quizMinutes;
-//                flashcardController.minScoreToAdvance = _minScoreToAdvance;
-//                flashcardController.playAudio = _playAudio;
-           // }
-            
-//            flashcardController.listid = _listid;
-            
-  //          flashcardController.projectLanguage = _projectLanguage;
-          
             flashcardController?.listtitle = cell.textLabel?.text
-          
         }
     }
 }

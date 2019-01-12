@@ -68,5 +68,6 @@
 - (void)askServerForJson;
 @property NSString *url;
 @property BOOL isRTL;
+@property BOOL showSentences;
 
 @end

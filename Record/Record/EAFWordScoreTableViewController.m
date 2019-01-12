@@ -68,21 +68,23 @@
     NSMutableArray *paths = [[NSMutableArray alloc] init];
     NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
     
-    NSArray *fields = [NSArray arrayWithObjects:@"ref",nil];
+    NSArray *fields = [NSArray arrayWithObjects:@"ref",@"ctmref",@"ctfref", nil];
     
     for (NSDictionary *object in items) {
         for (NSString *id in fields) {
-            NSString *refPath = [object objectForKey:id];
-            
-            if (refPath && refPath.length > 2) { //i.e. not NO
-                //NSLog(@"adding %@ %@",id,refPath);
-                refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
-                                                             withString:@".mp3"];
+            if ([[object objectForKey:id] isKindOfClass:[NSString class]]) {
+                NSString *refPath = [object objectForKey:id];
                 
-                NSMutableString *mu = [NSMutableString stringWithString:refPath];
-                [mu insertString:_url atIndex:0];
-                [paths addObject:mu];
-                [rawPaths addObject:refPath];
+                if (refPath && refPath.length > 2) { //i.e. not NO
+                    //NSLog(@"adding %@ %@",id,refPath);
+                    refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+                                                                 withString:@".mp3"];
+                    
+                    NSMutableString *mu = [NSMutableString stringWithString:refPath];
+                    [mu insertString:_url atIndex:0];
+                    [paths addObject:mu];
+                    [rawPaths addObject:refPath];
+                }
             }
         }
     }
@@ -135,6 +137,9 @@
     
     if (_listid != NULL) {
         baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&listid=%@&%@=%@&%@=%@", _url, _user, _listid, _unitName, _unitSelection, _chapterName, _chapterSelection];
+    }
+    if (_showSentences) {
+        baseurl = [NSString stringWithFormat:@"%@&context=true", baseurl];
     }
     
     NSLog(@"wordScoreTable: askServerForJson url %@ %@",baseurl, _projid);
@@ -576,7 +581,18 @@ NSString *myCurrentTitle;
            // NSLog(@"gotTapGesture got it %@",jsonObject);
             // NSString *refAudio = [jsonObject objectForKey:@"ref"];
             NSMutableArray *toPlay = [[NSMutableArray alloc] init];
-            NSString *refAudioPath = [jsonObject objectForKey:@"ref"];
+          
+            NSString *refAudioPath;
+            if ([[jsonObject objectForKey:@"ref"] isKindOfClass:[NSString class]]) {
+                refAudioPath = [jsonObject objectForKey:@"ref"];
+            }
+            else {
+                refAudioPath = [jsonObject objectForKey:@"ctmref"];
+                if ([refAudioPath isEqualToString:@"NO"]) {
+                    refAudioPath = [jsonObject objectForKey:@"ctfref"];
+                }
+            }
+            
             if (refAudioPath == nil) {
                 NSLog(@"gotTapGesture ERROR : no ref audio in %@",jsonObject);
             }
