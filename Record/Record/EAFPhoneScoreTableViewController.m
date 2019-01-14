@@ -335,6 +335,38 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                 constant:0.0]];
 }
 
+- (UILabel *)getLabelForWord:(float)score word:(NSString *)word {
+    //NSLog(@"resultWords : wordInResult is %@",wordInResult);
+    
+    UILabel *wordLabel = [[UILabel alloc] init];
+    
+    if ([_language isEqualToString:@"English"]) {
+        word = [word lowercaseString];
+    }
+    
+    NSLog(@"resultWords : Word is %@",word);
+    
+    NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
+    
+    NSRange range = NSMakeRange(0, [coloredWord length]);
+    
+    
+//    NSLog(@"score was %@ %f",scoreString,score);
+    if (score > 0) {
+        UIColor *color = [self getColor2:score];
+        [coloredWord addAttribute:NSBackgroundColorAttributeName
+                            value:color
+                            range:range];
+    }
+    
+    wordLabel.attributedText = coloredWord;
+    NSLog(@"label word is %@",wordLabel.attributedText);
+    [wordLabel setFont:[UIFont systemFontOfSize:24]];
+    
+    [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    return wordLabel;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Configure the cell...
@@ -353,7 +385,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     NSString *phone = [_phonesInOrder objectAtIndex:indexPath.row];
     
-    //   NSLog(@"tableView phone is %@",phone);
+   NSLog(@"tableView phone is %@",phone);
     
     for (UIView *v in [cell.contentView subviews]) {
         [v removeFromSuperview];
@@ -373,61 +405,12 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     [cell.contentView.superview addConstraint:constraint];
     
     NSArray *words = [_phoneToWords objectForKey:phone];
-    
+    NSLog(@"tableView words for %@ = %@",phone, words);
+
     UIView *leftView = nil;
     
     UILabel *overallPhoneLabel = [self getOverallPhoneLabel:phone cell:cell];
     
-    // UIScrollView *scrollView = [[UIScrollView alloc] init];
-    //    UIView *scrollView = [[UIView alloc] init];
-    //    scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-    //
-    //    scrollView.backgroundColor = [UIColor purpleColor];
-    //    [cell.contentView addSubview:scrollView];
-    //
-    //    // top
-    //    [cell.contentView addConstraint:[NSLayoutConstraint
-    //                                     constraintWithItem:scrollView
-    //                                     attribute:NSLayoutAttributeTop
-    //                                     relatedBy:NSLayoutRelationEqual
-    //                                     toItem:cell.contentView
-    //                                     attribute:NSLayoutAttributeTop
-    //                                     multiplier:1.0
-    //                                     constant:0.0]];
-    //    // bottom
-    //    [cell.contentView addConstraint:[NSLayoutConstraint
-    //                                     constraintWithItem:scrollView
-    //                                     attribute:NSLayoutAttributeBottom
-    //                                     relatedBy:NSLayoutRelationEqual
-    //                                     toItem:cell.contentView
-    //                                     attribute:NSLayoutAttributeBottom
-    //                                     multiplier:1.0
-    //                                     constant:0.0]];
-    //
-    //    [cell.contentView addConstraint:[NSLayoutConstraint
-    //                                     constraintWithItem:scrollView
-    //                                     attribute:NSLayoutAttributeLeft
-    //                                     relatedBy:NSLayoutRelationEqual
-    //                                     toItem:overallPhoneLabel
-    //                                     attribute:NSLayoutAttributeRight
-    //                                     multiplier:1.0
-    //                                     constant:3.0]];
-    //
-    //    [cell.contentView addConstraint:[NSLayoutConstraint
-    //                                     constraintWithItem:scrollView
-    //                                     attribute:NSLayoutAttributeRight
-    //                                     relatedBy:NSLayoutRelationEqual
-    //                                     toItem:cell.contentView
-    //                                     attribute:NSLayoutAttributeRight
-    //                                     multiplier:1.0
-    //                                     constant:0.0]];
-    //    [scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
-    
-    //    NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
-    //                    @"Egyptian",
-    //                    @"Farsi",
-    //                    @"Levantine",
-    //                    @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
     
     float totalPhoneScore = 0.0f;
     float totalPhones = 0.0f;
@@ -438,13 +421,17 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSMutableSet *shownSoFar = [[NSMutableSet alloc] init];
     for (NSDictionary *wordEntry in words) {
         // TODO iterate over first N words in example words for phone
+       // NSLog(@"about to ask for word from %@",wordEntry);
+        
         NSString *word = [wordEntry objectForKey:@"w"];
+        NSLog(@"word is %@",word);
         
         if ([shownSoFar containsObject:word]) continue;
         else [shownSoFar addObject:word];
         
         //    if (count++ > 5) break; // only first five?
         NSString *result = [wordEntry objectForKey:@"result"];
+        NSLog(@"result is %@",result);
         NSArray *resultWords = [_resultToWords objectForKey:result];
         
         EAFAudioView *exampleView = [[EAFAudioView alloc] init];
@@ -457,7 +444,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         exampleView.answer   = [_resultToAnswer objectForKey:result];
         
         //NSLog(@"ref %@ %@",exampleView.refAudio, exampleView.answer);
-        // NSLog(@"word is %@",wordEntry);
+      //   NSLog(@"word is %@",wordEntry);
         // first example view constraints left side to left side of container
         // all - top to top of container
         // bottom to bottom of container
@@ -524,42 +511,22 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         
         
         for (NSDictionary *wordResult in resultWords) {
+            NSLog(@"resultWords : wordEntry is %@",wordEntry);
             NSString *wordPhoneAppearsIn = [wordEntry objectForKey:@"wid"];
+        
+            NSLog(@"resultWords : wordPhoneAppearsIn is %@",wordPhoneAppearsIn);
+            NSLog(@"resultWords : wordResult         is %@",wordResult);
             NSString *wordInResult = [wordResult objectForKey:@"id"];
-            UILabel *wordLabel = [[UILabel alloc] init];
-            
-            if ([_language isEqualToString:@"English"]) {
-                word = [word lowercaseString];
-            }
-            //       NSLog(@"Word is %@",word);
-            NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
-            
-            NSRange range = NSMakeRange(0, [coloredWord length]);
-            NSString *scoreString = [wordResult objectForKey:@"s"];
+            NSString *scoreString  = [wordResult objectForKey:@"s"];
             float score = [scoreString floatValue];
             
-            // NSLog(@"score was %@ %f",scoreString,score);
-            if (score > 0) {
-                UIColor *color = [self getColor2:score];
-                [coloredWord addAttribute:NSBackgroundColorAttributeName
-                                    value:color
-                                    range:range];
-            }
-            
-            wordLabel.attributedText = coloredWord;
-            //NSLog(@"label word is %@",wordLabel.attributedText);
-            [wordLabel setFont:[UIFont systemFontOfSize:24]];
-            
-            [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+            UILabel * wordLabel = [self getLabelForWord:score word:word];
             
             [exampleView addSubview:wordLabel];
-            
             [self addWordLabelConstraints:exampleView wordLabel:wordLabel];
             
             if ([wordInResult isEqualToString:wordPhoneAppearsIn]) {
                 NSArray *phoneArray = [wordResult objectForKey:@"phones"];
-                
-                //BOOL isRTL = [rtl containsObject:_language];
                 
                 if (_isRTL && !_showPhonesLTRAlways) {
                     phoneArray = [self reversedArray:phoneArray];
@@ -572,7 +539,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 int start = 0;
                 for (NSDictionary *phoneInfo in phoneArray) {
                     NSString *phoneText =[phoneInfo objectForKey:@"p"];
+                    
                     NSRange range = NSMakeRange(start, [phoneText length]);
+                    
                     if ([_language isEqualToString:@"Korean"] || !addSpaces)
                     {
                         start += range.length;
@@ -581,11 +550,12 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                         
                         start += (phoneInfo != lastPhone) ? range.length+1 : range.length;
                     }
+                    
                     NSString *scoreString = [phoneInfo objectForKey:@"s"];
                     float score = [scoreString floatValue];
                     
-                    // NSLog(@"score was %@ %f",scoreString,score);
-                    // NSLog(@"%@ vs %@ ",phoneText,phone);
+                    NSLog(@"score was %@ %f",scoreString,score);
+                    NSLog(@"%@ vs %@ ",phoneText,phone);
                     BOOL match = [phoneText isEqualToString:phone];
                     
                     UIColor *color = match? [self getColor2:score] : [UIColor whiteColor];
@@ -593,7 +563,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                         totalPhoneScore += score;
                         totalPhones++;
                     }
-                    //   NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
+                    NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
                     [coloredPhones addAttribute:NSBackgroundColorAttributeName
                                           value:color
                                           range:range];
@@ -826,7 +796,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSLog(@"useJsonChapterData error %@",error.description);
         return false;
     }
-    //NSLog(@"PhoneScore: useJsonChapter data json\n%@",json);
+    NSLog(@"PhoneScore: useJsonChapter data json\n%@",json);
     
     NSDictionary *phoneDict = [json objectForKey:@"phones"];
     NSDictionary *resultsDict = [json objectForKey:@"results"];
@@ -846,28 +816,58 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
     
     for (NSString *resultID in resultsDict) {
-     //   NSLog(@"PhoneScore: resultID %@",resultID);
+        NSLog(@"PhoneScore: resultID %@",resultID);
         NSDictionary *fields = [resultsDict objectForKey:resultID];
         NSString *ref = [fields objectForKey:@"ref"];
         
-       // NSLog(@"PhoneScore: ref %@",ref);
-
+        NSLog(@"PhoneScore: ref %@",ref);
+        
         [_resultToRef setValue:ref forKey:resultID];
         NSString *answer = [fields objectForKey:@"answer"];
-     //   NSLog(@"PhoneScore: answer %@",answer);
-
+        NSLog(@"PhoneScore: answer %@",answer);
+        
         [_resultToAnswer setValue:answer forKey:resultID];
         
         NSDictionary *resultDict = [fields objectForKey:@"result"];
-      //  NSLog(@"PhoneScore: resultDict %@",resultDict);
-      
-        NSString *theWords = [resultDict objectForKey:@"words"];
+        NSLog(@"PhoneScore: resultDict %@",resultDict);
         
-        if (theWords != nil) {
-            [_resultToWords setValue:theWords forKey:resultID];
+        if ([[resultDict objectForKey:@"words"] isKindOfClass:[NSString class]]) {
+            NSLog(@"PhoneScore: is a string %@",[resultDict objectForKey:@"words"]);
+            
+            NSString *theWords = [resultDict objectForKey:@"words"];
+            
+            NSLog(@"PhoneScore: theWords %@",theWords);
+            
+            if (theWords != nil) {
+                [_resultToWords setValue:theWords forKey:resultID];
+            }
+            else {
+                NSLog(@"PhoneScore: no words for %@",answer);
+            }
+        }
+        else if ([[resultDict objectForKey:@"words"] isKindOfClass:[NSArray class]]) {
+            NSLog(@"PhoneScore: is an array %@",[resultDict objectForKey:@"words"]);
+            
+            NSArray *theWords = [resultDict objectForKey:@"words"];
+            
+            NSLog(@"PhoneScore: dict theWords %@",theWords);
+            
+            if (theWords != nil) {
+                NSMutableArray *newArray = [NSMutableArray new];
+                for (NSDictionary *word in theWords) {
+                    NSLog(@"PhoneScore: word %@",[word objectForKey:@"w"]);
+                    [newArray addObject:[word objectForKey:@"w"]];
+                }
+                NSLog(@"PhoneScore: read all words %@",newArray);
+
+                [_resultToWords setValue:newArray forKey:resultID];
+            }
+            else {
+                NSLog(@"PhoneScore: no words for %@",answer);
+            }
         }
         else {
-            NSLog(@"PhoneScore: no words for %@",answer);
+            NSLog(@"Phonescore can't tell class for words");
         }
         
         if (answer && answer.length > 2) { //i.e. not NO

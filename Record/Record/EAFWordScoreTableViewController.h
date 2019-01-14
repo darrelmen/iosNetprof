@@ -61,5 +61,6 @@
 -(void)setCurrentTitle;
 @property NSString *url;
 @property BOOL showSentences;
+@property BOOL isQuiz;
 
 @end
