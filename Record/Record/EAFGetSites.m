@@ -55,10 +55,6 @@
 @property (strong, nonatomic) NSMutableDictionary *mutableNameToProjectID;
 @property (strong, nonatomic) NSMutableDictionary *mutableNameToHost;
 @property (strong, nonatomic) NSMutableDictionary *mutableNameToLanguage;
-
-//@property (strong, nonatomic) NSString *oldServer;
-
-
 @end
 
 @interface NSURLRequest(Private)
@@ -78,8 +74,8 @@ NSString* const expectedVersion = @"1.0.1";
       //  _oldServer = @"https://np.ll.mit.edu/";
         //NSLog(@"EAFGetSites server now %@",_oldServer);
         //   _nServer = @"http://127.0.0.1:8888/netprof/";
-           _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
-    //     _nServer = @"https://netprof.ll.mit.edu/netprof/";
+     //      _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+        _nServer = @"https://netprof.ll.mit.edu/netprof/";
     }
     
     return self;

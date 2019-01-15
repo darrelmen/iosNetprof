@@ -102,9 +102,9 @@
                     [rawPaths addObject:refPath];
                 }
             }
-            else {
-                NSLog(@"skip %@",id);
-            }
+//            else {
+//                NSLog(@"skip %@",id);
+//            }
         }
     }
     

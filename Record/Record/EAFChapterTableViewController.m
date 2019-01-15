@@ -59,7 +59,7 @@
 @property EAFGetSites *siteGetter;
 @property EAFEventPoster *poster;
 
-@property unsigned long totalItemsPerLanguage;
+//@property unsigned long totalItemsPerLanguage;
 @property unsigned long totalItemsPerLesson;
 
 @end
@@ -80,7 +80,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _totalItemsPerLanguage = 0;
+   // _totalItemsPerLanguage = 0;
     _totalItemsPerLesson = 0;
     _siteGetter = [EAFGetSites new];
     _siteGetter.delegate = self;
@@ -186,12 +186,12 @@ UIAlertView *loadingContentAlert;
     NSLog(@"loadInitialData");
     
     NSData *cachedData = [self getCachedJson];
-    if (cachedData && [cachedData length] > 100) {
+    if (cachedData != NULL && [cachedData length] > 100) {
         NSLog(@"loadInitialData : using cached json!");
         _responseData = [NSMutableData dataWithData:cachedData];
         BOOL dataIsValid = [self useJsonChapterData];
         if (!dataIsValid) {
-            NSLog(@"loadInitialData : asking server for json!");
+            NSLog(@"loadInitialData : NOT VALID : asking server for json!");
             [self askServerForJson:false];
         }
         else {
@@ -231,11 +231,11 @@ UIAlertView *loadingContentAlert;
     NSError *error;
     BOOL success = [[NSFileManager defaultManager]  removeItemAtPath:appFile error:&error];
     if (success) {
-        NSLog(@"Good - deleted file");
+        NSLog(@"forceRefreshCache Good - deleted file");
     }
     else
     {
-        NSLog(@"Could not delete file -:%@ ",[error localizedDescription]);
+        NSLog(@"forceRefreshCache Could not delete file -:%@ ",[error localizedDescription]);
     }
 }
 
@@ -276,8 +276,14 @@ UIAlertView *loadingContentAlert;
     NSString *appFile = [self getCachedJsonFile];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:appFile]) {
-        NSLog(@"getCachedJson : found the cached json at %@",appFile);
         NSData *data = [[NSFileManager defaultManager] contentsAtPath:appFile];
+        NSLog(@"getCachedJson : found the cached json at %@",appFile);
+        if (data == NULL) {
+            NSLog(@"huh? can't get data from %@",appFile);
+        }
+        else {
+            NSLog(@"getCachedJson : found the cached json at %@ length %lu",appFile,(unsigned long)[data length]);
+        }
         return data;
     }
     else {
@@ -286,6 +292,7 @@ UIAlertView *loadingContentAlert;
     }
 }
 
+// only return false if for some reason can't parse the data - maybe it was corrupted somehow???
 - (BOOL)useJsonChapterData {
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
@@ -337,9 +344,35 @@ UIAlertView *loadingContentAlert;
         _chapters = myArray;
         _chapterInfo = json; // this is the full json dictionary (???)
     }
+    
+    [self getTotalItems];
+    
     [[self tableView] reloadData];
     
     return true;
+}
+
+- (void) getTotalItems {
+    unsigned long totalItemsPerLanguage  = 0;
+    
+    for (NSDictionary *entry in _jsonContentArray) {
+        //  NSString *name =[entry objectForKey:@"name"];
+        //  NSLog(@"%@ %@",[entry objectForKey:@"type"],name);
+        //  NSArray *items;// = [entry objectForKey:@"items"];
+        NSArray *theChildren = [entry objectForKey:@"children"];
+        //    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
+        
+        for (NSDictionary *child in theChildren) {
+            NSArray * items = [child objectForKey:@"items"];
+            //    NSLog(@"%@ %@ = %lu",[entry objectForKey:@"type"],name,(unsigned long)items.count);
+            
+            totalItemsPerLanguage += items.count;
+        }
+    }
+    
+    //    NSLog(@"%@ %@ %@ %@ _totalItemsPerLanguage = %lu",_chapterName,_chapters,_unitTitle,_unit,
+    //          _totalItemsPerLanguage);
+    [self setTitle: [NSString stringWithFormat:@"%@ (%@ items)", _language, [NSString stringWithFormat:@"%lu",totalItemsPerLanguage]]];
 }
 
 - (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
@@ -422,9 +455,6 @@ UIAlertView *loadingContentAlert;
     [titleForUnit appendString:prefix];
     [titleForLesson appendString:prefix];
     
-    //    [title appendString:@" : "];
-    //
-    //    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
     if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
     {
         cell.textLabel.font = [UIFont systemFontOfSize:28]; //Change this value to adjust size
@@ -436,157 +466,63 @@ UIAlertView *loadingContentAlert;
     
     // mark chapters with empty content
     for (NSDictionary *entry in _jsonContentArray) {
-        
         NSString *name =[entry objectForKey:@"name"];
         
         theChapter = entry;
         if ([name isEqualToString:chapter]) {
             NSArray *items = [entry objectForKey:@"items"];
-            
-            //        NSLog(@"items+++++++++++ %lu",_totalItemsPerLesson);
+
             NSArray *theChildren = [entry objectForKey:@"children"];
-            //    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
-            
-            for (NSDictionary *child in theChildren) {
-                childType = [child objectForKey:@"type"];
-                childType = [childType lowercaseString];
-                //break;
-                items = [child objectForKey:@"items"];
-                _totalItemsPerLanguage += items.count;
-            }
-            
-            cell.textLabel.attributedText = [self addStrToCellLabel: theChildren withTitle: titleForUnit withType: childType];
-            
-            if (items == nil) { // no items - not a leaf
-                break;
-            }
-            else {
-                if (items.count == 0) {
-                    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@ (No Audio Available)",_chapterName, chapter];
+            if ([theChildren count] > 0)  {
+                for (NSDictionary *child in theChildren) {
+                    childType = [child objectForKey:@"type"];
+                    childType = [childType lowercaseString];
+                    items = [child objectForKey:@"items"];
                 }
-                //                NSLog(@"items %lu",(unsigned long)items.count);
-                
-                break;
+                cell.textLabel.text = [self addStrToCellLabel: theChildren withTitle: titleForUnit withType: childType];
             }
+            
+            if (items != nil && items.count == 0) {
+                cell.textLabel.text = [NSString stringWithFormat:@"%@ %@ (No Audio Available)",_chapterName, chapter];
+            }
+            
+            break;
         }
-        
     }
     
     NSArray *items2 = [theChapter objectForKey:@"items"];
-    _totalItemsPerLanguage += items2.count;
-    
-    
-    //    NSLog(@"GGGGGGLLLL_________ %lu", items2.count);
     if (items2 != nil) {
-        cell.textLabel.attributedText = [self addStrToCellLabel: items2 withTitle: titleForLesson withType: childType];
-        
-        //        unsigned long max = items2.count;
-        //        if (max > 5) max = 5;
-        //        int count = 0;
-        //        NSArray *smallArray = [items2 subarrayWithRange:NSMakeRange(0, max)];
-        //        NSMutableArray *starts = [NSMutableArray new];
-        //        NSMutableArray *ends   = [NSMutableArray new];
-        //
-        //        for (NSDictionary *item in smallArray) {
-        //            NSString *fl =[item objectForKey:@"fl"];
-        //            NSString *en =[item objectForKey:@"en"];
-        //            //NSLog(@"fl %@",[self trim:fl]);
-        //            [starts addObject:[NSNumber numberWithUnsignedInteger:title.length]];
-        //            NSString *trimFL =[self trim:fl];
-        //            [ends addObject:[NSNumber numberWithUnsignedInteger:trimFL.length]];
-        //
-        //            [title appendString:trimFL];
-        //            [title appendString:@" "];
-        //            [title appendString:[self trim:en]];
-        //            if (++count < smallArray.count) {
-        //                [title appendString:@", "];
-        //            }
-        //        }
-        //        NSMutableAttributedString *title2 = [[NSMutableAttributedString alloc] initWithString:title];
-        //
-        //        for (int i = 0; i < starts.count; i++) {
-        //            NSNumber *start = [starts objectAtIndex:i];
-        //            NSNumber *len =   [ends objectAtIndex:i];
-        //            NSUInteger len2 = [len unsignedIntegerValue];
-        //
-        //            NSRange range = NSMakeRange([start unsignedIntegerValue], len2);
-        //
-        //            [title2 addAttribute:NSForegroundColorAttributeName
-        //                           value:[UIColor blueColor]
-        //                           range:range];
-        //        }
-        //        cell.textLabel.attributedText = title2;
+        cell.textLabel.text = [self addStrToCellLabel: items2 withTitle: titleForLesson withType: childType];
     }
-    //    if(items == nil && items2 != nil){
-    //        NSString *countTotalItems = [NSString stringWithFormat:@"%ld", _totalItemsPerLanguage];
-    //        [self setTitle: [NSString stringWithFormat:@"%@ (%@ items)", _language, countTotalItems]];
-    //    }
-    //   NSLog(@"GGGGGGLLLL_________ %lu", _totalItemsPerLanguage);
+
     return cell;
 }
 
-- (NSMutableAttributedString *) addStrToCellLabel: (NSArray *)chaptersOrLessons withTitle: (NSMutableString *)title withType: (NSString *)type {
+- (NSString *) addStrToCellLabel: (NSArray *)chaptersOrLessons withTitle: (NSMutableString *)title withType: (NSString *)type {
     unsigned long count = chaptersOrLessons.count;
     
     NSString *countStr = [NSString stringWithFormat:@"%ld", count];
-    // NSLog(@"TTTTTTTT %@", title);
+    NSLog(@"addStrToCellLabel %@ = %@", title,countStr);
     
-    unsigned long n1 = title.length;
     NSMutableArray *starts = [NSMutableArray new];
     [starts addObject:[NSNumber numberWithUnsignedInteger:title.length]];
     [title appendString:@" : "];
     [title appendString:countStr];
     [title appendString:@" "];
     
-    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-    [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
-    NSString *formattedTotalItems = [formatter stringFromNumber:[NSNumber numberWithInteger:_totalItemsPerLanguage]];
-    // [formatter release];
-    
-    
-    
-    if([_language isEqualToString:@"Pashto1"] || [_language isEqualToString:@"Tagalog"]){
-        //        NSString *countTotalItems = [NSString stringWithFormat:@"%@", formattedTotalItems];
-        
-        [self setTitle: [NSString stringWithFormat:@"%@ (%@ items)", _language, formattedTotalItems]];
-        
-    }
-    
-    
     if(type != nil){
-        
-        //       NSString *countTotalItems = [NSString stringWithFormat:@"%@", formattedTotalItems];
-        [self setTitle: [NSString stringWithFormat:@"%@ (%@ items)", _language, formattedTotalItems]];
-        
+     //   NSLog(@"addStrToCellLabel 1 setTitle %@ = %@", _language,formattedTotalItems);
         [title appendString: type];
         if(count > 1){
             [title appendString: @"s"];
         }
         
     } else {
+       // NSLog(@"addStrToCellLabel 2 setTitle %@ = %@", _language,formattedTotalItems);
         [title appendString:@"items"];
     }
     
-    
-    NSMutableAttributedString *title3 = [[NSMutableAttributedString alloc] initWithString:title];
-    
-    NSRange range = NSMakeRange(n1 + 2, countStr.length+1);
-    if([title containsString:@"items"]){
-        [title3 addAttribute:NSForegroundColorAttributeName
-                       value:[UIColor blackColor]
-                       range:range];
-        
-    } else {
-        
-        [title3 addAttribute:NSForegroundColorAttributeName
-                       value:[UIColor blackColor]
-                       range:range];
-        
-    }
-    
-    
-    return title3;
-    
+    return title;
 }
 
 - (NSString *)trim:(NSString *)untrimedToken {
