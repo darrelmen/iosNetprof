@@ -95,7 +95,7 @@
 @property NSMutableDictionary *exToScore;
 @property NSMutableDictionary *exToScoreJson;
 @property NSMutableDictionary *exToRecordedAudio;
-@property NSString *lastRecordedAudioExID;
+@property NSNumber *lastRecordedAudioExID;
 
 @property NSArray *wordTranscript;
 @property NSArray *phoneTranscript;
@@ -290,7 +290,9 @@
     _exToScore = [[NSMutableDictionary alloc] init];
     _exToScoreJson = [[NSMutableDictionary alloc] init];
     _exToRecordedAudio = [[NSMutableDictionary alloc] init];
-
+    
+    NSLog(@"viewDidLoad : OK - init exToRecordedAudio...");
+    
     // Turn on remote control event delivery
     EAFAppDelegate *myDelegate = [UIApplication sharedApplication].delegate;
     
@@ -1296,7 +1298,7 @@
         }
     }
     
-    NSDictionary *prevScore= [_exToScoreJson objectForKey: [self getExID]];
+    NSDictionary *prevScore= [_exToScoreJson objectForKey: [self getCurrentExID]];
     if (prevScore != NULL) {
         [self showScoreToUser:prevScore previousScore:NULL];
     }
@@ -2134,11 +2136,56 @@ bool debugRecord = false;
     }
 }
 
+- (void)getAltPlayerFromPreviousAudio:(NSNumber *)exid{
+    //    NSData *pastAudio= [_exToRecordedAudio objectForKey:exid];
+    //    if (pastAudio == NULL) {
+    //   NSLog(@"playAudio got null for %@",exid);
+    NSData *pastAudio= [_exToRecordedAudio objectForKey:exid];
+    
+    if (pastAudio == NULL) {
+        NSLog(@"playAudio 2 got null for %@",exid);
+        
+        for(id key in _exToRecordedAudio)
+            NSLog(@"key=%@ value=%@", key, [_exToRecordedAudio objectForKey:key]);
+    }
+    
+    //    }
+    
+    //            NSLog(@"playAudio using prev audio for %@ of size %lu",exid,(unsigned long)[pastAudio length]);
+    //            NSLog(@"postAudio   address is <NSData: %p>",pastAudio);
+    //            if ([pastAudio isKindOfClass:[NSData class]]) {
+    //                NSLog(@"postAudio   address for NSDATA is <NSData: %p>",pastAudio);
+    //            }
+    //            else {
+    //                NSLog(@"postAudio   address for something else is <?: %p>",pastAudio);
+    //            }
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *myPathDocs = [documentsDirectory stringByAppendingPathComponent:@"myAudio.wav"];
+    BOOL isFileWriteComplete = [pastAudio writeToFile:myPathDocs atomically:YES];
+    if(isFileWriteComplete)
+    {
+        //                NSLog(@"AVPlayer for %@ with %@",exid,myPathDocs);
+        NSURL *url = [[NSURL alloc] initFileURLWithPath: myPathDocs];
+        _altPlayer = [[AVPlayer alloc] initWithURL:url];
+    }
+}
+
+- (id _Nullable)getCurrentExID {
+    return [[self getCurrentJson] objectForKey:@"id"];
+}
+
 // called when touch on highlighted word
 - (IBAction)playAudio:(id)sender {
     if (!_audioRecorder.recording)
     {
-        NSString *exid= [[self getCurrentJson] objectForKey:@"id"];
+        NSNumber *exid= [self getCurrentExID];
+
+        if ([exid isKindOfClass:[NSNumber class]]) {
+            NSLog(@"exid is a NSNumber");
+        }
+       
         NSLog(@"playAudio playAudio %@ vs %@ audio url %@", exid, _lastRecordedAudioExID, _audioRecorder.url);
         [self stopPlayingAudio];
         
@@ -2149,22 +2196,13 @@ bool debugRecord = false;
         // what does this do?
         [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
         
-        NSString *asString = [NSString stringWithFormat:@"%@",exid];
-        if (_lastRecordedAudioExID == NULL || [asString isEqualToString:_lastRecordedAudioExID]) {
+       // NSString *asString = [NSString stringWithFormat:@"%@",exid];
+        if (_lastRecordedAudioExID == NULL || [exid isEqualToNumber:_lastRecordedAudioExID]) {
             _altPlayer = [[AVPlayer alloc] initWithURL:_audioRecorder.url];
         }
         else {
-            NSData *pastAudio= [_exToRecordedAudio objectForKey:exid];
-            
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-            NSString *documentsDirectory = [paths objectAtIndex:0];
-            NSString *myPathDocs = [documentsDirectory stringByAppendingPathComponent:@"myAudio.wav"];
-            //  [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-            BOOL isFileWriteComplete = [pastAudio writeToFile:myPathDocs atomically:YES];
-            if(isFileWriteComplete)
-            {
-                _altPlayer = [AVPlayer playerWithURL:[NSURL URLWithString:myPathDocs]];
-            }
+           // NSLog(@"playAudio  size %lu",[_exToRecordedAudio count]);
+            [self getAltPlayerFromPreviousAudio:exid];
         }
         
         CMTime tm = CMTimeMakeWithSeconds(0.01, 100);
@@ -2246,6 +2284,7 @@ bool debugRecord = false;
         {
             NSLog(@"Error: %@", [error localizedDescription]);
         } else {
+            NSLog(@"OK let's play the audio");
             [_altPlayer play];
         }
         
@@ -2318,7 +2357,7 @@ bool debugRecord = false;
     
     NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
     
-    // NSLog(@"data %d",[postData length]);
+    NSLog(@"postAudio data length %lu",(unsigned long)[postData length]);
     
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
     
@@ -2347,17 +2386,28 @@ bool debugRecord = false;
     
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     
-    NSString *exid = [[self getCurrentJson] objectForKey:@"id"];
+//    NSString *exid = [[self getCurrentJson] objectForKey:@"id"];
+    NSNumber *exid= [self getCurrentExID];
+
     // so netprof v2 has number ids - hard to know what type json is returning...
-    if ([[[self getCurrentJson] objectForKey:@"id"] isKindOfClass:[NSNumber class]]) {
-        NSNumber *nid = [[self getCurrentJson] objectForKey:@"id"];
-        exid = [NSString stringWithFormat:@"%@",nid];
-    }
+//    if ([[[self getCurrentJson] objectForKey:@"id"] isKindOfClass:[NSNumber class]]) {
+//        NSNumber *nid = [[self getCurrentJson] objectForKey:@"id"];
+//        exid = [NSString stringWithFormat:@"%@",nid];
+//    }
     
-    [_exToRecordedAudio setObject:postData forKey:exid];
+    NSData *audioData=[NSData dataWithData:postData];
+    NSLog(@"postAudio OK remember for %@ (%lu)",exid,(unsigned long)[audioData length]);
+    
+    [_exToRecordedAudio setObject:[NSData dataWithData:postData] forKey:exid];
+    
+    NSData *audioData2= [_exToRecordedAudio objectForKey:exid];
+    NSLog(@"postAudio   remembered for %@ (%lu)",exid,(unsigned long)[audioData2 length]);
+    NSLog(@"postAudio   now %ld",[_exToRecordedAudio count]);
+    NSLog(@"postAudio   address is <NSData: %p>",audioData2);
+    
     _lastRecordedAudioExID = exid;
     
-    [urlRequest setValue:exid        forHTTPHeaderField:@"exercise"];
+    [urlRequest setValue:[NSString stringWithFormat:@"%@",exid]        forHTTPHeaderField:@"exercise"];
     [urlRequest setValue:@"decode" forHTTPHeaderField:@"request"];
     
     NSString *projid = [NSString stringWithFormat:@"%@",[self getProjectID]];
@@ -2530,14 +2580,14 @@ bool debugRecord = false;
     [_correctFeedback setHidden:false];
 }
 
-- (NSString *)getExID {
-    NSString *current = [[self getCurrentJson] objectForKey:@"id"];
-    
-    if ([current isKindOfClass:[NSNumber class]]) {
-        current = [NSString stringWithFormat:@"%@",current];
-    }
-    return current;
-}
+//- (NSString *)getExID {
+//    NSString *current = [[self getCurrentJson] objectForKey:@"id"];
+//
+//    if ([current isKindOfClass:[NSNumber class]]) {
+//        current = [NSString stringWithFormat:@"%@",current];
+//    }
+//    return current;
+//}
 
 // TODO : consider how to do streaming audio
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
@@ -2581,14 +2631,13 @@ bool debugRecord = false;
     //  NSLog(@"score was %@",overallScore);
     //     NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
     //     NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
-    NSString *exid = [json objectForKey:@"exid"];
-    
+    NSNumber *exid = [json objectForKey:@"exid"];
     
     // so netprof v2 has number ids - hard to know what type json is returning...
-    if ([[json objectForKey:@"exid"] isKindOfClass:[NSNumber class]]) {
-        NSNumber *nid = [json objectForKey:@"exid"];
-        exid = [NSString stringWithFormat:@"%@",nid];
-    }
+//    if ([[json objectForKey:@"exid"] isKindOfClass:[NSNumber class]]) {
+//        NSNumber *nid = [json objectForKey:@"exid"];
+//        exid = [NSString stringWithFormat:@"%@",nid];
+//    }
     
     NSNumber *resultID = [json objectForKey:@"resultID"];
     
@@ -2629,10 +2678,10 @@ bool debugRecord = false;
         return;
     }
     
-    NSString * current = [self getExID];
-    
-    if (![exid isEqualToString:current]) {
-        NSLog(@"response exid not same as current - got %@ vs expecting %@",exid,current );
+   // NSString * current = [self getExID];
+    NSNumber *currentExID = [self getCurrentExID];
+    if (![exid isEqualToNumber:currentExID]) {
+        NSLog(@"response exid not same as current - got %@ vs expecting %@",exid,currentExID);
         return;
     }
     

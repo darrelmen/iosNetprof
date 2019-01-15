@@ -84,7 +84,7 @@
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)0];
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet", _urlToUse];
     
-    NSLog(@"postEvent post context %@ to url %@ or %@",context,_urlToUse,baseurl);
+    //NSLog(@"postEvent post context %@ to url %@ or %@",context,_urlToUse,baseurl);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
