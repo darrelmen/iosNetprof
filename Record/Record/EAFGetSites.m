@@ -74,8 +74,8 @@ NSString* const expectedVersion = @"1.0.1";
       //  _oldServer = @"https://np.ll.mit.edu/";
         //NSLog(@"EAFGetSites server now %@",_oldServer);
         //   _nServer = @"http://127.0.0.1:8888/netprof/";
-     //      _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
-        _nServer = @"https://netprof.ll.mit.edu/netprof/";
+           _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+       // _nServer = @"https://netprof.ll.mit.edu/netprof/";
     }
     
     return self;
@@ -150,7 +150,7 @@ NSString* const expectedVersion = @"1.0.1";
                                               }
                                               else {
                                                  //  NSLog(@"\tgetSites Got response %@",response);
-                                                _sitesData = data;
+                                                  self->_sitesData = data;
                                                   [self performSelectorOnMainThread:@selector(useJsonSitesData:)
                                                                          withObject:theServer
                                                                       waitUntilDone:YES];

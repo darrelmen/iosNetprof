@@ -2096,7 +2096,6 @@ bool debugRecord = false;
 }
 
 - (IBAction)longPressAction:(id)sender {
-    
     //  if (debugRecord)  NSLog(@"longPressAction   state %ul vs %ul", (long)_longPressGesture.state, (long)UIGestureRecognizerStateBegan);
     
     if (_longPressGesture.state == UIGestureRecognizerStateBegan) {
@@ -2118,7 +2117,7 @@ bool debugRecord = false;
         _recordButtonContainer.backgroundColor =[UIColor whiteColor];
         _recordButton.enabled = YES;
         
-        if (debugRecord)  NSLog(@"longPressAction now  time = %f",_gestureEnd);
+        if (debugRecord)  NSLog(@"longPressAction now time = %f",_gestureEnd);
         double gestureDiff = _gestureEnd - _gestureStart;
         
         // NSLog(@"diff %f",gestureDiff);
@@ -2703,7 +2702,6 @@ bool debugRecord = false;
 
 - (void) showQuizComplete {
     float total=0.0;
-    
     //NSLog(@"showQuizComplete _exToScore now %lu",(unsigned long)[_exToScore count]);
     
     int done=0;
@@ -2714,17 +2712,45 @@ bool debugRecord = false;
     }
     float overall = (100.0f*total)/(float)_jsonItems.count;
     
-    //NSLog(@"showQuizComplete got overall   %f", overall);
-   // NSLog(@"showQuizComplete got overall   %d", (int)overall);
-    
     NSString *score = [NSString stringWithFormat:@"Your score was a %d.",(int)overall];
     
     if (done < _jsonItems.count) {
         score = [NSString stringWithFormat:@"%@\nYou completed %d of %lu items.",score,done,(unsigned long)_jsonItems.count];
     }
-    if (_timeRemainingMillis > 0) {
-        score = [NSString stringWithFormat:@"%@\nAre you done with the quiz?",score];
-        [self quizCompleteYesNo:score];
+    if (_timeRemainingMillis > 0) {         // if you have time, it jumps back with sorted order worst to best
+        NSArray *sortedArray;
+        sortedArray = [_jsonItems sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+            NSNumber *firstExID = [(NSDictionary*)a objectForKey:@"id"];
+            NSNumber *secondExID = [(NSDictionary*)b objectForKey:@"id"];
+            
+            NSNumber *firstScore = [self->_exToScore objectForKey:firstExID];
+            NSNumber *secondScore = [self->_exToScore objectForKey:secondExID];
+            
+            if (firstScore == NULL) {
+                if (secondScore == NULL) {
+                    NSString *firstFL = [(NSDictionary*)a objectForKey:@"fl"];
+                    NSString *secondFL = [(NSDictionary*)b objectForKey:@"fl"];
+                    return [firstFL compare:secondFL];
+                }
+                else {
+                    return -1;
+                }
+            }
+            else {
+                if (secondScore == NULL) {
+                    return +1;
+                }
+                else {
+                    return [firstScore compare:secondScore];
+                }
+            }
+            
+        }];
+        _jsonItems = sortedArray;
+        _index = 0;
+        [self respondToSwipe];
+        // TODO : instead, sort the items by score
+        // jump back to first
     } else {
         UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Quiz Complete!"
                                                                        message:score
