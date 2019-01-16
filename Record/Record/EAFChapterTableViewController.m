@@ -502,7 +502,7 @@ UIAlertView *loadingContentAlert;
     unsigned long count = chaptersOrLessons.count;
     
     NSString *countStr = [NSString stringWithFormat:@"%ld", count];
-    NSLog(@"addStrToCellLabel %@ = %@", title,countStr);
+ //   NSLog(@"addStrToCellLabel %@ = %@", title,countStr);
     
     NSMutableArray *starts = [NSMutableArray new];
     [starts addObject:[NSNumber numberWithUnsignedInteger:title.length]];

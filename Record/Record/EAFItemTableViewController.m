@@ -138,6 +138,8 @@
     //   [self createBtnAndLabelForHeaderView];
     
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(OrientationChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
+    
+ //   [self sortBtnTapped:NULL];
 }
 
 //- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
@@ -232,9 +234,11 @@
     _sortBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     _sortBtn.frame = CGRectMake(self.view.frame.size.width - 5 - (self.view.frame.size.width - 10)/4, 50, (self.view.frame.size.width - 10)/4, 45);
 //    [_sortBtn setImage:[UIImage imageNamed:@"sort_big.png"] forState:UIControlStateNormal];
-     [_sortBtn setImage:[[UIImage imageNamed:@"ZtoA.png"]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
-     [_sortBtn setImage:[[UIImage imageNamed:@"AtoZ.png"]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateSelected];
-
+    [_sortBtn setImage:[[UIImage imageNamed:@"AtoZ.png"]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+    [_sortBtn setImage:[[UIImage imageNamed:@"ZtoA.png"]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateSelected];
+    
+ //   _sortBtn.selected = YES;
+    
     [[_sortBtn layer] setBorderWidth:1.0f];
     [[_sortBtn layer] setBorderColor:[UIColor npDarkBlue].CGColor];
     _sortBtn.backgroundColor = [UIColor npLightBlue];
@@ -250,17 +254,8 @@
     self.tableView.tableHeaderView = headerView;
 }
 
-- (void)sortBtnTapped:(id)sender{
-    
-    [sender tag];
-    
-    NSSortDescriptor *leadNameDescriptor;
-    _sortBtn.selected = !_sortBtn.selected;
-    if(_sortBtn.selected){
-        leadNameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"en" ascending:YES selector:@selector(localizedStandardCompare:)];
-    } else {
-        leadNameDescriptor = [[NSSortDescriptor alloc]initWithKey:@"en" ascending:NO selector:@selector(localizedStandardCompare:)];
-    }
+- (void)sortAndReload {
+    NSSortDescriptor *leadNameDescriptor = [[NSSortDescriptor alloc] initWithKey:@"fl" ascending:!_sortBtn.selected selector:@selector(localizedStandardCompare:)];
     
     NSArray *sortDescriptor = [NSArray arrayWithObject:leadNameDescriptor];
     NSArray *sortedArray = [_jsonItems sortedArrayUsingDescriptors:sortDescriptor];
@@ -269,27 +264,36 @@
     [[self tableView] reloadData];
 }
 
+- (void)sortBtnTapped:(id)sender{
+   // [sender tag];
+    _sortBtn.selected = !_sortBtn.selected;
+   
+    [self sortAndReload];
+}
+
 - (void)filterBtnTapped:(UISegmentedControl *)segment{
-    
     _jsonItems = _temp_jsonItems;
     NSMutableArray *checkMarkArray = [[NSMutableArray alloc] init];
     NSMutableArray *redXArray = [[NSMutableArray alloc] init];
     NSMutableArray *questionMarkArray = [[NSMutableArray alloc] init];
     for(NSDictionary *entry in _jsonItems){
-        
         NSString *exid = [entry objectForKey:@"id"];
         NSArray *answers = [_exToHistory objectForKey:exid];
         
         if(answers != nil && answers.count != 0){
-            BOOL isCorrect;
-            BOOL isIncorrect;
-            for(NSString *correct in answers){
-                isCorrect = [correct isEqualToString:@"Y"];
-                isIncorrect = [correct isEqualToString:@"N"];
-            }
+//            BOOL isCorrect;
+//            BOOL isIncorrect;
+//            for(NSString *correct in answers){
+//                isCorrect = [correct isEqualToString:@"Y"];
+//                isIncorrect = [correct isEqualToString:@"N"];
+//            }
+            
+            NSString *correctYesNo =  [answers lastObject];
+            BOOL isCorrect = [correctYesNo isEqualToString:@"Y"];
+            
             if(isCorrect){
                 [checkMarkArray addObject:entry];
-            } else if(isIncorrect){
+            } else {
                 [redXArray addObject:entry];
             }
         } else {
@@ -481,13 +485,16 @@
         cell.imageView.image = [UIImage imageNamed:@"questionIcon"];
     }
     else {
-        for (NSString *correct in answers) {
-            BOOL isCorrect = [correct isEqualToString:@"Y"];
-            //   NSLog(@"tableView  : history %@", scoreHistory);
-            //   NSLog(@"tableView  : exid %@ score %@",  exid,[_exToScore objectForKey:exid]);
-            cell.imageView.image = [UIImage imageNamed:isCorrect ? @"checkmark32.png" : @"redx32.png"];
-            break;
-        }
+      NSString *correctYesNo =  [answers lastObject];
+      BOOL isCorrect = [correctYesNo isEqualToString:@"Y"];
+      cell.imageView.image = [UIImage imageNamed:isCorrect ? @"checkmark32.png" : @"redx32.png"];
+//
+//        for (NSString *correct in answers) {
+//            //   NSLog(@"tableView  : history %@", scoreHistory);
+//            //   NSLog(@"tableView  : exid %@ score %@",  exid,[_exToScore objectForKey:exid]);
+//            cell.imageView.image = [UIImage imageNamed:isCorrect ? @"checkmark32.png" : @"redx32.png"];
+//            break;
+//        }
     }
     
     [self colorEachWord:exid cell:cell exercise:exercise scoreHistory:scoreHistory];
@@ -734,7 +741,10 @@
  
 //            NSLog(@"item table view : reload table ----------- ");
             
-            [[self tableView] reloadData];
+            [self sortAndReload];
+            
+            
+//            [[self tableView] reloadData];
         }
         else {
             NSLog(@"item table view : NOT reloading table ----------- ");

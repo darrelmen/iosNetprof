@@ -291,7 +291,8 @@
     _exToScoreJson = [[NSMutableDictionary alloc] init];
     _exToRecordedAudio = [[NSMutableDictionary alloc] init];
     
-    NSLog(@"viewDidLoad : OK - init exToRecordedAudio...");
+    //    NSLog(@"viewDidLoad : OK - init exToRecordedAudio...");
+//    _foreignLang.numberOfLines = _showSentences  ? 6:3;
     
     // Turn on remote control event delivery
     EAFAppDelegate *myDelegate = [UIApplication sharedApplication].delegate;
@@ -916,7 +917,9 @@
     float scale = slen/len;
     scale = fmin(1,scale);
     float newFont = smallest + floor((largest-smallest)*scale);
-    //  NSLog(@"scaleFont font is %f",newFont);
+    
+    NSLog(@"scaleFont font is %f",newFont);
+    
     // [labelToScale setFont:[UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue]];
     [labelToScale setFont:[UIFont fontWithName:@"Arial" size:[NSNumber numberWithFloat:newFont].intValue]];
 }
@@ -950,7 +953,7 @@
     
     _english.adjustsFontSizeToFitWidth=YES;
     _english.minimumScaleFactor=0.1;
-    
+
     _tl.adjustsFontSizeToFitWidth=YES;
     _tl.minimumScaleFactor=0.1;
     
@@ -1230,30 +1233,32 @@
     
     [_english setText:enAtIndex];
     
+    // so somehow we have to manually scale the font based on the length of the text, wish I could figure out how to not do this
     BOOL isIPhone = [self isiPhone];
-    
+    int minTextLength = _showSentences ? 20:10;
+    int maxFont  = 48;
+
     if (isIPhone) {
-        int maxFont  = 48;
         int maxEFont = 40;
-        
+
         NSString *dev =[self deviceName];
-        
+
         BOOL issmall = [dev rangeOfString:@"iPhone4"].location != NSNotFound;
         if (issmall) {
             maxFont = 30;
             maxEFont = 30;
         }
-        [self scaleFont:flAtIndex labelToScale:_foreignLang largest:maxFont slen:10 smallest:14];
-        [self scaleFont:_tlAtIndex labelToScale:_tl largest:maxFont slen:10 smallest:14];
-        
+
+        [self scaleFont:flAtIndex labelToScale:_foreignLang largest:maxFont slen:minTextLength smallest:14];
+        [self scaleFont:_tlAtIndex labelToScale:_tl largest:maxFont slen:minTextLength smallest:14];
+
         //     CGRect rect = [_english.text boundingRectWithSize:_english.bounds.size options:NSStringDrawingTruncatesLastVisibleLine attributes:nil context:nil];
         //   NSLog(@"Got rect %@",rect);
         //     NSLog(@"%@ vs %@", NSStringFromCGRect(rect), NSStringFromCGRect(_english.bounds));
-        
-        [self scaleFont:enAtIndex labelToScale:_english     largest:maxEFont slen:10 smallest:12];
+
+        [self scaleFont:enAtIndex labelToScale:_english     largest:maxEFont slen:minTextLength smallest:12];
     } else {
-        int maxFont  = 48;
-        [self scaleFont:enAtIndex labelToScale:_english     largest:maxFont slen:10 smallest:32];
+        [self scaleFont:enAtIndex labelToScale:_english     largest:maxFont slen:minTextLength smallest:32];
     }
     
     for (UIView *v in [_scoreDisplayContainer subviews]) {
