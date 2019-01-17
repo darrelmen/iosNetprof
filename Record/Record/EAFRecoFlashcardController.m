@@ -918,7 +918,7 @@
     scale = fmin(1,scale);
     float newFont = smallest + floor((largest-smallest)*scale);
     
-    NSLog(@"scaleFont font is %f",newFont);
+    //NSLog(@"scaleFont font is %f",newFont);
     
     // [labelToScale setFont:[UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue]];
     [labelToScale setFont:[UIFont fontWithName:@"Arial" size:[NSNumber numberWithFloat:newFont].intValue]];
@@ -1000,15 +1000,15 @@
 
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
-    NSLog(@"respondToSwipe - \n\n");
+    NSLog(@"respondToSwipe - %ld",_index);
     
-    long index = (long) _index + 1.0;
+    //long index = (long) _index + 1.0;
     long jsonItemCount = (long) _jsonItems.count;
     
     _progressThroughItems.progress = ((float) _index) /(float) _jsonItems.count;
     
     NSString *jsonItemCountStr = [NSString stringWithFormat:@"%ld",jsonItemCount];
-    _progressNum.text = [NSString stringWithFormat:@"%ld  / %ld", index, jsonItemCount];
+    _progressNum.text = [NSString stringWithFormat:@"%ld  / %ld", _index + 1, jsonItemCount];
     _progressNum.textColor = [UIColor npLightBlue];
     _timeRemainingLabel.textColor = [UIColor npLightBlue];
     
@@ -2753,6 +2753,7 @@ bool debugRecord = false;
         }];
         _jsonItems = sortedArray;
         _index = 0;
+        
         [self respondToSwipe];
         // TODO : instead, sort the items by score
         // jump back to first
@@ -3454,6 +3455,9 @@ BOOL addSpaces = false;
         
         phoneReport.url = _url;
         phoneReport.isRTL = _isRTL;
+        
+        phoneReport.listid = _listid;
+
     }
     @catch (NSException *exception)
     {

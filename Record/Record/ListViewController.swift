@@ -43,7 +43,9 @@ class ListViewController: UITableViewController {
         
         if (isQuiz) {
             server = serverURL! + "scoreServlet?quiz"
+            self.title="Quizzes";
         }
+        
         
         let request = NSMutableURLRequest(url: NSURL(string: server)! as URL)
         request.httpMethod = "GET"

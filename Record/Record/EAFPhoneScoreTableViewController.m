@@ -101,7 +101,7 @@
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (_responseData == nil) { // if it failed before.
-        NSLog(@"PhoneScoreTableViewController.viewWillAppear - ask server for json");
+       // NSLog(@"PhoneScoreTableViewController.viewWillAppear - ask server for json");
         [self askServerForJson];
     }
 }
@@ -121,7 +121,10 @@
 - (void)askServerForJson {
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
+    if (_listid != NULL) {
+        //     baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&listid=%@&%@=%@&%@=%@", _url, _user, _listid, _unitName, _unitSelection, _chapterName, _chapterSelection];
+        baseurl = [NSString stringWithFormat:@"%@&listid=%@", baseurl, _listid];
+    }
     NSLog(@"EAFPhoneScoreTableViewController url %@ %@",baseurl,_projid);
     
     NSURL *url = [NSURL URLWithString:baseurl];
@@ -509,23 +512,22 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         
         leftView = exampleView;
         
-        
         for (NSDictionary *wordResult in resultWords) {
             NSLog(@"resultWords : wordEntry is %@",wordEntry);
             NSString *wordPhoneAppearsIn = [wordEntry objectForKey:@"wid"];
         
             NSLog(@"resultWords : wordPhoneAppearsIn is %@",wordPhoneAppearsIn);
             NSLog(@"resultWords : wordResult         is %@",wordResult);
-            NSString *wordInResult = [wordResult objectForKey:@"id"];
+            NSString *idOfWordInResult = [wordResult objectForKey:@"id"];
             NSString *scoreString  = [wordResult objectForKey:@"s"];
-            float score = [scoreString floatValue];
+          //  float score = [scoreString floatValue];
             
-            UILabel * wordLabel = [self getLabelForWord:score word:word];
+            UILabel * wordLabel = [self getLabelForWord:[scoreString floatValue] word:word];
             
             [exampleView addSubview:wordLabel];
             [self addWordLabelConstraints:exampleView wordLabel:wordLabel];
             
-            if ([wordInResult isEqualToString:wordPhoneAppearsIn]) {
+            if ([idOfWordInResult isEqualToString:wordPhoneAppearsIn]) {  // match!
                 NSArray *phoneArray = [wordResult objectForKey:@"phones"];
                 
                 if (_isRTL && !_showPhonesLTRAlways) {
@@ -853,14 +855,17 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             NSLog(@"PhoneScore: dict theWords %@",theWords);
             
             if (theWords != nil) {
-                NSMutableArray *newArray = [NSMutableArray new];
-                for (NSDictionary *word in theWords) {
-                    NSLog(@"PhoneScore: word %@",[word objectForKey:@"w"]);
-                    [newArray addObject:[word objectForKey:@"w"]];
-                }
-                NSLog(@"PhoneScore: read all words %@",newArray);
+//                NSMutableArray *newArray = [NSMutableArray new];
+//                for (NSDictionary *word in theWords) {
+//                    NSLog(@"PhoneScore: word %@",[word objectForKey:@"w"]);
+//                    [newArray addObject:[word objectForKey:@"w"]];
+//                }
+//                NSLog(@"PhoneScore: read all words %@",newArray);
+//
+//                [_resultToWords setValue:newArray forKey:resultID];
+                
+                [_resultToWords setValue:theWords forKey:resultID];
 
-                [_resultToWords setValue:newArray forKey:resultID];
             }
             else {
                 NSLog(@"PhoneScore: no words for %@",answer);

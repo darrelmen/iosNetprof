@@ -61,6 +61,8 @@
 @property BOOL isRTL;
 
 @property long user;
+@property NSNumber *listid;
+
 -(void)setCurrentTitle;
 
 @end
