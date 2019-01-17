@@ -370,7 +370,7 @@
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
-    NSString *message = error.localizedDescription;// @"Couldn't connect to server.";
+    NSString *message = error.localizedDescription;
     if (error.code == NSURLErrorNotConnectedToInternet) {
         message = @"NetProF needs a wifi or cellular internet connection.";
     }

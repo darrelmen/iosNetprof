@@ -411,7 +411,7 @@ UIAlertView *loadingContentAlert;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
     if (!_isRefresh) {
-        NSString *message = @"Couldn't connect to server.";
+        NSString *message = @"Couldn't connect to server (getting chapter history).";
         if (error.code == NSURLErrorNotConnectedToInternet) {
             message = @"NetProF needs a wifi or cellular internet connection.";
         }

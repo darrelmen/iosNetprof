@@ -476,7 +476,7 @@
     
     NSString *message = error.localizedDescription;// @"Couldn't connect to server.";
     if (error.code == NSURLErrorNotConnectedToInternet) {
-        message = @"NetProF needs a wifi or cellular internet connection.";
+        message = @"Netprof needs a wifi or cellular internet connection.";
     }
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
                                                     message: message

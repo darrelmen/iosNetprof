@@ -797,6 +797,14 @@
     // The request has failed for some reason!
     // Check the error var
     NSLog(@"ItemTableViewController - Download content failed with %@",error);
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                    message:[NSString stringWithFormat:@"Network problem - please try again (%@).",error.localizedDescription]
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+    [alert show];
+    
     _requestPending = false;
     [[self tableView] reloadData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];

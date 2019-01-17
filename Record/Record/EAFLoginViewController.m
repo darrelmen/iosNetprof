@@ -556,7 +556,7 @@
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
-    NSString *message = @"Couldn't connect to server.";
+    NSString *message = [NSString stringWithFormat:@"Couldn't connect to server (login) (code = %ld).",(long)error.code];
     if (error.code == NSURLErrorNotConnectedToInternet) {
         message = @"NetProF needs a wifi or cellular internet connection.";
     }

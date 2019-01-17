@@ -74,8 +74,9 @@ NSString* const expectedVersion = @"1.0.1";
       //  _oldServer = @"https://np.ll.mit.edu/";
         //NSLog(@"EAFGetSites server now %@",_oldServer);
         //   _nServer = @"http://127.0.0.1:8888/netprof/";
-           _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
-       // _nServer = @"https://netprof.ll.mit.edu/netprof/";
+   //        _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+        // _nServer = @"https://netprof.ll.mit.edu/netprof/";
+       _nServer = @"https://netprof.ll.mit.edu/dialog/";
     }
     
     return self;
@@ -172,17 +173,8 @@ NSString* const expectedVersion = @"1.0.1";
 - (NSString *)getCachePath:(NSString *) theServer {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
   //  NSLog(@"HTTTTTUUUU___: %@", paths);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    
-    NSString *fileToGet;
-//    if ([theServer isEqualToString:_oldServer]) {
-//        fileToGet = @"oldSites.json";
-//    }
-//    else {
-        fileToGet = @"newSites.json";
-//    }
-    
-    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:fileToGet];
+    NSString *documentsDirectory = [paths objectAtIndex:0];   
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"newSites.json"];
     return filePath;
 }
 

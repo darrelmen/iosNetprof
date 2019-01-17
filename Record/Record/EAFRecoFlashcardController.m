@@ -158,12 +158,10 @@
     }
 }
 
+// view will appear
 -(void)askServerForJsonForList {
     if (_siteGetter == NULL) {
-        
         _siteGetter = [EAFGetSites new];
-        
-        // NSLog(@"RecoFlashcardController.viewDidLoad : getSites...");
         
         if (_url == NULL) {
             _url = [_siteGetter getServerURL];
@@ -421,13 +419,11 @@
     
     _moreSelection = [[MoreSelection alloc]initWithLanguageIndex:_languageSegmentIndex withVoiceIndex:_voiceSegmentIndex];
     
-    //    self.navigationController.navigationBar.barTintColor=[UIColor yellowColor];
-    //    self.navigationController.navigationBar.tintColor=[UIColor blueColor];
-    //    self.navigationController.navigationBar.translucent=NO;
+
     
     UIBarButtonItem *scoreShow = [[UIBarButtonItem alloc]
                                   initWithTitle:@"Score"
-                                  style:UIBarButtonItemStyleBordered
+                                  style:UIBarButtonItemStylePlain
                                   target:self
                                   action:@selector(showScores:)];
     self.navigationItem.rightBarButtonItem = scoreShow;
@@ -435,10 +431,12 @@
     _selectionToolbar=[[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 10, 10)];
     
     [self setupToolBar];
-    if (_quizMinutes == NULL) {
+
+    if (_quizMinutes != NULL) {
+        self.navigationItem.rightBarButtonItem.enabled = false;
+        [_selectionToolbar setHidden:true];
     }
     else {
-        [_selectionToolbar setHidden:true];
     }
     
     //    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
@@ -588,7 +586,7 @@
         constData = self.view.bounds.size.height * 0.12;
     } else {
         // constData = self.view.bounds.size.height * 0.2;
-        constData = 180.0;
+        constData = 100.0;
     }
     NSLayoutConstraint  *height = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:constData];
     //_selectionToolbar.backgroundColor = [UIColor colorWithRed:3/255.0 green:99/255.0 blue:148/255.0 alpha:1.0];
@@ -948,6 +946,9 @@
     NSString *englishPhrases = [jsonObject objectForKey:@"en"];
     [_english setText:englishPhrases];
     
+
+    
+    // TODO : do we need these???
     _foreignLang.adjustsFontSizeToFitWidth=YES;
     _foreignLang.minimumScaleFactor=0.1;
     
@@ -1032,6 +1033,16 @@
     
     [_correctFeedback setHidden:true];
     [_scoreProgress     setProgress:0 ];
+    
+    // fade in the english!
+    self->_english.alpha = 0.0;
+    
+    [UIView animateWithDuration:0.5 delay:0.5 options:UIViewAnimationOptionCurveLinear  animations:^{
+        //code with animation
+        self->_english.alpha = 1.0;
+    } completion:^(BOOL finished) {
+        //code for completion
+    }];
     
     [self setGenderSelector];
     
@@ -2705,10 +2716,46 @@ bool debugRecord = false;
     }
 }
 
+- (void)sortWorstFirstStartOver {
+    NSArray *sortedArray;
+    sortedArray = [_jsonItems sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+        NSNumber *firstExID = [(NSDictionary*)a objectForKey:@"id"];
+        NSNumber *secondExID = [(NSDictionary*)b objectForKey:@"id"];
+        
+        NSNumber *firstScore = [self->_exToScore objectForKey:firstExID];
+        NSNumber *secondScore = [self->_exToScore objectForKey:secondExID];
+        
+        if (firstScore == NULL) {
+            if (secondScore == NULL) {
+                NSString *firstFL = [(NSDictionary*)a objectForKey:@"fl"];
+                NSString *secondFL = [(NSDictionary*)b objectForKey:@"fl"];
+                return [firstFL compare:secondFL];
+            }
+            else {
+                return -1;
+            }
+        }
+        else {
+            if (secondScore == NULL) {
+                return +1;
+            }
+            else {
+                return [firstScore compare:secondScore];
+            }
+        }
+        
+    }];
+    _jsonItems = sortedArray;
+    _index = 0;
+    
+    [self respondToSwipe];
+}
+
 - (void) showQuizComplete {
     float total=0.0;
     //NSLog(@"showQuizComplete _exToScore now %lu",(unsigned long)[_exToScore count]);
-    
+    self.navigationItem.rightBarButtonItem.enabled = true;
+
     int done=0;
     for(id key in _exToScore) {
         total+= [[_exToScore objectForKey:key] floatValue];
@@ -2723,38 +2770,7 @@ bool debugRecord = false;
         score = [NSString stringWithFormat:@"%@\nYou completed %d of %lu items.",score,done,(unsigned long)_jsonItems.count];
     }
     if (_timeRemainingMillis > 0) {         // if you have time, it jumps back with sorted order worst to best
-        NSArray *sortedArray;
-        sortedArray = [_jsonItems sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-            NSNumber *firstExID = [(NSDictionary*)a objectForKey:@"id"];
-            NSNumber *secondExID = [(NSDictionary*)b objectForKey:@"id"];
-            
-            NSNumber *firstScore = [self->_exToScore objectForKey:firstExID];
-            NSNumber *secondScore = [self->_exToScore objectForKey:secondExID];
-            
-            if (firstScore == NULL) {
-                if (secondScore == NULL) {
-                    NSString *firstFL = [(NSDictionary*)a objectForKey:@"fl"];
-                    NSString *secondFL = [(NSDictionary*)b objectForKey:@"fl"];
-                    return [firstFL compare:secondFL];
-                }
-                else {
-                    return -1;
-                }
-            }
-            else {
-                if (secondScore == NULL) {
-                    return +1;
-                }
-                else {
-                    return [firstScore compare:secondScore];
-                }
-            }
-            
-        }];
-        _jsonItems = sortedArray;
-        _index = 0;
-        
-        [self respondToSwipe];
+        [self quizCompleteYesNo:@"You have time, do you want to try again on low score items?"];
         // TODO : instead, sort the items by score
         // jump back to first
     } else {
@@ -2789,14 +2805,16 @@ bool debugRecord = false;
                                 style:UIAlertActionStyleDefault
                                 handler:^(UIAlertAction * action) {
                                     //Handle your yes please button action here
-                                    [self showScoresClick:nil];
+                                        [self sortWorstFirstStartOver];
+
                                 }];
     
     UIAlertAction* noButton = [UIAlertAction
                                actionWithTitle:@"No"
                                style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction * action) {
-                                   //Handle no, thanks button
+                                   _timeRemainingLabel.text = @"00:00";
+                                     [self showScoresClick:nil];
                                }];
     
     //Add your buttons to alert controller
