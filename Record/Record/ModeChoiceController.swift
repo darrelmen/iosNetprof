@@ -25,12 +25,8 @@ class ModeChoiceController: UITableViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        print("\n\n\ngot prepare for segue  \(segue)")
-//        print("got prepare for sender \(sender ?? "something undefined")")
-//
-        print("segue    \(String(describing: segue.identifier))")
-        print("segue dest \(segue.destination)")
-        
+        //        print("segue    \(String(describing: segue.identifier))")
+        //        print("segue dest \(segue.destination)")
         let identifier: String? = segue.identifier
         if (identifier == "goToListChoice") {
             let listViewController = segue.destination as? ListViewController

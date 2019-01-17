@@ -50,6 +50,11 @@ class ListViewController: UITableViewController {
         let request = NSMutableURLRequest(url: NSURL(string: server)! as URL)
         request.httpMethod = "GET"
         request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 10.0
+        
+        print("making request to \(server)")
+        
+//        request.timeoutIntervalForResource = 60.0
         
         let queue:OperationQueue = OperationQueue()
         
@@ -66,6 +71,9 @@ class ListViewController: UITableViewController {
             } catch let error as NSError {
                 DispatchQueue.main.async {
                     UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                    let alert = UIAlertController(title: "Connection Error", message: "Got error getting lists or quizzes \(error)", preferredStyle: UIAlertController.Style.alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
                 }
                 print(error.localizedDescription)
             }       
