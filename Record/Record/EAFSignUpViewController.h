@@ -59,7 +59,7 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomOffsetConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *maxLangPickerHeightConstraint;
 
-@property (strong, nonatomic) IBOutlet UIPickerView *languagePicker;
+//@property (strong, nonatomic) IBOutlet UIPickerView *languagePicker;
 //@property (strong, nonatomic) NSArray *languages;
 @property (strong, nonatomic) NSMutableData *responseData;
 @property (strong, nonatomic) NSString *userFromLogin;

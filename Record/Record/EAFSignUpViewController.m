@@ -40,7 +40,8 @@
 #import "EAFSignUpViewController.h"
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
-#import "EAFChapterTableViewController.h"
+//#import "EAFChapterTableViewController.h"
+#import "EAFSetPasswordViewController.h"
 #import "EAFEventPoster.h"
 #import "EAFGetSites.h"
 #import "UIColor_netprofColors.h"
@@ -48,6 +49,9 @@
 @interface EAFSignUpViewController ()
 
 @property EAFEventPoster *poster;
+
+@property (strong, nonatomic) NSString *resetPassKey;
+
 
 @end
 
@@ -72,7 +76,6 @@
     
     if (_projID != -1) {
         [_password setHidden:true];
-        [_languagePicker setHidden:true];
     }
 
     [notificationCenter addObserver:self
@@ -82,13 +85,12 @@
     
     _username.text = _userFromLogin;
     _password.text = _passFromLogin;
-    [_languagePicker selectRow:_languageIndex inComponent:0 animated:false];
     
     _username.delegate = self;
     _password.delegate = self;
     _email.delegate = self;
     
-    NSLog(@"Height %f", [[UIScreen mainScreen] bounds].size.height);
+   // NSLog(@"Height %f", [[UIScreen mainScreen] bounds].size.height);
     if ([[UIScreen mainScreen] bounds].size.height < 600) {
         _maxLangPickerHeightConstraint.constant = 150;
         _bottomOffsetConstraint.constant = 32;
@@ -108,38 +110,20 @@
     if (_passFromLogin == nil && rememberedPass != nil) {
         _password.text = rememberedPass;
     }
-    UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
-    gestureRecognizer.cancelsTouchesInView = NO;
-    gestureRecognizer.delegate = self;
-    [self.languagePicker addGestureRecognizer:gestureRecognizer];
+//    UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
+//    gestureRecognizer.cancelsTouchesInView = NO;
+//    gestureRecognizer.delegate = self;
+//    [self.languagePicker addGestureRecognizer:gestureRecognizer];
     [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
     [_titleLabel setTextColor:[UIColor npDarkBlue]];
     [_signUp setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
     [_signUp setTitleColor:[UIColor npDarkBlue] forState:UIControlStateApplication];
 }
 
-- (void) sitesReady {
-    [_languagePicker reloadAllComponents ];
-}
-
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
     return true;
 }
 
-- (void)pickerViewTapGestureRecognized:(UITapGestureRecognizer*)gestureRecognizer
-{
-    CGPoint touchPoint = [gestureRecognizer locationInView:gestureRecognizer.view.superview];
-    
-    CGRect frame = _languagePicker.frame;
-    CGRect selectorFrame = CGRectInset( frame, 0.0, _languagePicker.bounds.size.height * 0.85 / 2.0 );
-    // NSLog( @"Got tap -- Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
-    
-    if( CGRectContainsPoint( selectorFrame, touchPoint) )
-    {
-        //  NSLog( @"Selected Row: %i", [_languagePicker selectedRowInComponent:0] );
-        [self onClick:nil];
-    }
-}
 
 // POST request
 - (void)addUser:(NSString *)chosenLanguage username:(NSString *)username password:(NSString *)password email:(NSString *)email {
@@ -246,53 +230,6 @@
     }
 }
 
--(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
-{
-    //One column
-    return 1;
-}
-
--(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
-{
-    //set number of rows
-
-    return _siteGetter.oldSites.count;
-}
-
-//-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
-//{
-//    return [_siteGetter.languages objectAtIndex:row];
-//}
-
--(UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(nullable UIView *)view{
-    UILabel *pView = (UILabel *)view;
-    if(!pView){
-        pView = [[UILabel alloc] init];
-        //        CGRect frame = CGRectMake(0.0, 0.0, 80, 32);
-        //        pView = [[[UILabel alloc] initWithFrame:frame] autorelease];
-        if([self isiPhone]){
-            [pView setFont:[UIFont boldSystemFontOfSize: 38]];
-        } else {
-            [pView setFont:[UIFont boldSystemFontOfSize: 46]];
-        }
-        [pView setBackgroundColor:[UIColor clearColor]];
-        //        [pView setTextColor:[UIColor greenColor]];
-        [pView setTextColor:[UIColor npDarkBlue]];
-        [pView setTextAlignment: NSTextAlignmentCenter];
-    }
-    [pView setText:[_siteGetter.languages objectAtIndex: row]];
-    return pView;
-}
-
--(CGFloat)pickerView: (UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component{
-    if([self isiPhone]){
-        return 45;
-    } else {
-        return 50;
-    }
-}
-
-
 - (void) textFieldText:(id)notification {
     [self emailChanged:nil];
 }
@@ -392,11 +329,11 @@
     if (error) {
         NSLog(@"EAFSignUpViewController.useJsonChapterData error %@",error.description);
         NSString *myString = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
-
+        
         //NSLog(@"EAFSignUpViewController.useJsonChapterData _responseData %@",_responseData);
         NSLog(@"EAFSignUpViewController.useJsonChapterData myString %@",myString);
-        NSLog(@"EAFSignUpViewController.useJsonChapterData json %@",json);
-       
+        NSLog(@"EAFSignUpViewController.useJsonChapterData json     %@",json);
+        
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
                                                         message:@"Network problem - please try again."
                                                        delegate:nil
@@ -407,9 +344,9 @@
         return false;
     }
     
-      NSLog(@"useJsonChapter got %@ ",json);
+    NSLog(@"useJsonChapter got %@ ",json);
     NSString *existing = [json objectForKey:@"ExistingUserName"];
- //   NSString *existingUserID = [json objectForKey:@"userid"];
+    //   NSString *existingUserID = [json objectForKey:@"userid"];
     
     if (existing != nil) {// || existingUserID != nil) {
         _signUp.enabled = true;
@@ -429,21 +366,17 @@
     }
     else {
         NSString *userIDExisting = [json objectForKey:@"userid"];
-        
+        NSString *resetPassKey   = [json objectForKey:@"resetPassKey"];
+
         // OK store info and segue
-        //        NSLog(@"userid %@",userIDExisting);
         NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];  // huh? why is this necessary?
         [SSKeychain setPassword:converted      forService:@"mitll.proFeedback.device" account:@"userid"];
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_email.text    forService:@"mitll.proFeedback.device" account:@"chosenEmail"];
         
-        
-        if (_projID == -1) {
-            [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
-            NSString *chosenLanguage = [_siteGetter.oldSites objectAtIndex:[_languagePicker selectedRowInComponent:0]];
-            [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
-            
-            [self performSegueWithIdentifier:@"goToChapterFromSignUp" sender:self];
+        if (resetPassKey != NULL) {
+            _resetPassKey = resetPassKey;
+            [self performSegueWithIdentifier:@"goToSetPassword" sender:self];
         }
         else {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Please Check Email"
@@ -477,6 +410,7 @@
     if (error.code == NSURLErrorNotConnectedToInternet) {
         message = @"Netprof needs a wifi or cellular internet connection.";
     }
+    
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
                                                     message: message
                                                    delegate: nil
@@ -492,18 +426,10 @@
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
     
-    EAFChapterTableViewController *chapterController = [segue destinationViewController];
-    
-    NSString *chosenLanguage = [_siteGetter.oldSites objectAtIndex:[_languagePicker selectedRowInComponent:0]];
-    [chapterController setLanguage:chosenLanguage];
-    chapterController.url = [_siteGetter.nameToURL objectForKey:chosenLanguage];
-    [chapterController setTitle:chosenLanguage];
-}
-
-- (BOOL)isiPhone
-{
-    //  NSLog(@"dev %@",[UIDevice currentDevice].model);
-    return [[UIDevice currentDevice].model rangeOfString:@"iPhone"].location != NSNotFound;
+    if ([segue.identifier isEqualToString:@"goToSetPassword"]) {
+        EAFSetPasswordViewController *controller = [segue destinationViewController];
+        controller.token = _resetPassKey;
+    }
 }
 
 @end

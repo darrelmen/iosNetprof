@@ -42,6 +42,7 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "UIColor_netprofColors.h"
+#import "EAFGetSites.h"
 
 @interface EAFSetPasswordViewController ()
 
@@ -51,7 +52,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setTitle:[NSString stringWithFormat:@"Set new password for %@",_language]];
+    [self setTitle:[NSString stringWithFormat:@"Set new password"]];
     [self.navigationController.navigationBar setTitleTextAttributes:
      @{NSForegroundColorAttributeName:[UIColor npLightBlue]}];
     
@@ -82,7 +83,8 @@
         valid = false;
     }
     if (valid) {
-        [self setPassword:[self MD5:_password.text] language:_language];
+     //   [self setPassword:[self MD5:_password.text] language:_language];
+        [self setPassword:_password.text language:_language];
     }
 }
 
@@ -101,45 +103,47 @@
     
     return YES;
 }
-- (NSString*)MD5:(NSString*)toConvert
-{
-    // Create pointer to the string as UTF8
-    const char *ptr = [toConvert UTF8String];
-    
-    // Create byte array of unsigned chars
-    unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
-    
-    // Create 16 byte MD5 hash value, store in buffer
-    CC_MD5(ptr, strlen(ptr), md5Buffer);
-    
-    // Convert MD5 value in the buffer to NSString of hex values
-    NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
-    for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++)
-        [output appendFormat:@"%02x",md5Buffer[i]];
-    
-    return output;
-}
+
+//- (NSString*)MD5:(NSString*)toConvert
+//{
+//    // Create pointer to the string as UTF8
+//    const char *ptr = [toConvert UTF8String];
+//
+//    // Create byte array of unsigned chars
+//    unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
+//
+//    // Create 16 byte MD5 hash value, store in buffer
+//    CC_MD5(ptr, strlen(ptr), md5Buffer);
+//
+//    // Convert MD5 value in the buffer to NSString of hex values
+//    NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
+//    for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++)
+//        [output appendFormat:@"%02x",md5Buffer[i]];
+//
+//    return output;
+//}
 
 #pragma mark NSURLConnection Delegate Methods
 
-- (void) setPassword:(NSString *)passwordH language:(NSString *)lang {
-    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?setPassword=%@&email=%@", _url, _token, passwordH];
+- (void) setPassword:(NSString *)password language:(NSString *)lang {
+    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
+
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=setPassword&token=%@&pass=%@&userid=%@", [[EAFGetSites new] getServerURL], _token, password, userid];
    
-//    NSLog(@"url %@",baseurl);
+    NSLog(@"setPassword : url %@",baseurl);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
- //   [urlRequest setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+    
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
     [connection start];
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:TRUE];
 }
 
 #pragma mark NSURLConnection Delegate Methods
@@ -185,12 +189,35 @@
     if ([validEmail boolValue]) {
         // force user to enter in userid and password again
         [SSKeychain deletePasswordForService:@"mitll.proFeedback.device" account:@"userid"];
-        [self.navigationController popToRootViewControllerAnimated:YES];
+        
+        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Success!"
+                                                                       message:@"Please log in with your new password."
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
+                                                                  [self.navigationController popToRootViewControllerAnimated:YES];
+                                                              }];
+        
+        [alert addAction:defaultAction];
+        [self presentViewController:alert animated:YES completion:nil];
     }
     else {
         _passwordFeedback.text = @"Error setting new password.";
         _passwordFeedback.textColor = [UIColor redColor];
     }
+}
+
+- (void)showError:(NSError * _Nonnull)error message:(NSString *)message {
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Connection problem (%@)",error.localizedDescription]
+                                                                   message:message
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {}];
+    
+    [alert addAction:defaultAction];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
@@ -205,11 +232,14 @@
         message = @"NetProF needs a wifi or cellular internet connection.";
     }
     
-    [[[UIAlertView alloc] initWithTitle: @"Connection problem"
-                                message: message
-                               delegate: nil
-                      cancelButtonTitle:@"OK"
-                      otherButtonTitles:nil] show];
+//    [[[UIAlertView alloc] initWithTitle: @"Connection problem"
+//                                message: message
+//                               delegate: nil
+//                      cancelButtonTitle:@"OK"
+//                      otherButtonTitles:nil] show];
+    
+    
+    [self showError:error message:message];
 }
 
 #pragma mark - Navigation

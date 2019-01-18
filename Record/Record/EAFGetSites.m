@@ -71,12 +71,12 @@ NSString* const expectedVersion = @"1.0.1";
 {
     self = [super init];
     if (self) {
-      //  _oldServer = @"https://np.ll.mit.edu/";
-        //NSLog(@"EAFGetSites server now %@",_oldServer);
-        //   _nServer = @"http://127.0.0.1:8888/netprof/";
-   //        _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+        // _nServer = @"http://127.0.0.1:8888/netprof/";
+        
+        // _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
         // _nServer = @"https://netprof.ll.mit.edu/netprof/";
-       _nServer = @"https://netprof.ll.mit.edu/dialog/";
+        
+        _nServer = @"https://netprof.ll.mit.edu/dialog/";
     }
     
     return self;
@@ -149,7 +149,7 @@ NSString* const expectedVersion = @"1.0.1";
                                                   [self getCacheOrDefault:theServer];
                                               }
                                               else {
-                                                 //  NSLog(@"\tgetSites Got response %@",response);
+                                                  //  NSLog(@"\tgetSites Got response %@",response);
                                                   self->_sitesData = data;
                                                   [self performSelectorOnMainThread:@selector(useJsonSitesData:)
                                                                          withObject:theServer
@@ -171,8 +171,8 @@ NSString* const expectedVersion = @"1.0.1";
 // cache the file as sites.json
 - (NSString *)getCachePath:(NSString *) theServer {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-  //  NSLog(@"HTTTTTUUUU___: %@", paths);
-    NSString *documentsDirectory = [paths objectAtIndex:0];   
+    //  NSLog(@"HTTTTTUUUU___: %@", paths);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"newSites.json"];
     return filePath;
 }
@@ -212,8 +212,8 @@ NSString* const expectedVersion = @"1.0.1";
     
     for (int i = 0; i<fetchedArr.count; i++) {
         NSDictionary* site = fetchedArr[i];
-       
-//        NSLog(@"parseJSON got %@",site);
+        
+        //        NSLog(@"parseJSON got %@",site);
         
         BOOL showOnIOS = [[site valueForKey:@"showOnIOS"] boolValue];
         if (showOnIOS) {
@@ -222,12 +222,12 @@ NSString* const expectedVersion = @"1.0.1";
             if (url == NULL) {
                 url = _nServer;
             }
-   
+            
             if (![url hasSuffix:@"/"]) {
                 url = [NSString stringWithFormat:@"%@/",url];
             }
             [_mutableNameToURL   setObject:url     forKey:name];
-
+            
             
             BOOL isRTL = [[site valueForKey:@"rtl"] boolValue];
             
@@ -239,7 +239,7 @@ NSString* const expectedVersion = @"1.0.1";
             if (id != NULL) {
                 [_mutableNameToProjectID  setObject:id forKey:name];
                 NSString *host  = [site objectForKey:@"host"];
-             //   NSLog(@"parseJSON host %@",host);
+                //   NSLog(@"parseJSON host %@",host);
                 if (host == NULL) host = @"";
                 [_mutableNameToHost  setObject:host forKey:name];
             }
@@ -248,12 +248,12 @@ NSString* const expectedVersion = @"1.0.1";
                 [_mutableNameToHost  setObject:@"" forKey:name];
             }
             [_mutableNameToLanguage  setObject:[site objectForKey:@"language"] forKey:name];
-
+            
         }
     }
     
- //   NSLog(@"EAFGetSites : name->lang %@",_mutableNameToLanguage);
-   
+    //   NSLog(@"EAFGetSites : name->lang %@",_mutableNameToLanguage);
+    
     [self setLanguagesGivenData];
 }
 
@@ -272,47 +272,25 @@ NSString* const expectedVersion = @"1.0.1";
     }
     else {
         [self parseJSON:json];
-
+        
         //          NSLog(@"useJsonSitesData name to url now %@",_nameToURL);
         //          NSLog(@"useJsonSitesData _languages now %@",_languages);
         
         [self writeSitesDataToCacheAt:[self getCachePath:theServer] mp3AudioData:_sitesData];
         
         
+        NSMutableOrderedSet *copy = [_languages mutableCopy];
+        //   NSLog(@"useJsonSitesData copy %@",copy);
         
-//        if ([theServer isEqualToString:_oldServer]) {
-//            [self getSitesFromServer:_nServer];
-//        }
-//        else {
-
-//            for(id key in _nameToURL)
-//                NSLog(@"useJsonSitesData name=%@ url=%@", key, [_nameToURL objectForKey:key]);
-
-//            for(id key in _nameToProjectID)
-//                NSLog(@"key=%@ value=%@", key, [_nameToProjectID objectForKey:key]);
-//
-
-         //   NSLog(@"useJsonSitesData all New %@",[_nameToProjectID allKeys]);
-
-            NSMutableOrderedSet *copy = [_languages mutableCopy];
-         //   NSLog(@"useJsonSitesData copy %@",copy);
-
-            for(id key in _nameToProjectID) {
-           //     NSLog(@"useJsonSitesData key=%@ project id=%@", key, [_nameToProjectID objectForKey:key]);
-                if ([[_nameToProjectID objectForKey:key] intValue] > -1) {
-                    [copy removeObject:key];
-                }
+        for(id key in _nameToProjectID) {
+            //     NSLog(@"useJsonSitesData key=%@ project id=%@", key, [_nameToProjectID objectForKey:key]);
+            if ([[_nameToProjectID objectForKey:key] intValue] > -1) {
+                [copy removeObject:key];
             }
-
-           // _oldSites = copy;
-
-         //   NSLog(@"useJsonSitesData _oldSites %@",_oldSites);
-
-            [_delegate sitesReady];
-      //  }
+        }
         
-    
-
+        [_delegate sitesReady];
+        
     }
 }
 
