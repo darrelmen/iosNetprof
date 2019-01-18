@@ -61,6 +61,7 @@
 @property unsigned long currentIndex;
 
 - (IBAction)playRefAudio;
+- (IBAction)playFirstRefAudio;
 - (IBAction)stopAudio;
 @property float volume;
 

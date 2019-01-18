@@ -67,13 +67,21 @@
 
 - (IBAction)playRefAudio {
     _currentIndex = 0;
-   
+    
     [self playRefAudioInternal];
+}
+
+- (IBAction)playFirstRefAudio {
+    _currentIndex = 0;
+    
+    [self playRefAudioInternal];
+    _currentIndex = 99;
+
 }
 
 // @see #makePlayerGivenURL
 - (void)makeAVPlayer:(NSURL *)url {
-    NSLog(@"EAFAudioPlayer : makeAVPlayer ---- %@",url);
+   // NSLog(@"EAFAudioPlayer : makeAVPlayer ---- %@",url);
     if (url != nil) {
         _player = [AVPlayer playerWithURL:url];
         NSString *PlayerStatusContext;
@@ -92,9 +100,7 @@
     
     if ([[url scheme] hasPrefix:@"file"]) {
       //  NSLog(@"makePlayerGivenURL reading file %@",url);
-
         NSDictionary * dict = [self id3TagsForURL:url];
-        
         isValid = dict != nil;
     }
     else {
@@ -126,9 +132,7 @@
     AudioFileID fileID;
     
  //   NSLog(@"id3TagsForURL get tags for '%@'", resourceUrl);
-    
  //   CFURLRef test = (__bridge CFURLRef)resourceUrl;
-    
    // NSLog(@"id3TagsForURL get tags for test '%@'", test);
 
     OSStatus result = AudioFileOpenURL((__bridge CFURLRef)resourceUrl, kAudioFileReadPermission, 0, &fileID);
@@ -242,10 +246,10 @@
         [self removePlayObserver];
     }
     
-    UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
-    AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
-    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
-    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+//    UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
+//    AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
+//    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+//    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
     
     [self makePlayerGivenURL:url waveURL:waveUrl];
 }
@@ -301,7 +305,6 @@
 
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't play audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alert show];
-            
             //  NSLog(@"player status failed %@",_player.status);
         }
     }
