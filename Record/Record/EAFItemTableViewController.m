@@ -348,7 +348,7 @@
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     [urlRequest setValue:[_projid stringValue] forHTTPHeaderField:@"projid"];
-     NSLog(@"ItemViewController projid = %@",_projid);
+    NSLog(@"ItemViewController askServerForJsonForList projid = %@",_projid);
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
@@ -603,6 +603,10 @@
     if (_listid != NULL) {
         baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&listid=%@&%@=%@&%@=%@", _url, _user, _listid, _unitTitle, _unit, _chapterTitle, _currentChapter];
     }
+   
+//    if (_projid != NULL) {
+//        baseurl = [NSString stringWithFormat:@"%@&projid=%@", baseurl, _projid];
+//    }
     
     if (_showSentences) {
         baseurl = [NSString stringWithFormat:@"%@&context=true", baseurl];

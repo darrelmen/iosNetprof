@@ -136,7 +136,7 @@
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     NSString *showedID = [NSString stringWithFormat:@"showedIntro_%@",userid];
     NSString *showedIntro = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:showedID];
-    if (showedIntro == nil && _quizMinutes == NULL) {
+    if (showedIntro == nil && [self notAQuiz]) {
         UIAlertView *info = [[UIAlertView alloc] initWithTitle:@"Swipe left/right/up/down to advance, tap to flip.\n\nPress and hold to record.\n\nTouch a word to hear audio or yourself.\n\nTouch Scores to see answers and sounds to work on." message:nil delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
         [info show];
         
@@ -234,13 +234,13 @@
     
     NSLog(@"Reco - useListData --- num json %lu ",(unsigned long)_jsonItems.count);
     
-    if (_quizMinutes != NULL) {
+    if ([self isAQuiz]) {
         _timeRemainingMillis = _quizMinutes.intValue*60000;
         [self setTimeRemainingLabel];
     }
     
     [self respondToSwipe];
-    _numQuizItems = [NSNumber numberWithInt:_jsonItems.count];
+    _numQuizItems = [NSNumber numberWithUnsignedLong:_jsonItems.count];
     
     [self showQuizIntro];
     return true;
@@ -268,18 +268,10 @@
         _url = [_siteGetter getServerURL];
         _isRTL = [_siteGetter.rtlLanguages containsObject:_language];
     }
-    BOOL noQuiz =(_quizMinutes == NULL);
+    BOOL noQuiz =([self notAQuiz]);
     
-    if (_quizMinutes != NULL) {
-        NSLog(@"RecoFlashcardController.viewDidLoad : has quiz!");
-        [_timerProgress setHidden:NO];
-        [_timeRemainingLabel setHidden:NO];
-    }
-    else {
-        NSLog(@"RecoFlashcardController.viewDidLoad : NO quiz! ");
-        [_timerProgress setHidden:YES];
-        [_timeRemainingLabel setHidden:YES];
-    }
+    [_timerProgress setHidden:noQuiz];
+    [_timeRemainingLabel setHidden:noQuiz];
     
     if (_jsonItems != NULL) {
         [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
@@ -288,9 +280,6 @@
     _exToScore = [[NSMutableDictionary alloc] init];
     _exToScoreJson = [[NSMutableDictionary alloc] init];
     _exToRecordedAudio = [[NSMutableDictionary alloc] init];
-    
-    //    NSLog(@"viewDidLoad : OK - init exToRecordedAudio...");
-//    _foreignLang.numberOfLines = _showSentences  ? 6:3;
     
     // Turn on remote control event delivery
     EAFAppDelegate *myDelegate = [UIApplication sharedApplication].delegate;
@@ -419,8 +408,6 @@
     
     _moreSelection = [[MoreSelection alloc]initWithLanguageIndex:_languageSegmentIndex withVoiceIndex:_voiceSegmentIndex];
     
-
-    
     UIBarButtonItem *scoreShow = [[UIBarButtonItem alloc]
                                   initWithTitle:@"Score"
                                   style:UIBarButtonItemStylePlain
@@ -432,11 +419,9 @@
     
     [self setupToolBar];
 
-    if (_quizMinutes != NULL) {
+    if (![self notAQuiz]) {
         self.navigationItem.rightBarButtonItem.enabled = false;
         [_selectionToolbar setHidden:true];
-    }
-    else {
     }
     
     //    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
@@ -586,7 +571,7 @@
         constData = self.view.bounds.size.height * 0.12;
     } else {
         // constData = self.view.bounds.size.height * 0.2;
-        constData = 100.0;
+        constData = 180.0;
     }
     NSLayoutConstraint  *height = [NSLayoutConstraint constraintWithItem:_selectionToolbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:constData];
     //_selectionToolbar.backgroundColor = [UIColor colorWithRed:3/255.0 green:99/255.0 blue:148/255.0 alpha:1.0];
@@ -1037,7 +1022,8 @@
     // fade in the english!
     self->_english.alpha = 0.0;
     
-    [UIView animateWithDuration:0.5 delay:0.5 options:UIViewAnimationOptionCurveLinear  animations:^{
+    float delay = _showSentences ? 1.5:0.5;
+    [UIView animateWithDuration:0.5 delay:delay options:UIViewAnimationOptionCurveLinear  animations:^{
         //code with animation
         self->_english.alpha = 1.0;
     } completion:^(BOOL finished) {
@@ -1357,7 +1343,7 @@
     [self postEvent:@"swipeLeft" widget:@"card" type:@"UIView"];
     
     if (onLast) {
-        if (_quizMinutes == NULL) {
+        if ([self notAQuiz]) {
             [self showScoresClick:nil];
             [((EAFItemTableViewController*)_itemViewController) askServerForJson];
         }
@@ -1508,14 +1494,25 @@
     }
 }
 
+- (BOOL)notAQuiz {
+    return _quizMinutes == NULL;
+}
+
+- (BOOL)isAQuiz {
+    return _quizMinutes != NULL;
+}
+
 // deals with missing audio...?
 - (void)playRefAudioIfAvailable {
     // NSLog(@"play ref if avail");
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     if ([self hasRefAudio]) {
         //  NSLog(@"\tplay ref if avail");
-        if (_quizMinutes == NULL || _playAudio) {
+        if ([self notAQuiz]) {
             [_myAudioPlayer playRefAudio];
+        }
+        else if (_playAudio) {
+            [_myAudioPlayer playFirstRefAudio];
         }
     }
     else {
@@ -1910,7 +1907,7 @@ bool debugRecord = false;
                 NSLog(@"recordAudio -recording %f vs begin %f diff %f ",_then2,recordingBegins,(recordingBegins-_then2));
             }
             
-            if (_quizTimer == NULL && _quizMinutes != NULL) {  // start the timer!
+            if (_quizTimer == NULL && [self isAQuiz]) {  // start the timer!
                 _timeRemainingMillis = _quizMinutes.intValue*60000;
                 _sessionTimeStamp= (int) CFAbsoluteTimeGetCurrent() * 1000;
                 
@@ -1946,6 +1943,12 @@ bool debugRecord = false;
         }
         [_timerProgress setProgress:percent];
         
+//        if (percent < 0.20) {
+//            [_timerProgress setColor:[UIColor yellowColor]];
+//        }
+//        else if (percent < 0.10) {
+//            [_timerProgress setColor:[UIColor redColor]];
+//        }
         // TODO : consider coloring it
         //  prefix + min + @":" + (sec < 10 ? @"0" : @"") + sec;
         //            if (min == 0) {
@@ -1980,10 +1983,6 @@ bool debugRecord = false;
             _quizTimer = NULL;
             
             [self showQuizComplete];
-            // [self showScores]
-            // TODO : show times up!
-            // TODO : show summary score
-            // maybe give option of starting over?
         }
         
         [self setTimeRemainingLabel];
@@ -2401,24 +2400,17 @@ bool debugRecord = false;
     
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     
-//    NSString *exid = [[self getCurrentJson] objectForKey:@"id"];
     NSNumber *exid= [self getCurrentExID];
-
-    // so netprof v2 has number ids - hard to know what type json is returning...
-//    if ([[[self getCurrentJson] objectForKey:@"id"] isKindOfClass:[NSNumber class]]) {
-//        NSNumber *nid = [[self getCurrentJson] objectForKey:@"id"];
-//        exid = [NSString stringWithFormat:@"%@",nid];
-//    }
     
     NSData *audioData=[NSData dataWithData:postData];
-    NSLog(@"postAudio OK remember for %@ (%lu)",exid,(unsigned long)[audioData length]);
+//    NSLog(@"postAudio OK remember for %@ (%lu)",exid,(unsigned long)[audioData length]);
     
     [_exToRecordedAudio setObject:[NSData dataWithData:postData] forKey:exid];
     
-    NSData *audioData2= [_exToRecordedAudio objectForKey:exid];
-    NSLog(@"postAudio   remembered for %@ (%lu)",exid,(unsigned long)[audioData2 length]);
+//    NSData *audioData2= [_exToRecordedAudio objectForKey:exid];
+//    NSLog(@"postAudio   remembered for %@ (%lu)",exid,(unsigned long)[audioData2 length]);
     NSLog(@"postAudio   now %ld",[_exToRecordedAudio count]);
-    NSLog(@"postAudio   address is <NSData: %p>",audioData2);
+//    NSLog(@"postAudio   address is <NSData: %p>",audioData2);
     
     _lastRecordedAudioExID = exid;
     
@@ -2615,7 +2607,7 @@ bool debugRecord = false;
     
     NSLog(@"connectionDidFinishLoading - round trip time was %f %d ",diff, iMillis);
     
-    if (_quizMinutes != NULL) {
+    if ([self isAQuiz]) {
         _timeRemainingMillis += iMillis;  // put the time back - don't count round trip wait against completion time...
     }
     
@@ -2702,7 +2694,7 @@ bool debugRecord = false;
     
     [self showScoreToUser:json previousScore:previousScore];
     
-    if (_quizMinutes != NULL && score.floatValue*100 >= _minScoreToAdvance.floatValue) {
+    if ([self isAQuiz] && score.floatValue*100 >= _minScoreToAdvance.floatValue) {
         BOOL onLast = _index+1 == _jsonItems.count;
         //  NSLog(@"check got %lu vs total %lu",_index, (unsigned long)_jsonItems.count);
         if (onLast) {
@@ -2752,11 +2744,11 @@ bool debugRecord = false;
 }
 
 - (void) showQuizComplete {
-    float total=0.0;
     //NSLog(@"showQuizComplete _exToScore now %lu",(unsigned long)[_exToScore count]);
     self.navigationItem.rightBarButtonItem.enabled = true;
 
     int done=0;
+    float total=0.0;
     for(id key in _exToScore) {
         total+= [[_exToScore objectForKey:key] floatValue];
         done++;
@@ -2770,7 +2762,8 @@ bool debugRecord = false;
         score = [NSString stringWithFormat:@"%@\nYou completed %d of %lu items.",score,done,(unsigned long)_jsonItems.count];
     }
     if (_timeRemainingMillis > 0) {         // if you have time, it jumps back with sorted order worst to best
-        [self quizCompleteYesNo:@"You have time, do you want to try again on low score items?"];
+        score = [NSString stringWithFormat:@"%@\nYou have time, do you want to try again on low score items?",score];
+        [self quizCompleteYesNo:score];
         // TODO : instead, sort the items by score
         // jump back to first
     } else {
@@ -3436,7 +3429,7 @@ BOOL addSpaces = false;
         wordReport.url = _url;
         wordReport.listid = _listid;
         wordReport.showSentences = _showSentences;
-        wordReport.isQuiz = _quizMinutes != NULL;
+        wordReport.isQuiz = [self isAQuiz];
         
         
         NSMutableDictionary *exToFL = [[NSMutableDictionary alloc] init];

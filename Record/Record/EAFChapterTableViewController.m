@@ -144,9 +144,9 @@
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    NSNumber *projid = [_siteGetter getProject:_language];
     
-    NSLog(@"ChapterTableViewController - askServerForJson projid %@",projid);
+    NSNumber *projid = [_siteGetter getProject:_language];
+   NSLog(@"ChapterTableViewController - askServerForJson projid %@",projid);
     
     [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
     
@@ -210,7 +210,7 @@ UIAlertView *loadingContentAlert;
 // refresh cache checks how old the cached file is
 - (void)writeToCache:(NSData *) toWrite {
     NSString *appFile = [self getCachedJsonFile];
-    NSLog(@"Writing json data to file %@ %lu bytes",appFile,(unsigned long)toWrite.length);
+    NSLog(@"writeToCache : Writing json data to file %@ %lu bytes",appFile,(unsigned long)toWrite.length);
     [toWrite writeToFile:appFile atomically:YES];
 }
 

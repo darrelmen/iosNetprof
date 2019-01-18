@@ -137,12 +137,10 @@
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     if (_listid != NULL) {
-        //     baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&listid=%@&%@=%@&%@=%@", _url, _user, _listid, _unitName, _unitSelection, _chapterName, _chapterSelection];
         baseurl = [NSString stringWithFormat:@"%@&listid=%@", baseurl, _listid];
     }
     
     if (_projid != NULL) {
-        //     baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&listid=%@&%@=%@&%@=%@", _url, _user, _listid, _unitName, _unitSelection, _chapterName, _chapterSelection];
         baseurl = [NSString stringWithFormat:@"%@&projid=%@", baseurl, _projid];
     }
     

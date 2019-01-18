@@ -149,7 +149,6 @@
     if (_projID != -1) {
         //baseurl =_siteGetter.nServer;
         baseurl = [NSString stringWithFormat:@"%@scoreServlet",_siteGetter.nServer];
-
     }
     
     NSURL *url = [NSURL URLWithString:baseurl];

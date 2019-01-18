@@ -101,7 +101,7 @@
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (_responseData == nil) { // if it failed before.
-       // NSLog(@"PhoneScoreTableViewController.viewWillAppear - ask server for json");
+        // NSLog(@"PhoneScoreTableViewController.viewWillAppear - ask server for json");
         [self askServerForJson];
     }
 }
@@ -121,22 +121,25 @@
 - (void)askServerForJson {
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+ 
+    //   baseurl = [NSString stringWithFormat:@"%@&projid=%@", baseurl, _projid];
+
     if (_listid != NULL) {
-        //     baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&listid=%@&%@=%@&%@=%@", _url, _user, _listid, _unitName, _unitSelection, _chapterName, _chapterSelection];
         baseurl = [NSString stringWithFormat:@"%@&listid=%@", baseurl, _listid];
     }
+
     NSLog(@"EAFPhoneScoreTableViewController url %@ %@",baseurl,_projid);
     
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
     [urlRequest setValue:[NSString stringWithFormat:@"%@",_projid] forHTTPHeaderField:@"projid"];
-
+    
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     [urlRequest setTimeoutInterval:10];
-
+    
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
@@ -354,7 +357,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSRange range = NSMakeRange(0, [coloredWord length]);
     
     
-//    NSLog(@"score was %@ %f",scoreString,score);
+    //    NSLog(@"score was %@ %f",scoreString,score);
     if (score > 0) {
         UIColor *color = [self getColor2:score];
         [coloredWord addAttribute:NSBackgroundColorAttributeName
@@ -388,7 +391,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     NSString *phone = [_phonesInOrder objectAtIndex:indexPath.row];
     
-   NSLog(@"tableView phone is %@",phone);
+    NSLog(@"tableView phone is %@",phone);
     
     for (UIView *v in [cell.contentView subviews]) {
         [v removeFromSuperview];
@@ -409,7 +412,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     NSArray *words = [_phoneToWords objectForKey:phone];
     NSLog(@"tableView words for %@ = %@",phone, words);
-
+    
     UIView *leftView = nil;
     
     UILabel *overallPhoneLabel = [self getOverallPhoneLabel:phone cell:cell];
@@ -419,22 +422,23 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     float totalPhones = 0.0f;
     // int count = 0;
     BOOL addSpaces = false;
+    BOOL debug=false;
     
     // try to worry about the same word appearing multiple times...
     NSMutableSet *shownSoFar = [[NSMutableSet alloc] init];
     for (NSDictionary *wordEntry in words) {
         // TODO iterate over first N words in example words for phone
-       // NSLog(@"about to ask for word from %@",wordEntry);
+        // NSLog(@"about to ask for word from %@",wordEntry);
         
         NSString *word = [wordEntry objectForKey:@"w"];
-        NSLog(@"word is %@",word);
+        if (debug) NSLog(@"word is %@",word);
         
         if ([shownSoFar containsObject:word]) continue;
         else [shownSoFar addObject:word];
         
         //    if (count++ > 5) break; // only first five?
         NSString *result = [wordEntry objectForKey:@"result"];
-        NSLog(@"result is %@",result);
+        if (debug) NSLog(@"result is %@",result);
         NSArray *resultWords = [_resultToWords objectForKey:result];
         
         EAFAudioView *exampleView = [[EAFAudioView alloc] init];
@@ -447,7 +451,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         exampleView.answer   = [_resultToAnswer objectForKey:result];
         
         //NSLog(@"ref %@ %@",exampleView.refAudio, exampleView.answer);
-      //   NSLog(@"word is %@",wordEntry);
+        //   NSLog(@"word is %@",wordEntry);
         // first example view constraints left side to left side of container
         // all - top to top of container
         // bottom to bottom of container
@@ -513,14 +517,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         leftView = exampleView;
         
         for (NSDictionary *wordResult in resultWords) {
-            NSLog(@"resultWords : wordEntry is %@",wordEntry);
+            if (debug)  NSLog(@"resultWords : wordEntry is %@",wordEntry);
             NSString *wordPhoneAppearsIn = [wordEntry objectForKey:@"wid"];
-        
-            NSLog(@"resultWords : wordPhoneAppearsIn is %@",wordPhoneAppearsIn);
-            NSLog(@"resultWords : wordResult         is %@",wordResult);
+            
+            if (debug)  NSLog(@"resultWords : wordPhoneAppearsIn is %@",wordPhoneAppearsIn);
+            if (debug)  NSLog(@"resultWords : wordResult         is %@",wordResult);
             NSString *idOfWordInResult = [wordResult objectForKey:@"id"];
             NSString *scoreString  = [wordResult objectForKey:@"s"];
-          //  float score = [scoreString floatValue];
+            //  float score = [scoreString floatValue];
             
             UILabel * wordLabel = [self getLabelForWord:[scoreString floatValue] word:word];
             
@@ -556,8 +560,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     NSString *scoreString = [phoneInfo objectForKey:@"s"];
                     float score = [scoreString floatValue];
                     
-                    NSLog(@"score was %@ %f",scoreString,score);
-                    NSLog(@"%@ vs %@ ",phoneText,phone);
+                    if (debug)   NSLog(@"score was %@ %f",scoreString,score);
+                    if (debug)    NSLog(@"%@ vs %@ ",phoneText,phone);
                     BOOL match = [phoneText isEqualToString:phone];
                     
                     UIColor *color = match? [self getColor2:score] : [UIColor whiteColor];
@@ -565,7 +569,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                         totalPhoneScore += score;
                         totalPhones++;
                     }
-                    NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
+                    if (debug)   NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
                     [coloredPhones addAttribute:NSBackgroundColorAttributeName
                                           value:color
                                           range:range];
@@ -686,7 +690,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     else {
         [audioRefs addObject:sender.refAudio];
         EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url projid:[_siteGetter.nameToProjectID objectForKey:_language]];
-
+        
         [poster postEvent:sender.refAudio exid:@"n/a" widget:@"refAudio" widgetType:@"PhoneScoreTableCell"];
     }
     if (sender.answer == nil) {
@@ -855,17 +859,17 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             NSLog(@"PhoneScore: dict theWords %@",theWords);
             
             if (theWords != nil) {
-//                NSMutableArray *newArray = [NSMutableArray new];
-//                for (NSDictionary *word in theWords) {
-//                    NSLog(@"PhoneScore: word %@",[word objectForKey:@"w"]);
-//                    [newArray addObject:[word objectForKey:@"w"]];
-//                }
-//                NSLog(@"PhoneScore: read all words %@",newArray);
-//
-//                [_resultToWords setValue:newArray forKey:resultID];
+                //                NSMutableArray *newArray = [NSMutableArray new];
+                //                for (NSDictionary *word in theWords) {
+                //                    NSLog(@"PhoneScore: word %@",[word objectForKey:@"w"]);
+                //                    [newArray addObject:[word objectForKey:@"w"]];
+                //                }
+                //                NSLog(@"PhoneScore: read all words %@",newArray);
+                //
+                //                [_resultToWords setValue:newArray forKey:resultID];
                 
                 [_resultToWords setValue:theWords forKey:resultID];
-
+                
             }
             else {
                 NSLog(@"PhoneScore: no words for %@",answer);

@@ -139,7 +139,6 @@ NSString* const expectedVersion = @"1.0.1";
     
     NSURLSessionDataTask *downloadTask = [session
                                           dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                                              
                                               dispatch_async(dispatch_get_main_queue(), ^{
                                                   // add UI related changes here
                                                   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
