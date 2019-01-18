@@ -940,8 +940,8 @@
     _english.adjustsFontSizeToFitWidth=YES;
     _english.minimumScaleFactor=0.1;
 
-    _tl.adjustsFontSizeToFitWidth=YES;
-    _tl.minimumScaleFactor=0.1;
+//    _tl.adjustsFontSizeToFitWidth=YES;
+//    _tl.minimumScaleFactor=0.1;
     
     if ([self isiPad]) {
         [_foreignLang setFont:[UIFont fontWithName:@"Arial" size:52]];
@@ -1256,6 +1256,7 @@
         [self scaleFont:enAtIndex labelToScale:_english     largest:maxEFont slen:minTextLength smallest:12];
     } else {
         [self scaleFont:enAtIndex labelToScale:_english     largest:maxFont slen:minTextLength smallest:32];
+        [self scaleFont:_tlAtIndex labelToScale:_tl     largest:maxFont slen:minTextLength smallest:32];
     }
     
     for (UIView *v in [_scoreDisplayContainer subviews]) {
