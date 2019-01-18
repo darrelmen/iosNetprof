@@ -46,6 +46,9 @@ class ListViewController: UITableViewController {
             self.title="Quizzes";
         }
         
+        //        if (projid != -1) {
+        //            server = "\(server)&projid\(projid)";
+        //        }
         
         let request = NSMutableURLRequest(url: NSURL(string: server)! as URL)
         request.httpMethod = "GET"
@@ -53,8 +56,6 @@ class ListViewController: UITableViewController {
         request.timeoutInterval = 10.0
         
         print("making request to \(server)")
-        
-//        request.timeoutIntervalForResource = 60.0
         
         let queue:OperationQueue = OperationQueue()
         
@@ -64,7 +65,7 @@ class ListViewController: UITableViewController {
             do {
                 if let jsonResult = try JSONSerialization.jsonObject(with: data!, options: []) as? NSDictionary {
                     DispatchQueue.main.async {
-                         UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
                         self.addItems(json: jsonResult);
                     }
                 }
@@ -76,9 +77,42 @@ class ListViewController: UITableViewController {
                     self.present(alert, animated: true, completion: nil)
                 }
                 print(error.localizedDescription)
-            }       
-            
+            }
         })
+        
+        //
+        //
+        //
+        //        let config = URLSessionConfiguration.default
+//        let session = URLSession(configuration: config)
+//
+//        let task = session.dataTask(with: request as URLRequest, completionHandler: {(data, response, error) in
+//
+//            // notice that I can omit the types of data, response and error
+//
+//            // your code
+//
+//            do {
+//                if let jsonResult = try JSONSerialization.jsonObject(with: data!, options: []) as? NSDictionary {
+//                    DispatchQueue.main.async {
+//                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+//                        self.addItems(json: jsonResult);
+//                    }
+//                }
+//            } catch let error as NSError {
+//                DispatchQueue.main.async {
+//                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
+//                    let alert = UIAlertController(title: "Connection Error", message: "Got error getting lists or quizzes \(error)", preferredStyle: UIAlertController.Style.alert)
+//                    alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+//                    self.present(alert, animated: true, completion: nil)
+//                }
+//                print(error.localizedDescription)
+//            }
+//
+//        });
+//
+//        // do whatever you need with the task e.g. run
+//        task.resume()
     }
     
     func addItems(json : NSDictionary) {
