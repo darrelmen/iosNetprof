@@ -58,9 +58,10 @@
 @property NSArray *currentItems;
 @property EAFGetSites *siteGetter;
 @property EAFEventPoster *poster;
+@property EAFAudioCache *audioCache;
 
 //@property unsigned long totalItemsPerLanguage;
-@property unsigned long totalItemsPerLesson;
+//@property unsigned long totalItemsPerLesson;
 
 @end
 
@@ -80,8 +81,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    _audioCache = [EAFAudioCache new];
+    _audioCache.language = _language;
+    
    // _totalItemsPerLanguage = 0;
-    _totalItemsPerLesson = 0;
+ //   _totalItemsPerLesson = 0;
     _siteGetter = [EAFGetSites new];
     _siteGetter.delegate = self;
     _poster = [[EAFEventPoster alloc] init];
@@ -124,6 +129,9 @@
     if (found) {
         self.navigationController.viewControllers = navigationArray;
     }
+    
+    [self cacheAllItems];
+
 }
 
 - (void)askServerForJson:(BOOL) isRefresh {
@@ -177,6 +185,9 @@
 - (void) sitesReady {
     if (_jsonContentArray == nil) {
         [self loadInitialData];
+    }
+    else {
+        
     }
 }
 
@@ -346,7 +357,7 @@ UIAlertView *loadingContentAlert;
     }
     
     [self getTotalItems];
-    
+
     [[self tableView] reloadData];
     
     return true;
@@ -358,14 +369,10 @@ UIAlertView *loadingContentAlert;
     for (NSDictionary *entry in _jsonContentArray) {
         //  NSString *name =[entry objectForKey:@"name"];
         //  NSLog(@"%@ %@",[entry objectForKey:@"type"],name);
-        //  NSArray *items;// = [entry objectForKey:@"items"];
         NSArray *theChildren = [entry objectForKey:@"children"];
-        //    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
-        
         for (NSDictionary *child in theChildren) {
             NSArray * items = [child objectForKey:@"items"];
             //    NSLog(@"%@ %@ = %lu",[entry objectForKey:@"type"],name,(unsigned long)items.count);
-            
             totalItemsPerLanguage += items.count;
         }
     }
@@ -373,6 +380,39 @@ UIAlertView *loadingContentAlert;
     //    NSLog(@"%@ %@ %@ %@ _totalItemsPerLanguage = %lu",_chapterName,_chapters,_unitTitle,_unit,
     //          _totalItemsPerLanguage);
     [self setTitle: [NSString stringWithFormat:@"%@ (%@ items)", _language, [NSString stringWithFormat:@"%lu",totalItemsPerLanguage]]];
+}
+
+- (void) cacheAllItems {
+    if (_doCache) {
+        NSLog(@"OK do cache size = %lu",(unsigned long)_jsonContentArray.count);
+        NSString *url =[_siteGetter getServerURL];
+        NSArray *combined=[NSArray new];
+
+        for (NSDictionary *entry in _jsonContentArray) {            
+            NSArray * items = [entry objectForKey:@"items"];
+
+            if (items != NULL) {
+            //    NSLog(@"cache %lu",(unsigned long)items.count);
+                combined=[combined arrayByAddingObjectsFromArray:items];
+            }
+        }
+
+        NSLog(@"combined cache %lu",(unsigned long)items.count);
+
+        [_audioCache cacheAudio:combined url:url];
+    }
+    else  {
+        NSLog(@"NO cache!");
+    }
+
+}
+
+-(void) viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+    NSLog(@"ChapterTableView - viewDidDisappear - cancelling audio cache queue operations.");
+    
+    [_audioCache cancelAllOperations];
 }
 
 - (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
@@ -610,7 +650,7 @@ UIAlertView *loadingContentAlert;
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
     NSArray *children;
-    _totalItemsPerLesson = 0;
+   // _totalItemsPerLesson = 0;
     for (NSDictionary *entry in _jsonContentArray) {
         NSString *name =[entry objectForKey:@"name"];
         //NSLog(@"looking for '%@' '%@'",name, tappedItem);
@@ -622,7 +662,7 @@ UIAlertView *loadingContentAlert;
             
             if (items == nil) { // no items - not a leaf
                 children = [entry objectForKey:@"children"];
-                //NSLog(@"children are %@",children);
+                NSLog(@"didSelectRowAtIndexPath # children  %lu",(unsigned long)children.count );
                 EAFChapterTableViewController *myController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChapterViewController"];
                 [myController setJsonContentArray:children];
                 
@@ -635,7 +675,7 @@ UIAlertView *loadingContentAlert;
                     [myArray addObject:[child objectForKey:@"name"]];
                     items = [child objectForKey:@"items"];
                     
-                    _totalItemsPerLesson += items.count;
+                  //  _totalItemsPerLesson += items.count;
                     //   NSLog(@"items+++++++++++ %lu",_totalItemsPerLesson);
                 }
                 //sorting
@@ -655,6 +695,7 @@ UIAlertView *loadingContentAlert;
                 myController.url = _url;
                 myController.isRTL = _isRTL;
                 myController.showSentences = _showSentences;
+                myController.doCache = TRUE;
 
                 [self.navigationController pushViewController: myController animated:YES];
                 break;

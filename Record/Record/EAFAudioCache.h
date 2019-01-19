@@ -43,6 +43,7 @@
 @property NSString *language;
 @property NSData *mp3Audio;
 
+- (void) cacheAudio:(NSArray *)items url:(NSString *) url;
 - (void) goGetAudio:(NSArray *)rawPaths paths:(NSArray *)ppaths language:(NSString *)lang;
 - (void) cancelAllOperations;
 

@@ -100,7 +100,8 @@
 {
     [super viewDidLoad];
     _audioCache = [EAFAudioCache new];
-    
+    _audioCache.language = _language;
+
     [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
     _rowHeight = 60;
     

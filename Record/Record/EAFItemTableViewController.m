@@ -77,39 +77,46 @@
 
 - (void)cacheAudio:(NSArray *)items
 {
-    NSMutableArray *paths = [[NSMutableArray alloc] init];
-    NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
     
-    NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"msr",@"frr",@"fsr",@"ctmref",@"ctfref",@"ctref",nil];
+    NSString *msg=[NSString stringWithFormat:@"EAFItemTableViewController cacheAudio getting audio for %lu",(unsigned long)items.count];
+    NSLog(@"%@", msg);
     
     if (_url == NULL) {
         _url = [[EAFGetSites new] getServerURL];
     }
-    
-    for (NSDictionary *object in items) {
-        for (NSString *id in fields) {
-            if ([[object objectForKey:id] isKindOfClass:[NSString class]]) {
-                NSString *refPath = [object objectForKey:id];
-                
-                if (refPath != NULL && refPath.length > 2) { //i.e. not NO
-                    //NSLog(@"adding %@ %@",id,refPath);
-                    refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
-                                                                 withString:@".mp3"];
-                    
-                    NSMutableString *mu = [NSMutableString stringWithString:refPath];
-                    [mu insertString:_url atIndex:0];
-                    [paths addObject:mu];
-                    [rawPaths addObject:refPath];
-                }
-            }
-//            else {
-//                NSLog(@"skip %@",id);
+    [_audioCache cacheAudio:items url:_url];
+
+//
+//    NSMutableArray *paths = [[NSMutableArray alloc] init];
+//    NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
+//
+//    NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"msr",@"frr",@"fsr",@"ctmref",@"ctfref",@"ctref",nil];
+//
+//
+//    for (NSDictionary *object in items) {
+//        for (NSString *id in fields) {
+//            if ([[object objectForKey:id] isKindOfClass:[NSString class]]) {
+//                NSString *refPath = [object objectForKey:id];
+//
+//                if (refPath != NULL && refPath.length > 2) { //i.e. not NO
+//                    //NSLog(@"adding %@ %@",id,refPath);
+//                    refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+//                                                                 withString:@".mp3"];
+//
+//                    NSMutableString *mu = [NSMutableString stringWithString:refPath];
+//                    [mu insertString:_url atIndex:0];
+//                    [paths addObject:mu];
+//                    [rawPaths addObject:refPath];
+//                }
 //            }
-        }
-    }
-    
-    //   NSLog(@"ItemTableViewController.cacheAudio Got get audio -- %@ ",_audioCache);
-    [_audioCache goGetAudio:rawPaths paths:paths language:_language];
+////            else {
+////                NSLog(@"skip %@",id);
+////            }
+//        }
+//    }
+//
+//    //   NSLog(@"ItemTableViewController.cacheAudio Got get audio -- %@ ",_audioCache);
+//    [_audioCache goGetAudio:rawPaths paths:paths language:_language];
 }
 
 - (void)viewDidLoad
@@ -121,6 +128,8 @@
     
     _temp_jsonItems = [[NSMutableArray alloc] initWithArray:_jsonItems];;
     _audioCache = [[EAFAudioCache alloc] init];
+    _audioCache.language = _language;
+    
     NSLog(@"viewDidLoad made audio cache, url %@ listid %@",_url,_listid );
     //  NSLog(@"viewDidLoad - item table controller - %@, count = %lu", _hasModel?@"YES":@"NO",(unsigned long)_jsonItems.count);
     

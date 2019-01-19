@@ -67,7 +67,8 @@
 {
     [super viewDidLoad];
     _audioCache = [[EAFAudioCache alloc] init];
-    
+    _audioCache.language = _language;
+
     _showPhonesLTRAlways = true;
     
     _rowHeight = 66;
