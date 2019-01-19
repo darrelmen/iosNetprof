@@ -397,7 +397,7 @@ UIAlertView *loadingContentAlert;
             }
         }
 
-        NSLog(@"combined cache %lu",(unsigned long)items.count);
+        NSLog(@"combined cache %lu",(unsigned long)combined.count);
 
         [_audioCache cacheAudio:combined url:url];
     }
