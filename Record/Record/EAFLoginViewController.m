@@ -298,19 +298,16 @@
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
     NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
-    if (projid.intValue > -1) {
-        NSLog(@"LoginView projid  '%@'",projid);
-        [urlRequest setValue:@"hasUser" forHTTPHeaderField:@"request"];
-        if ([username length] < 5) {
-            username = [username stringByAppendingString:@"_"];
-            NSLog(@"tryToLogIn user %@ project %@ md5 password %@", username, projid, [self MD5:_password.text]);
-        }
-        [urlRequest setValue:username forHTTPHeaderField:@"userid"];
-        [urlRequest setValue:password forHTTPHeaderField:@"pass"];
-        [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
+    
+    NSLog(@"LoginView projid  '%@'",projid);
+    [urlRequest setValue:@"hasUser" forHTTPHeaderField:@"request"];
+    if ([username length] < 5) {
+        username = [username stringByAppendingString:@"_"];
+        NSLog(@"tryToLogIn user %@ project %@ md5 password %@", username, projid, [self MD5:_password.text]);
     }
-    else {
-    }
+    [urlRequest setValue:username forHTTPHeaderField:@"userid"];
+    [urlRequest setValue:password forHTTPHeaderField:@"pass"];
+    [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
@@ -330,6 +327,15 @@
              });
          }
          else {
+             
+             for (NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies])
+             {
+                 NSLog(@"name: '%@'\n",   [cookie name]);
+                 NSLog(@"value: '%@'\n",  [cookie value]);
+                 NSLog(@"domain: '%@'\n", [cookie domain]);
+                 NSLog(@"path: '%@'\n",   [cookie path]);
+             }
+             
              self->_responseData = data;
              
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)

@@ -3277,43 +3277,6 @@ BOOL addSpaces = false;
         _url = [[EAFGetSites new] getServerURL];
     }
     [_audioCache cacheAudio:items url:_url];
-    
-//    NSMutableArray *paths = [[NSMutableArray alloc] init];
-//    NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
-//
-//    NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"msr",@"frr",@"fsr",@"ctmref",@"ctfref",@"ctref",nil];
-//
-//
-//    NSString *urlWithSlash = _url;
-//    for (NSDictionary *object in items) {
-//        for (NSString *id in fields) {
-//
-//            if ([[object objectForKey:id] isKindOfClass:[NSString class]]) {
-//                NSString *refPath = [object objectForKey:id];
-//
-//                if (refPath && refPath.length > 2) { //i.e. not NO
-//                    //  NSLog(@"cacheAudio adding %@ %@",id,refPath);
-//
-//                    refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
-//                                                                 withString:@".mp3"];
-//
-//                    NSMutableString *mu = [NSMutableString stringWithString:refPath];
-//                    [mu insertString:urlWithSlash atIndex:0];
-//                    //                NSLog(@"cacheAudio %@ %@",mu,urlWithSlash);
-//
-//                    [paths addObject:mu];
-//                    [rawPaths addObject:refPath];
-//                }
-//                else {
-//                    //NSLog(@"skipping %@ %@",id,refPath);
-//                }
-//            }
-//        }
-//    }
-//
-//    NSLog(@"EAFRecoFlashcardController - Got get audio -- %@ ",_audioCache);
-//
-//    [_audioCache goGetAudio:rawPaths paths:paths language:_language];
 }
 
 #pragma mark - Managing popovers

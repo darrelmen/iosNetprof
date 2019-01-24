@@ -367,7 +367,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     
     wordLabel.attributedText = coloredWord;
-    NSLog(@"label word is %@",wordLabel.attributedText);
+   // NSLog(@"label word is %@",wordLabel.attributedText);
     [wordLabel setFont:[UIFont systemFontOfSize:24]];
     
     [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -412,7 +412,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     [cell.contentView.superview addConstraint:constraint];
     
     NSArray *words = [_phoneToWords objectForKey:phone];
-    NSLog(@"tableView words for %@ = %@",phone, words);
+   
+    
+    // NSLog(@"tableView words for %@ = %@",phone, words);
     
     UIView *leftView = nil;
     
@@ -424,7 +426,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     // int count = 0;
     BOOL addSpaces = false;
     BOOL debug=false;
-    
+    BOOL debug2=true;
+
     // try to worry about the same word appearing multiple times...
     NSMutableSet *shownSoFar = [[NSMutableSet alloc] init];
     for (NSDictionary *wordEntry in words) {
@@ -432,10 +435,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         // NSLog(@"about to ask for word from %@",wordEntry);
         
         NSString *word = [wordEntry objectForKey:@"w"];
-        if (debug) NSLog(@"word is %@",word);
+        if (debug2) NSLog(@"phone %@ word is %@",phone,word);
         
-        if ([shownSoFar containsObject:word]) continue;
-        else [shownSoFar addObject:word];
+        // don't show more than one example of a word
+//        if ([shownSoFar containsObject:word]) continue;
+//        else [shownSoFar addObject:word];
         
         //    if (count++ > 5) break; // only first five?
         NSString *result = [wordEntry objectForKey:@"result"];
@@ -519,20 +523,42 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         
         for (NSDictionary *wordResult in resultWords) {
             if (debug)  NSLog(@"resultWords : wordEntry is %@",wordEntry);
-            NSString *wordPhoneAppearsIn = [wordEntry objectForKey:@"wid"];
             
-            if (debug)  NSLog(@"resultWords : wordPhoneAppearsIn is %@",wordPhoneAppearsIn);
+            BOOL isMatch;
+            if ([[wordEntry objectForKey:@"wid"] isKindOfClass:[NSNumber class]]) {
+                NSNumber *wordPhoneAppearsInID = [wordEntry objectForKey:@"wid"];
+                NSNumber *idOfWordInResult = [wordResult objectForKey:@"id"];
+                
+                isMatch = [wordPhoneAppearsInID isEqualToNumber:idOfWordInResult];
+            }
+            else {
+                NSString *wordPhoneAppearsIn = [wordEntry objectForKey:@"wid"];
+                if (debug)  NSLog(@"resultWords : wordPhoneAppearsIn is %@",wordPhoneAppearsIn);
+                int iwid= [wordPhoneAppearsIn intValue];
+                
+                int idOfWordInResult = [[wordResult objectForKey:@"id"] intValue];
+                
+                isMatch = iwid == idOfWordInResult;
+            }
+            
             if (debug)  NSLog(@"resultWords : wordResult         is %@",wordResult);
-            NSString *idOfWordInResult = [wordResult objectForKey:@"id"];
-            NSString *scoreString  = [wordResult objectForKey:@"s"];
-            //  float score = [scoreString floatValue];
             
-            UILabel * wordLabel = [self getLabelForWord:[scoreString floatValue] word:word];
+            float fscore = [[wordResult objectForKey:@"s"] floatValue];
+            
+            //            if ([[wordResult objectForKey:@"s"] isKindOfClass:[NSString class]]) {
+            //                NSString *scoreString  = [wordResult objectForKey:@"s"];
+            //            }
+            //            else {
+            //                NSNumber *scoreString  = [wordResult objectForKey:@"s"];
+            //                fscore = [scoreString floatValue];
+            //            }
+            
+            UILabel * wordLabel = [self getLabelForWord:fscore word:word];
             
             [exampleView addSubview:wordLabel];
             [self addWordLabelConstraints:exampleView wordLabel:wordLabel];
-            
-            if ([idOfWordInResult isEqualToString:wordPhoneAppearsIn]) {  // match!
+           
+            if (isMatch) {  // match!
                 NSArray *phoneArray = [wordResult objectForKey:@"phones"];
                 
                 if (_isRTL && !_showPhonesLTRAlways) {
@@ -562,7 +588,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                     float score = [scoreString floatValue];
                     
                     if (debug)   NSLog(@"score was %@ %f",scoreString,score);
-                    if (debug)    NSLog(@"%@ vs %@ ",phoneText,phone);
+                    if (debug)   NSLog(@"%@ vs %@ ",phoneText,phone);
                     BOOL match = [phoneText isEqualToString:phone];
                     
                     UIColor *color = match? [self getColor2:score] : [UIColor whiteColor];
