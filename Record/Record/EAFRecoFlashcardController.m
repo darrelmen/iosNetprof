@@ -171,6 +171,8 @@
     NSString* baseurl =[NSString stringWithFormat:@"%@scoreServlet?request=CONTENT&list=%@", _url, _listid];
     NSLog(@"Reco : askServerForJsonForList url %@",baseurl);
     
+    _sessionTimeStamp = 0;
+    
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
@@ -252,6 +254,21 @@
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
     //NSLog(@"popoverControllerDidDismissPopover --->");
+}
+
++ (void)setInputGain:(CGFloat)gain
+{
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+    if (audioSession.isInputGainSettable) {
+        NSError *error = nil;
+        BOOL success = [audioSession setInputGain:gain error:&error];
+        if (!success) {
+            NSLog(@"%@", error);
+        }
+    }
+    else {
+        NSLog(@"Cannot set input gain");
+    }
 }
 
 - (void)viewDidLoad
@@ -340,6 +357,16 @@
     // make sure volume is high on iPhones
     
     [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&setOverrideError];
+    if (session.isInputGainSettable) {
+        NSError *error = nil;
+        BOOL success = [session setInputGain:1.0 error:&error];
+        if (!success) {
+            NSLog(@"%@", error);
+        }
+    }
+    else {
+        NSLog(@"Cannot set input gain");
+    }
     
     if(setOverrideError){
         NSLog(@"%@", [setOverrideError description]);
@@ -361,7 +388,7 @@
     }
     
     _audioRecorder.delegate = self;
-    _audioRecorder.meteringEnabled = YES;
+//    _audioRecorder.meteringEnabled = YES;
     [_audioRecorder prepareToRecord];
     
     [self checkAvailableMics];
@@ -1911,11 +1938,16 @@ bool debugRecord = false;
             
             if (_quizTimer == NULL && [self isAQuiz]) {  // start the timer!
                 _timeRemainingMillis = _quizMinutes.intValue*60000;
-                _sessionTimeStamp= (int) CFAbsoluteTimeGetCurrent() * 1000;
+                _sessionTimeStamp= (long) CFAbsoluteTimeGetCurrent() * 1000;
                 
-                NSLog(@"set new session to %ld",_sessionTimeStamp);
+            //    NSLog(@"recordAudio set new session to %ld",_sessionTimeStamp);
                 
                 _quizTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerCalled) userInfo:nil repeats:YES];
+            }
+            else {
+//                if (_quizTimer != NULL)                NSLog(@"recordAudio there is a quiz timer.");
+//                if (![self isAQuiz])                 NSLog(@"recordAudio not a quiz.");
+//
             }
             
         }
@@ -1982,6 +2014,8 @@ bool debugRecord = false;
         if (_timeRemainingMillis <= 0) {
             [_quizTimer invalidate];
             _sessionTimeStamp = 0;
+            NSLog(@"recordAudio set new session to %ld",_sessionTimeStamp);
+
             _quizTimer = NULL;
             
             [self showQuizComplete];
@@ -2399,19 +2433,20 @@ bool debugRecord = false;
     if (_sessionTimeStamp > 0) {
         retrieveuuid = [NSString stringWithFormat:@"%ld",_sessionTimeStamp] ;
     }
+   // NSLog(@"postAudio session is %@",[NSString stringWithFormat:@"%ld",_sessionTimeStamp]);
     
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     
     NSNumber *exid= [self getCurrentExID];
     
-    NSData *audioData=[NSData dataWithData:postData];
+//    NSData *audioData=[NSData dataWithData:postData];
 //    NSLog(@"postAudio OK remember for %@ (%lu)",exid,(unsigned long)[audioData length]);
     
     [_exToRecordedAudio setObject:[NSData dataWithData:postData] forKey:exid];
     
 //    NSData *audioData2= [_exToRecordedAudio objectForKey:exid];
 //    NSLog(@"postAudio   remembered for %@ (%lu)",exid,(unsigned long)[audioData2 length]);
-    NSLog(@"postAudio   now %ld",[_exToRecordedAudio count]);
+ //   NSLog(@"postAudio   now %ld",[_exToRecordedAudio count]);
 //    NSLog(@"postAudio   address is <NSData: %p>",audioData2);
     
     _lastRecordedAudioExID = exid;

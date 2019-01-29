@@ -39,7 +39,7 @@
 //
 
 #import "EAFSetPasswordViewController.h"
-#import <CommonCrypto/CommonDigest.h>
+//#import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "UIColor_netprofColors.h"
 #import "EAFGetSites.h"

@@ -38,7 +38,7 @@
 //
 
 #import "EAFSignUpViewController.h"
-#import <CommonCrypto/CommonDigest.h>
+//#import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 //#import "EAFChapterTableViewController.h"
 #import "EAFSetPasswordViewController.h"
@@ -148,11 +148,11 @@
     
     [urlRequest setValue:username forHTTPHeaderField:@"user"];
     if (_projID == -1) {
-        [urlRequest setValue:[[self MD5:password] uppercaseString] forHTTPHeaderField:@"passwordH"];
+//        [urlRequest setValue:[[self MD5:password] uppercaseString] forHTTPHeaderField:@"passwordH"];
         [urlRequest setValue:[password uppercaseString] forHTTPHeaderField:@"password"];
         NSLog(@"addUser password    %@",password);
     }
-    [urlRequest setValue:[[self MD5:email]    uppercaseString] forHTTPHeaderField:@"emailH"];
+  //  [urlRequest setValue:[[self MD5:email]    uppercaseString] forHTTPHeaderField:@"emailH"];
     [urlRequest setValue:email forHTTPHeaderField:@"email"];
     [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
     
@@ -273,24 +273,24 @@
     return [emailTest evaluateWithObject:candidate];
 }
 
-- (NSString*)MD5:(NSString*)toConvert
-{
-    // Create pointer to the string as UTF8
-    const char *ptr = [toConvert UTF8String];
-    
-    // Create byte array of unsigned chars
-    unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
-    
-    // Create 16 byte MD5 hash value, store in buffer
-    CC_MD5(ptr, strlen(ptr), md5Buffer);
-    
-    // Convert MD5 value in the buffer to NSString of hex values
-    NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
-    for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++)
-        [output appendFormat:@"%02x",md5Buffer[i]];
-    
-    return output;
-}
+//- (NSString*)MD5:(NSString*)toConvert
+//{
+//    // Create pointer to the string as UTF8
+//    const char *ptr = [toConvert UTF8String];
+//
+//    // Create byte array of unsigned chars
+//    unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
+//
+//    // Create 16 byte MD5 hash value, store in buffer
+//    CC_MD5(ptr, strlen(ptr), md5Buffer);
+//
+//    // Convert MD5 value in the buffer to NSString of hex values
+//    NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
+//    for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++)
+//        [output appendFormat:@"%02x",md5Buffer[i]];
+//
+//    return output;
+//}
 
 #pragma mark NSURLConnection Delegate Methods
 
