@@ -35,6 +35,15 @@ class ListViewController: UITableViewController {
         //        fatalError("init(coder:) has not been implemented")
     }
     
+    fileprivate func showError(_ error: NSError) {
+        DispatchQueue.main.async {
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
+            let alert = UIAlertController(title: "Connection Error", message: "Got error getting lists or quizzes \(error)", preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -46,16 +55,12 @@ class ListViewController: UITableViewController {
             self.title="Quizzes";
         }
         
-        //        if (projid != -1) {
-        //            server = "\(server)&projid\(projid)";
-        //        }
-        
         let request = NSMutableURLRequest(url: NSURL(string: server)! as URL)
         request.httpMethod = "GET"
         request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.timeoutInterval = 10.0
         
-        print("making request to \(server)")
+        //print("making request to \(server)")
         
         let queue:OperationQueue = OperationQueue()
         
@@ -63,19 +68,19 @@ class ListViewController: UITableViewController {
         
         NSURLConnection.sendAsynchronousRequest(request as URLRequest, queue: queue, completionHandler:{ (response: URLResponse?, data: Data?, error: Error?) -> Void in
             do {
-                if let jsonResult = try JSONSerialization.jsonObject(with: data!, options: []) as? NSDictionary {
-                    DispatchQueue.main.async {
-                        UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                        self.addItems(json: jsonResult);
+                if data != nil {
+                    if let jsonResult = try JSONSerialization.jsonObject(with: data!, options: []) as? NSDictionary {
+                        DispatchQueue.main.async {
+                            UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                            self.addItems(json: jsonResult);
+                        }
                     }
                 }
-            } catch let error as NSError {
-                DispatchQueue.main.async {
-                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                    let alert = UIAlertController(title: "Connection Error", message: "Got error getting lists or quizzes \(error)", preferredStyle: UIAlertController.Style.alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
-                    self.present(alert, animated: true, completion: nil)
+                else {
+                    self.showError(error! as NSError)
                 }
+            } catch let error as NSError {
+                self.showError(error)
                 print(error.localizedDescription)
             }
         })

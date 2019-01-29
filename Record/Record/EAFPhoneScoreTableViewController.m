@@ -436,10 +436,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         
         NSString *word = [wordEntry objectForKey:@"w"];
         if (debug2) NSLog(@"phone %@ word is %@",phone,word);
-        
+
+        // TODO : fix this on the server!
         // don't show more than one example of a word
-//        if ([shownSoFar containsObject:word]) continue;
-//        else [shownSoFar addObject:word];
+        if ([shownSoFar containsObject:word]) continue;
+        else [shownSoFar addObject:word];
         
         //    if (count++ > 5) break; // only first five?
         NSString *result = [wordEntry objectForKey:@"result"];
