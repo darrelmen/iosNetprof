@@ -566,7 +566,6 @@
     NSLog(@"Item Table - got seque row %ld %@ %@ url %@",(long)indexPath.row, _chapterTitle, _currentChapter, _url );
     
     flashcardController.url = _url;
-    flashcardController.isRTL = _isRTL;
     flashcardController.jsonItems = _jsonItems;
     flashcardController.index = row;
     flashcardController.language = _language;

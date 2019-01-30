@@ -22,7 +22,8 @@ class ListViewController: UITableViewController {
     var projid = -1
     public var language = ""
     var isQuiz = false
-    
+    var isRTL = false
+
     override init(style : UITableView.Style) {
         // Overriding this method prevents other initializers from being inherited.
         // The super implementation calls init:nibName:bundle:
@@ -197,19 +198,22 @@ class ListViewController: UITableViewController {
             itemTableViewController?.listTitle = cell.textLabel?.text
             itemTableViewController?.projid = self.projid as NSNumber
             itemTableViewController?.language = language
+            itemTableViewController?.isRTL = isRTL
         }
         else if (segue.identifier == "goToQuizFlashcard") {
             let flashcardController = segue.destination as? EAFRecoFlashcardController
             
-           // print("prepare quiz \(isQuiz)")
+            print("prepare quiz \(isQuiz)")
             
             let cell = sender as! EAFListChoiceCell
             
             flashcardController?.listid = cell.listid as NSNumber
             flashcardController?.projid = self.projid as NSNumber
             flashcardController?.language = language
+           // flashcardController?.isRTL = isRTL
 
-            
+            print("prepare isRTL \(isRTL)")
+
             flashcardController?.quizMinutes = cell.quizMinutes as NSNumber;
             flashcardController?.minScoreToAdvance = cell.minScoreToAdvance as NSNumber;
             flashcardController?.playAudio = cell.playAudio;

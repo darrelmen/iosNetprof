@@ -69,7 +69,7 @@
 @property NSArray *jsonItems;
 
 @property NSString *url;
-@property BOOL isRTL;
+//@property BOOL isRTL;
 
 @property NSString *currentChapter;
 @property NSString *chapterTitle;

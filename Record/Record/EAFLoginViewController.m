@@ -647,12 +647,10 @@
         ModeChoiceController *choiceController = [segue destinationViewController];
         
         choiceController.language=chosenLanguage;
-//        choiceController.url =url;
-//        choiceController.isRTL = isRTL;
+        choiceController.isRTL = isRTL;        
         NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
         choiceController.projid = projid.intValue;
-        
-      //  [choiceController setTitle:chosenLanguage];
+       
         [self textFieldText:nil];
     }
     else if ([segue.identifier isEqualToString:@"goToChapter"]) {

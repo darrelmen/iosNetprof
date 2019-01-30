@@ -12,6 +12,7 @@ import UIKit;
 class ModeChoiceController: UITableViewController {
     @objc public var projid = -1
     @objc public var language = ""
+    @objc public var isRTL = false
 
     override init(style : UITableView.Style) {
         // Overriding this method prevents other initializers from being inherited.
@@ -32,15 +33,20 @@ class ModeChoiceController: UITableViewController {
             let listViewController = segue.destination as? ListViewController
             listViewController?.projid=projid;
             listViewController?.language=language;
+            listViewController?.isRTL=isRTL;
         }
         else if (identifier == "goToQuizChoice") {
             let listViewController = segue.destination as? ListViewController
             listViewController?.isQuiz=true
             listViewController?.projid=projid;
             listViewController?.language=language;
+            listViewController?.isRTL=isRTL;
+                   print("isRTL \(isRTL)")
+
         } else if (identifier == "showSentences") {
             let chapterView = segue.destination as? EAFChapterTableViewController
             chapterView?.showSentences=true
-        }
+            chapterView?.isRTL=isRTL
+        } //else if (identifier == "show)
     }
 }

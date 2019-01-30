@@ -165,11 +165,10 @@
         
         if (_url == NULL) {
             _url = [_siteGetter getServerURL];
-            _isRTL = [_siteGetter.rtlLanguages containsObject:_language];
         }
     }
     NSString* baseurl =[NSString stringWithFormat:@"%@scoreServlet?request=CONTENT&list=%@", _url, _listid];
-    NSLog(@"Reco : askServerForJsonForList url %@",baseurl);
+   // NSLog(@"Reco : askServerForJsonForList url %@",baseurl);
     
     _sessionTimeStamp = 0;
     
@@ -280,8 +279,8 @@
     
     if (_url == NULL) {
         _url = [_siteGetter getServerURL];
-        _isRTL = [_siteGetter.rtlLanguages containsObject:_language];
     }
+
     BOOL noQuiz =([self notAQuiz]);
     
     [_timerProgress setHidden:noQuiz];
@@ -309,9 +308,7 @@
     _myAudioPlayer = [[EAFAudioPlayer alloc] init];
     _myAudioPlayer.url = _url;
     _myAudioPlayer.language = _language;
-    _myAudioPlayer.delegate = self;
-   // _audioCache.delegate = _myAudioPlayer;
-    
+    _myAudioPlayer.delegate = self;   
     
     [[self view] sendSubviewToBack:_cardBackground];
     
@@ -1620,10 +1617,12 @@
 }
 
 - (void)setForeignLang {
-    NSDictionary *jsonObject = [self getCurrentJson];
-    NSString *exercise       = [jsonObject objectForKey:@"fl"];
-    if (exercise != nil) {
-        [self setForeignLangWith:exercise];
+    if ([_jsonItems count] > 0) {
+        NSDictionary *jsonObject = [self getCurrentJson];
+        NSString *exercise       = [jsonObject objectForKey:@"fl"];
+        if (exercise != nil) {
+            [self setForeignLangWith:exercise];
+        }
     }
 }
 
@@ -3110,7 +3109,7 @@ BOOL addSpaces = false;
     
     //    NSLog(@"updateScoreDisplay size for words %lu",(unsigned long)wordAndScore.count);
     
-    //    NSLog(@"word  json %@",wordAndScore);
+  //    NSLog(@"word  json %@",wordAndScore);
     //    NSLog(@"phone json %@",phoneAndScore);
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
@@ -3126,8 +3125,11 @@ BOOL addSpaces = false;
     UIView *leftView  = nil;
     UIView *rightView = nil;
     
-    if (_isRTL) {
+    BOOL isRTL = [_siteGetter.rtlLanguages containsObject:_language];
+    if (isRTL) {
         wordAndScore  = [self reversedArray:wordAndScore];
+        //NSLog(@"now word  json %@",wordAndScore);
+
         if (!_showPhonesLTRAlways) {
             phoneAndScore = [self reversedArray:phoneAndScore];
         }
@@ -3239,7 +3241,7 @@ BOOL addSpaces = false;
         leftView = exampleView;
         
         UILabel *wordLabel = [self getWordLabel:word score:score wordFont:wordFont];
-        wordLabel.textAlignment = _isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
+        wordLabel.textAlignment = isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
         [_wordLabels addObject:wordLabel];
         
         [exampleView addSubview:wordLabel];
@@ -3251,7 +3253,7 @@ BOOL addSpaces = false;
         
         NSMutableAttributedString *coloredPhones = [self getColoredPhones:phoneToShow wend:wend wstart:wstart phoneAndScore:phoneAndScore];
         
-        UILabel *phoneLabel = [self getPhoneLabel:_isRTL coloredPhones:coloredPhones phoneFont:wordFont];
+        UILabel *phoneLabel = [self getPhoneLabel:isRTL coloredPhones:coloredPhones phoneFont:wordFont];
         [_phoneLabels addObject:phoneLabel];
         
         [exampleView addSubview:phoneLabel];
@@ -3469,7 +3471,7 @@ BOOL addSpaces = false;
         phoneReport.unitSelection = _currentUnit;
         
         phoneReport.url = _url;
-        phoneReport.isRTL = _isRTL;
+        phoneReport.isRTL = [_siteGetter.rtlLanguages containsObject:_language];
         
         phoneReport.listid = _listid;
 
