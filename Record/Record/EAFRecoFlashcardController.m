@@ -234,6 +234,8 @@
     
     _jsonItems = [json objectForKey:@"content"];
     
+    [self cacheAudio];
+
     NSLog(@"Reco - useListData --- num json %lu ",(unsigned long)_jsonItems.count);
     
     if ([self isAQuiz]) {
@@ -256,18 +258,12 @@
     //NSLog(@"popoverControllerDidDismissPopover --->");
 }
 
-+ (void)setInputGain:(CGFloat)gain
-{
-    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-    if (audioSession.isInputGainSettable) {
-        NSError *error = nil;
-        BOOL success = [audioSession setInputGain:gain error:&error];
-        if (!success) {
-            NSLog(@"%@", error);
-        }
+- (void)cacheAudio {
+    if (_jsonItems != NULL) {
+        [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
     }
     else {
-        NSLog(@"Cannot set input gain");
+        NSLog(@" --- did not cache audio?");
     }
 }
 
@@ -291,9 +287,7 @@
     [_timerProgress setHidden:noQuiz];
     [_timeRemainingLabel setHidden:noQuiz];
     
-    if (_jsonItems != NULL) {
-        [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
-    }
+    [self cacheAudio];
     _showPhonesLTRAlways = true;
     _exToScore = [[NSMutableDictionary alloc] init];
     _exToScoreJson = [[NSMutableDictionary alloc] init];
@@ -316,6 +310,8 @@
     _myAudioPlayer.url = _url;
     _myAudioPlayer.language = _language;
     _myAudioPlayer.delegate = self;
+   // _audioCache.delegate = _myAudioPlayer;
+    
     
     [[self view] sendSubviewToBack:_cardBackground];
     
@@ -357,16 +353,6 @@
     // make sure volume is high on iPhones
     
     [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&setOverrideError];
-    if (session.isInputGainSettable) {
-        NSError *error = nil;
-        BOOL success = [session setInputGain:1.0 error:&error];
-        if (!success) {
-            NSLog(@"%@", error);
-        }
-    }
-    else {
-        NSLog(@"Cannot set input gain");
-    }
     
     if(setOverrideError){
         NSLog(@"%@", [setOverrideError description]);
@@ -391,7 +377,7 @@
 //    _audioRecorder.meteringEnabled = YES;
     [_audioRecorder prepareToRecord];
     
-    [self checkAvailableMics];
+  //  [self checkAvailableMics];
     [self configureTextFields];
     
     [_scoreProgress setTintColor:[UIColor npLightBlue]];
@@ -943,23 +929,17 @@
 - (void)configureTextFields
 {
     NSDictionary *jsonObject = [self getCurrentJson];
-    /*
-     long selected = [_whatToShow selectedSegmentIndex];
-     */
     long selected = _languageSegmentIndex;
     if (selected == 3) {
         NSString *exercise       = [jsonObject objectForKey:@"fl"];
         [self hideWithDashes:exercise];
     }
     else {
-        //[_foreignLang setText:[self trim:exercise]];
         [self setForeignLang];
     }
     
     NSString *englishPhrases = [jsonObject objectForKey:@"en"];
     [_english setText:englishPhrases];
-    
-
     
     // TODO : do we need these???
     _foreignLang.adjustsFontSizeToFitWidth=YES;
@@ -1014,9 +994,7 @@
 
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
-    NSLog(@"respondToSwipe - %ld",_index);
-    
-    //long index = (long) _index + 1.0;
+    //NSLog(@"respondToSwipe - %ld",_index);
     long jsonItemCount = (long) _jsonItems.count;
     
     _progressThroughItems.progress = ((float) _index) /(float) _jsonItems.count;
@@ -1248,7 +1226,8 @@
         [self hideWithDashes:flAtIndex];
     }
     else {
-        [_foreignLang setText:flAtIndex];
+      //  [_foreignLang setText:flAtIndex];
+        [self setForeignLangWith:flAtIndex];
         if([_tlAtIndex length] != 0){
             [_tl setText:_tlAtIndex];
         } else {
@@ -1300,8 +1279,6 @@
     BOOL showEnglish = _languageSegmentIndex == 0;
     
     // complicated...
-    // _myAudioPlayer.audioPaths = _audioRefs;
-    
     if (_isAudioOnSelected && !_preventPlayAudio &&
         showedIntro != nil) {
         
@@ -1542,6 +1519,17 @@
         }
         else if (_playAudio) {
             [_myAudioPlayer playFirstRefAudio];
+
+            
+//            if ([_myAudioPlayer allExist]) {
+//                NSLog(@"OK all the audio exists");
+//                [_myAudioPlayer playFirstRefAudio];
+//            }
+//            else {
+//                NSLog(@"not all the audio exists -------------- ");
+//
+//                [self cacheAudio];
+//            }
         }
     }
     else {
@@ -1623,10 +1611,20 @@
     }
 }
 
+- (void)setForeignLangWith:(NSString *)exercise {
+   // NSLog(@"setForeignLang before %@",exercise);
+    NSString *clean = [exercise stringByReplacingOccurrencesOfString:@"&#39;" withString:@"'"];
+  //  NSLog(@"setForeignLang after %@",clean);
+    
+    [_foreignLang setText:[self trim:clean]];
+}
+
 - (void)setForeignLang {
     NSDictionary *jsonObject = [self getCurrentJson];
     NSString *exercise       = [jsonObject objectForKey:@"fl"];
-    [_foreignLang setText:[self trim:exercise]];
+    if (exercise != nil) {
+        [self setForeignLangWith:exercise];
+    }
 }
 
 -(void)whatToShowSelect{
@@ -3306,7 +3304,7 @@ BOOL addSpaces = false;
 
 - (void)cacheAudio:(NSArray *)items
 {
-    NSLog(@"cacheAudio cache for %lu",(unsigned long)[items count]);
+    NSLog(@"--- cacheAudio cache for %lu",(unsigned long)[items count]);
 
     if (_url == NULL) {
         _url = [[EAFGetSites new] getServerURL];

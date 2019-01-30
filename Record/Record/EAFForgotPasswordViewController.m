@@ -37,7 +37,7 @@
 //
 
 #import "EAFForgotPasswordViewController.h"
-#import <CommonCrypto/CommonDigest.h>
+//#import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "UIColor_netprofColors.h"
 
@@ -99,9 +99,8 @@
     }
 }
 
-
 - (IBAction)gotSingleTap:(id)sender {
-    NSLog(@"dismiss keyboard! %@",_currentResponder);
+//    NSLog(@"dismiss keyboard! %@",_currentResponder);
     [_currentResponder resignFirstResponder];
 }
 
@@ -111,7 +110,7 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    NSLog(@"Got return!");
+//    NSLog(@"Got return!");
     // done button was pressed - dismiss keyboard
     [textField resignFirstResponder];
     
