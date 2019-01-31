@@ -665,7 +665,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
     //  NSLog(@"Got path %@",indexPath);
     
-    
     if (indexPath == nil) {
         NSLog(@"press on table view but not on a row");
     } else {
@@ -708,8 +707,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 
 // look for local file with mp3 and use it if it's there.
 - (IBAction)playRefAudio:(EAFAudioView *)sender {
-    //NSString *refPath = _playingRef ? sender.refAudio : sender.answer;
-    //NSLog(@"ref path %@ playing ref %@",refPath, (_playingRef ? @"YES":@"NO"));
+//    NSLog(@"playRefAudio playing audio...");
+    
     NSMutableArray *audioRefs = [[NSMutableArray alloc] init];
     
     if (sender.refAudio == nil) {
@@ -717,13 +716,13 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     else {
         [audioRefs addObject:sender.refAudio];
-        EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url projid:[_siteGetter.nameToProjectID objectForKey:_language]];
+        EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url projid:_projid];
+  //      NSLog(@"playRefAudio post - projid %@ lang %@",_projid,_language);
         
         [poster postEvent:sender.refAudio exid:@"n/a" widget:@"refAudio" widgetType:@"PhoneScoreTableCell"];
     }
     if (sender.answer == nil) {
         NSLog(@"ERROR - answer audio is null on %@",sender);
-        
     }
     else {
         [audioRefs addObject:sender.answer];
@@ -830,7 +829,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSLog(@"useJsonChapterData error %@",error.description);
         return false;
     }
-    NSLog(@"PhoneScore: useJsonChapter data json\n%@",json);
+  //  NSLog(@"PhoneScore: useJsonChapter data json\n%@",json);
     
     NSDictionary *phoneDict = [json objectForKey:@"phones"];
     NSDictionary *resultsDict = [json objectForKey:@"results"];
@@ -863,7 +862,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         [_resultToAnswer setValue:answer forKey:resultID];
         
         NSDictionary *resultDict = [fields objectForKey:@"result"];
-        NSLog(@"PhoneScore: resultDict %@",resultDict);
+       // NSLog(@"PhoneScore: resultDict %@",resultDict);
         
         if ([[resultDict objectForKey:@"words"] isKindOfClass:[NSString class]]) {
             NSLog(@"PhoneScore: is a string %@",[resultDict objectForKey:@"words"]);
@@ -880,11 +879,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             }
         }
         else if ([[resultDict objectForKey:@"words"] isKindOfClass:[NSArray class]]) {
-            NSLog(@"PhoneScore: is an array %@",[resultDict objectForKey:@"words"]);
+           // NSLog(@"PhoneScore: is an array %@",[resultDict objectForKey:@"words"]);
             
             NSArray *theWords = [resultDict objectForKey:@"words"];
             
-            NSLog(@"PhoneScore: dict theWords %@",theWords);
+           // NSLog(@"PhoneScore: dict theWords %@",theWords);
             
             if (theWords != nil) {
                 //                NSMutableArray *newArray = [NSMutableArray new];
@@ -897,7 +896,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 //                [_resultToWords setValue:newArray forKey:resultID];
                 
                 [_resultToWords setValue:theWords forKey:resultID];
-                
             }
             else {
                 NSLog(@"PhoneScore: no words for %@",answer);

@@ -790,6 +790,7 @@
 
 - (id) getProjectID {
     if (_projid == NULL) {
+    //    NSLog(@"getProjectID lang %@",_language);
         return [_siteGetter.nameToProjectID objectForKey:_language];
     }
     else {
@@ -798,22 +799,16 @@
 }
 
 - (id) getProjectLanguage {
-    //    NSLog(@"getProjectLanguage lang %@",_language);
-    //    NSLog(@"getProjectLanguage map  %@",_siteGetter.nameToLanguage);
-    NSString *actualLang = [_siteGetter.nameToLanguage objectForKey:_language];
-    //   NSLog(@"getProjectLanguage actualLang  %@",actualLang);
-    //   NSLog(@"getProjectLanguage projectLang %@",_projectLanguage);
-    
-    return actualLang;
+    return [_siteGetter.nameToLanguage objectForKey:_language];
 }
 
 - (IBAction)showScoresClick:(id)sender {
     [self stopPlayingAudio];
     [self postEvent:@"showScoresClick" widget:@"showScores" type:@"Button"];
     [self performSegueWithIdentifier:@"goToReport" sender:self];
-} 
+}
 
-
+// deprecated
 - (void)checkAvailableMics {
     NSError* theError = nil;
     BOOL result = YES;
@@ -857,7 +852,7 @@
     }
     
     // Print out a description of the data sources for the built-in microphone
-    NSLog(@"There are %u data sources for port :\"%@\"", (unsigned)[builtInMicPort.dataSources count], builtInMicPort);
+  //  NSLog(@"There are %u data sources for port :\"%@\"", (unsigned)[builtInMicPort.dataSources count], builtInMicPort);
     // NSLog(@"Headset port :\"%@\"",  headsetMicPort);
     //  NSLog(@"Sources : %@", builtInMicPort.dataSources);
     
@@ -2902,7 +2897,7 @@ bool debugRecord = false;
                                    _timeRemainingLabel.text = @"00:00";
                                    [self showScoresClick:nil];
                                }];
-        
+    
     [alert addAction:yesButton];
     [alert addAction:noButton];
     
@@ -3519,8 +3514,11 @@ BOOL addSpaces = false;
                                               forState:UIControlStateSelected];
         
         phoneReport.language = _language;
+        
+        
         phoneReport.projid = [self getProjectID];
         
+        NSLog(@"phoneReport projid %@",phoneReport.projid);
         phoneReport.chapterName = _chapterTitle;
         phoneReport.chapterSelection = _currentChapter;
         
