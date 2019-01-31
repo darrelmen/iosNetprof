@@ -59,9 +59,7 @@
 @property EAFGetSites *siteGetter;
 @property EAFEventPoster *poster;
 @property EAFAudioCache *audioCache;
-
-//@property unsigned long totalItemsPerLanguage;
-//@property unsigned long totalItemsPerLesson;
+@property UIAlertView *loadingContentAlert;
 
 @end
 
@@ -85,8 +83,6 @@
     _audioCache = [EAFAudioCache new];
     _audioCache.language = _language;
     
-   // _totalItemsPerLanguage = 0;
- //   _totalItemsPerLesson = 0;
     _siteGetter = [EAFGetSites new];
     _siteGetter.delegate = self;
     _poster = [[EAFEventPoster alloc] init];
@@ -141,7 +137,7 @@
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?nestedChapters", [_siteGetter.nameToURL objectForKey:_language]];
     
     if (_showSentences) {
-       baseurl = [NSString stringWithFormat:@"%@&context=true", baseurl];
+        baseurl = [NSString stringWithFormat:@"%@&context=true", baseurl];
     }
     
     NSURL *url = [NSURL URLWithString:baseurl];
@@ -154,7 +150,7 @@
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     NSNumber *projid = [_siteGetter getProject:_language];
-   NSLog(@"ChapterTableViewController - askServerForJson projid %@",projid);
+    NSLog(@"ChapterTableViewController - askServerForJson projid %@",projid);
     
     [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
     
@@ -174,7 +170,7 @@
          else {
              NSLog(@"ChapterTableViewController Got data %lu",(unsigned long)data.length);
              
-             _responseData = data;
+             self->_responseData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:YES];
@@ -191,7 +187,6 @@
     }
 }
 
-UIAlertView *loadingContentAlert;
 
 - (void)loadInitialData {
     NSLog(@"loadInitialData");
@@ -211,8 +206,23 @@ UIAlertView *loadingContentAlert;
     }
     else {
         // show please wait dialog
-        loadingContentAlert = [[UIAlertView alloc] initWithTitle:@"Fetching course word list\nPlease Wait..." message:nil delegate:self cancelButtonTitle:nil otherButtonTitles: nil];
-        [loadingContentAlert show];
+        _loadingContentAlert = [[UIAlertView alloc] initWithTitle:@"Fetching course content\nPlease Wait..." message:nil delegate:self cancelButtonTitle:nil otherButtonTitles: nil];
+       
+        
+//        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Fetching course content"
+//                                                                       message:@"Please Wait..."
+//                                                                preferredStyle:UIAlertControllerStyleAlert];
+//
+//        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+//                                                              handler:^(UIAlertAction * action) {
+//                                                                  [self.navigationController popToRootViewControllerAnimated:YES];
+//                                                              }];
+//
+//        [alert addAction:defaultAction];
+        
+     //   [self presentViewController:alert animated:YES completion:nil];
+        
+        [_loadingContentAlert show];
         
         [self askServerForJson:false];
     }
@@ -427,7 +437,7 @@ UIAlertView *loadingContentAlert;
     NSLog(@"connectionDidFinishLoading course content round trip time was %f",diff);
     [self postEvent:[NSString stringWithFormat:@"Roundtrip to download content for %.2f",diff] widget:@"download content" type:[NSString stringWithFormat:@"%.2f",diff]];
     
-    [loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
+    [_loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
     
     BOOL dataIsValid = [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
@@ -445,7 +455,7 @@ UIAlertView *loadingContentAlert;
     // The request has failed for some reason!
     // Check the error var
     NSLog(@"ChapterTable Download content failed with %@",error);
-    [loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
+    [_loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
     
     _receivedCount++;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];

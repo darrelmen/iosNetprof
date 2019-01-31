@@ -178,7 +178,13 @@ class ListViewController: UITableViewController {
             cell.quizMinutes =  quizMinutes[selectedRow]
             cell.minScoreToAdvance = minScoreToAdvance[selectedRow]
             cell.playAudio   = playAudio[selectedRow]
-            cell.detailTextLabel?.text = "\(cell.quizMinutes) minute quiz on \(numItems[selectedRow]) items"
+            
+            if (playAudio[selectedRow]) {
+                cell.detailTextLabel?.text = "\(cell.quizMinutes) minute quiz on \(numItems[selectedRow]) items (with audio)"
+            }
+            else {
+                cell.detailTextLabel?.text = "\(cell.quizMinutes) minute quiz on \(numItems[selectedRow]) items"
+            }
         }
         
         return cell

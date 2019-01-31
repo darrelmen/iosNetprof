@@ -38,7 +38,6 @@
 //
 
 #import "EAFSignUpViewController.h"
-//#import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 //#import "EAFChapterTableViewController.h"
 #import "EAFSetPasswordViewController.h"
@@ -70,27 +69,15 @@
                              object:_username];
     
     [notificationCenter addObserver:self
-                           selector:@selector (passwordChanged:)
-                               name:UITextFieldTextDidChangeNotification
-                             object:_password];
-    
-    if (_projID != -1) {
-        [_password setHidden:true];
-    }
-
-    [notificationCenter addObserver:self
                            selector:@selector (emailChanged:)
                                name:UITextFieldTextDidChangeNotification
                              object:_email];
     
     _username.text = _userFromLogin;
-    _password.text = _passFromLogin;
     
     _username.delegate = self;
-    _password.delegate = self;
     _email.delegate = self;
     
-   // NSLog(@"Height %f", [[UIScreen mainScreen] bounds].size.height);
     if ([[UIScreen mainScreen] bounds].size.height < 600) {
         _maxLangPickerHeightConstraint.constant = 150;
         _bottomOffsetConstraint.constant = 32;
@@ -106,14 +93,16 @@
         _username.text = rememberedUserID;
     }
     
-    NSString *rememberedPass = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenPassword"];
-    if (_passFromLogin == nil && rememberedPass != nil) {
-        _password.text = rememberedPass;
+    NSString *rememberedFirst = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"firstName"];
+    if (rememberedFirst != nil) {
+        _firstName.text = rememberedFirst;
     }
-//    UITapGestureRecognizer* gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerViewTapGestureRecognized:)];
-//    gestureRecognizer.cancelsTouchesInView = NO;
-//    gestureRecognizer.delegate = self;
-//    [self.languagePicker addGestureRecognizer:gestureRecognizer];
+    
+    NSString *rememberedLast = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"lastName"];
+    if (rememberedLast != nil) {
+        _lastName.text = rememberedLast;
+    }
+    
     [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
     [_titleLabel setTextColor:[UIColor npDarkBlue]];
     [_signUp setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
@@ -124,14 +113,12 @@
     return true;
 }
 
-
 // POST request
-- (void)addUser:(NSString *)chosenLanguage username:(NSString *)username password:(NSString *)password email:(NSString *)email {
+- (void)addUser:(NSString *)chosenLanguage username:(NSString *)username email:(NSString *)email {
     
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet",[_siteGetter.nameToURL objectForKey:chosenLanguage]];
     
     if (_projID != -1) {
-        //baseurl =_siteGetter.nServer;
         baseurl = [NSString stringWithFormat:@"%@scoreServlet",_siteGetter.nServer];
     }
     
@@ -147,12 +134,6 @@
       forHTTPHeaderField:@"Content-Type"];
     
     [urlRequest setValue:username forHTTPHeaderField:@"user"];
-    if (_projID == -1) {
-//        [urlRequest setValue:[[self MD5:password] uppercaseString] forHTTPHeaderField:@"passwordH"];
-        [urlRequest setValue:[password uppercaseString] forHTTPHeaderField:@"password"];
-        NSLog(@"addUser password    %@",password);
-    }
-  //  [urlRequest setValue:[[self MD5:email]    uppercaseString] forHTTPHeaderField:@"emailH"];
     [urlRequest setValue:email forHTTPHeaderField:@"email"];
     [urlRequest setValue:[UIDevice currentDevice].model forHTTPHeaderField:@"deviceType"];
     
@@ -185,17 +166,6 @@
         valid = false;
     }
     
-    if (_projID == -1) {
-        if (_password.text.length == 0) {
-            _passwordFeedback.text = @"Please enter a password.";
-            valid = false;
-        }
-        if (_password.text.length < 8) {  // domino password length is 8
-            _passwordFeedback.text = @"Please enter a longer password.";
-            valid = false;
-        }
-    }
-
     if (_email.text.length == 0) {
         _emailFeedback.text = @"Please enter your email.";
         _emailFeedback.textColor = [UIColor redColor];
@@ -208,21 +178,12 @@
     }
     
     if (valid) {
+        _emailFeedback.text = @"";
         _emailFeedback.textColor = [UIColor blackColor];
+        [self addUser:@"" username:_username.text email:_email.text];
         
-        NSString *username = _username.text;
-        NSString *password = _password.text;
-        NSString *email = _email.text;
-        
-        [self addUser:@"" username:username password:password email:email];
-        
-      //  if (FALSE) {
-            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-            [_activityIndicator startAnimating];
-            
-           // [_poster setURL:[_siteGetter.nameToURL objectForKey:chosenLanguage] projid:[_siteGetter.nameToProjectID objectForKey:chosenLanguage]];
-          //  [_poster postEvent:[NSString stringWithFormat:@"signUp by %@",_username.text] exid:@"N/A" widget:@"SignIn" widgetType:@"Button"];
-        // }
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
+        [_activityIndicator startAnimating];
     }
     else {
         _signUp.enabled = true;
@@ -231,10 +192,6 @@
 }
 
 - (void) textFieldText:(id)notification {
-    [self emailChanged:nil];
-}
-
-- (void) passwordChanged:(id)notification {
     [self emailChanged:nil];
 }
 
@@ -272,25 +229,6 @@
     
     return [emailTest evaluateWithObject:candidate];
 }
-
-//- (NSString*)MD5:(NSString*)toConvert
-//{
-//    // Create pointer to the string as UTF8
-//    const char *ptr = [toConvert UTF8String];
-//
-//    // Create byte array of unsigned chars
-//    unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
-//
-//    // Create 16 byte MD5 hash value, store in buffer
-//    CC_MD5(ptr, strlen(ptr), md5Buffer);
-//
-//    // Convert MD5 value in the buffer to NSString of hex values
-//    NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
-//    for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++)
-//        [output appendFormat:@"%02x",md5Buffer[i]];
-//
-//    return output;
-//}
 
 #pragma mark NSURLConnection Delegate Methods
 
@@ -344,11 +282,10 @@
         return false;
     }
     
-    NSLog(@"useJsonChapter got %@ ",json);
+    NSLog(@"EAFSignUpViewController.useJsonChapterData got %@ ",json);
     NSString *existing = [json objectForKey:@"ExistingUserName"];
-    //   NSString *existingUserID = [json objectForKey:@"userid"];
     
-    if (existing != nil) {// || existingUserID != nil) {
+    if (existing != nil) {
         _signUp.enabled = true;
         if (_projID == -1) {
             // no user with that name
@@ -373,9 +310,16 @@
         [SSKeychain setPassword:converted      forService:@"mitll.proFeedback.device" account:@"userid"];
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_email.text    forService:@"mitll.proFeedback.device" account:@"chosenEmail"];
+        [SSKeychain setPassword:_firstName.text    forService:@"mitll.proFeedback.device" account:@"firstName"];
+        [SSKeychain setPassword:_lastName.text    forService:@"mitll.proFeedback.device" account:@"lastName"];
         
-        if (resetPassKey != NULL) {
+        if (resetPassKey != NULL && [_resetPassKey length] > 0) {
             _resetPassKey = resetPassKey;
+            NSLog(@"EAFSignUpViewController. got back %@", _resetPassKey);
+            if ([_resetPassKey length] == 0) {
+                NSLog(@"EAFSignUpViewController. ERROR got back %@", _resetPassKey);
+
+            }
             [self performSegueWithIdentifier:@"goToSetPassword" sender:self];
         }
         else {

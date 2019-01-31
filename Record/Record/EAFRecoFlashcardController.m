@@ -120,10 +120,11 @@
 @property int timeRemainingMillis;
 @property long sessionTimeStamp;
 @property NSTimer *quizTimer;
+@property NSTimer *slowContentTimer;
 @property (strong, nonatomic) NSData *responseListData;
 
 @property BOOL isPostingAudio;
-
+@property UIAlertView *loadingContentAlert;
 
 - (void)postAudio;
 
@@ -188,10 +189,11 @@
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          if (error != nil) {
-             NSLog(@"ItemTableViewController askServerForJsonForList Got error %@",error);
+             NSLog(@"EAFRecoFlashcardController askServerForJsonForList Got error %@",error);
              dispatch_async(dispatch_get_main_queue(), ^{
                  [self connection:nil didFailWithError:error];
              });
+             [self showConnectionError:error];
          }
          else {
              self->_responseListData = data;
@@ -201,6 +203,13 @@
          }
      }];
     
+    _loadingContentAlert = NULL;
+    _slowContentTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(slowContentTimerFired) userInfo:nil repeats:NO];
+}
+
+- (void) slowContentTimerFired {
+    _loadingContentAlert = [[UIAlertView alloc] initWithTitle:@"Fetching quiz.\nPlease Wait..." message:nil delegate:self cancelButtonTitle:nil otherButtonTitles: nil];
+    [_loadingContentAlert show];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
@@ -214,6 +223,10 @@
 
 - (void)connectionDidFinishLoadingList:(NSURLConnection *)connection {
     // The request is complete and data has been received
+    [_slowContentTimer invalidate];
+    if (_loadingContentAlert != NULL) {
+        [_loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
+    }
     [self useListData];
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
@@ -308,7 +321,7 @@
     _myAudioPlayer = [[EAFAudioPlayer alloc] init];
     _myAudioPlayer.url = _url;
     _myAudioPlayer.language = _language;
-    _myAudioPlayer.delegate = self;   
+    _myAudioPlayer.delegate = self;
     
     [[self view] sendSubviewToBack:_cardBackground];
     
@@ -1276,8 +1289,11 @@
     BOOL showEnglish = _languageSegmentIndex == 0;
     
     // complicated...
-    if (_isAudioOnSelected && !_preventPlayAudio &&
-        showedIntro != nil) {
+    if(_playAudio) {
+        [self playRefAudioIfAvailable];
+    }
+    else if (_isAudioOnSelected && !_preventPlayAudio &&
+             showedIntro != nil) {
         
         //         NSLog(@"respondToSwipe first");
         if (showEnglish) {
@@ -1507,14 +1523,15 @@
 
 // deals with missing audio...?
 - (void)playRefAudioIfAvailable {
-    // NSLog(@"play ref if avail");
+    NSLog(@"playRefAudioIfAvailable play ref if avail");
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     if ([self hasRefAudio]) {
-        //  NSLog(@"\tplay ref if avail");
+        NSLog(@"\tplay ref if avail");
         if ([self notAQuiz]) {
             [_myAudioPlayer playRefAudio];
         }
         else if (_playAudio) {
+            NSLog(@"\t\tplay first ref if avail");
             [_myAudioPlayer playFirstRefAudio];
 
             
@@ -2227,11 +2244,13 @@ bool debugRecord = false;
 - (IBAction)playAudio:(id)sender {
     if (!_audioRecorder.recording)
     {
+        [self stopTimer];
+        
         NSNumber *exid= [self getCurrentExID];
 
-        if ([exid isKindOfClass:[NSNumber class]]) {
-            NSLog(@"exid is a NSNumber");
-        }
+//        if ([exid isKindOfClass:[NSNumber class]]) {
+//            NSLog(@"exid is a NSNumber");
+//        }
        
         NSLog(@"playAudio playAudio %@ vs %@ audio url %@", exid, _lastRecordedAudioExID, _audioRecorder.url);
         [self stopPlayingAudio];
@@ -2395,6 +2414,11 @@ bool debugRecord = false;
     _index = firstIndex;
 }
 
+- (void)showConnectionError:(NSError *)error {
+    NSString *msg= [NSString stringWithFormat:@"Network connection problem, please try again.\nError Code (%ld) : %@",(long)error.code,error.localizedDescription];
+    [self setDisplayMessage:msg];
+}
+
 // Posts audio with current fl field
 - (void)postAudio {
     // create request
@@ -2469,7 +2493,7 @@ bool debugRecord = false;
              [self->_recoFeedbackImage stopAnimating];
          });
          
-         //    NSLog(@"response to post of audio...");
+         //    NSLog(@"resself->ponse to post of audio...");
          if (error != nil) {
              NSLog(@"postAudio : Got error %@",error);
              dispatch_async(dispatch_get_main_queue(), ^{
@@ -2477,13 +2501,13 @@ bool debugRecord = false;
                      [self setDisplayMessage:@"Make sure your wifi or cellular connection is on."];
                  }
                  else {
-                     [self setDisplayMessage:@"Network connection problem, please try again."];
+                     [self showConnectionError:error];
                  }
              });
              [self postEvent:error.localizedDescription widget:@"Record" type:@"Connection error"];
          }
          else {
-             _responseData = data;
+             self->_responseData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:YES];
@@ -2620,15 +2644,6 @@ bool debugRecord = false;
     [_correctFeedback setImage:[UIImage imageNamed:correct ? @"checkmark32" : @"redx32"]];
     [_correctFeedback setHidden:false];
 }
-
-//- (NSString *)getExID {
-//    NSString *current = [[self getCurrentJson] objectForKey:@"id"];
-//
-//    if ([current isKindOfClass:[NSNumber class]]) {
-//        current = [NSString stringWithFormat:@"%@",current];
-//    }
-//    return current;
-//}
 
 // TODO : consider how to do streaming audio
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {

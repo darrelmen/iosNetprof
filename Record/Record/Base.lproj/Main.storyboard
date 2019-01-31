@@ -286,8 +286,8 @@
                                             <outletCollection property="gestureRecognizers" destination="Wli-rm-Tip" appends="YES" id="ThR-VD-0ij"/>
                                         </connections>
                                     </label>
-                                    <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="245" verticalCompressionResistancePriority="1000" restorationIdentifier="foreignLang" text="foreign language foreign language foreign language foreign language" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="5" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="j6L-63-Jyx">
-                                        <rect key="frame" x="8" y="221" width="329" height="197"/>
+                                    <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="245" verticalCompressionResistancePriority="1000" restorationIdentifier="foreignLang" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="5" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="j6L-63-Jyx">
+                                        <rect key="frame" x="8" y="221" width="329" height="0.0"/>
                                         <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="58" id="Op7-Sb-XV2"/>
@@ -312,7 +312,7 @@
                                         <rect key="frame" x="8" y="410" width="327" height="0.0"/>
                                     </view>
                                     <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" verticalCompressionResistancePriority="748" text="" textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="A1W-86-4EI">
-                                        <rect key="frame" x="8" y="426" width="327" height="0.0"/>
+                                        <rect key="frame" x="8" y="229" width="327" height="0.0"/>
                                         <gestureRecognizers/>
                                         <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="20"/>
                                         <nil key="highlightedColor"/>
@@ -1350,12 +1350,6 @@
         <!--Sign Up-->
         <scene sceneID="q5a-w4-7vz">
             <objects>
-                <tapGestureRecognizer id="aUv-bt-FfR">
-                    <connections>
-                        <action selector="gotSingleTap:" destination="8eL-jw-jXE" id="fis-PK-h2z"/>
-                    </connections>
-                </tapGestureRecognizer>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="j60-vc-4ha" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="SignUpViewController" title="Sign Up" useStoryboardIdentifierAsRestorationIdentifier="YES" id="8eL-jw-jXE" customClass="EAFSignUpViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="84u-3K-4nd"/>
@@ -1643,6 +1637,12 @@
                         <segue destination="VFl-2k-NIH" kind="show" identifier="goToChapterFromSignUp" id="q28-aI-wTP"/>
                     </connections>
                 </viewController>
+                <tapGestureRecognizer id="aUv-bt-FfR">
+                    <connections>
+                        <action selector="gotSingleTap:" destination="8eL-jw-jXE" id="fis-PK-h2z"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="j60-vc-4ha" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1353" y="646"/>
         </scene>

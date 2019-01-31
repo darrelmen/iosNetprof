@@ -29,7 +29,7 @@
  */
 
 //
-//  EAFLoginViewController.m
+//  EAFContextPopupViewController
 //  Shows a context sentence and its translation.
 //  Plays male or female audio for the sentence.
 //  Highlights the item term in the context sentence.

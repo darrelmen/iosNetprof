@@ -328,14 +328,14 @@
          }
          else {
              
-             for (NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies])
-             {
-                 NSLog(@"name   : '%@'\n",   [cookie name]);
-                 NSLog(@"value  : '%@'\n",  [cookie value]);
-                 NSLog(@"domain : '%@'\n", [cookie domain]);
-                 NSLog(@"path   : '%@'\n",   [cookie path]);
-             }
-             
+//             for (NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies])
+//             {
+//                 NSLog(@"name   : '%@'\n",   [cookie name]);
+//                 NSLog(@"value  : '%@'\n",  [cookie value]);
+//                 NSLog(@"domain : '%@'\n", [cookie domain]);
+//                 NSLog(@"path   : '%@'\n",   [cookie path]);
+//             }
+//
              self->_responseData = data;
              
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
