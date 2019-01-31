@@ -313,7 +313,7 @@
         [SSKeychain setPassword:_firstName.text    forService:@"mitll.proFeedback.device" account:@"firstName"];
         [SSKeychain setPassword:_lastName.text    forService:@"mitll.proFeedback.device" account:@"lastName"];
         
-        if (resetPassKey != NULL && [_resetPassKey length] > 0) {
+        if (resetPassKey != NULL && [resetPassKey length] > 0) {
             _resetPassKey = resetPassKey;
             NSLog(@"EAFSignUpViewController. got back %@", _resetPassKey);
             if ([_resetPassKey length] == 0) {

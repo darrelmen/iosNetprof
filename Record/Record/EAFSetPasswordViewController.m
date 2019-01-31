@@ -75,6 +75,19 @@
         _confirmPasswordFeedback.textColor = [UIColor redColor];
         valid = false;
     }
+    
+    
+    if (_password.text.length < 8) {
+        _passwordFeedback.text = @"Must be at least 8 characters long.";
+        _passwordFeedback.textColor = [UIColor redColor];
+        valid = false;
+    }
+    
+    if (_confirmPassword.text.length< 8) {
+        _confirmPasswordFeedback.text = @"Must be at least 8 characters long.";
+        _confirmPasswordFeedback.textColor = [UIColor redColor];
+        valid = false;
+    }
 
     if (![_password.text isEqualToString:_confirmPassword.text]) {
         _confirmPasswordFeedback.text = @"Passwords do no match.";
