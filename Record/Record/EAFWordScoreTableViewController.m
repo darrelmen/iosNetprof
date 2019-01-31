@@ -566,7 +566,7 @@ NSString *myCurrentTitle;
     if ([exid isKindOfClass:[NSNumber class]]) {
         NSNumber *nid = [_exList objectAtIndex:row];
         exid = [NSString stringWithFormat:@"%@",nid];
-        NSLog(@"gotTapGesture got at row %ld, object id %@ = %@", (long)row, nid, exid);
+     //   NSLog(@"gotTapGesture got at row %ld, object id %@ = %@", (long)row, nid, exid);
     }
     
     //    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
@@ -586,7 +586,7 @@ NSString *myCurrentTitle;
         }
         
         if ([id isEqualToString:exid]) {
-            NSLog(@"gotTapGesture got match %@ = %@",id,exid);
+          //  NSLog(@"gotTapGesture got match %@ = %@",id,exid);
            // NSLog(@"gotTapGesture got it %@",jsonObject);
             // NSString *refAudio = [jsonObject objectForKey:@"ref"];
             NSMutableArray *toPlay = [[NSMutableArray alloc] init];

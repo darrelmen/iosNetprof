@@ -109,7 +109,8 @@
 @property (strong) NSTimer *repeatingTimer;
 
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;
-@property (strong, nonatomic) IBOutlet UIImageView *correctFeedback;
+//@property (strong, nonatomic) IBOutlet UIImageView *correctFeedback;
+@property (strong, nonatomic) IBOutlet UILabel *correctFeedback;
 
 - (void)respondToSwipe;
 - (void)doAutoAdvance;
