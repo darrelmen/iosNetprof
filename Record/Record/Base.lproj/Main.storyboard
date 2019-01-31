@@ -257,7 +257,7 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" alpha="0.0" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalCompressionResistancePriority="749" restorationIdentifier="english" text="english text english text english text english text" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="18" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wAh-a0-3Cd">
-                                        <rect key="frame" x="8" y="55" width="327" height="158"/>
+                                        <rect key="frame" x="6" y="55" width="331" height="158"/>
                                         <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="58" id="0ZW-SI-2Zt">
@@ -307,7 +307,7 @@
                                         </variation>
                                     </label>
                                     <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="245" verticalCompressionResistancePriority="1000" restorationIdentifier="foreignLang" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="5" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="j6L-63-Jyx">
-                                        <rect key="frame" x="8" y="221" width="329" height="0.0"/>
+                                        <rect key="frame" x="6" y="221" width="331" height="0.0"/>
                                         <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="58" id="Op7-Sb-XV2"/>
@@ -329,7 +329,7 @@
                                         </connections>
                                     </label>
                                     <view contentMode="scaleToFill" verticalHuggingPriority="900" verticalCompressionResistancePriority="1000" ambiguous="YES" restorationIdentifier="scoreContainer" translatesAutoresizingMaskIntoConstraints="NO" id="vlT-Ea-UA6">
-                                        <rect key="frame" x="8" y="237" width="327" height="228"/>
+                                        <rect key="frame" x="6" y="237" width="331" height="228"/>
                                     </view>
                                     <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" verticalCompressionResistancePriority="748" text="" textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="A1W-86-4EI">
                                         <rect key="frame" x="8" y="229" width="327" height="0.0"/>
@@ -357,7 +357,7 @@
                                     <constraint firstAttribute="centerY" secondItem="cmF-9c-VKI" secondAttribute="centerY" id="6co-eg-htr"/>
                                     <constraint firstAttribute="trailing" secondItem="LDy-Lh-sWf" secondAttribute="trailing" constant="8" id="7o1-X4-LwW"/>
                                     <constraint firstItem="t3S-bB-IN2" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="wAh-a0-3Cd" secondAttribute="trailing" id="8kO-Yc-nRi"/>
-                                    <constraint firstItem="j6L-63-Jyx" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="8" id="AiZ-kB-Y0E"/>
+                                    <constraint firstItem="j6L-63-Jyx" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="6" id="AiZ-kB-Y0E"/>
                                     <constraint firstAttribute="centerY" secondItem="j6L-63-Jyx" secondAttribute="centerY" priority="250" constant="42" id="An0-4a-7dP">
                                         <variation key="heightClass=compact-widthClass=compact" constant="0.0"/>
                                         <variation key="heightClass=regular-widthClass=regular" constant="0.0"/>
@@ -366,20 +366,20 @@
                                         <variation key="heightClass=compact-widthClass=compact" constant="20" symbolic="YES"/>
                                     </constraint>
                                     <constraint firstItem="vmx-bc-B8p" firstAttribute="top" secondItem="vlT-Ea-UA6" secondAttribute="bottom" constant="12" id="FOx-Zu-PfK"/>
-                                    <constraint firstItem="wAh-a0-3Cd" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="8" id="GC5-HH-dpQ"/>
+                                    <constraint firstItem="wAh-a0-3Cd" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="6" id="GC5-HH-dpQ"/>
                                     <constraint firstItem="85Q-3i-7cz" firstAttribute="centerX" secondItem="vlT-Ea-UA6" secondAttribute="centerX" id="GEV-iO-QTe"/>
                                     <constraint firstItem="t3S-bB-IN2" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="wAh-a0-3Cd" secondAttribute="trailing" constant="-39" id="J9Z-MF-4gN"/>
-                                    <constraint firstAttribute="trailing" secondItem="vlT-Ea-UA6" secondAttribute="trailing" constant="8" id="K6V-UJ-kgT"/>
+                                    <constraint firstAttribute="trailing" secondItem="vlT-Ea-UA6" secondAttribute="trailing" constant="6" id="K6V-UJ-kgT"/>
                                     <constraint firstItem="vmx-bc-B8p" firstAttribute="leading" secondItem="8OG-9q-XWO" secondAttribute="trailing" constant="8" symbolic="YES" id="N0J-Uq-peb"/>
                                     <constraint firstItem="A1W-86-4EI" firstAttribute="top" secondItem="j6L-63-Jyx" secondAttribute="bottom" constant="8" id="NdP-2R-goN"/>
                                     <constraint firstAttribute="trailing" secondItem="vmx-bc-B8p" secondAttribute="trailing" constant="20" symbolic="YES" id="Niy-px-NK2"/>
                                     <constraint firstItem="wAh-a0-3Cd" firstAttribute="top" secondItem="t3S-bB-IN2" secondAttribute="bottom" constant="8" id="PNQ-nY-HJH"/>
                                     <constraint firstAttribute="trailing" secondItem="A1W-86-4EI" secondAttribute="trailing" constant="8" id="RZe-OT-zfi"/>
-                                    <constraint firstItem="vlT-Ea-UA6" firstAttribute="top" secondItem="A1W-86-4EI" secondAttribute="bottom" constant="8" symbolic="YES" id="Sck-ck-Cle"/>
-                                    <constraint firstItem="vlT-Ea-UA6" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="8" id="Wai-Z4-xXp"/>
+                                    <constraint firstItem="vlT-Ea-UA6" firstAttribute="top" relation="greaterThanOrEqual" secondItem="A1W-86-4EI" secondAttribute="bottom" constant="8" symbolic="YES" id="Sck-ck-Cle"/>
+                                    <constraint firstItem="vlT-Ea-UA6" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="6" id="Wai-Z4-xXp"/>
                                     <constraint firstItem="t3S-bB-IN2" firstAttribute="top" secondItem="D0k-He-nFx" secondAttribute="top" constant="7" id="YTd-n2-tnS"/>
                                     <constraint firstAttribute="centerX" secondItem="wAh-a0-3Cd" secondAttribute="centerX" id="YVf-NC-0yu"/>
-                                    <constraint firstAttribute="trailing" secondItem="wAh-a0-3Cd" secondAttribute="trailing" constant="8" id="bTr-3M-lcP"/>
+                                    <constraint firstAttribute="trailing" secondItem="wAh-a0-3Cd" secondAttribute="trailing" constant="6" id="bTr-3M-lcP"/>
                                     <constraint firstItem="wAh-a0-3Cd" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="8" id="cwy-vs-jeX"/>
                                     <constraint firstItem="LDy-Lh-sWf" firstAttribute="leading" secondItem="D0k-He-nFx" secondAttribute="leading" constant="8" id="dTm-qP-y6K"/>
                                     <constraint firstItem="j6L-63-Jyx" firstAttribute="top" secondItem="wAh-a0-3Cd" secondAttribute="bottom" constant="8" id="fgS-5X-UmZ"/>
