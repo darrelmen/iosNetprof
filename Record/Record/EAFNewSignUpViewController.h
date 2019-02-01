@@ -55,15 +55,11 @@
 @property (strong, nonatomic) IBOutlet UISegmentedControl *gender;
 @property (strong, nonatomic) IBOutlet UIButton *signUp;
 @property (strong, nonatomic) IBOutlet UILabel *usernameFeedback;
-//@property (strong, nonatomic) IBOutlet UILabel *passwordFeedback;
-//@property (strong, nonatomic) IBOutlet UILabel *emailFeedback;
 
 @property (strong, nonatomic) IBOutlet UIPickerView *affiliation;
-//@property (strong, nonatomic) NSArray *languages;
 @property (strong, nonatomic) NSMutableData *responseData;
 @property (strong, nonatomic) NSString *userFromLogin;
 @property (strong, nonatomic) NSString *chosenLanguage;
-//@property (strong, nonatomic) NSString *passFromLogin;
 @property long languageIndex;
 @property (nonatomic, assign) id currentResponder;
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;

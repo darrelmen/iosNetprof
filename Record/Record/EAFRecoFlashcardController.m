@@ -2669,9 +2669,7 @@ bool debugRecord = false;
                           options:NSJSONReadingMutableContainers
                           error:&error];
     
-    NSString *string = [NSString stringWithUTF8String:[_responseData bytes]];
-    
-    
+   // NSString *string = [NSString stringWithUTF8String:[_responseData bytes]];   
     // NSLog(@"connectionDidFinishLoading data was \n%@",string);
     if (error != nil) {
         NSLog(@"connectionDidFinishLoading - got error %@",error);
@@ -2894,7 +2892,7 @@ bool debugRecord = false;
                                actionWithTitle:@"No"
                                style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction * action) {
-                                   _timeRemainingLabel.text = @"00:00";
+                                   self->_timeRemainingLabel.text = @"00:00";
                                    [self showScoresClick:nil];
                                }];
     

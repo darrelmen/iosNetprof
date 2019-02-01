@@ -37,7 +37,6 @@
 //
 
 #import "EAFForgotPasswordViewController.h"
-//#import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "UIColor_netprofColors.h"
 
@@ -50,7 +49,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setTitle:[NSString stringWithFormat:@"Forgot password for %@",_language]];
+    [self setTitle:@"Reset Password"];
     _username.text = _userFromLogin;
     
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -67,6 +66,11 @@
     [_sendEmail setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
     [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
     [_titleLabel setTextColor:[UIColor npDarkBlue]];
+    
+    NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
+    if (rememberedEmail != nil) {
+        _email.text = rememberedEmail;
+    }
 }
 
 - (void) emailChanged:(id)notification {
@@ -100,7 +104,6 @@
 }
 
 - (IBAction)gotSingleTap:(id)sender {
-//    NSLog(@"dismiss keyboard! %@",_currentResponder);
     [_currentResponder resignFirstResponder];
 }
 

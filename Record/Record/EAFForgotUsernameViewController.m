@@ -56,6 +56,11 @@
     [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
     [_titleLabel setTextColor:[UIColor npDarkBlue]];
     [_sendEmail setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
+    
+    NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
+    if (rememberedEmail != nil) {
+        _email.text = rememberedEmail;
+    }
 }
 
 - (IBAction)gotClick:(id)sender {

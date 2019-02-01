@@ -369,7 +369,7 @@
              });
          }
          else {
-             _responseListData = data;
+             self->_responseListData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoadingList:)
                                     withObject:nil
                                  waitUntilDone:YES];
@@ -656,7 +656,7 @@
          }
          else {
              //NSLog(@"ItemTableViewController Got normal resp");
-             _responseData = data;
+             self->_responseData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:YES];

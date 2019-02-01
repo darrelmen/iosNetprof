@@ -182,7 +182,7 @@
                                  waitUntilDone:NO];
          }
          else {
-             _responseData = data;
+             self->_responseData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:NO];
@@ -607,6 +607,15 @@ NSString *myCurrentTitle;
             }
             else {
                 [toPlay addObject:refAudioPath];
+                
+                // need json to return audio refs... ideally...
+//                if (sender.answer == nil) {
+//                    NSLog(@"ERROR - answer audio is null on %@",sender);
+//                }
+//                else {
+//                    [audioRefs addObject:sender.answer];
+//                }
+                
                 NSString *fl = [_exToFL objectForKey:exid];
                 
                 UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];

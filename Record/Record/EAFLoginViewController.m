@@ -537,7 +537,7 @@
              });
          }
          else {
-             _responseData = data;
+             self->_responseData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:YES];

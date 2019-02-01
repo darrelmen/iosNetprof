@@ -44,7 +44,6 @@
 
 
 #import "EAFNewSignUpViewController.h"
-//#import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
 #import "EAFEventPoster.h"
@@ -52,7 +51,6 @@
 
 @interface EAFNewSignUpViewController ()
 
-//@property (weak, nonatomic) IBOutlet UIPickerView *affiliation;
 @property EAFEventPoster *poster;
 @property NSArray *pickerData;
 @property NSArray *affiliations;
@@ -84,11 +82,8 @@
                              object:_email];
     
     _username.text = _userFromLogin;
-    //    _password.text = _passFromLogin;
-    //    [_languagePicker selectRow:_languageIndex inComponent:0 animated:false];
     
     _username.delegate = self;
-    //    _password.delegate = self;
     _email.delegate = self;
     
     NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
