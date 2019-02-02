@@ -125,6 +125,7 @@
 
 @property BOOL isPostingAudio;
 @property UIAlertView *loadingContentAlert;
+@property EAFEventPoster *poster;
 
 - (void)postAudio;
 
@@ -285,7 +286,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     _audioCache = [[EAFAudioCache alloc] init];
     _audioCache.language = _language;
     
@@ -325,6 +326,8 @@
     _myAudioPlayer.url = _url;
     _myAudioPlayer.language = _language;
     _myAudioPlayer.delegate = self;
+    _poster = [self getPoster];
+    _myAudioPlayer.poster = _poster;
     
     [[self view] sendSubviewToBack:_cardBackground];
     
@@ -779,12 +782,10 @@
     //    NSLog(@"postEvent widget   %@", widget);
     //    NSLog(@"postEvent type     %@", type);
     
-    EAFEventPoster *poster = [self getPoster];
-    [poster postEvent:message exid:id widget:widget widgetType:type];
+    [_poster postEvent:message exid:id widget:widget widgetType:type];
 }
 
 - (EAFEventPoster*)getPoster {
-    
     return [[EAFEventPoster alloc] initWithURL:_url projid:[self getProjectID]];
 }
 
@@ -1017,7 +1018,6 @@
     [str addAttribute:NSForegroundColorAttributeName value:[UIColor npLightBlue] range:NSMakeRange(0,[jsonItemCountStr length])];
     _progressNum.attributedText = str;
     
-    
     [_progressNum setFont:[UIFont fontWithName:@"Arial" size:16]];
     
     [self hideAndShowText];
@@ -1025,7 +1025,9 @@
     //   [self removePlayObserver];
     
     if ([self hasRefAudio]) {
-        [_myAudioPlayer stopAudio];
+       NSLog(@"respondToSwipe stop audio - %ld",_index);
+       [self postEvent:@"stop audio since has ref audio..." widget:@"respondToSwipe" type:@"Button"];
+       [_myAudioPlayer stopAudio];
     }
     
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
@@ -1222,6 +1224,8 @@
     }
     NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
     
+    [self postEvent:[NSString stringWithFormat:@"EAFReco : found refAudio %@ and %@",refAudio,_audioRefs] widget:@"respondToSwipe" type:@"Button"];
+
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
     _tlAtIndex = [jsonObject objectForKey:@"tl"];
@@ -1287,8 +1291,11 @@
     
     BOOL showEnglish = _languageSegmentIndex == 0;
     
+    [self postEvent:@"EAFReco : about to think about playing audio..." widget:@"respondToSwipe" type:@"Button"];
+
     // complicated...
     if(_playAudio) {
+        [self postEvent:@"EAFReco : try to play ref audio b/c of quiz" widget:@"respondToSwipe" type:@"Button"];
         [self playRefAudioIfAvailable];
     }
     else if (_isAudioOnSelected && !_preventPlayAudio &&
@@ -1297,24 +1304,34 @@
         //         NSLog(@"respondToSwipe first");
         if (showEnglish) {
             //   NSLog(@"respondToSwipe first - %ld", (long)_whatToShow.selectedSegmentIndex);
+            [self postEvent:@"EAFReco : 1 try to speak english" widget:@"respondToSwipe" type:@"Button"];
             if (_autoPlayButton.selected) {
                 [self speakEnglish:false];
+            }
+            else {
+                [self postEvent:@"EAFReco : not speaking english" widget:@"respondToSwipe" type:@"Button"];
             }
         }
         else {
             //   [self stopPlayingAudio];
-            [self playRefAudioIfAvailable];
+            [self postEvent:@"EAFReco : 1 try to play ref audio" widget:@"respondToSwipe" type:@"Button"];
+           [self playRefAudioIfAvailable];
         }
     }
     else {
         _preventPlayAudio = false;
         if (_autoPlayButton.selected) {
             if (showEnglish) {
+                [self postEvent:@"EAFReco : 2 try to speak english" widget:@"respondToSwipe" type:@"Button"];
                 [self speakEnglish:false];
             }
             else {
+                [self postEvent:@"EAFReco : 2 try to play ref audio" widget:@"respondToSwipe" type:@"Button"];
                 [self playRefAudioIfAvailable];
             }
+        }
+        else {
+            [self postEvent:@"EAFReco : not playing ref audio" widget:@"respondToSwipe" type:@"Button"];
         }
     }
     
@@ -1322,6 +1339,9 @@
     if (prevScore != NULL) {
         [self showScoreToUser:prevScore previousScore:NULL];
     }
+    
+    [self postEvent:@"EAFReco : exit..." widget:@"respondToSwipe" type:@"Button"];
+
 }
 
 - (NSString*) deviceName {
@@ -1355,6 +1375,8 @@
     }
     
     if (onLast) {
+        [self postEvent:@"on last so prevent play..." widget:@"swipeLeftDetected" type:@"UIView"];
+
         _preventPlayAudio = TRUE;
     }
     
@@ -1523,14 +1545,19 @@
 // deals with missing audio...?
 - (void)playRefAudioIfAvailable {
     NSLog(@"playRefAudioIfAvailable play ref if avail");
+    NSString *current = [self getCurrentExID];
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     if ([self hasRefAudio]) {
         NSLog(@"\tplay ref if avail");
         if ([self notAQuiz]) {
+            [self postEvent:[NSString stringWithFormat:@"EAFReco :  not a quiz - has ref audio for exid %@",current] widget:@"playRefAudioIfAvailable" type:@"Button"];
+            
             [_myAudioPlayer playRefAudio];
         }
         else if (_playAudio) {
             NSLog(@"\t\tplay first ref if avail");
+            [self postEvent:[NSString stringWithFormat:@"EAFReco :  quiz just play first ref for exid %@",current] widget:@"playRefAudioIfAvailable" type:@"Button"];
+
             [_myAudioPlayer playFirstRefAudio];
             
             
@@ -1546,7 +1573,7 @@
         }
     }
     else {
-        NSString *current = [[self getCurrentJson] objectForKey:@"id"];
+        [self postEvent:[NSString stringWithFormat:@"EAFReco :  no ref audio for exid %@",current] widget:@"playRefAudioIfAvailable" type:@"Button"];
         NSLog(@"HUH? no ref audio exid %@",current);
     }
 }
@@ -1591,7 +1618,7 @@
         _english.hidden = false;
         _pageControl.hidden = false;
         _pageControl.currentPage = 0;
-        
+        NSLog(@"recoflashcard : hideAndShowText - stop audio %ld", selected);
         [_myAudioPlayer stopAudio];
         [self setForeignLang];
     }
@@ -1754,10 +1781,15 @@
 }
 
 - (void) playStarted {
+    [self postEvent:[NSString stringWithFormat:@"EAFReco : playStarted exid %@",[self getCurrentExID]] widget:@"playStarted" type:@"Button"];
+
     [self highlightFLWhilePlaying];
 }
 
 - (void) playStopped {
+    NSLog(@"playStopped - ");
+    [self postEvent:[NSString stringWithFormat:@"EAFReco : playStopped exid %@",[self getCurrentExID]] widget:@"playStopped" type:@"Button"];
+
     [self removePlayingAudioHighlight];
 }
 
@@ -1780,6 +1812,8 @@
         }
     }
     else {
+        [self postEvent:[NSString stringWithFormat:@"EAFReco : playGotToEnd exid %@",[self getCurrentExID]] widget:@"playGotToEnd" type:@"Button"];
+
         //  NSLog(@"playGotToEnd - no op");
     }
 }
@@ -1827,7 +1861,7 @@
         [self setDisplayMessage:@"Recording too short."];
         if (_audioRecorder.recording)
         {
-            if (debugRecord)  NSLog(@"audioRecorderDidFinishRecording : stopAudio stop time = %f",CFAbsoluteTimeGetCurrent());
+            if (debugRecord)  NSLog(@"audioRecorderDidFinishRecording : audio recorder stop time = %f",CFAbsoluteTimeGetCurrent());
             [_audioRecorder stop];
         }
     }
@@ -2177,7 +2211,7 @@ bool debugRecord = false;
             [self setDisplayMessage:@"Press and hold to record."];
             if (_audioRecorder.recording)
             {
-                if (debugRecord)  NSLog(@"longPressAction : stopAudio stop time = %f",CFAbsoluteTimeGetCurrent());
+                if (debugRecord)  NSLog(@"longPressAction : audio recorder stop time = %f",CFAbsoluteTimeGetCurrent());
                 [_audioRecorder stop];
             }
         }
@@ -2231,7 +2265,9 @@ bool debugRecord = false;
 - (IBAction)playAudio:(id)sender {
     if (!_audioRecorder.recording)
     {
-        [self stopTimer];
+        if ([self isAQuiz]) {
+            [self stopTimer];
+        }
         
         NSNumber *exid= [self getCurrentExID];
         
@@ -2682,13 +2718,7 @@ bool debugRecord = false;
     //     NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
     //     NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSNumber *exid = [json objectForKey:@"exid"];
-    
-    // so netprof v2 has number ids - hard to know what type json is returning...
-    //    if ([[json objectForKey:@"exid"] isKindOfClass:[NSNumber class]]) {
-    //        NSNumber *nid = [json objectForKey:@"exid"];
-    //        exid = [NSString stringWithFormat:@"%@",nid];
-    //    }
-    
+
     NSNumber *resultID = [json objectForKey:@"resultID"];
     
     // Post a RT value for the result id
@@ -3516,7 +3546,6 @@ BOOL addSpaces = false;
         
         phoneReport.projid = [self getProjectID];
         
-        NSLog(@"phoneReport projid %@",phoneReport.projid);
         phoneReport.chapterName = _chapterTitle;
         phoneReport.chapterSelection = _currentChapter;
         
