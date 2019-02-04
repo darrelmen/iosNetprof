@@ -25,7 +25,7 @@
     [_voiceSelection setSelectedSegmentIndex:_moreSelection.voiceIndex];
     [_languageSelection setSelectedSegmentIndex:_moreSelection.languageIndex];
     
-    [_languageSelection setTitle:_language forSegmentAtIndex:1];
+    [_languageSelection setTitle:[_language capitalizedString] forSegmentAtIndex:1];
     
     if ([_language isEqualToString:@"English"]) {
         [_languageSelection setTitle:@"Def." forSegmentAtIndex:0];
@@ -40,10 +40,7 @@
     if (![self isiPad] && ![_language isEqualToString:@"English"]) {
         [_languageSelection setTitle:@"Eng" forSegmentAtIndex:0];
     }
-/*
-    _audioOnBtn.selected = !_audioOnBtn.selected;
-    _audioOnBtn.color = _audioOnBtn.selected ?[UIColor blueColor]:[UIColor whiteColor];
-*/
+ 
     NSString *audioOn = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioOn"];
     if (audioOn != nil) {
         _audioOnBtn.selected = [audioOn isEqualToString:@"Yes"] ? 1:0;

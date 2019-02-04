@@ -434,6 +434,10 @@
     _languageSegmentIndex = 2;  // initial value is show both - enum better?
     _voiceSegmentIndex = 0;
     
+    _selectionToolbar=[[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 10, 10)];
+    
+    [self setupToolBar];
+
     if (_jsonItems != NULL) {
         [self respondToSwipe];
     }
@@ -449,9 +453,7 @@
                                   action:@selector(showScores:)];
     self.navigationItem.rightBarButtonItem = scoreShow;
     
-    _selectionToolbar=[[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 10, 10)];
-    
-    [self setupToolBar];
+   
     
     if (![self notAQuiz]) {
         self.navigationItem.rightBarButtonItem.enabled = false;
@@ -1050,13 +1052,7 @@
     
     [self setGenderSelector];
     
-    NSString *audioSpeed = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioSpeed"];
-    if (audioSpeed != nil) {
-        //   NSLog(@"checking - audio on %@",audioSpeed);
-        _speedButton.selected = [audioSpeed isEqualToString:@"Slow"];
-        _speedButton.backgroundColor = _speedButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
-        _speedButton.layer.borderColor = _speedButton.selected ? [UIColor npDarkBlueBorder].CGColor : [UIColor npLightBlueBorder].CGColor;
-    }
+
     
     NSDictionary *jsonObject =[self getCurrentJson] ;
     
@@ -1093,7 +1089,8 @@
     
     long selectedGender = _voiceSegmentIndex;
     _audioRefs = [[NSMutableArray alloc] init];
-    BOOL isSlow = _speedButton.selected;
+    NSString *audioSpeed = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioSpeed"];
+    BOOL isSlow = (audioSpeed     != NULL) && [audioSpeed isEqualToString:@"Slow"];
     
     //    NSLog(@"speed is %@",isSlow ? @"SLOW" :@"REGULAR");
     //    NSLog(@"male slow %@",hasMaleSlow ? @"YES" :@"NO");
@@ -1214,6 +1211,13 @@
     
     BOOL hasTwoSpeeds = (hasMaleReg || hasFemaleReg) && (hasMaleSlow || hasFemaleSlow);
     _speedButton.enabled = hasTwoSpeeds;
+    
+    if (audioSpeed != nil && (hasMaleSlow || hasFemaleSlow)) {
+        //   NSLog(@"checking - audio on %@",audioSpeed);
+        _speedButton.selected = [audioSpeed isEqualToString:@"Slow"];
+        _speedButton.backgroundColor = _speedButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
+        _speedButton.layer.borderColor = _speedButton.selected ? [UIColor npDarkBlueBorder].CGColor : [UIColor npLightBlueBorder].CGColor;
+    }
     
     if (refAudio != nil && ![refAudio isEqualToString:@"NO"] && _audioRefs.count == 0) {
         //        NSLog(@"respondToSwipe adding refAudio %@",refAudio);
@@ -1687,7 +1691,6 @@
     NSString *speed = (_speedButton.selected ? @"Slow":@"Regular");
     [SSKeychain setPassword:speed
                  forService:@"mitll.proFeedback.device" account:@"audioSpeed"];
-    
     
     [self postEvent:speed widget:@"speed" type:@"UIButton"];
     _speedButton.layer.borderColor = _speedButton.selected ? [UIColor npDarkBlueBorder].CGColor : [UIColor npLightBlueBorder].CGColor;
