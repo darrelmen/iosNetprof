@@ -42,6 +42,7 @@
 @interface EAFAudioPlayer ()
 
 @property AVPlayer *player;
+@property BOOL debug;
 @end
 
 @implementation EAFAudioPlayer
@@ -58,7 +59,8 @@
 
 - (IBAction)stopAudio {
     NSLog(@"EAFAudioPlayer : stopAudio ---- %@",self);
-    [self postEvent:@"EAFAudio : stopAudio" widget:@"stopAudio" type:@"Button"];
+    if (_debug) [self postEvent:@"EAFAudio : stopAudio" widget:@"stopAudio" type:@"Button"];
+    
     _currentIndex = _audioPaths.count;
     if (_player != nil) {
         [_player pause];
@@ -78,7 +80,7 @@
     
     [self playRefAudioInternal];
     _currentIndex = 99;
-
+    
 }
 
 // @see #makePlayerGivenURL
@@ -91,7 +93,7 @@
         _player.volume = _volume;
     }
     else {
-        [self postEvent:@"EAFAudio : makeAVPlayer null url?" widget:@"makeAVPlayer" type:@"Button"];
+        if (_debug)   [self postEvent:@"EAFAudio : makeAVPlayer null url?" widget:@"makeAVPlayer" type:@"Button"];
     }
 }
 
@@ -99,12 +101,12 @@
 // for the original wav file on the server (somehow perhaps an mp3 file was not created?)
 //
 - (void)makePlayerGivenURL:(NSURL *)url waveURL:(NSURL *)waveURL {
-   // NSLog(@"makePlayerGivenURL checking %@ scheme %@",url, [url scheme]);
-
+    // NSLog(@"makePlayerGivenURL checking %@ scheme %@",url, [url scheme]);
+    
     BOOL isValid;
     
     if ([[url scheme] hasPrefix:@"file"]) {
-      //  NSLog(@"makePlayerGivenURL reading file %@",url);
+        //  NSLog(@"makePlayerGivenURL reading file %@",url);
         NSDictionary * dict = [self id3TagsForURL:url];
         isValid = dict != nil;
     }
@@ -112,12 +114,12 @@
         //NSLog(@"makePlayerGivenURL reading url %@",url);
         isValid  = [self webFileExists:url];
     }
-
-//    NSLog(@"reading %@ header - %@",url,dict);
+    
+    //    NSLog(@"reading %@ header - %@",url,dict);
     if (!isValid) {
         BOOL val  = [self webFileExists:waveURL];
         if (val) {
-//            NSLog(@"trying again - reading %@ header - %@",waveURL,dict);
+            //            NSLog(@"trying again - reading %@ header - %@",waveURL,dict);
             [self makeAVPlayer:waveURL];
         }
         else {
@@ -137,10 +139,10 @@
 {
     AudioFileID fileID;
     
- //   NSLog(@"id3TagsForURL get tags for '%@'", resourceUrl);
- //   CFURLRef test = (__bridge CFURLRef)resourceUrl;
-   // NSLog(@"id3TagsForURL get tags for test '%@'", test);
-
+    //   NSLog(@"id3TagsForURL get tags for '%@'", resourceUrl);
+    //   CFURLRef test = (__bridge CFURLRef)resourceUrl;
+    // NSLog(@"id3TagsForURL get tags for test '%@'", test);
+    
     OSStatus result = AudioFileOpenURL((__bridge CFURLRef)resourceUrl, kAudioFileReadPermission, 0, &fileID);
     
     if (result != noErr) {
@@ -170,8 +172,8 @@
     NSHTTPURLResponse* response = nil;
     NSError* error = nil;
     [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-   // NSLog(@"statusCode = %ld", (long)[response statusCode]);
-    return [response statusCode] == 404 ? NO : YES;
+    // NSLog(@"statusCode = %ld", (long)[response statusCode]);
+    return [response statusCode] != 404;
 }
 
 - (NSString *)getCacheMP3:(NSString *)rawRefAudioPath {
@@ -199,9 +201,10 @@
 // look for local file with mp3 and use it if it's there.
 // otherwise hit the URL on the server.
 - (IBAction)playRefAudioInternal {
-  //  NSLog(@"playRefAudioInternal using paths %@",_audioPaths);
-    [self postEvent:[NSString stringWithFormat:@"EAFAudio : playRefAudioInternal using paths %@",_audioPaths] widget:@"playRefAudioInternal" type:@"Button"];
-
+    //  NSLog(@"playRefAudioInternal using paths %@",_audioPaths);
+    
+    if (_debug) [self postEvent:[NSString stringWithFormat:@"EAFAudio : playRefAudioInternal using paths %@",_audioPaths] widget:@"playRefAudioInternal" type:@"Button"];
+    
     if (_audioPaths.count == 0) {
         return;
     }
@@ -211,50 +214,41 @@
     NSString *rawRefAudioPath;
     
     NSString *mp3RefPath = [origRefPath stringByReplacingOccurrencesOfString:@".wav"
-                                                 withString:@".mp3"];
+                                                                  withString:@".mp3"];
     wavAudioPath = [NSString stringWithFormat:@"%@%@",_url,origRefPath];
     rawRefAudioPath = mp3RefPath;
     
     NSURL *url = [NSURL URLWithString:[self getRefAudioPathURL:mp3RefPath]];
     NSURL *waveUrl = [NSURL URLWithString:wavAudioPath];
-    NSLog(@"playRefAudioInternal default URL %@",url);
-    NSLog(@"playRefAudioInternal waveUrl URL %@",waveUrl);
-
+    //    NSLog(@"playRefAudioInternal default URL %@",url);
+    //    NSLog(@"playRefAudioInternal waveUrl URL %@",waveUrl);
+    
     NSString *destFileName = [self getCacheMP3:rawRefAudioPath];
     if ([[NSFileManager defaultManager] fileExistsAtPath:destFileName]) {
-        //NSLog(@"playRefAudio Raw URL %@", _rawRefAudioPath);
-        //      NSError *attributesError = nil;
-        //NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:destFileName error:&attributesError];
-        //NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
-        
-      //  NSLog(@"playRefAudio using local url %@ size %@",destFileName,fileSizeNumber);
-       // NSLog(@"playRefAudio using local url %@",destFileName);
-        
         NSURL *testURL = [[NSURL alloc] initFileURLWithPath: destFileName];
-     
-      //  NSLog(@"playRefAudioInternal testURL - %@",testURL);
-        [self postEvent:[NSString stringWithFormat:@"playRefAudioInternal found local url %@",testURL] widget:@"playRefAudioInternal" type:@"Button"];
-
+        //  NSLog(@"playRefAudioInternal testURL - %@",testURL);
+        if (_debug) [self postEvent:[NSString stringWithFormat:@"playRefAudioInternal found local url %@",testURL] widget:@"playRefAudioInternal" type:@"Button"];
+        
         NSDictionary * dict = [self id3TagsForURL:testURL];
-      //  NSLog(@"file exists - checking header - %@",dict);
+        //  NSLog(@"file exists - checking header - %@",dict);
         if (dict == nil) {
             [self postEvent:[NSString stringWithFormat:@"playRefAudioInternal mp3 at %@ was corrupt?",testURL] widget:@"playRefAudioInternal" type:@"Button"];
             NSLog(@"warning : mp3 at %@ was corrupt?", testURL);
         } else {
-          //  NSLog(@"playRefAudio using local header %@ url %@",dict,destFileName);
+            //  NSLog(@"playRefAudio using local header %@ url %@",dict,destFileName);
             url = testURL;
         }
     }
     else {
         [self postEvent:[NSString stringWithFormat:@"playRefAudioInternal can't find local url %@",destFileName] widget:@"playRefAudioInternal" type:@"Button"];
-
+        
         NSLog(@"playRefAudio can't find local url %@",destFileName);
         NSLog(@"playRefAudio URL     %@", url);
     }
     
     if (_player) {
         [_player pause];
-     //   NSLog(@" playRefAudioInternal : removing current observer");
+        //   NSLog(@" playRefAudioInternal : removing current observer");
         [self removePlayObserver];
     }
     
@@ -272,12 +266,12 @@
     [self.delegate playStopped];
     [self.delegate playGotToEnd];
     
-   // NSLog(@" - playerItemDidReachEnd called self delegate - play stopped");
-
-    [self postEvent:[NSString stringWithFormat:@"EAFAudio playerItemDidReachEnd got to end of item #%lu",_currentIndex] widget:@"playerItemDidReachEnd" type:@"Button"];
-
+    // NSLog(@" - playerItemDidReachEnd called self delegate - play stopped");
+    
+    if (_debug)  [self postEvent:[NSString stringWithFormat:@"EAFAudio playerItemDidReachEnd got to end of item #%lu",_currentIndex] widget:@"playerItemDidReachEnd" type:@"Button"];
+    
     if (_currentIndex < _audioPaths.count-1) {
-       // NSLog(@" - playerItemDidReachEnd playing next audio...");
+        // NSLog(@" - playerItemDidReachEnd playing next audio...");
         _currentIndex++;
         [self playRefAudioInternal];
     }
@@ -293,7 +287,7 @@
 // we remove the observer, or else we will later get a message when the player discarded
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                         change:(NSDictionary *)change context:(void *)context {
-   // NSLog(@" observeValueForKeyPath %@",keyPath);
+    // NSLog(@" observeValueForKeyPath %@",keyPath);
     
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
@@ -301,22 +295,22 @@
             
             NSLog(@"observeValueForKeyPath audio ready so playing...");
             
-            [self postEvent:@"EAFAudio observeValueForKeyPath audio ready" widget:@"observeValueForKeyPath" type:@"Button"];
-
+            if (_debug)  [self postEvent:@"EAFAudio observeValueForKeyPath audio ready" widget:@"observeValueForKeyPath" type:@"Button"];
+            
             // GAH what thread should we do this on???
             [self.delegate playStarted];
             
             AVPlayerItem *currentItem = [_player currentItem];
             
-            [self postEvent:[NSString stringWithFormat:@"EAFAudio before current item %@",currentItem] widget:@"observeValueForKeyPath" type:@"Button"];
-            [self postEvent:[NSString stringWithFormat:@"EAFAudio before current item status %ld",(long)[currentItem status]] widget:@"observeValueForKeyPath" type:@"Button"];
-            [self postEvent:[NSString stringWithFormat:@"EAFAudio before player status %ld",(long)[_player status]] widget:@"observeValueForKeyPath" type:@"Button"];
+            if (_debug)  [self postEvent:[NSString stringWithFormat:@"EAFAudio before current item %@",currentItem] widget:@"observeValueForKeyPath" type:@"Button"];
+            if (_debug)   [self postEvent:[NSString stringWithFormat:@"EAFAudio before current item status %ld",(long)[currentItem status]] widget:@"observeValueForKeyPath" type:@"Button"];
+            if (_debug)   [self postEvent:[NSString stringWithFormat:@"EAFAudio before player status %ld",(long)[_player status]] widget:@"observeValueForKeyPath" type:@"Button"];
             
             [_player play];
             
-            [self postEvent:[NSString stringWithFormat:@"EAFAudio after current item %@",currentItem] widget:@"observeValueForKeyPath" type:@"Button"];
-            [self postEvent:[NSString stringWithFormat:@"EAFAudio after current item status %ld",(long)[currentItem status]] widget:@"observeValueForKeyPath" type:@"Button"];
-
+            if (_debug)   [self postEvent:[NSString stringWithFormat:@"EAFAudio after current item %@",currentItem] widget:@"observeValueForKeyPath" type:@"Button"];
+            if (_debug)   [self postEvent:[NSString stringWithFormat:@"EAFAudio after current item status %ld",(long)[currentItem status]] widget:@"observeValueForKeyPath" type:@"Button"];
+            
             
             [[NSNotificationCenter defaultCenter]
              addObserver:self
@@ -328,43 +322,43 @@
             [self removeStatusObserver];
             
             [self.delegate playStopped];
-
+            
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem" message: @"Couldn't play audio file." delegate: nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alert show];
             NSLog(@"observeValueForKeyPath player status failed %ld",(long)_player.status);
             [self postEvent:@"EAFAudio observeValueForKeyPath audio failed" widget:@"observeValueForKeyPath" type:@"Button"];
-
+            
         }
         else {
             NSLog(@"observeValueForKeyPath player status unk? %ld",(long)_player.status);
             [self postEvent:@"EAFAudio observeValueForKeyPath audio unk" widget:@"observeValueForKeyPath" type:@"Button"];
-  }
+        }
     }
     else {
         NSLog(@"observeValueForKeyPath ignoring value... %@",keyPath);
-        [self postEvent:@"EAFAudio observeValueForKeyPath audio ignoring status" widget:@"observeValueForKeyPath" type:@"Button"];
-
+        if (_debug)   [self postEvent:@"EAFAudio observeValueForKeyPath audio ignoring status" widget:@"observeValueForKeyPath" type:@"Button"];
+        
     }
 }
 
 - (void)removeStatusObserver
 {
     @try {
-     //   NSLog(@" remove status observer...");
+        //   NSLog(@" remove status observer...");
         [_player removeObserver:self forKeyPath:@"status"];
     }
     @catch (NSException *exception) {
-       // NSLog(@"removeStatusObserver observeValueForKeyPath : got exception %@",exception.description);
+        // NSLog(@"removeStatusObserver observeValueForKeyPath : got exception %@",exception.description);
     }
 }
 
 // called from stopAudio and playRefAudioInternal
 - (void)removePlayObserver {
-   // NSLog(@"paths were %@, remove observer %@",_audioPaths,self);
+    // NSLog(@"paths were %@, remove observer %@",_audioPaths,self);
     
     @try {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[_player currentItem]];
-//        [_player removeObserver:self forKeyPath:@"status"];
+        //        [_player removeObserver:self forKeyPath:@"status"];
         [self removeStatusObserver];
     }
     @catch (NSException *exception) {

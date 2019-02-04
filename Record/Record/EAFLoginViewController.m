@@ -166,16 +166,11 @@
     // must come after language picker
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     if (userid != nil) {
-        //  [self performSegueWithIdentifier:@"goToChapter" sender:self];
         NSString *languageRemembered = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
         if (languageRemembered != nil) {
-            
             dispatch_async(dispatch_get_main_queue(), ^{
-                // add UI related changes here
                 [self tryToLogIn:languageRemembered];
-
             });
-            
         }
     }
 }
@@ -231,7 +226,7 @@
     
     NSLog(@"LoginView : onClick chosenLanguage %@", chosenLanguage);
     
-    [self checkUpToDate];
+  //  [self checkUpToDate];
     
     if (!isLogin) {
         NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
@@ -263,7 +258,7 @@
         _logIn.enabled = false;
         
         [self tryToLogIn:chosenLanguage];
-        
+    
         //NSLog(@"got project id %@",[_siteGetter.nameToProjectID objectForKey:chosenLanguage]);
         NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
         [_poster setURL:urlForLanguage projid:[_siteGetter.nameToProjectID objectForKey:chosenLanguage]];
@@ -285,7 +280,8 @@
     NSString *password =_password.text;
     
     NSLog(@"LoginView onClick password '%@'",_password.text);
-    //NSLog(@"onClick md5 password %@",[self MD5:_password.text]);
+    
+    [self checkUpToDate];
     
     NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
     
@@ -599,10 +595,25 @@
     return YES;
 }
 
+// don't pester them if it's out of date - only one warning per hour...
+// this will stop working
 - (void)checkUpToDate {
-    if (!_siteGetter.isCurrent) {
-        UIAlertView *_alert = [[UIAlertView alloc] initWithTitle:@"App is out of date"
-                                                         message:@"Please download from the appstore or netprof.ll.mit.edu"
+    NSString *lastUpdate = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"lastUpdateMessage"];
+    double CurrentTime = [[NSDate date] timeIntervalSince1970];
+   // NSLog(@"checkUpToDate CurrentTime  %f", CurrentTime);
+    double diff = 0;
+    
+    if (lastUpdate != NULL) {
+        double lastShownTime = [lastUpdate doubleValue];
+        diff = CurrentTime - lastShownTime;
+//        NSLog(@"checkUpToDate last diff %f", diff);
+    }
+    
+    if (!_siteGetter.isCurrent && diff > 3600) {
+        [SSKeychain setPassword:[NSString stringWithFormat:@"%f",CurrentTime]      forService:@"mitll.proFeedback.device" account:@"lastUpdateMessage"];
+        
+        UIAlertView *_alert = [[UIAlertView alloc] initWithTitle:@"Update available"
+                                                         message:@"Please download from your local appstore or \nhttps://netprof.ll.mit.edu/ios"
                                                         delegate:nil
                                                cancelButtonTitle:@"OK"
                                                otherButtonTitles:nil];

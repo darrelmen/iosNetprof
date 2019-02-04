@@ -768,24 +768,22 @@
 }
 
 - (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
-    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-    
-    //    NSLog(@"postEvent language %@", _language);
-    //    NSLog(@"postEvent message  %@", message);
-    
-    NSString *id = [jsonObject objectForKey:@"id"];
-    
-    // so netprof v2 has number ids - hard to know what type json is returning...
-    if ([[jsonObject objectForKey:@"id"] isKindOfClass:[NSNumber class]]) {
-        NSNumber *nid = [jsonObject objectForKey:@"id"];
-        id = [NSString stringWithFormat:@"%@",nid];
-    }
+//    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
+//    NSString *id = [jsonObject objectForKey:@"id"];
+//
+//    // so netprof v2 has number ids - hard to know what type json is returning...
+//    if ([[jsonObject objectForKey:@"id"] isKindOfClass:[NSNumber class]]) {
+//        NSNumber *nid = [jsonObject objectForKey:@"id"];
+//        id = [NSString stringWithFormat:@"%@",nid];
+//    }
     
     //    NSLog(@"postEvent id       %@", id);
     //    NSLog(@"postEvent widget   %@", widget);
     //    NSLog(@"postEvent type     %@", type);
     
-    [_poster postEvent:message exid:id widget:widget widgetType:type];
+    [self getCurrentExID];
+    
+    [_poster postEvent:message exid:[NSString stringWithFormat:@"%@",[self getCurrentExID]] widget:widget widgetType:type];
 }
 
 - (EAFEventPoster*)getPoster {
@@ -1029,7 +1027,7 @@
     
     if ([self hasRefAudio]) {
        NSLog(@"respondToSwipe stop audio - %ld",_index);
-       [self postEvent:@"stop audio since has ref audio..." widget:@"respondToSwipe" type:@"Button"];
+      // [self postEvent:@"stop audio since has ref audio..." widget:@"respondToSwipe" type:@"Button"];
        [_myAudioPlayer stopAudio];
     }
     
@@ -1227,7 +1225,7 @@
     }
     NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
     
-    [self postEvent:[NSString stringWithFormat:@"EAFReco : found refAudio %@ and %@",refAudio,_audioRefs] widget:@"respondToSwipe" type:@"Button"];
+  //  [self postEvent:[NSString stringWithFormat:@"EAFReco : found refAudio %@ and %@",refAudio,_audioRefs] widget:@"respondToSwipe" type:@"Button"];
 
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
@@ -1294,11 +1292,11 @@
     
     BOOL showEnglish = _languageSegmentIndex == 0;
     
-    [self postEvent:@"EAFReco : about to think about playing audio..." widget:@"respondToSwipe" type:@"Button"];
+   // [self postEvent:@"EAFReco : about to think about playing audio..." widget:@"respondToSwipe" type:@"Button"];
 
     // complicated...
     if(_playAudio) {
-        [self postEvent:@"EAFReco : try to play ref audio b/c of quiz" widget:@"respondToSwipe" type:@"Button"];
+      //  [self postEvent:@"EAFReco : try to play ref audio b/c of quiz" widget:@"respondToSwipe" type:@"Button"];
         [self playRefAudioIfAvailable];
     }
     else if (_isAudioOnSelected && !_preventPlayAudio &&
@@ -1307,7 +1305,7 @@
         //         NSLog(@"respondToSwipe first");
         if (showEnglish) {
             //   NSLog(@"respondToSwipe first - %ld", (long)_whatToShow.selectedSegmentIndex);
-            [self postEvent:@"EAFReco : 1 try to speak english" widget:@"respondToSwipe" type:@"Button"];
+         //   [self postEvent:@"EAFReco : 1 try to speak english" widget:@"respondToSwipe" type:@"Button"];
             if (_autoPlayButton.selected) {
                 [self speakEnglish:false];
             }
@@ -1316,8 +1314,7 @@
             }
         }
         else {
-            //   [self stopPlayingAudio];
-            [self postEvent:@"EAFReco : 1 try to play ref audio" widget:@"respondToSwipe" type:@"Button"];
+        //    [self postEvent:@"EAFReco : 1 try to play ref audio" widget:@"respondToSwipe" type:@"Button"];
            [self playRefAudioIfAvailable];
         }
     }
@@ -1325,11 +1322,11 @@
         _preventPlayAudio = false;
         if (_autoPlayButton.selected) {
             if (showEnglish) {
-                [self postEvent:@"EAFReco : 2 try to speak english" widget:@"respondToSwipe" type:@"Button"];
+             //   [self postEvent:@"EAFReco : 2 try to speak english" widget:@"respondToSwipe" type:@"Button"];
                 [self speakEnglish:false];
             }
             else {
-                [self postEvent:@"EAFReco : 2 try to play ref audio" widget:@"respondToSwipe" type:@"Button"];
+              //  [self postEvent:@"EAFReco : 2 try to play ref audio" widget:@"respondToSwipe" type:@"Button"];
                 [self playRefAudioIfAvailable];
             }
         }
@@ -1343,7 +1340,7 @@
         [self showScoreToUser:prevScore previousScore:NULL];
     }
     
-    [self postEvent:@"EAFReco : exit..." widget:@"respondToSwipe" type:@"Button"];
+ //   [self postEvent:@"EAFReco : exit..." widget:@"respondToSwipe" type:@"Button"];
 
 }
 
@@ -1378,7 +1375,7 @@
     }
     
     if (onLast) {
-        [self postEvent:@"on last so prevent play..." widget:@"swipeLeftDetected" type:@"UIView"];
+       // [self postEvent:@"on last so prevent play..." widget:@"swipeLeftDetected" type:@"UIView"];
 
         _preventPlayAudio = TRUE;
     }
@@ -1551,15 +1548,15 @@
     NSString *current = [self getCurrentExID];
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     if ([self hasRefAudio]) {
-        NSLog(@"\tplay ref if avail");
+       // NSLog(@"\tplay ref if avail");
         if ([self notAQuiz]) {
-            [self postEvent:[NSString stringWithFormat:@"EAFReco :  not a quiz - has ref audio for exid %@",current] widget:@"playRefAudioIfAvailable" type:@"Button"];
+            //[self postEvent:[NSString stringWithFormat:@"EAFReco :  not a quiz - has ref audio for exid %@",current] widget:@"playRefAudioIfAvailable" type:@"Button"];
             
             [_myAudioPlayer playRefAudio];
         }
         else if (_playAudio) {
             NSLog(@"\t\tplay first ref if avail");
-            [self postEvent:[NSString stringWithFormat:@"EAFReco :  quiz just play first ref for exid %@",current] widget:@"playRefAudioIfAvailable" type:@"Button"];
+          //  [self postEvent:[NSString stringWithFormat:@"EAFReco :  quiz just play first ref for exid %@",current] widget:@"playRefAudioIfAvailable" type:@"Button"];
 
             [_myAudioPlayer playFirstRefAudio];
         }
@@ -1574,11 +1571,12 @@
     _myAudioPlayer.volume = 1;
     NSLog(@"foreign lang taped");
     [self playRefAudioIfAvailable];
-    [self postEvent:@"playAudioTouch" widget:_english.text type:@"UILabel"];
+    [self postEvent:@"playAudioTouchForeign" widget:_english.text type:@"UILabel"];
 }
 
 - (IBAction)tapOnEnglishDetected:(id)sender {
     NSLog(@"tap on english---");
+    [self postEvent:@"playAudioTouchEnglish" widget:_english.text type:@"UILabel"];
     [self stopPlayingAudio];
     [self speakEnglish:true];
 }
@@ -1587,7 +1585,7 @@
     NSLog(@"TL Pinyin taped");
     if([_tlAtIndex length] != 0){
         [self playRefAudioIfAvailable];
-        [self postEvent:@"playAudioTouch" widget:_english.text type:@"UILabel"];
+        [self postEvent:@"playAudioTouchTransliteration" widget:_english.text type:@"UILabel"];
     }
 }
 
@@ -1700,32 +1698,7 @@
     }
 }
 
-/*
- // remember selection in keychain cache
- - (IBAction)audioOnSelection:(id)sender {
- [SSKeychain setPassword:(_audioOnButton.selected ? @"Yes":@"No")
- forService:@"mitll.proFeedback.device" account:@"audioOn"];
- _audioOnButton.selected = !_audioOnButton.selected;
- _audioOnButton.color = _audioOnButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
- 
- _myAudioPlayer.volume = _audioOnButton.selected ? 1: 0;
- 
- if (_audioOnButton.selected) {
- [self postEvent:@"turnOnAudio" widget:@"audioOnButton" type:@"Button"];
- }
- else {
- [self postEvent:@"turnOffAudio" widget:@"audioOnButton" type:@"Button"];
- 
- }
- 
- if (!_autoPlayButton.selected) {
- if (!_audioOnButton.selected) {
- [self stopPlayingAudio];
- }
- [self respondToSwipe];
- }
- }
- */
+
 
 - (void)audioOnSelection {
     [SSKeychain setPassword:(_isAudioOnSelected ? @"Yes":@"No")
@@ -1742,7 +1715,6 @@
     }
     else {
         [self postEvent:@"turnOffAudio" widget:@"_identityRestoreID" type:@"Button"];
-        
     }
     
     if (!_autoPlayButton.selected) {
@@ -1752,7 +1724,6 @@
         [self respondToSwipe];
     }
 }
-
 
 - (BOOL) hasRefAudio
 {
@@ -1773,14 +1744,14 @@
 }
 
 - (void) playStarted {
-    [self postEvent:[NSString stringWithFormat:@"EAFReco : playStarted exid %@",[self getCurrentExID]] widget:@"playStarted" type:@"Button"];
+   // [self postEvent:[NSString stringWithFormat:@"EAFReco : playStarted exid %@",[self getCurrentExID]] widget:@"playStarted" type:@"Button"];
 
     [self highlightFLWhilePlaying];
 }
 
 - (void) playStopped {
     NSLog(@"playStopped - ");
-    [self postEvent:[NSString stringWithFormat:@"EAFReco : playStopped exid %@",[self getCurrentExID]] widget:@"playStopped" type:@"Button"];
+//    [self postEvent:[NSString stringWithFormat:@"EAFReco : playStopped exid %@",[self getCurrentExID]] widget:@"playStopped" type:@"Button"];
 
     [self removePlayingAudioHighlight];
 }
@@ -1804,8 +1775,7 @@
         }
     }
     else {
-        [self postEvent:[NSString stringWithFormat:@"EAFReco : playGotToEnd exid %@",[self getCurrentExID]] widget:@"playGotToEnd" type:@"Button"];
-
+    //    [self postEvent:[NSString stringWithFormat:@"EAFReco : playGotToEnd exid %@",[self getCurrentExID]] widget:@"playGotToEnd" type:@"Button"];
         //  NSLog(@"playGotToEnd - no op");
     }
 }
@@ -1816,7 +1786,7 @@
         if ([subview isKindOfClass:[UILabel class]]) {
             UILabel *asLabel = (UILabel *) subview;
             asLabel.textColor = color;
-            NSLog(@"initial hit %@ %@",asLabel,asLabel.text);
+          //  NSLog(@"initial hit %@ %@",asLabel,asLabel.text);
         }
         else {
             for (UIView *subview2 in [subview subviews]) {
@@ -2263,10 +2233,6 @@ bool debugRecord = false;
         
         NSNumber *exid= [self getCurrentExID];
         
-        //        if ([exid isKindOfClass:[NSNumber class]]) {
-        //            NSLog(@"exid is a NSNumber");
-        //        }
-        
         NSLog(@"playAudio playAudio %@ vs %@ audio url %@", exid, _lastRecordedAudioExID, _audioRecorder.url);
         [self stopPlayingAudio];
         
@@ -2365,11 +2331,10 @@ bool debugRecord = false;
         {
             NSLog(@"Error: %@", [error localizedDescription]);
         } else {
-            NSLog(@"OK let's play the audio");
+          //  NSLog(@"OK let's play the audio");
             [_altPlayer play];
         }
-        
-        [self postEvent:@"playUserAudio" widget:@"userScoreDisplay" type:@"UIView"];
+        // [self postEvent:@"playUserAudio" widget:@"userScoreDisplay" type:@"UIView"];
     }
 }
 
@@ -2443,7 +2408,7 @@ bool debugRecord = false;
     
     NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
     
-    NSLog(@"postAudio data length %lu",(unsigned long)[postData length]);
+  //  NSLog(@"postAudio data length %lu",(unsigned long)[postData length]);
     
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
     
@@ -2452,7 +2417,7 @@ bool debugRecord = false;
     if ([host length] != 0) {
         baseurl = [NSString stringWithFormat:@"%@scoreServlet/%@", _url, host];
     }
-    NSLog(@"Reco : postAudio talking to %@ file length %@",baseurl, postLength);
+    //NSLog(@"Reco : postAudio talking to %@ file length %@",baseurl, postLength);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
@@ -2500,7 +2465,7 @@ bool debugRecord = false;
     [urlRequest setHTTPBody:postData];
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    NSLog(@"posting to %@",_url);
+   // NSLog(@"posting to %@",_url);
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          dispatch_async(dispatch_get_main_queue(), ^{
@@ -2698,7 +2663,7 @@ bool debugRecord = false;
                           error:&error];
     
     NSString *string = [NSString stringWithUTF8String:[_responseData bytes]];
-    NSLog(@"connectionDidFinishLoading data was \n%@",string);
+ //   NSLog(@"connectionDidFinishLoading data was \n%@",string);
     
     if (error != nil) {
         NSLog(@"connectionDidFinishLoading - got error %@",error);

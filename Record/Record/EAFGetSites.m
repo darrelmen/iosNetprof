@@ -64,7 +64,8 @@
 @implementation EAFGetSites
 
 // make sure consistent with netprof 2 website
-NSString* const expectedVersion = @"1.0.1";
+// see : ServerProperties IOS_VERSION = "2.0.0";
+NSString* const expectedVersion = @"2.0.0";
 
 // Set the NetProf server here!
 - (instancetype)init
@@ -72,8 +73,7 @@ NSString* const expectedVersion = @"1.0.1";
     self = [super init];
     if (self) {
         // _nServer = @"http://127.0.0.1:8888/netprof/";
-        
-      //   _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+        // _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
         // _nServer = @"https://netprof.ll.mit.edu/netprof/";
         
         _nServer = @"https://netprof.ll.mit.edu/dialog/";
@@ -205,6 +205,7 @@ NSString* const expectedVersion = @"1.0.1";
 - (void)parseJSON:(NSDictionary *)json {
     NSArray *fetchedArr = [json objectForKey:@"sites"];
     NSString *iOSVersion = [json objectForKey:@"iOSVersion"];
+    NSLog(@"parseJSON compare versions %@ vs %@",iOSVersion,expectedVersion);
     _isCurrent =[iOSVersion isEqualToString:expectedVersion];
     
     NSMutableSet *localRTL = [[NSMutableSet alloc] init];
