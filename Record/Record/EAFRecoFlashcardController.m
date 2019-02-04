@@ -436,6 +436,8 @@
     
     _selectionToolbar=[[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 10, 10)];
     
+    _moreSelection = [[MoreSelection alloc]initWithLanguageIndex:_languageSegmentIndex withVoiceIndex:_voiceSegmentIndex];
+
     [self setupToolBar];
 
     if (_jsonItems != NULL) {
@@ -444,7 +446,6 @@
     
     [self checkAndShowIntro];
     
-    _moreSelection = [[MoreSelection alloc]initWithLanguageIndex:_languageSegmentIndex withVoiceIndex:_voiceSegmentIndex];
     
     UIBarButtonItem *scoreShow = [[UIBarButtonItem alloc]
                                   initWithTitle:@"Score"
@@ -3411,10 +3412,7 @@ bool debugRecord = false;
     EAFMoreSelectionPopupViewController *selectionPopupController = [self.storyboard instantiateViewControllerWithIdentifier:@"SelectionPopover"];
     _moreSelectionPopupView = selectionPopupController;
     
-    
-    //_moreSelectionPopupView.language = _language;
     _moreSelectionPopupView.language = [self getProjectLanguage];
-    
     
     _moreSelectionPopupView.fl = [[self getCurrentJson] objectForKey:@"fl"];
     
