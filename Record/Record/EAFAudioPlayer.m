@@ -171,7 +171,6 @@
     NSError* error = nil;
     [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
    // NSLog(@"statusCode = %ld", (long)[response statusCode]);
-    
     return [response statusCode] == 404 ? NO : YES;
 }
 
@@ -190,6 +189,13 @@
     [_poster postEvent:message exid:@"unk" widget:widget widgetType:type];
 }
 
+- (NSString *)getRefAudioPathURL:(NSString *)mp3RefPath {
+    NSMutableString *mu = [NSMutableString stringWithString:mp3RefPath];
+    [mu insertString:_url atIndex:0];
+    NSString *refAudioPathURL = mu;
+    return refAudioPathURL;
+}
+
 // look for local file with mp3 and use it if it's there.
 // otherwise hit the URL on the server.
 - (IBAction)playRefAudioInternal {
@@ -201,31 +207,21 @@
     }
     NSString *origRefPath = [_audioPaths objectAtIndex:_currentIndex];
     
-    NSString *refAudioPathURL;
     NSString *wavAudioPath;
     NSString *rawRefAudioPath;
     
     NSString *mp3RefPath = [origRefPath stringByReplacingOccurrencesOfString:@".wav"
                                                  withString:@".mp3"];
-    
-    NSMutableString *mu = [NSMutableString stringWithString:mp3RefPath];
-    
-   // NSString *urlWithSlash = [NSString stringWithFormat:@"%@/",_url];
-    NSString *urlWithSlash = _url;
-
-    [mu insertString:urlWithSlash atIndex:0];
-    refAudioPathURL = mu;
-    wavAudioPath = [NSString stringWithFormat:@"%@%@",urlWithSlash,origRefPath];
+    wavAudioPath = [NSString stringWithFormat:@"%@%@",_url,origRefPath];
     rawRefAudioPath = mp3RefPath;
     
-    NSURL *url = [NSURL URLWithString:refAudioPathURL];
+    NSURL *url = [NSURL URLWithString:[self getRefAudioPathURL:mp3RefPath]];
     NSURL *waveUrl = [NSURL URLWithString:wavAudioPath];
- //   NSLog(@"playRefAudioInternal default URL %@",url);
-    
+    NSLog(@"playRefAudioInternal default URL %@",url);
+    NSLog(@"playRefAudioInternal waveUrl URL %@",waveUrl);
+
     NSString *destFileName = [self getCacheMP3:rawRefAudioPath];
-    
-    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName];
-    if (fileExists) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:destFileName]) {
         //NSLog(@"playRefAudio Raw URL %@", _rawRefAudioPath);
         //      NSError *attributesError = nil;
         //NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:destFileName error:&attributesError];
@@ -262,10 +258,10 @@
         [self removePlayObserver];
     }
     
-//    UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
-//    AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
-//    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
-//    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+    UInt32 sessionCategory = kAudioSessionCategory_MediaPlayback;
+    AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(sessionCategory), &sessionCategory);
+    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
     
     [self makePlayerGivenURL:url waveURL:waveUrl];
 }

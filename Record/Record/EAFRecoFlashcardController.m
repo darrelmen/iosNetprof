@@ -126,6 +126,7 @@
 @property BOOL isPostingAudio;
 @property UIAlertView *loadingContentAlert;
 @property EAFEventPoster *poster;
+@property BOOL addSpaces;
 
 - (void)postAudio;
 
@@ -289,6 +290,8 @@
 
     _audioCache = [[EAFAudioCache alloc] init];
     _audioCache.language = _language;
+    
+    _addSpaces = ([[_language lowercaseString] isEqualToString:@"korean"]);
     
     _siteGetter = [EAFGetSites new];
     [_siteGetter getSites];
@@ -1559,17 +1562,6 @@
             [self postEvent:[NSString stringWithFormat:@"EAFReco :  quiz just play first ref for exid %@",current] widget:@"playRefAudioIfAvailable" type:@"Button"];
 
             [_myAudioPlayer playFirstRefAudio];
-            
-            
-            //            if ([_myAudioPlayer allExist]) {
-            //                NSLog(@"OK all the audio exists");
-            //                [_myAudioPlayer playFirstRefAudio];
-            //            }
-            //            else {
-            //                NSLog(@"not all the audio exists -------------- ");
-            //
-            //                [self cacheAudio];
-            //            }
         }
     }
     else {
@@ -2705,8 +2697,9 @@ bool debugRecord = false;
                           options:NSJSONReadingMutableContainers
                           error:&error];
     
-   // NSString *string = [NSString stringWithUTF8String:[_responseData bytes]];   
-    // NSLog(@"connectionDidFinishLoading data was \n%@",string);
+    NSString *string = [NSString stringWithUTF8String:[_responseData bytes]];
+    NSLog(@"connectionDidFinishLoading data was \n%@",string);
+    
     if (error != nil) {
         NSLog(@"connectionDidFinishLoading - got error %@",error);
         // NSLog(@"data was %@",_responseData);
@@ -2985,7 +2978,6 @@ bool debugRecord = false;
     return wordLabel;
 }
 
-BOOL addSpaces = false;
 
 - (NSMutableAttributedString *)getColoredPhones:(NSString *)phoneToShow wend:(NSNumber *)wend wstart:(NSNumber *)wstart phoneAndScore:(NSArray *)phoneAndScore {
     // now mark the ranges in the string with colors
@@ -3003,7 +2995,7 @@ BOOL addSpaces = false;
         
         if ([start floatValue] >= [wstart floatValue] && [end floatValue] <= [wend floatValue]) {
             NSRange range = NSMakeRange(pstart, [phoneText length]);
-            pstart += range.length + (addSpaces ? 1 : 0);
+            pstart += range.length + (_addSpaces ? 1 : 0);
             float score = [pscore floatValue];
             UIColor *color = [self getColor2:score];
             //        NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
@@ -3043,7 +3035,7 @@ BOOL addSpaces = false;
         if ([start floatValue] >= [wstart floatValue] && [end floatValue] <= [wend floatValue]) {
             NSRange range = NSMakeRange(pstart, [phoneText length]);
             //         NSLog(@"\tpstart %@ at %d %d",phoneText,pstart,i);
-            pstart += range.length + (addSpaces ? 1 : 0);
+            pstart += range.length + (_addSpaces ? 1 : 0);
             NSNumber *pscore = [event objectForKey:@"score"];
             
             if (now >= [start floatValue] && now < [end floatValue]) {
@@ -3083,7 +3075,7 @@ BOOL addSpaces = false;
         
         if ([start floatValue] >= [wstart floatValue] && [end floatValue] <= [wend floatValue]) {
             phoneToShow = [phoneToShow stringByAppendingString:phone];
-            if (addSpaces) {
+            if (_addSpaces) {
                 phoneToShow = [phoneToShow stringByAppendingString:@" "];
             }
         }
@@ -3259,15 +3251,13 @@ BOOL addSpaces = false;
     _phoneLabels = [NSMutableArray new];
     _wordTranscript = wordAndScore;
     _phoneTranscript = phoneAndScore;
-    // _phoneStarts = [NSMutableArray new];
-    // _phoneEnds = [NSMutableArray new];
     
-    for (NSDictionary *event in wordAndScore) {
-        NSString *word = [event objectForKey:@"event"];
+    for (NSDictionary *wordEvent in wordAndScore) {
+        NSString *word = [wordEvent objectForKey:@"event"];
         if ([word isEqualToString:@"sil"] || [word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) continue;
-        NSNumber *score = [event objectForKey:@"score"];//saidWord ? [event objectForKey:@"score"] : 0;
-        NSNumber *wstart = [event objectForKey:@"start"];
-        NSNumber *wend = [event objectForKey:@"end"];
+        NSNumber *score = [wordEvent objectForKey:@"score"];
+        NSNumber *wstart = [wordEvent objectForKey:@"start"];
+        NSNumber *wend = [wordEvent objectForKey:@"end"];
         
         UIView *exampleView = [[UIView alloc] init];
         exampleView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -3329,7 +3319,8 @@ BOOL addSpaces = false;
         [self addWordLabelContstraints:exampleView wordLabel:wordLabel];
         
         NSString *phoneToShow = [self getPhonesWithinWord:wend wstart:wstart phoneAndScore:phoneAndScore];
-        //        NSLog(@"phone to show %@",phoneToShow);
+
+//        NSLog(@"phone to show %@",phoneToShow);
         
         NSMutableAttributedString *coloredPhones = [self getColoredPhones:phoneToShow wend:wend wstart:wstart phoneAndScore:phoneAndScore];
         
