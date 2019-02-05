@@ -134,6 +134,9 @@
 
 @implementation EAFRecoFlashcardController
 
+// GLOBAL CONSTANT!
+//int const TIMEOUT = 15;
+
 - (void)checkAndShowIntro
 {
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
@@ -174,7 +177,7 @@
         }
     }
     NSString* baseurl =[NSString stringWithFormat:@"%@scoreServlet?request=CONTENT&list=%@", _url, _listid];
-    // NSLog(@"Reco : askServerForJsonForList url %@",baseurl);
+    NSLog(@"Reco : askServerForJsonForList url %@",baseurl);
     
     _sessionTimeStamp = 0;
     
@@ -182,7 +185,7 @@
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
     [urlRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
-    [urlRequest setTimeoutInterval:10];
+   // [urlRequest setTimeoutInterval:TIMEOUT];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
@@ -202,6 +205,7 @@
          }
          else {
              self->_responseListData = data;
+             NSLog(@"EAFRecoFlashcardController askServerForJsonForList Got data length %lu",(unsigned long)[data length]);
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoadingList:)
                                     withObject:nil
                                  waitUntilDone:YES];
@@ -226,12 +230,16 @@
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 
-- (void)connectionDidFinishLoadingList:(NSURLConnection *)connection {
-    // The request is complete and data has been received
-    [_slowContentTimer invalidate];
+- (void)dismissLoadingContentAlert {
     if (_loadingContentAlert != NULL) {
         [_loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
     }
+}
+
+- (void)connectionDidFinishLoadingList:(NSURLConnection *)connection {
+    // The request is complete and data has been received
+    [_slowContentTimer invalidate];
+    [self dismissLoadingContentAlert];
     [self useListData];
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
@@ -245,26 +253,35 @@
                           error:&error];
     
     if (error) {
-        NSLog(@"useListData error %@",error.description);
+        NSLog(@"useListData error code %ldl = %@",(long)error.code, error.description);
         return false;
     }
     
     _jsonItems = [json objectForKey:@"content"];
-    
-    [self cacheAudio];
-    
-    NSLog(@"Reco - useListData --- num json %lu ",(unsigned long)_jsonItems.count);
-    
-    if ([self isAQuiz]) {
-        _timeRemainingMillis = _quizMinutes.intValue*60000;
-        [self setTimeRemainingLabel];
+    NSString *errMessage = [json objectForKey:@"ERROR"];
+    if (errMessage != NULL && ![errMessage isEqualToString:@"OK"]) {
+        NSLog(@"useListData got error %@",errMessage);
+        NSString *msg= [NSString stringWithFormat:@"Network connection problem, please try again. Error : %@",errMessage];
+        [self showError:msg];
+        [self dismissLoadingContentAlert];
+        return false;
     }
-    
-    [self respondToSwipe];
-    _numQuizItems = [NSNumber numberWithUnsignedLong:_jsonItems.count];
-    
-    [self showQuizIntro];
-    return true;
+    else {
+        [self cacheAudio];
+        
+        NSLog(@"Reco - useListData --- num json %lu ",(unsigned long)_jsonItems.count);
+        
+        if ([self isAQuiz]) {
+            _timeRemainingMillis = _quizMinutes.intValue*60000;
+            [self setTimeRemainingLabel];
+        }
+        
+        [self respondToSwipe];
+        _numQuizItems = [NSNumber numberWithUnsignedLong:_jsonItems.count];
+        
+        [self showQuizIntro];
+        return true;
+    }
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
@@ -475,6 +492,18 @@
     
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Quiz Rules"
                                                                    message:postLength
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {}];
+    
+    [alert addAction:defaultAction];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void) showError:(NSString *) msg {
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Network error"
+                                                                   message:msg
                                                             preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
@@ -784,9 +813,9 @@
     //    NSLog(@"postEvent widget   %@", widget);
     //    NSLog(@"postEvent type     %@", type);
     
-    [self getCurrentExID];
-    
-    [_poster postEvent:message exid:[NSString stringWithFormat:@"%@",[self getCurrentExID]] widget:widget widgetType:type];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self->_poster postEvent:message exid:[NSString stringWithFormat:@"%@",[self getCurrentExID]] widget:widget widgetType:type];
+    });
 }
 
 - (EAFEventPoster*)getPoster {
@@ -2400,12 +2429,12 @@ bool debugRecord = false;
 
 - (void)showConnectionError:(NSError *)error {
     NSString *msg= [NSString stringWithFormat:@"Network connection problem, please try again.\nError Code (%ld) : %@",(long)error.code,error.localizedDescription];
-    [self setDisplayMessage:msg];
+    [self showError:msg];
+    [self dismissLoadingContentAlert];
 }
 
 // Posts audio with current fl field
 - (void)postAudio {
-    // create request
     [_recoFeedbackImage startAnimating];
     
     _isPostingAudio=TRUE;
@@ -2427,7 +2456,7 @@ bool debugRecord = false;
     [urlRequest setHTTPMethod: @"POST"];
     [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"      forHTTPHeaderField:@"Content-Type"];
-    [urlRequest setTimeoutInterval:15];
+    //[urlRequest setTimeoutInterval:TIMEOUT];
     
     // add request parameters
     

@@ -351,7 +351,8 @@
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
     [urlRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
-    [urlRequest setTimeoutInterval:10];
+   
+  //  [urlRequest setTimeoutInterval:1];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
@@ -636,7 +637,7 @@
 //    NSURLRequestCachePolicy policy= [urlRequest cachePolicy];
 //    NSLog(@"\n\n\nItemViewController policy = %d\n\n\n",policy);
 
-    [urlRequest setTimeoutInterval:10];
+ //   [urlRequest setTimeoutInterval:1];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];

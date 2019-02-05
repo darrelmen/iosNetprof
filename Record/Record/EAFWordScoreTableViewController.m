@@ -163,7 +163,7 @@
     
     [urlRequest setValue:[NSString stringWithFormat:@"%@",_projid] forHTTPHeaderField:@"projid"];
     
-    [urlRequest setTimeoutInterval:10];
+    //[urlRequest setTimeoutInterval:10];
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     

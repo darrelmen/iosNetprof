@@ -58,7 +58,7 @@
 }
 
 - (IBAction)stopAudio {
-    NSLog(@"EAFAudioPlayer : stopAudio ---- %@",self);
+   // NSLog(@"EAFAudioPlayer : stopAudio ---- %@",self);
     if (_debug) [self postEvent:@"EAFAudio : stopAudio" widget:@"stopAudio" type:@"Button"];
     
     _currentIndex = _audioPaths.count;
@@ -85,7 +85,9 @@
 
 // @see #makePlayerGivenURL
 - (void)makeAVPlayer:(NSURL *)url {
-    NSLog(@"EAFAudioPlayer : makeAVPlayer ---- %@",url);
+  
+    //NSLog(@"EAFAudioPlayer : makeAVPlayer ---- %@",url);
+   
     if (url != nil) {
         _player = [AVPlayer playerWithURL:url];
         NSString *PlayerStatusContext;
@@ -293,7 +295,7 @@
         if (_player.status == AVPlayerStatusReadyToPlay) {
             [self removeStatusObserver];
             
-            NSLog(@"observeValueForKeyPath audio ready so playing...");
+           // NSLog(@"observeValueForKeyPath audio ready so playing...");
             
             if (_debug)  [self postEvent:@"EAFAudio observeValueForKeyPath audio ready" widget:@"observeValueForKeyPath" type:@"Button"];
             

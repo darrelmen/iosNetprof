@@ -295,7 +295,8 @@
     
     NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
     
-    NSLog(@"LoginView projid  '%@'",projid);
+    NSLog(@"LoginView projid  '%@' url %@",projid,url);
+    
     [urlRequest setValue:@"hasUser" forHTTPHeaderField:@"request"];
     if ([username length] < 5) {
         username = [username stringByAppendingString:@"_"];
@@ -307,7 +308,7 @@
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    [urlRequest setTimeoutInterval:15];
+  //  [urlRequest setTimeoutInterval:1];
     
     dispatch_async(dispatch_get_main_queue(), ^{
         // add UI related changes here
@@ -434,6 +435,14 @@
     if (error) {
         NSLog(@"got error %@",error);
         NSLog(@"useJsonChapterData error %@",error.description);
+        
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
+                                                        message: error.description
+                                                       delegate: nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+        [alert show];
+        
         return false;
     }
     
@@ -520,7 +529,7 @@
     
     [urlRequest setValue:@"addUser"    forHTTPHeaderField:@"request"];
     
-    [urlRequest setTimeoutInterval:10];
+   // [urlRequest setTimeoutInterval:10];
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {

@@ -63,6 +63,8 @@
 
 @implementation EAFPhoneScoreTableViewController
 
+const BOOL debug = FALSE;
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -139,8 +141,8 @@
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
-    [urlRequest setTimeoutInterval:10];
     
+  //  [urlRequest setTimeoutInterval:1];
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
@@ -351,7 +353,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         word = [word lowercaseString];
     }
     
-    NSLog(@"resultWords : Word is %@",word);
+    if (debug) NSLog(@"resultWords : Word is %@",word);
     
     NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
     
@@ -426,7 +428,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     // int count = 0;
     BOOL addSpaces = false;
     BOOL debug=false;
-    BOOL debug2=true;
+    BOOL debug2=false;
 
     // try to worry about the same word appearing multiple times...
     NSMutableSet *shownSoFar = [[NSMutableSet alloc] init];
@@ -849,15 +851,15 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
     
     for (NSString *resultID in resultsDict) {
-        NSLog(@"PhoneScore: resultID %@",resultID);
+        if (debug) NSLog(@"PhoneScore: resultID %@",resultID);
         NSDictionary *fields = [resultsDict objectForKey:resultID];
         NSString *ref = [fields objectForKey:@"ref"];
         
-        NSLog(@"PhoneScore: ref %@",ref);
+        if (debug) NSLog(@"PhoneScore: ref %@",ref);
         
         [_resultToRef setValue:ref forKey:resultID];
         NSString *answer = [fields objectForKey:@"answer"];
-        NSLog(@"PhoneScore: answer %@",answer);
+       if (debug)  NSLog(@"PhoneScore: answer %@",answer);
         
         [_resultToAnswer setValue:answer forKey:resultID];
         
@@ -865,11 +867,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
        // NSLog(@"PhoneScore: resultDict %@",resultDict);
         
         if ([[resultDict objectForKey:@"words"] isKindOfClass:[NSString class]]) {
-            NSLog(@"PhoneScore: is a string %@",[resultDict objectForKey:@"words"]);
+            if (debug) NSLog(@"PhoneScore: is a string %@",[resultDict objectForKey:@"words"]);
             
             NSString *theWords = [resultDict objectForKey:@"words"];
             
-            NSLog(@"PhoneScore: theWords %@",theWords);
+            if (debug) NSLog(@"PhoneScore: theWords %@",theWords);
             
             if (theWords != nil) {
                 [_resultToWords setValue:theWords forKey:resultID];

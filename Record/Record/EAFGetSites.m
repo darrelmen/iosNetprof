@@ -66,6 +66,7 @@
 // make sure consistent with netprof 2 website
 // see : ServerProperties IOS_VERSION = "2.0.0";
 NSString* const expectedVersion = @"2.0.0";
+//const int PROJECTS_TIMEOUT = -1;
 
 // Set the NetProf server here!
 - (instancetype)init
@@ -120,8 +121,8 @@ NSString* const expectedVersion = @"2.0.0";
 
 // we talk to the old server, then the new server...
 - (void)getSitesFromServer:(NSString *) theServer {
-    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?projects", theServer];
-    NSURL *url = [NSURL URLWithString:baseurl];
+    //  NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?projects", theServer];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@scoreServlet?projects", theServer]];
     NSLog(@"EAFGetSites getSites url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
@@ -130,7 +131,7 @@ NSString* const expectedVersion = @"2.0.0";
     [NSMutableURLRequest setAllowsAnyHTTPSCertificate:YES forHost:[url host]];
     
     [urlRequest setHTTPMethod: @"GET"];
-    [urlRequest setTimeoutInterval:10];
+   // [urlRequest setTimeoutInterval:PROJECTS_TIMEOUT];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
     NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
@@ -205,7 +206,7 @@ NSString* const expectedVersion = @"2.0.0";
 - (void)parseJSON:(NSDictionary *)json {
     NSArray *fetchedArr = [json objectForKey:@"sites"];
     NSString *iOSVersion = [json objectForKey:@"iOSVersion"];
-    NSLog(@"parseJSON compare versions %@ vs %@",iOSVersion,expectedVersion);
+  //  NSLog(@"parseJSON compare versions %@ vs %@",iOSVersion,expectedVersion);
     _isCurrent =[iOSVersion isEqualToString:expectedVersion];
     
     NSMutableSet *localRTL = [[NSMutableSet alloc] init];
