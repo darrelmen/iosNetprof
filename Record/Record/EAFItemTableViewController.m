@@ -612,11 +612,11 @@
     if (_listid != NULL) {
         baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&listid=%@&%@=%@&%@=%@", _url, _user, _listid, _unitTitle, _unit, _chapterTitle, _currentChapter];
     }
-   
+//
 //    if (_projid != NULL) {
 //        baseurl = [NSString stringWithFormat:@"%@&projid=%@", baseurl, _projid];
 //    }
-    
+//
     if (_showSentences) {
         baseurl = [NSString stringWithFormat:@"%@&context=true", baseurl];
         NSLog(@"showing sentences");

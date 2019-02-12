@@ -488,7 +488,7 @@
 - (void) showQuizIntro {
     NSString *min = @"minutes";
     if (_quizMinutes.intValue == 1) min = @"minute";
-    NSString *postLength = [NSString stringWithFormat:@"You have %@ %@ to complete %@ items.\nScores above %@ advance automatically.\nIf you finish with time remaining, it's OK to go back.",_quizMinutes,min,_numQuizItems,_minScoreToAdvance];
+    NSString *postLength = [NSString stringWithFormat:@"You have %@ %@ to complete %@ items.\nScores above %@ advance automatically.\nIf you finish with time remaining, it's OK to go back.\nSwipe to skip an item or go back.",_quizMinutes,min,_numQuizItems,_minScoreToAdvance];
     
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Quiz Rules"
                                                                    message:postLength

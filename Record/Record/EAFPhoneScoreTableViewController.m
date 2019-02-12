@@ -393,8 +393,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     [cell setSelectedBackgroundView:bgColorView];
     
     NSString *phone = [_phonesInOrder objectAtIndex:indexPath.row];
+    NSNumber *phoneScore = NULL;
+
+    if (_phonesInOrderScores != NULL) {
+      //  NSLog(@"Got phone score %@ %@",phone, [_phonesInOrderScores objectAtIndex:indexPath.row]);
+        phoneScore =  [_phonesInOrderScores objectAtIndex:indexPath.row];
+    }
     
-    NSLog(@"tableView phone is %@",phone);
+  //  NSLog(@"tableView phone is %@",phone);
     
     for (UIView *v in [cell.contentView subviews]) {
         [v removeFromSuperview];
@@ -639,6 +645,11 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSRange range = NSMakeRange(0, [coloredWord length]);
     
     float overallAvg = totalPhoneScore/totalPhones;
+    
+    if (phoneScore != NULL) {
+        overallAvg = [phoneScore floatValue];
+        NSLog(@"%@ score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
+    }
     //   NSLog(@"%@ score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
     if (overallAvg > -0.1) {
         UIColor *color = [self getColor2:overallAvg];
@@ -836,6 +847,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *phoneDict = [json objectForKey:@"phones"];
     NSDictionary *resultsDict = [json objectForKey:@"results"];
     _phonesInOrder = [[NSArray alloc] initWithArray:[json objectForKey:@"order"]];
+    
+    if ([json objectForKey:@"orderScores"] != NULL) {
+        _phonesInOrderScores = [[NSArray alloc] initWithArray:[json objectForKey:@"orderScores"]];
+    }
     
     _phoneToWords   = [[NSMutableDictionary alloc] init];
     _resultToRef   = [[NSMutableDictionary alloc] init];
