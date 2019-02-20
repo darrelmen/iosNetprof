@@ -56,6 +56,7 @@
 @property NSDictionary *resultToAnswer;
 @property NSDictionary *resultToWords;
 @property NSArray *phonesInOrder;
+@property NSArray *phonesInOrderScores;
 @property AVPlayer *player;
 @property NSString *url;
 @property BOOL isRTL;

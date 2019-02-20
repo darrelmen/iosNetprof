@@ -2614,10 +2614,8 @@ bool debugRecord = false;
 
 // previous score lets the progress bar grow from old to new score
 - (void)showScoreToUser:(NSDictionary *)json previousScore:(NSNumber *)previousScore {
-    //   BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
-    BOOL correct = [[json objectForKey:@"isCorrect"] boolValue];
+    BOOL correct = [[json objectForKey:@"isCorrect"] boolValue] && [[json objectForKey:@"fullMatch"] boolValue];
     NSString *valid = [json objectForKey:@"valid"];
-    //NSNumber *overallScore = correct ? [json objectForKey:@"score"] : 0;
     NSNumber *overallScore = [json objectForKey:@"score"];
     
     if (![valid isEqualToString:@"OK"]) {
@@ -2659,9 +2657,17 @@ bool debugRecord = false;
         float overall;
         NSString * emoji= [self getEmoji:&overall];
         [_correctFeedback setText:emoji];
+        
+//        if ([emoji isEqualToString:@"\U00002639"]) {
+//            [_correctFeedback setBackgroundColor:[UIColor redColor]];
+//        }
+//        else {
+//            [_correctFeedback setBackgroundColor:[UIColor whiteColor]];
+//        }
     }
     else {
         [_correctFeedback setText:@"\U0000274C"];  // red x
+//        [_correctFeedback setBackgroundColor:[UIColor whiteColor]];
     }
    
     [_correctFeedback setHidden:false];
@@ -2695,8 +2701,8 @@ bool debugRecord = false;
                           options:NSJSONReadingMutableContainers
                           error:&error];
     
-    NSString *string = [NSString stringWithUTF8String:[_responseData bytes]];
- //   NSLog(@"connectionDidFinishLoading data was \n%@",string);
+//    NSString *string = [NSString stringWithUTF8String:[_responseData bytes]];
+//    NSLog(@"connectionDidFinishLoading data was \n%@",string);
     
     if (error != nil) {
         NSLog(@"connectionDidFinishLoading - got error %@",error);
@@ -2711,6 +2717,7 @@ bool debugRecord = false;
     NSNumber *exid = [json objectForKey:@"exid"];
 
     NSNumber *resultID = [json objectForKey:@"resultID"];
+    BOOL isFullMatch = [[json objectForKey:@"fullmatch"] boolValue];
     
     // Post a RT value for the result id
     NSString * roundTrip =[NSString stringWithFormat:@"%d",(int) millis];
@@ -2724,15 +2731,18 @@ bool debugRecord = false;
         [self setDisplayMessage:@"Score low, try again."];
         return;
     }
+    if (!isFullMatch) {
+        NSLog(@"OK, audio is cut off.");
+    }
     
     NSNumber *previousScore;
     if (exid != nil) {
         previousScore = [_exToScore objectForKey:exid];
         //BOOL saidWord = [[json objectForKey:@"saidWord"] boolValue];
-        if (score != nil) {
+        if (score != nil && isFullMatch) {
             [_exToScore setObject:score forKey:exid];
             [_exToScoreJson setObject:json forKey:exid];
-            [self setTitleWithScore ];
+            [self setTitleWithScore];
             NSLog(@"_exToScore %@ %@ now %lu",exid,score,(unsigned long)[_exToScore count]);
         }
     }
@@ -2752,7 +2762,7 @@ bool debugRecord = false;
     
     [self showScoreToUser:json previousScore:previousScore];
     
-    if ([self isAQuiz] && score.floatValue*100 >= _minScoreToAdvance.floatValue) {
+    if ([self isAQuiz] && score.floatValue*100 >= _minScoreToAdvance.floatValue && isFullMatch) {
         BOOL onLast = _index+1 == _jsonItems.count;
         //  NSLog(@"check got %lu vs total %lu",_index, (unsigned long)_jsonItems.count);
         if (onLast) {
@@ -2972,7 +2982,12 @@ bool debugRecord = false;
     //    }
     
     [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    wordLabel.adjustsFontForContentSizeCategory = YES;
     wordLabel.adjustsFontSizeToFitWidth=YES;
+    
+    wordLabel.minimumScaleFactor=0.1;
+    
+    
     return wordLabel;
 }
 
@@ -3083,7 +3098,6 @@ bool debugRecord = false;
 
 - (void)addPhoneLabelConstraints:(UIView *)exampleView phoneLabel:(UILabel *)phoneLabel {
     // left
-    
     [exampleView addConstraint:[NSLayoutConstraint
                                 constraintWithItem:phoneLabel
                                 attribute:NSLayoutAttributeLeft
@@ -3094,7 +3108,6 @@ bool debugRecord = false;
                                 constant:0.0]];
     
     // right
-    
     [exampleView addConstraint:[NSLayoutConstraint
                                 constraintWithItem:phoneLabel
                                 attribute:NSLayoutAttributeRight
@@ -3104,6 +3117,7 @@ bool debugRecord = false;
                                 multiplier:1.0
                                 constant:0.0]];
     
+    // bottom
     [exampleView addConstraint:[NSLayoutConstraint
                                 constraintWithItem:phoneLabel
                                 attribute:NSLayoutAttributeBottom
@@ -3114,7 +3128,7 @@ bool debugRecord = false;
                                 constant:2.0]];
 }
 
-- (void)addWordLabelContstraints:(UIView *)exampleView wordLabel:(UILabel *)wordLabel {
+- (void)addWordLabelConstraints:(UIView *)exampleView wordLabel:(UILabel *)wordLabel {
     // top
     [exampleView addConstraint:[NSLayoutConstraint
                                 constraintWithItem:wordLabel
@@ -3150,9 +3164,13 @@ bool debugRecord = false;
     UILabel *phoneLabel = [[UILabel alloc] init];
     phoneLabel.font = phoneFont;
     phoneLabel.adjustsFontSizeToFitWidth=YES;
+    phoneLabel.minimumScaleFactor=0.1;
+
     phoneLabel.textAlignment = isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
     phoneLabel.attributedText = coloredPhones;
     [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    phoneLabel.adjustsFontForContentSizeCategory = YES;
+
     return phoneLabel;
 }
 
@@ -3163,37 +3181,44 @@ bool debugRecord = false;
     float scale = slen/len;
     scale = fmin(1,scale);
     
-    int largest  = [self isiPhone] ? 24 : 48;
-    int smallest = [self isiPhone] ? 7  : 14;
+//    int largest  = [self isiPhone] ? 24 : 48;
+//    int smallest = [self isiPhone] ? 7  : 14;
+    
+    int largest  = [self isiPhone] ? 36 : 48;
+    int smallest = [self isiPhone] ? 14 : 24;
     
     float newFont = smallest + floor((largest-smallest)*scale);
-    // NSLog(@"getWordFont len %lu font is %f",(unsigned long)len,newFont);
+ //   float newFont = largest;//36;//smallest + floor((largest-smallest)*scale);
+    //NSLog(@"getWordFont len %lu font is %f",(unsigned long)len,newFont);
+    
+
+    
     UIFont *wordFont = [UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue];
     return wordFont;
 }
 
 // worries about RTL languages
+// super complicated and finicky - tries to do center alignment and word wrap
 - (void)updateScoreDisplay:(NSDictionary*) json {
     NSArray *wordAndScore  = [json objectForKey:@"WORD_TRANSCRIPT"];
     NSArray *phoneAndScore = [json objectForKey:@"PHONE_TRANSCRIPT"];
     
     //    NSLog(@"updateScoreDisplay size for words %lu",(unsigned long)wordAndScore.count);
-    
     //    NSLog(@"word  json %@",wordAndScore);
     //    NSLog(@"phone json %@",phoneAndScore);
     for (UIView *v in [_scoreDisplayContainer subviews]) {
         [v removeFromSuperview];
     }
     
-    UIFont *wordFont;
-    wordFont = [self getWordFont];
+    UIFont *wordFont = [self getWordFont];
     
     [_scoreDisplayContainer removeConstraints:_scoreDisplayContainer.constraints];
     _scoreDisplayContainer.translatesAutoresizingMaskIntoConstraints = NO;
     _scoreDisplayContainer.clipsToBounds = YES;
-    
+ //   _scoreDisplayContainer.backgroundColor = [UIColor yellowColor];
+
     UIView *leftView  = nil;
-    UIView *rightView = nil;
+   // UIView *prevView = nil;
     
     BOOL isRTL = [_siteGetter.rtlLanguages containsObject:_language];
     if (isRTL) {
@@ -3207,7 +3232,10 @@ bool debugRecord = false;
     
     UIView *spacerLeft  = [[UIView alloc] init];
     UIView *spacerRight = [[UIView alloc] init];
-    
+ 
+//    spacerLeft.backgroundColor = [UIColor redColor];
+//    spacerRight.backgroundColor = [UIColor blueColor];
+
     spacerLeft.translatesAutoresizingMaskIntoConstraints = NO;
     spacerRight.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -3215,6 +3243,8 @@ bool debugRecord = false;
     [_scoreDisplayContainer addSubview:spacerRight];
     
     leftView = spacerLeft;
+    
+    UIView *lineStart = leftView;
     
     // width of spacers on left and right are equal
     [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
@@ -3226,7 +3256,37 @@ bool debugRecord = false;
                                            multiplier:1.0
                                            constant:0.0]];
     
-    //right edge of right spacer
+    // height is equal
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                           constraintWithItem:spacerLeft
+                                           attribute:NSLayoutAttributeHeight
+                                           relatedBy:NSLayoutRelationEqual
+                                           toItem:spacerRight
+                                           attribute:NSLayoutAttributeHeight
+                                           multiplier:1.0
+                                           constant:1.0]];
+    
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                           constraintWithItem:spacerLeft
+                                           attribute:NSLayoutAttributeWidth
+                                           relatedBy:NSLayoutRelationGreaterThanOrEqual
+                                           toItem:NULL
+                                           attribute:NSLayoutAttributeWidth
+                                           multiplier:1.0
+                                           constant:10.0]];
+    
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                           constraintWithItem:spacerRight
+                                           attribute:NSLayoutAttributeWidth
+                                           relatedBy:NSLayoutRelationGreaterThanOrEqual
+                                           toItem:NULL
+                                           attribute:NSLayoutAttributeWidth
+                                           multiplier:1.0
+                                           constant:10.0]];
+    
+   
+
+    // right edge of right spacer
     [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
                                            constraintWithItem:spacerRight
                                            attribute:NSLayoutAttributeRight
@@ -3236,7 +3296,16 @@ bool debugRecord = false;
                                            multiplier:1.0
                                            constant:0.0]];
     
-    // left edge of left spacer
+    // bottom of right spacer
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                           constraintWithItem:spacerRight
+                                           attribute:NSLayoutAttributeBottom
+                                           relatedBy:NSLayoutRelationEqual
+                                           toItem:spacerLeft
+                                           attribute:NSLayoutAttributeBottom
+                                           multiplier:1.0
+                                           constant:0.0]];
+    // left edge of left spacer = left of container
     [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
                                            constraintWithItem:spacerLeft
                                            attribute:NSLayoutAttributeLeft
@@ -3244,23 +3313,76 @@ bool debugRecord = false;
                                            toItem:_scoreDisplayContainer
                                            attribute:NSLayoutAttributeLeft
                                            multiplier:1.0
+                                           constant:5.0]];
+    
+    // top of spacer left = top of container
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                           constraintWithItem:spacerLeft
+                                           attribute:NSLayoutAttributeTop
+                                           relatedBy:NSLayoutRelationEqual
+                                           toItem:_scoreDisplayContainer
+                                           attribute:NSLayoutAttributeTop
+                                           multiplier:1.0
                                            constant:0.0]];
+    
+    // bottom of left = bottom of container
+    [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                           constraintWithItem:spacerLeft
+                                           attribute:NSLayoutAttributeBottom
+                                           relatedBy:NSLayoutRelationEqual
+                                           toItem:_scoreDisplayContainer
+                                           attribute:NSLayoutAttributeBottom
+                                           multiplier:1.0
+                                           constant:0.0]];
+    
+//    NSLog(@"address of score display %p", _scoreDisplayContainer);
+//    NSLog(@"address of left spacer   %p", spacerLeft    );
+//    NSLog(@"address of right spacer   %p", spacerRight    );
+
     _wordLabels  = [NSMutableArray new];
     _phoneLabels = [NSMutableArray new];
     _wordTranscript = wordAndScore;
     _phoneTranscript = phoneAndScore;
     
+    NSString *sofar = @"";
+    BOOL onFirstLine=true;
+    int numLines = 0;
+    
+    int max = 250;
+    if ([self isiPad]) max =2*275;
+    
     for (NSDictionary *wordEvent in wordAndScore) {
         NSString *word = [wordEvent objectForKey:@"event"];
         if ([word isEqualToString:@"sil"] || [word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) continue;
         NSNumber *score = [wordEvent objectForKey:@"score"];
+        
         NSNumber *wstart = [wordEvent objectForKey:@"start"];
         NSNumber *wend = [wordEvent objectForKey:@"end"];
+    
+        sofar = [sofar stringByAppendingString:word];
+
+        // NSLog(@"wordEvent for %@ len = %lu",sofar, (unsigned long)[sofar length]);
+        
+        BOOL startNewLine = false;//[sofar length] > max;
+        
+        NSDictionary *userAttributes = @{NSFontAttributeName: wordFont,
+                                         NSForegroundColorAttributeName: [UIColor blackColor]};
+        
+        
+        CGSize textSize = [sofar sizeWithAttributes: userAttributes];
+        if (textSize.width > max) {
+            NSLog(@"wordEvent width %@ len = %f",sofar, textSize.width);
+            startNewLine = true;
+            sofar = word;
+            numLines++;
+        }
+        sofar = [sofar stringByAppendingString:@" "];
         
         UIView *exampleView = [[UIView alloc] init];
         exampleView.translatesAutoresizingMaskIntoConstraints = NO;
+     //   exampleView.backgroundColor = [UIColor grayColor];
         [_scoreDisplayContainer addSubview:exampleView];
-        rightView = exampleView;
+       
         [self addSingleTap:exampleView];
         
         //         NSLog(@"word is %@",word);
@@ -3276,36 +3398,110 @@ bool debugRecord = false;
         // lower has left, right bottom bound to container
         // lower has top that is equal to bottom of top or half container height
         
-        // top
         
-        [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                               constraintWithItem:exampleView
-                                               attribute:NSLayoutAttributeTop
-                                               relatedBy:NSLayoutRelationEqual
-                                               toItem:_scoreDisplayContainer
-                                               attribute:NSLayoutAttributeTop
-                                               multiplier:1.0
-                                               constant:0.0]];
+        if (onFirstLine) {
+            onFirstLine = false;
+            
+            // top
+            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                   constraintWithItem:exampleView
+                                                   attribute:NSLayoutAttributeTop
+                                                   relatedBy:NSLayoutRelationEqual
+                                                   toItem:_scoreDisplayContainer
+                                                   attribute:NSLayoutAttributeTop
+                                                   multiplier:1.0
+                                                   constant:0.0]];
+            
+            // bottom
+//            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+//                                                   constraintWithItem:exampleView
+//                                                   attribute:NSLayoutAttributeBottom
+//                                                   relatedBy:NSLayoutRelationEqual
+//                                                   toItem:lineStart
+//                                                   attribute:NSLayoutAttributeBottom
+//                                                   multiplier:1.0
+//                                                   constant:0.0]];
+//
+            // left - initial left view is the left spacer, but afterwards is the previous word view
+            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                   constraintWithItem:exampleView
+                                                   attribute:NSLayoutAttributeLeft
+                                                   relatedBy:NSLayoutRelationEqual
+                                                   toItem:spacerLeft
+                                                   attribute:NSLayoutAttributeRight
+                                                   multiplier:1.0
+                                                   constant:5.0]];
+            lineStart = exampleView;
+        }
+        else if (startNewLine) {
+            // right of prev view = left of right spacer
+            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                   constraintWithItem:leftView
+                                                   attribute:NSLayoutAttributeRight
+                                                   relatedBy:NSLayoutRelationEqual
+                                                   toItem:spacerRight
+                                                   attribute:NSLayoutAttributeLeft
+                                                   multiplier:1.0
+                                                   constant:5.0]];
+            
+            // top of this view = bottom of prev view
+            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                   constraintWithItem:exampleView
+                                                   attribute:NSLayoutAttributeTop
+                                                   relatedBy:NSLayoutRelationEqual
+                                                   toItem:leftView
+                                                   attribute:NSLayoutAttributeBottom
+                                                   multiplier:1.0
+                                                   constant:5.0]];
+            
+            // left of this view is right of spacer
+            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                   constraintWithItem:exampleView
+                                                   attribute:NSLayoutAttributeLeft
+                                                   relatedBy:NSLayoutRelationEqual
+                                                   toItem:spacerLeft
+                                                   attribute:NSLayoutAttributeRight
+                                                   multiplier:1.0
+                                                   constant:5.0]];
+            
+            NSLog(@"starting new line with %@",word);
+           
+            lineStart = exampleView;
+            
+        }
+        else {
+            // top
+            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                   constraintWithItem:exampleView
+                                                   attribute:NSLayoutAttributeTop
+                                                   relatedBy:NSLayoutRelationEqual
+                                                   toItem:lineStart
+                                                   attribute:NSLayoutAttributeTop
+                                                   multiplier:1.0
+                                                   constant:0.0]];
+            
+            // bottom
+            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                   constraintWithItem:exampleView
+                                                   attribute:NSLayoutAttributeBottom
+                                                   relatedBy:NSLayoutRelationEqual
+                                                   toItem:lineStart
+                                                   attribute:NSLayoutAttributeBottom
+                                                   multiplier:1.0
+                                                   constant:0.0]];
+            
+            // left - initial left view is the left spacer, but afterwards is the previous word view
+            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                   constraintWithItem:exampleView
+                                                   attribute:NSLayoutAttributeLeft
+                                                   relatedBy:NSLayoutRelationEqual
+                                                   toItem:leftView
+                                                   attribute:NSLayoutAttributeRight
+                                                   multiplier:1.0
+                                                   constant:5.0]];
+        }
         
-        // bottom
-        [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                               constraintWithItem:exampleView
-                                               attribute:NSLayoutAttributeBottom
-                                               relatedBy:NSLayoutRelationEqual
-                                               toItem:_scoreDisplayContainer
-                                               attribute:NSLayoutAttributeBottom
-                                               multiplier:1.0
-                                               constant:0.0]];
-        
-        // left - initial left view is the left spacer, but afterwards is the previous word view
-        [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                               constraintWithItem:exampleView
-                                               attribute:NSLayoutAttributeLeft
-                                               relatedBy:NSLayoutRelationEqual
-                                               toItem:leftView
-                                               attribute:NSLayoutAttributeRight
-                                               multiplier:1.0
-                                               constant:5.0]];
+      //  prevView = exampleView;
         leftView = exampleView;
         
         UILabel *wordLabel = [self getWordLabel:word score:score wordFont:wordFont];
@@ -3314,19 +3510,19 @@ bool debugRecord = false;
         
         [exampleView addSubview:wordLabel];
         
-        [self addWordLabelContstraints:exampleView wordLabel:wordLabel];
+        [self addWordLabelConstraints:exampleView wordLabel:wordLabel];
         
         NSString *phoneToShow = [self getPhonesWithinWord:wend wstart:wstart phoneAndScore:phoneAndScore];
 
 //        NSLog(@"phone to show %@",phoneToShow);
-        
+
         NSMutableAttributedString *coloredPhones = [self getColoredPhones:phoneToShow wend:wend wstart:wstart phoneAndScore:phoneAndScore];
-        
+
         UILabel *phoneLabel = [self getPhoneLabel:isRTL coloredPhones:coloredPhones phoneFont:wordFont];
         [_phoneLabels addObject:phoneLabel];
-        
+
         [exampleView addSubview:phoneLabel];
-        
+
         // top of the phone label is the bottom of the word
         [exampleView addConstraint:[NSLayoutConstraint
                                     constraintWithItem:phoneLabel
@@ -3336,27 +3532,46 @@ bool debugRecord = false;
                                     attribute:NSLayoutAttributeBottom
                                     multiplier:1.0
                                     constant:+2.0]];
-        
+
         [self addPhoneLabelConstraints:exampleView phoneLabel:phoneLabel];
+
     }
     
     // if the alignment fails completely it can sometimes return no words at all.
-    if (rightView != nil)  {
+    if (leftView != nil)  {
         // the right side of the last word is the same as the left side of the right side spacer
+        if (numLines == 0) {
+            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                   constraintWithItem:leftView
+                                                   attribute:NSLayoutAttributeRight
+                                                   relatedBy:NSLayoutRelationEqual
+                                                   toItem:spacerRight
+                                                   attribute:NSLayoutAttributeLeft
+                                                   multiplier:1.0
+                                                   constant:-5.0]];
+        }
+        else {
+            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                   constraintWithItem:leftView
+                                                   attribute:NSLayoutAttributeRight
+                                                   relatedBy:NSLayoutRelationLessThanOrEqual
+                                                   toItem:spacerRight
+                                                   attribute:NSLayoutAttributeLeft
+                                                   multiplier:1.0
+                                                   constant:5.0]];
+        }
+        
         [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                               constraintWithItem:rightView
-                                               attribute:NSLayoutAttributeRight
+                                               constraintWithItem:lineStart
+                                               attribute:NSLayoutAttributeBottom
                                                relatedBy:NSLayoutRelationEqual
-                                               toItem:spacerRight
-                                               attribute:NSLayoutAttributeLeft
+                                               toItem:_scoreDisplayContainer
+                                               attribute:NSLayoutAttributeBottom
                                                multiplier:1.0
                                                constant:0.0]];
     }
-    // TODO : consider how to make all the labels have the same font after being adjusted
-    //    for (UILabel *word in wordLabels) {
-    //        NSLog(@"Word %@ %@",word.text,word.font);
-    //    }
 }
+
 
 - (UIColor *) getColor2:(float) score {
     if (score > 1.0) score = 1.0;
