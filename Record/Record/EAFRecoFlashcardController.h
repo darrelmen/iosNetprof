@@ -110,6 +110,8 @@
 
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;
 @property (strong, nonatomic) IBOutlet UILabel *correctFeedback;
+@property (strong, nonatomic) IBOutlet UIView *metering;
+@property (strong, nonatomic) IBOutlet UIView *peak;
 
 - (void)respondToSwipe;
 - (void)doAutoAdvance;

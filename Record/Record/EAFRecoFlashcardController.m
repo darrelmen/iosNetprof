@@ -83,6 +83,7 @@
 @property float lastUpdate;
 @property (nonatomic, strong) AVSpeechSynthesizer *synthesizer;
 @property NSTimer *autoAdvanceTimer;
+@property NSTimer *meteringTimer;
 @property NSTimeInterval autoAdvanceInterval;
 @property double gestureStart;
 @property double gestureEnd;
@@ -410,7 +411,7 @@
     }
     
     _audioRecorder.delegate = self;
-    //    _audioRecorder.meteringEnabled = YES;
+    _audioRecorder.meteringEnabled = YES;
     [_audioRecorder prepareToRecord];
     
     //  [self checkAvailableMics];
@@ -1520,6 +1521,58 @@
     _english.textColor = [UIColor npMedPurple];
 }
 
+//- (double) DbToAmp(double inDb)
+//{
+//    return pow(10., 0.05 * inDb);
+//}
+
+
+//float lowPassResults=0;
+//float lowPassResultsAvg=0;
+NSLayoutConstraint *meteringConstraint;
+NSLayoutConstraint *peakConstraint;
+-(void) doMeteringUpdate
+{
+    [_audioRecorder updateMeters];
+    float peak   =  [_audioRecorder peakPowerForChannel:0];
+    float average = [_audioRecorder averagePowerForChannel:0];
+    
+    float minDB = -50.0;
+    
+    if (peak < minDB) {
+       // NSLog(@"peak min capped from %f", peak);
+        peak = minDB;
+    }
+    
+    if (average == -120) {
+        [self setDisplayMessage:@"Please allow recording."];  // kinda wasteful....
+    }
+    
+    if (average < minDB) {
+       // NSLog(@"average min capped from %f", average);
+        average = minDB;
+    }
+    
+    if (average > -6) {
+       // NSLog(@"average yellow %f", average);
+        [_metering setBackgroundColor:[UIColor yellowColor]];
+    }
+    else {
+        BOOL isGreen = [_metering backgroundColor] == [UIColor greenColor];
+        if (!isGreen) {
+            [_metering setBackgroundColor:[UIColor greenColor]];
+       //     NSLog(@"average set normal color %f", average);
+        }
+    }
+    
+    // 0-> -6 yellow
+    
+    average = (average*(-50.0f/minDB))-minDB;
+    peak    = (peak*(-50.0f/minDB))-minDB;
+    [self updateMeteringConstraint:average];
+    [self updatePeakConstraint:peak];
+}
+
 // when autoplay is active, automatically go to next item...
 - (void)doAutoAdvance
 {
@@ -1838,9 +1891,47 @@
     NSLog(@"Decode Error occurred %@",error);
 }
 
+- (void)updateMeteringConstraint: (float) height {
+    if (meteringConstraint != NULL) {
+        [_metering removeConstraint: meteringConstraint]; //all constraints
+    }
+    meteringConstraint = [NSLayoutConstraint constraintWithItem:_metering
+                                                      attribute:NSLayoutAttributeHeight
+                                                      relatedBy:NSLayoutRelationEqual
+                                                         toItem:nil
+                                                      attribute: NSLayoutAttributeNotAnAttribute
+                                                     multiplier:1
+                                                       constant:height];
+    
+    [_metering addConstraint:meteringConstraint];
+}
+
+- (void)updatePeakConstraint: (float) height {
+    if (peakConstraint != NULL) {
+        [_recordButtonContainer removeConstraint: peakConstraint]; //all constraints
+    }
+    
+    peakConstraint = [NSLayoutConstraint constraintWithItem:_peak
+                                                      attribute:NSLayoutAttributeBottom
+                                                      relatedBy:NSLayoutRelationEqual
+                                                         toItem:_metering
+                                                      attribute: NSLayoutAttributeBottom
+                                                     multiplier:1
+                                                       constant:-height];
+    
+    [_recordButtonContainer addConstraint:peakConstraint];
+}
+
 - (void)audioRecorderDidFinishRecording:
 (AVAudioRecorder *)recorder successfully:(BOOL)flag
 {
+    if (_meteringTimer != NULL) {
+        [_meteringTimer invalidate];
+        [self updateMeteringConstraint:0];
+        [self updatePeakConstraint:0];
+        [_peak setHidden:TRUE];
+    }
+   
     if (debugRecord)  NSLog(@"audioRecorderDidFinishRecording time = %f",CFAbsoluteTimeGetCurrent());
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
     CMTime time = asset.duration;
@@ -1961,7 +2052,9 @@ bool debugRecord = false;
     {
         if (debugRecord) NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
         _english.textColor = [UIColor npDarkBlue];
-        
+        _meteringTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(doMeteringUpdate) userInfo:nil repeats:YES];
+        [_peak setHidden:FALSE];
+
         for (UIView *v in [_scoreDisplayContainer subviews]) {
             [v removeFromSuperview];
         }
@@ -2614,7 +2707,7 @@ bool debugRecord = false;
 
 // previous score lets the progress bar grow from old to new score
 - (void)showScoreToUser:(NSDictionary *)json previousScore:(NSNumber *)previousScore {
-    BOOL correct = [[json objectForKey:@"isCorrect"] boolValue] && [[json objectForKey:@"fullMatch"] boolValue];
+    BOOL correct = [[json objectForKey:@"isCorrect"] boolValue] && [[json objectForKey:@"fullmatch"] boolValue];
     NSString *valid = [json objectForKey:@"valid"];
     NSNumber *overallScore = [json objectForKey:@"score"];
     
@@ -2636,12 +2729,12 @@ bool debugRecord = false;
             [self setDisplayMessage:@"Speaking too quietly or the room is too noisy."];
         }
         else {
-            [self setDisplayMessage:[json objectForKey:@"valid"]];
+            [self setDisplayMessage:valid];
         }
     }
     _scoreProgress.hidden = false;
-    [_scoreProgress setProgress:[overallScore floatValue]];
-    [_scoreProgress setProgressTintColor:[self getColor2:[overallScore floatValue]]];
+//    [_scoreProgress setProgress:[overallScore floatValue]];
+//    [_scoreProgress setProgressTintColor:[self getColor2:[overallScore floatValue]]];
     
     if (previousScore != nil) {
         [_scoreProgress setProgress:[previousScore floatValue]];
@@ -2991,13 +3084,15 @@ bool debugRecord = false;
     return wordLabel;
 }
 
-
+// try to de-emphasize phones you score well on
 - (NSMutableAttributedString *)getColoredPhones:(NSString *)phoneToShow wend:(NSNumber *)wend wstart:(NSNumber *)wstart phoneAndScore:(NSArray *)phoneAndScore {
     // now mark the ranges in the string with colors
     
     NSMutableAttributedString *coloredPhones = [[NSMutableAttributedString alloc] initWithString:phoneToShow];
     
     int pstart = 0;
+    UIColor *gray = [UIColor grayColor];
+
     for (NSDictionary *event in phoneAndScore) {
         NSString *phoneText = [event objectForKey:@"event"];
         if ([phoneText isEqualToString:@"sil"]) continue;
@@ -3010,11 +3105,17 @@ bool debugRecord = false;
             NSRange range = NSMakeRange(pstart, [phoneText length]);
             pstart += range.length + (_addSpaces ? 1 : 0);
             float score = [pscore floatValue];
-            UIColor *color = [self getColor2:score];
+            UIColor *color = [self getColorPhones:score];
             //        NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
             [coloredPhones addAttribute:NSBackgroundColorAttributeName
                                   value:color
                                   range:range];
+            
+            if (score > 0.53) {
+                [coloredPhones addAttribute:NSForegroundColorAttributeName
+                                      value:gray
+                                      range:range];
+            }
         }
         else {
             
@@ -3586,6 +3687,24 @@ bool debugRecord = false;
     blue /= 255;
     
     return [UIColor colorWithRed:red green:green blue:blue alpha:1];
+}
+
+- (UIColor *) getColorPhones:(float) score {
+    if (score > 1.0) score = 1.0;
+    if (score < 0)  score = 0;
+    
+    float alpha = 1;
+    if (score > 0.53) alpha = 0.5;
+    
+    float red   = fmaxf(0,(255 - (fmaxf(0, score-0.5)*2*255)));
+    float green = fminf(255, score*2*255);
+    float blue  = 0;
+    
+    red /= 255;
+    green /= 255;
+    blue /= 255;
+    
+    return [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
 }
 
 - (void)cacheAudio:(NSArray *)items
