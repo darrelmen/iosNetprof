@@ -228,6 +228,9 @@
     NSLog(@"Reco - Download content failed with %@",error);
     // _requestPending = false;
     // [[self tableView] reloadData];
+    
+    [self postEvent:error.localizedDescription widget:@"WARNING" type:@"connection failure"];
+
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 
@@ -1544,9 +1547,9 @@ NSLayoutConstraint *peakConstraint;
         peak = minDB;
     }
     
-    if (average == -120) {
-        [self setDisplayMessage:@"Please allow recording."];  // kinda wasteful....
-    }
+//    if (average == -120) {
+//        [self setDisplayMessage:@"Please allow recording."];  // kinda wasteful....
+//    }
     
     if (average < minDB) {
        // NSLog(@"average min capped from %f", average);

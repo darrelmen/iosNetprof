@@ -220,15 +220,33 @@
                                                     </constraint>
                                                 </constraints>
                                             </activityIndicatorView>
+                                            <view contentMode="scaleToFill" ambiguous="YES" restorationIdentifier="metering" translatesAutoresizingMaskIntoConstraints="NO" id="gOh-X5-LH4">
+                                                <rect key="frame" x="198.5" y="50" width="15" height="0.0"/>
+                                                <color key="backgroundColor" red="0.38119952649853139" green="1" blue="0.32763080568269498" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="15" id="piK-05-9K3"/>
+                                                </constraints>
+                                            </view>
+                                            <view hidden="YES" contentMode="scaleToFill" ambiguous="YES" restorationIdentifier="peak" translatesAutoresizingMaskIntoConstraints="NO" id="GEG-lz-Txf">
+                                                <rect key="frame" x="198.5" y="27" width="15" height="2"/>
+                                                <color key="backgroundColor" red="1" green="0.18422672179999999" blue="0.0038713064180000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="3" id="NDs-p3-9wx"/>
+                                                    <constraint firstAttribute="width" constant="15" id="UU5-ha-H9l"/>
+                                                </constraints>
+                                            </view>
                                         </subviews>
                                         <gestureRecognizers/>
                                         <constraints>
                                             <constraint firstAttribute="height" secondItem="85Q-3i-7cz" secondAttribute="height" multiplier="1.2" constant="1" id="7jP-Zp-tfr"/>
+                                            <constraint firstItem="GEG-lz-Txf" firstAttribute="leading" secondItem="85Q-3i-7cz" secondAttribute="trailing" constant="5" id="8bh-Do-W24"/>
                                             <constraint firstItem="85Q-3i-7cz" firstAttribute="centerY" secondItem="D19-P2-ZOH" secondAttribute="centerY" id="PuG-8M-ani"/>
                                             <constraint firstItem="85Q-3i-7cz" firstAttribute="top" secondItem="LDy-Lh-sWf" secondAttribute="top" constant="5" id="fQa-mO-wDK"/>
                                             <constraint firstAttribute="bottom" secondItem="85Q-3i-7cz" secondAttribute="bottom" constant="5" id="glB-vA-Ptd"/>
                                             <constraint firstItem="85Q-3i-7cz" firstAttribute="leading" secondItem="D19-P2-ZOH" secondAttribute="trailing" constant="8" id="kZl-uv-8YW"/>
+                                            <constraint firstItem="gOh-X5-LH4" firstAttribute="leading" secondItem="85Q-3i-7cz" secondAttribute="trailing" constant="5" id="nHk-64-mLD"/>
                                             <constraint firstAttribute="centerY" secondItem="85Q-3i-7cz" secondAttribute="centerY" id="ou8-JJ-Ca4"/>
+                                            <constraint firstItem="gOh-X5-LH4" firstAttribute="bottom" secondItem="85Q-3i-7cz" secondAttribute="bottom" constant="-5" id="qhc-IO-XTC"/>
                                         </constraints>
                                         <variation key="default">
                                             <mask key="constraints">
@@ -499,7 +517,9 @@
                         <outlet property="english" destination="wAh-a0-3Cd" id="qyl-bF-QLS"/>
                         <outlet property="foreignLang" destination="j6L-63-Jyx" id="mSI-fR-moz"/>
                         <outlet property="longPressGesture" destination="0JG-qf-3We" id="FyB-RQ-hLB"/>
+                        <outlet property="metering" destination="gOh-X5-LH4" id="g3r-kb-3uI"/>
                         <outlet property="pageControl" destination="cmF-9c-VKI" id="nJg-Fg-118"/>
+                        <outlet property="peak" destination="GEG-lz-Txf" id="Paa-qE-hbf"/>
                         <outlet property="progressNum" destination="udM-ls-vBD" id="F5d-tw-FDm"/>
                         <outlet property="progressThroughItems" destination="f4N-q5-bJc" id="7r1-dF-OvB"/>
                         <outlet property="recoFeedbackImage" destination="D19-P2-ZOH" id="bgs-8h-Rk4"/>
@@ -561,7 +581,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="4676" y="-116"/>
+            <point key="canvasLocation" x="4676" y="-116.49175412293854"/>
         </scene>
         <!--In Context-->
         <scene sceneID="YzQ-rN-OlP">
@@ -2418,14 +2438,14 @@
         </scene>
     </scenes>
     <resources>
-        <image name="checkAndEar" width="32" height="32"/>
+        <image name="checkAndEar" width="64" height="64"/>
         <image name="dliIcon.png" width="54" height="70"/>
         <image name="female_better" width="19" height="26"/>
         <image name="male_better" width="19" height="26"/>
         <image name="micBiggerCircleTransparent" width="60" height="60"/>
         <image name="mitllLogo2.png" width="39" height="39"/>
-        <image name="rightWrong" width="30" height="15"/>
-        <image name="sounds" width="24" height="24"/>
+        <image name="rightWrong" width="60" height="30"/>
+        <image name="sounds" width="48" height="48"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Rkv-H3-tXt"/>
