@@ -52,6 +52,25 @@
 //    return YES;
 //}
 
+void uncaughtExceptionHandler(NSException *exception) {
+    NSLog(@"CRASH: %@", exception);
+    NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    // NSLog(@"got doc dir %@",documentsDirectory);
+//    NSString *audioDir = [NSString stringWithFormat:@"%@_crash",lang];
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"crash.log"];
+    NSLog(@"uncaughtExceptionHandler got filePath %@",filePath);
+    
+    NSString *dump=[NSString stringWithFormat:@"exception %@ \nstack %@",exception,[exception callStackSymbols]];
+//    [dump writeToFile:filePath atomically:YES encoding:YES error:(NSError * _Nullable __autoreleasing * _Nullable)];
+    
+    NSError *myError = nil;
+    [dump writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&myError];
+    // Internal error reporting
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     [UINavigationBar appearance].translucent = YES;
@@ -72,6 +91,8 @@
     //NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     [[NSUserDefaults standardUserDefaults] setObject:[self appNameAndVersionNumberDisplayString] forKey:@"version_preference"];
 
+    NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);    // Normal launch stuff
+    
   //  [self getSites];
     [UITextView appearance].linkTextAttributes = @{ NSForegroundColorAttributeName : [UIColor npMedPurple] };
     return YES;

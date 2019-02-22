@@ -229,10 +229,17 @@
                                             </view>
                                             <view hidden="YES" contentMode="scaleToFill" ambiguous="YES" restorationIdentifier="peak" translatesAutoresizingMaskIntoConstraints="NO" id="GEG-lz-Txf">
                                                 <rect key="frame" x="198.5" y="27" width="15" height="2"/>
-                                                <color key="backgroundColor" red="1" green="0.18422672179999999" blue="0.0038713064180000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="3" id="NDs-p3-9wx"/>
                                                     <constraint firstAttribute="width" constant="15" id="UU5-ha-H9l"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" restorationIdentifier="outline" translatesAutoresizingMaskIntoConstraints="NO" id="dhL-Kw-ipC">
+                                                <rect key="frame" x="198.5" y="10" width="15" height="50"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="15" id="IWB-vm-tlt"/>
+                                                    <constraint firstAttribute="height" constant="50" id="Ic8-rc-gEY"/>
                                                 </constraints>
                                             </view>
                                         </subviews>
@@ -240,7 +247,9 @@
                                         <constraints>
                                             <constraint firstAttribute="height" secondItem="85Q-3i-7cz" secondAttribute="height" multiplier="1.2" constant="1" id="7jP-Zp-tfr"/>
                                             <constraint firstItem="GEG-lz-Txf" firstAttribute="leading" secondItem="85Q-3i-7cz" secondAttribute="trailing" constant="5" id="8bh-Do-W24"/>
+                                            <constraint firstItem="dhL-Kw-ipC" firstAttribute="bottom" secondItem="85Q-3i-7cz" secondAttribute="bottom" constant="-5" id="FB8-Ak-xcx"/>
                                             <constraint firstItem="85Q-3i-7cz" firstAttribute="centerY" secondItem="D19-P2-ZOH" secondAttribute="centerY" id="PuG-8M-ani"/>
+                                            <constraint firstItem="dhL-Kw-ipC" firstAttribute="leading" secondItem="85Q-3i-7cz" secondAttribute="trailing" constant="5" id="c3u-Cu-RaF"/>
                                             <constraint firstItem="85Q-3i-7cz" firstAttribute="top" secondItem="LDy-Lh-sWf" secondAttribute="top" constant="5" id="fQa-mO-wDK"/>
                                             <constraint firstAttribute="bottom" secondItem="85Q-3i-7cz" secondAttribute="bottom" constant="5" id="glB-vA-Ptd"/>
                                             <constraint firstItem="85Q-3i-7cz" firstAttribute="leading" secondItem="D19-P2-ZOH" secondAttribute="trailing" constant="8" id="kZl-uv-8YW"/>
@@ -518,6 +527,7 @@
                         <outlet property="foreignLang" destination="j6L-63-Jyx" id="mSI-fR-moz"/>
                         <outlet property="longPressGesture" destination="0JG-qf-3We" id="FyB-RQ-hLB"/>
                         <outlet property="metering" destination="gOh-X5-LH4" id="g3r-kb-3uI"/>
+                        <outlet property="outline" destination="dhL-Kw-ipC" id="r92-ex-cqk"/>
                         <outlet property="pageControl" destination="cmF-9c-VKI" id="nJg-Fg-118"/>
                         <outlet property="peak" destination="GEG-lz-Txf" id="Paa-qE-hbf"/>
                         <outlet property="progressNum" destination="udM-ls-vBD" id="F5d-tw-FDm"/>

@@ -98,6 +98,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+  
+
     [_logIn setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
     [_signUp setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
     [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
@@ -108,8 +110,9 @@
     _siteGetter = [EAFGetSites new];
     _siteGetter.delegate = self;
     [_siteGetter getSites];
-    _poster = [[EAFEventPoster alloc] init];
-    
+
+    _poster = [[EAFEventPoster alloc] initWithURL:[[EAFGetSites new] getServerURL] projid:[NSNumber numberWithInt:-1]];
+ 
     // NSLog(@"viewDidLoad : languages now %@",_siteGetter.languages);
     
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -215,6 +218,34 @@
     [self gotSingleTap:nil];
 }
 
+- (void)maybeReportCrash {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    // NSLog(@"got doc dir %@",documentsDirectory);
+    //    NSString *audioDir = [NSString stringWithFormat:@"%@_crash",lang];
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"crash.log"];
+    NSLog(@"viewDidLoad got filePath %@",filePath);
+    
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
+    if (fileExists) {
+        NSLog(@"viewDidLoad EXISTS filePath %@",filePath);
+        NSError *error;
+        NSString *content = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
+        NSLog(@"viewDidLoad content %@ error %@",content, error);
+        [_poster postEvent:content exid:@"crash" widget:@"crash"  widgetType:@"crash"];
+        
+        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+        if (success) {
+            
+        }
+        else
+        {
+            NSLog(@"Could not delete file -:%@ ",[error localizedDescription]);
+        }
+        
+    }
+}
+
 // both login and sign up button clicks come here
 - (IBAction)onClick:(id)sender {
     //NSLog(@"LoginView : onClick Got click from %@", sender);
@@ -260,8 +291,8 @@
         [self tryToLogIn:chosenLanguage];
     
         //NSLog(@"got project id %@",[_siteGetter.nameToProjectID objectForKey:chosenLanguage]);
-        NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
-        [_poster setURL:urlForLanguage projid:[_siteGetter.nameToProjectID objectForKey:chosenLanguage]];
+       // NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
+     
         
         [_poster postEvent:@"login" exid:@"N/A" widget:@"LogIn" widgetType:@"Button"];
     }
@@ -272,6 +303,9 @@
 
 -(void)tryToLogIn:(NSString*) chosenLanguage
 {
+    [_poster setURL: [_siteGetter.nameToURL objectForKey:chosenLanguage] projid:[_siteGetter.nameToProjectID objectForKey:chosenLanguage]];
+    [self maybeReportCrash];
+    
     _passwordFeedback.text = @"";
     
     // make sure multiple events don't occur
@@ -279,7 +313,7 @@
     NSString *username =_username.text;
     NSString *password =_password.text;
     
-    NSLog(@"LoginView onClick password '%@'",_password.text);
+  //  NSLog(@"LoginView onClick password '%@'",_password.text);
     
     [self checkUpToDate];
     
@@ -295,7 +329,7 @@
     
     NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
     
-    NSLog(@"LoginView projid  '%@' url %@",projid,url);
+    NSLog(@"LoginView tryToLogIn projid  '%@' url %@",projid,url);
     
     [urlRequest setValue:@"hasUser" forHTTPHeaderField:@"request"];
     if ([username length] < 5) {
@@ -315,12 +349,15 @@
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     });
     
-    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+    NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
+
+//    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          if (error != nil) {
              NSLog(@"\n\n\n\t1 Got error %@",error);
              dispatch_async(dispatch_get_main_queue(), ^{
                  [self connection:nil didFailWithError:error];
+                 [self->_poster postError:urlRequest error:error];
              });
          }
          else {
@@ -334,13 +371,12 @@
 //             }
 //
              self->_responseData = data;
-             
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:YES];
          }
      }];
-    
+    [downloadTask resume];
 }
 
 -(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView

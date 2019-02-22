@@ -226,8 +226,8 @@
         NSString *audioDir = [NSString stringWithFormat:@"%@_audio",lang];
         NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
         NSLog(@"goGetAudio got filePath %@",filePath);
-        Reachability* reach = [Reachability reachabilityForInternetConnection];
-        if ([reach isReachable]) {
+       // Reachability* reach = [Reachability reachabilityForInternetConnection];
+        if ([[Reachability reachabilityForInternetConnection] isReachable]) {
             //NSLog(@"_rawPaths count %d",_rawPaths.count);
             //NSLog(@"_paths count %d",_paths .count);
             

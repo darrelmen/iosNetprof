@@ -186,7 +186,7 @@
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
     [urlRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
-   // [urlRequest setTimeoutInterval:TIMEOUT];
+//    [urlRequest setTimeoutInterval:1];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
@@ -195,7 +195,8 @@
     NSLog(@"Reco projid = %@",_projid);
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+    NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
+     //    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          if (error != nil) {
              NSLog(@"EAFRecoFlashcardController askServerForJsonForList Got error %@",error);
@@ -203,6 +204,7 @@
                  [self connection:nil didFailWithError:error];
              });
              [self showConnectionError:error];
+             [_poster postError:urlRequest error:error];
          }
          else {
              self->_responseListData = data;
@@ -212,7 +214,9 @@
                                  waitUntilDone:YES];
          }
      }];
-    
+
+    [downloadTask resume];
+
     _loadingContentAlert = NULL;
     _slowContentTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(slowContentTimerFired) userInfo:nil repeats:NO];
 }
@@ -222,6 +226,10 @@
     [_loadingContentAlert show];
 }
 
+//- (void)postWarningEvent:(NSURLRequest *)request error:(NSError *)error {
+//    [self postEvent:error.localizedDescription widget:@"WARNING" type:[NSString stringWithFormat:@"connection failure to %@", request]];
+//}
+
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     // The request has failed for some reason!
     // Check the error var
@@ -229,8 +237,9 @@
     // _requestPending = false;
     // [[self tableView] reloadData];
     
-    [self postEvent:error.localizedDescription widget:@"WARNING" type:@"connection failure"];
-
+  //  NSString *type = [NSString stringWithFormat:@"connection failure to %@", connection.currentRequest];
+    [_poster postError:connection.currentRequest error:error];
+    
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 
@@ -244,12 +253,12 @@
     // The request is complete and data has been received
     [_slowContentTimer invalidate];
     [self dismissLoadingContentAlert];
-    [self useListData];
+    [self useListData:connection.currentRequest];
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 
-- (BOOL) useListData {
+- (BOOL) useListData:(NSURLRequest *)currentRequest {
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_responseListData
@@ -268,6 +277,8 @@
         NSString *msg= [NSString stringWithFormat:@"Network connection problem, please try again. Error : %@",errMessage];
         [self showError:msg];
         [self dismissLoadingContentAlert];
+        [_poster postError:currentRequest error:error];
+
         return false;
     }
     else {
@@ -309,6 +320,13 @@
 {
     [super viewDidLoad];
 
+    
+    CGFloat borderWidth = 2.0f;
+    
+    _outline.frame = CGRectInset(_outline.frame, -borderWidth, -borderWidth);
+    _outline.layer.borderColor = [UIColor grayColor].CGColor;
+    _outline.layer.borderWidth = borderWidth;
+    
     _audioCache = [[EAFAudioCache alloc] init];
     _audioCache.language = _language;
     
@@ -2542,11 +2560,11 @@ bool debugRecord = false;
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
     
     NSString *host = [_siteGetter.nameToHost objectForKey:_language];
-    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet", _url];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServletTTTT", _url];
     if ([host length] != 0) {
         baseurl = [NSString stringWithFormat:@"%@scoreServlet/%@", _url, host];
     }
-    //NSLog(@"Reco : postAudio talking to %@ file length %@",baseurl, postLength);
+    NSLog(@"Reco : postAudio talking to %@ file length %@",baseurl, postLength);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
@@ -2610,14 +2628,14 @@ bool debugRecord = false;
                      [self setDisplayMessage:@"Make sure your wifi or cellular connection is on."];
                  }
                  else {
+                     [self->_poster postError:urlRequest error:error];
                      [self showConnectionError:error];
                  }
              });
-             [self postEvent:error.localizedDescription widget:@"Record" type:@"Connection error"];
          }
          else {
              self->_responseData = data;
-             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:urlRequest:)
                                     withObject:nil
                                  waitUntilDone:YES];
          }
@@ -2770,7 +2788,7 @@ bool debugRecord = false;
 }
 
 // TODO : consider how to do streaming audio
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+- (void)connectionDidFinishLoading:(NSURLRequest *)request {
     _isPostingAudio=FALSE;
     
     CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
@@ -2778,7 +2796,7 @@ bool debugRecord = false;
     CFAbsoluteTime millis = diff * 1000;
     int iMillis = (int) millis;
     
-    NSLog(@"connectionDidFinishLoading - round trip time was %f %d ",diff, iMillis);
+    //NSLog(@"connectionDidFinishLoading - round trip time was %f %d ",diff, iMillis);
     
     if ([self isAQuiz]) {
         _timeRemainingMillis += iMillis;  // put the time back - don't count round trip wait against completion time...
@@ -2787,9 +2805,9 @@ bool debugRecord = false;
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
     double durationInSeconds = CMTimeGetSeconds(asset.duration);
     
-    [self postEvent:[NSString stringWithFormat:@"round trip was %.2f sec for file of dur %.2f sec",diff,durationInSeconds]
-             widget:[NSString stringWithFormat:@"rt %.2f",diff]
-               type:[NSString stringWithFormat:@"file %.2f",durationInSeconds] ];
+    [self postEvent:[NSString stringWithFormat:@"round trip was %.3f sec for file of dur %.3f sec",diff,durationInSeconds]
+             widget:[NSString stringWithFormat:@"rt %.3f",diff]
+               type:[NSString stringWithFormat:@"file %.3f",durationInSeconds] ];
     
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
@@ -2801,7 +2819,8 @@ bool debugRecord = false;
 //    NSLog(@"connectionDidFinishLoading data was \n%@",string);
     
     if (error != nil) {
-        NSLog(@"connectionDidFinishLoading - got error %@",error);
+        NSLog(@"connectionDidFinishLoading - url %@ got error %@",request, error);
+        [_poster postError:request error:error];
         // NSLog(@"data was %@",_responseData);
     }
     // else {
@@ -2811,7 +2830,7 @@ bool debugRecord = false;
     //     NSLog(@"correct was %@",[json objectForKey:@"isCorrect"]);
     //     NSLog(@"saidWord was %@",[json objectForKey:@"saidWord"]);
     NSNumber *exid = [json objectForKey:@"exid"];
-
+    
     NSNumber *resultID = [json objectForKey:@"resultID"];
     BOOL isFullMatch = [[json objectForKey:@"fullmatch"] boolValue];
     
@@ -2819,7 +2838,9 @@ bool debugRecord = false;
     NSString * roundTrip =[NSString stringWithFormat:@"%d",(int) millis];
     NSLog(@"connectionDidFinishLoading - roundTrip  %@ %@",roundTrip, [resultID stringValue]);
     
-    [[self getPoster] postRT:[resultID stringValue] rtDur:roundTrip];
+    if (resultID != NULL) {
+        [[self getPoster] postRT:[resultID stringValue] rtDur:roundTrip];
+    }
     
     NSNumber *score = [json objectForKey:@"score"];
     //   NSLog(@"score was %@ class %@",[json objectForKey:@"score"], [[json objectForKey:@"score"] class]);
@@ -2827,9 +2848,9 @@ bool debugRecord = false;
         [self setDisplayMessage:@"Score low, try again."];
         return;
     }
-    if (!isFullMatch) {
-        NSLog(@"OK, audio is cut off.");
-    }
+//    if (!isFullMatch) {
+//        NSLog(@"OK, audio is cut off.");
+//    }
     
     NSNumber *previousScore;
     if (exid != nil) {
@@ -2846,7 +2867,7 @@ bool debugRecord = false;
     if ([[json objectForKey:@"reqid"] intValue] < _reqid-1) {
         NSString *reqid = [json objectForKey:@"reqid"];
         NSLog(@"got back reqid %@",reqid);
-        NSLog(@"json was %@",json);
+        NSLog(@"json was       %@",json);
         NSLog(@"discarding old response - got back %@ latest %d",reqid ,_reqid);
         return;
     }
