@@ -130,6 +130,14 @@ const BOOL debug = FALSE;
     if (_listid != NULL) {
         baseurl = [NSString stringWithFormat:@"%@&listid=%@", baseurl, _listid];
     }
+    
+    if (_sessionid != NULL) {
+        baseurl = [NSString stringWithFormat:@"%@&session=%@", baseurl, _sessionid];
+    }
+    
+    if (_sentencesOnly) {
+        baseurl = [NSString stringWithFormat:@"%@&sentences=TRUE", baseurl];
+    }
 
     NSLog(@"EAFPhoneScoreTableViewController url %@ %@",baseurl,_projid);
     
@@ -461,7 +469,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         [cell.contentView addSubview:exampleView];
         //    [scrollView addSubview:exampleView];
         
-        exampleView.refAudio = [_resultToRef    objectForKey:result];
+        NSString *refAudioPath = [_resultToRef    objectForKey:result];
+        if (refAudioPath && [refAudioPath isKindOfClass:[NSString class]]) {
+            exampleView.refAudio = refAudioPath;
+        }
+        else {
+            NSLog(@"ref audio is nil");
+            exampleView.refAudio = nil;
+        }
         exampleView.answer   = [_resultToAnswer objectForKey:result];
         
         //NSLog(@"ref %@ %@",exampleView.refAudio, exampleView.answer);
@@ -648,7 +663,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if (phoneScore != NULL) {
         overallAvg = [phoneScore floatValue];
-        NSLog(@"%@ score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
+        //NSLog(@"%@ overallAvg score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
     }
     //   NSLog(@"%@ score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
     if (overallAvg > -0.1) {
@@ -754,7 +769,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (void) playGotToEnd {
-    NSLog(@" playGotToEnd");
+   // NSLog(@" playGotToEnd");
     [self setTextColor:[UIColor blackColor]];
 }
 
@@ -821,6 +836,23 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
  }
  */
 
+- (void)addToCacheRequest:(NSString *)answer paths:(NSMutableArray *)paths rawPaths:(NSMutableArray *)rawPaths {
+    if (answer == NULL || [answer isKindOfClass:[NSNull class]]) {
+        NSLog(@"Huh? skipping null ");
+    }
+    else {
+        NSString * refPath = [answer stringByReplacingOccurrencesOfString:@".wav"
+                                                               withString:@".mp3"];
+        
+       // NSLog(@"Phonescore.useJsonChapterData will get audio %lu : %@",(unsigned long)paths.count, refPath);
+        
+        NSMutableString *mu = [NSMutableString stringWithString:refPath];
+        [mu insertString:_url atIndex:0];
+        [paths addObject:mu];
+        [rawPaths addObject:refPath];
+    }
+}
+
 /*
  // Override to support conditional rearranging of the table view.
  - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
@@ -870,6 +902,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSDictionary *fields = [resultsDict objectForKey:resultID];
         NSString *ref = [fields objectForKey:@"ref"];
         
+        [self addToCacheRequest:ref paths:paths rawPaths:rawPaths];
+
         if (debug) NSLog(@"PhoneScore: ref %@",ref);
         
         [_resultToRef setValue:ref forKey:resultID];
@@ -897,9 +931,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         else if ([[resultDict objectForKey:@"words"] isKindOfClass:[NSArray class]]) {
            // NSLog(@"PhoneScore: is an array %@",[resultDict objectForKey:@"words"]);
-            
             NSArray *theWords = [resultDict objectForKey:@"words"];
-            
            // NSLog(@"PhoneScore: dict theWords %@",theWords);
             
             if (theWords != nil) {
@@ -923,13 +955,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         }
         
         if (answer && answer.length > 2) { //i.e. not NO
-            NSString * refPath = [answer stringByReplacingOccurrencesOfString:@".wav"
-                                                                   withString:@".mp3"];
-            
-            NSMutableString *mu = [NSMutableString stringWithString:refPath];
-            [mu insertString:_url atIndex:0];
-            [paths addObject:mu];
-            [rawPaths addObject:refPath];
+            [self addToCacheRequest:answer paths:paths rawPaths:rawPaths];
         }
     }
     

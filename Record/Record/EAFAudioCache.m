@@ -38,6 +38,8 @@
 
 #import "EAFAudioCache.h"
 #import "Reachability.h"
+#import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 
 @interface AudioCacheOperation : NSOperation
 
@@ -72,16 +74,63 @@
         [[NSFileManager defaultManager] createDirectoryAtPath:parent withIntermediateDirectories:YES attributes:nil error:nil];
     }
     
+    
     [mp3AudioData writeToFile:destFileName atomically:YES];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:destFileName]) {
         NSLog(@"writeMP3DataToCacheAt huh? can't find     %@",destFileName);
+    }
+    
+    if (![self isValidMP3File:destFileName]) {
+        NSLog(@"writeMP3DataToCacheAt mp3 data for %@ had length %lul and was invalid.",destFileName,(unsigned long)[mp3AudioData length]);
     }
 }
 
 - (NSString *)getFileInCache:(NSString *)rawRefAudioPath filePath:(NSString *)filePath
 {
     return [filePath stringByAppendingPathComponent:rawRefAudioPath];
+}
+
+// The purpose here is defensive - if the mp3 is truncated, you can't read the header, so you can't get the tags dictionary
+// if you can get the dictionary, the mp3 file is valid and can be played.
+
+- (NSDictionary *)id3TagsForURL:(NSURL *)resourceUrl
+{
+    AudioFileID fileID;
+    
+    //   NSLog(@"id3TagsForURL get tags for '%@'", resourceUrl);
+    //   CFURLRef test = (__bridge CFURLRef)resourceUrl;
+    // NSLog(@"id3TagsForURL get tags for test '%@'", test);
+    
+    OSStatus result = AudioFileOpenURL((__bridge CFURLRef)resourceUrl, kAudioFileReadPermission, 0, &fileID);
+    
+    if (result != noErr) {
+        NSLog(@"id3TagsForURL Error reading tags for %@: %i", resourceUrl, (int)result);
+        return nil;
+    }
+    
+    CFDictionaryRef piDict = nil;
+    UInt32 piDataSize = sizeof(piDict);
+    
+    result = AudioFileGetProperty(fileID, kAudioFilePropertyInfoDictionary, &piDataSize, &piDict);
+    if (result != noErr)
+        NSLog(@"Error reading tags. AudioFileGetProperty failed");
+    
+    AudioFileClose(fileID);
+    
+    NSDictionary *tagsDictionary = [NSDictionary dictionaryWithDictionary:(__bridge NSDictionary*)piDict];
+    CFRelease(piDict);
+    
+    return tagsDictionary;
+}
+
+- (BOOL)isValidMP3File:(NSString *) destFileName {
+    NSURL *testURL = [[NSURL alloc] initFileURLWithPath: destFileName];
+    //  NSLog(@"playRefAudioInternal testURL - %@",testURL);
+    //  if (_debug) [self postEvent:[NSString stringWithFormat:@"playRefAudioInternal found local url %@",testURL] widget:@"playRefAudioInternal" type:@"Button"];
+    
+    NSDictionary * dict = [self id3TagsForURL:testURL];
+    return dict != nil;
 }
 
 -(void) main {
@@ -93,7 +142,10 @@
         NSString *destFileName = [self getFileInCache:_rawPath filePath:_filePath];
         //NSLog(@"%@ started to check %@.",self,destFileName);
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:destFileName] || [destFileName hasSuffix:@"NO"]) {
+        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName] || [destFileName hasSuffix:@"NO"];
+
+        BOOL isValid = exists && [self isValidMP3File:destFileName];
+        if (isValid) {
             //            _completed++;
             //            if (total == _completed) {
             //                NSLog(@"\t goGetAudio turning off network indicator");
@@ -102,8 +154,8 @@
             //                    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:FALSE];
             //                });
             //            }
-            //  NSLog(@"%@ checked file %@.",self,destFileName);
-            
+       //     NSLog(@"%@ checked valid file %@.",self,destFileName);
+        
         }
         else {
             NSURLResponse * response = nil;
@@ -119,7 +171,7 @@
                 });
             }
             else {
-                //    NSLog(@"%@ completed %@",self,destFileName);
+               // NSLog(@"%@ completed %@",self,destFileName);
                 
                 _completed++;
                 if (_completed % 10 == 0) NSLog(@"%@ completed %d",self,_completed);

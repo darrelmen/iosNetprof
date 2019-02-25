@@ -63,6 +63,8 @@
 
 @property long user;
 @property NSNumber *listid;
+@property NSNumber *sessionid;
+@property BOOL sentencesOnly;
 
 -(void)setCurrentTitle;
 

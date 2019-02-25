@@ -120,6 +120,7 @@
 @property BOOL timerStarted;
 @property int timeRemainingMillis;
 @property long sessionTimeStamp;
+@property long lastSessionTimeStamp;
 @property NSTimer *quizTimer;
 @property NSTimer *slowContentTimer;
 @property (strong, nonatomic) NSData *responseListData;
@@ -180,8 +181,9 @@
     NSString* baseurl =[NSString stringWithFormat:@"%@scoreServlet?request=CONTENT&list=%@", _url, _listid];
     NSLog(@"Reco : askServerForJsonForList url %@",baseurl);
     
-    _sessionTimeStamp = 0;
-    
+    _sessionTimeStamp = -1;
+    _lastSessionTimeStamp = -1;
+
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
@@ -320,11 +322,16 @@
 {
     [super viewDidLoad];
 
-    
-    CGFloat borderWidth = 2.0f;
+    _sessionTimeStamp = -1;
+    _lastSessionTimeStamp  = -1;
+
+    CGFloat borderWidth = 1.0f;
     
     _outline.frame = CGRectInset(_outline.frame, -borderWidth, -borderWidth);
-    _outline.layer.borderColor = [UIColor grayColor].CGColor;
+    
+   // [UIColor colorWithRed:0 green:0 blue:0 alpha:0.25];
+    
+    _outline.layer.borderColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.25].CGColor;//[UIColor grayColor].CGColor;
     _outline.layer.borderWidth = borderWidth;
     
     _audioCache = [[EAFAudioCache alloc] init];
@@ -357,7 +364,7 @@
     myDelegate.recoController = self;
     
     // TODO: make this a parameter?
-    _autoAdvanceInterval = 0.5;
+    _autoAdvanceInterval = 0.75;
     _reqid = 1;
     if (!self.synthesizer) {
         self.synthesizer = [[AVSpeechSynthesizer alloc] init];
@@ -512,12 +519,23 @@
     if (_quizMinutes.intValue == 1) min = @"minute";
     NSString *postLength = [NSString stringWithFormat:@"You have %@ %@ to complete %@ items.\nScores above %@ advance automatically.\nIf you finish with time remaining, it's OK to go back.\nSwipe to skip an item or go back.",_quizMinutes,min,_numQuizItems,_minScoreToAdvance];
     
-    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Quiz Rules"
+//    NSString *rememberedFirst = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"firstName"];
+//    NSString *rememberedLast = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"lastName"];
+    NSString *rememberedUserID = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenUserID"];
+
+   // NSString *welcome = [NSString stringWithFormat:@"Welcome %@ %@",rememberedFirst,rememberedLast];
+    NSString *welcome = [NSString stringWithFormat:@"Welcome %@!",rememberedUserID];
+   
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:welcome
                                                                    message:postLength
                                                             preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction * action) {}];
+                                                          handler:^(UIAlertAction * action) {
+                                                              if (self->_quizTimer == NULL && [self isAQuiz]) {  // start the timer!
+                                                                  [self startQuiz];
+                                                              }
+                                                          }];
     
     [alert addAction:defaultAction];
     [self presentViewController:alert animated:YES completion:nil];
@@ -762,9 +780,8 @@
     
     NSLog(@"- viewWillDisappear - Stop auto play.");
     
-    if (_quizTimer !=NULL) {
-        [_quizTimer invalidate];
-        _sessionTimeStamp = 0;
+    if (_quizTimer != NULL) {
+        [self stopQuiz];
     }
     
     [self stopAutoPlay];
@@ -2061,6 +2078,27 @@ NSLayoutConstraint *peakConstraint;
 
 bool debugRecord = false;
 
+// only called on startQuiz and if don't have a session id - i.e. after the end of a quiz
+- (void)startNewSession {
+    _sessionTimeStamp= (long) CFAbsoluteTimeGetCurrent() * 1000;
+    _lastSessionTimeStamp = _sessionTimeStamp;
+}
+
+// when the user says OK out of the welcome dialog.
+- (void)startQuiz {
+    _timeRemainingMillis = _quizMinutes.intValue*60000;
+    [self startNewSession];
+    //    NSLog(@"recordAudio set new session to %ld",_sessionTimeStamp);
+    _quizTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerCalled) userInfo:nil repeats:YES];
+}
+
+- (void)stopQuiz {
+    [_quizTimer invalidate];
+    _sessionTimeStamp = -1;
+    NSLog(@"recordAudio set new session to %ld vs last %ld",_sessionTimeStamp, _lastSessionTimeStamp);
+    _quizTimer = NULL;
+}
+
 - (IBAction)recordAudio:(id)sender {
     [self stopAutoPlay];
     
@@ -2091,11 +2129,8 @@ bool debugRecord = false;
                 NSLog(@"recordAudio -recording %f vs begin %f diff %f ",_then2,recordingBegins,(recordingBegins-_then2));
             }
             
-            if (_quizTimer == NULL && [self isAQuiz]) {  // start the timer!
-                _timeRemainingMillis = _quizMinutes.intValue*60000;
-                _sessionTimeStamp= (long) CFAbsoluteTimeGetCurrent() * 1000;
-                //    NSLog(@"recordAudio set new session to %ld",_sessionTimeStamp);
-                _quizTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerCalled) userInfo:nil repeats:YES];
+           if (_quizTimer == NULL && [self isAQuiz] && _sessionTimeStamp == -1) {  // start a new session if we don't have one...
+               [self startNewSession];
             }
         }
         else {
@@ -2152,6 +2187,7 @@ bool debugRecord = false;
     [_timeRemainingLabel setText:[self getTimeRemaining:_timeRemainingMillis]];
 }
 
+
 -(void)timerCalled
 {
     //    NSLog(@"Timer Called %d",_timeRemaining);
@@ -2159,11 +2195,7 @@ bool debugRecord = false;
     
     if (!_isPostingAudio) {
         if (_timeRemainingMillis <= 0) {
-            [_quizTimer invalidate];
-            _sessionTimeStamp = 0;
-            NSLog(@"recordAudio set new session to %ld",_sessionTimeStamp);
-            
-            _quizTimer = NULL;
+            [self stopQuiz];
             
             [self showQuizComplete];
         }
@@ -2560,7 +2592,7 @@ bool debugRecord = false;
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
     
     NSString *host = [_siteGetter.nameToHost objectForKey:_language];
-    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServletTTTT", _url];
+    NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet", _url];
     if ([host length] != 0) {
         baseurl = [NSString stringWithFormat:@"%@scoreServlet/%@", _url, host];
     }
@@ -2635,7 +2667,7 @@ bool debugRecord = false;
          }
          else {
              self->_responseData = data;
-             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:urlRequest:)
+             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading)
                                     withObject:nil
                                  waitUntilDone:YES];
          }
@@ -2788,7 +2820,7 @@ bool debugRecord = false;
 }
 
 // TODO : consider how to do streaming audio
-- (void)connectionDidFinishLoading:(NSURLRequest *)request {
+- (void)connectionDidFinishLoading {
     _isPostingAudio=FALSE;
     
     CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
@@ -2819,8 +2851,8 @@ bool debugRecord = false;
 //    NSLog(@"connectionDidFinishLoading data was \n%@",string);
     
     if (error != nil) {
-        NSLog(@"connectionDidFinishLoading - url %@ got error %@",request, error);
-        [_poster postError:request error:error];
+        NSLog(@"connectionDidFinishLoading - url %@ got error %@",NULL, error);
+        [_poster postError:NULL error:error];
         // NSLog(@"data was %@",_responseData);
     }
     // else {
@@ -2995,7 +3027,6 @@ bool debugRecord = false;
         // TODO : instead, sort the items by score
         // jump back to first
     } else {
-        
         NSMutableAttributedString *hogan = [[NSMutableAttributedString alloc] initWithString:score];
         [hogan addAttribute:NSFontAttributeName
                       value:[UIFont systemFontOfSize:50.0]
@@ -3900,7 +3931,9 @@ bool debugRecord = false;
         phoneReport.isRTL = [_siteGetter.rtlLanguages containsObject:_language];
         
         phoneReport.listid = _listid;
-        
+        NSLog(@"\n\tusing session id %ld",_lastSessionTimeStamp);
+        phoneReport.sessionid = [NSNumber numberWithLong:_lastSessionTimeStamp];
+        phoneReport.sentencesOnly = _showSentences;
     }
     @catch (NSException *exception)
     {
