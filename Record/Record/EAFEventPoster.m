@@ -127,9 +127,9 @@
          if (error != nil) {
              NSLog(@"\n\npostEvent : Got error %@",error);
          }
-         else {
-             NSLog(@"postEvent : reply %@",data);
-         }
+//         else {
+//             NSLog(@"postEvent : reply %@",data);
+//         }
      }];
     [downloadTask resume];
 }

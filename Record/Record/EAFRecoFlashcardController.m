@@ -696,35 +696,6 @@
     }
 }
 
-/*
- -(IBAction)shuffleBtnClicked:(id)sender{
- //   _shuffleButton.superview.tintColor = [UIColor lightGrayColor];
- 
- //   sender.superview.tintColor = [UIColor whiteColor];
- 
- _shuffleButton.selected = !_shuffleButton.selected;
- _shuffleButton.color = _shuffleButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
- 
- if (_shuffleButton.selected) {
- 
- _itemForShuffle.enabled = 0;
- _itemForShuffle.enabled = !_itemForShuffle.enabled;
- _itemForShuffle.enabled = _itemForShuffle.enabled ?[UIColor blueColor]:[UIColor whiteColor];
- 
- if (_shuffleButton.enabled) {
- 
- //        if (_autoPlayButton.selected) {
- //            [self unselectAutoPlay];
- ////            _autoPlayButton.selected = !_shuffleButton.selected;
- //        }
- [self doShuffle];
- [self respondToSwipe];
- }
- //    [self respondToSwipe];
- 
- [self postEvent:@"shuffle" widget:@"shuffle" type:@"BButton"];
- }
- */
 - (IBAction)shuffle:(id)sender {
     _shuffleBtn.selected = !_shuffleBtn.selected;
     _shuffleBtn.color = _shuffleBtn.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
@@ -1060,7 +1031,6 @@
     [self respondToSwipe];
 }
 
-
 - (void)setGenderSelector {
     NSString *audioGender = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioGender"];
     if (audioGender == nil) {
@@ -1076,12 +1046,14 @@
 
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
-    //NSLog(@"respondToSwipe - %ld",_index);
+   // NSLog(@"respondToSwipe - %ld",_index);
+    
     long jsonItemCount = (long) _jsonItems.count;
     
-    _progressThroughItems.progress = ((float) _index) /(float) _jsonItems.count;
+    _progressThroughItems.progress = ((float) _index+1) /(float) _jsonItems.count;
     
     NSString *jsonItemCountStr = [NSString stringWithFormat:@"%ld",jsonItemCount];
+    
     _progressNum.text = [NSString stringWithFormat:@"%ld  / %ld", _index + 1, jsonItemCount];
     _progressNum.textColor = [UIColor npLightBlue];
     _timeRemainingLabel.textColor = [UIColor npLightBlue];
@@ -1307,13 +1279,12 @@
     flAtIndex = [self trim:flAtIndex];
     _tlAtIndex = [self trim:_tlAtIndex];
     
-    NSLog(@"respondToSwipe _languageSegmentIndex %ld",(long)_languageSegmentIndex);
+    //NSLog(@"respondToSwipe _languageSegmentIndex %ld",(long)_languageSegmentIndex);
     
     if (_languageSegmentIndex == 3) {
         [self hideWithDashes:flAtIndex];
     }
     else {
-        //  [_foreignLang setText:flAtIndex];
         [self setForeignLangWith:flAtIndex];
         if([_tlAtIndex length] != 0){
             [_tl setText:_tlAtIndex];
@@ -1429,7 +1400,9 @@
     [self stopAutoPlay];
     
     _index--;
-    if (_index == -1) _index = _jsonItems.count  -1UL;
+    if (_index == -1) {
+        _index = _jsonItems.count  -1UL;
+    }
     
     [self postEvent:@"swipeRight" widget:@"card" type:@"UIView"];
     [self respondToSwipe];
@@ -1444,12 +1417,12 @@
     BOOL onLast = _index == _jsonItems.count;
     if (onLast) {
         _index = 0;
+       // NSLog(@"OK index is %ld",_index);
         // TODO : get the sorted list and resort the items in incorrect first order
     }
     
     if (onLast) {
        // [self postEvent:@"on last so prevent play..." widget:@"swipeLeftDetected" type:@"UIView"];
-
         _preventPlayAudio = TRUE;
     }
     
@@ -1459,6 +1432,9 @@
         if ([self notAQuiz]) {
             [self showScoresClick:nil];
             [((EAFItemTableViewController*)_itemViewController) askServerForJson];
+        }
+        else {
+            [self respondToSwipe];
         }
     }
     else {
@@ -1559,14 +1535,6 @@
     _english.textColor = [UIColor npMedPurple];
 }
 
-//- (double) DbToAmp(double inDb)
-//{
-//    return pow(10., 0.05 * inDb);
-//}
-
-
-//float lowPassResults=0;
-//float lowPassResultsAvg=0;
 NSLayoutConstraint *meteringConstraint;
 NSLayoutConstraint *peakConstraint;
 -(void) doMeteringUpdate
@@ -1592,14 +1560,30 @@ NSLayoutConstraint *peakConstraint;
     }
     
     if (average > -6) {
-       // NSLog(@"average yellow %f", average);
+        // NSLog(@"average yellow %f", average);
         [_metering setBackgroundColor:[UIColor yellowColor]];
     }
     else {
         BOOL isGreen = [_metering backgroundColor] == [UIColor greenColor];
         if (!isGreen) {
             [_metering setBackgroundColor:[UIColor greenColor]];
-       //     NSLog(@"average set normal color %f", average);
+            //     NSLog(@"average set normal color %f", average);
+        }
+    }
+    
+    if (peak > -2) {
+        NSLog(@"average red %f", average);
+        [_peak setBackgroundColor:[UIColor redColor]];
+    }
+    else if (peak > -6) {
+        NSLog(@"average yellow %f", average);
+        [_peak setBackgroundColor:[UIColor yellowColor]];
+    }
+    else {
+        BOOL isGreen = [_peak backgroundColor] == [UIColor blackColor];
+        if (!isGreen) {
+            [_peak setBackgroundColor:[UIColor blackColor]];
+            //     NSLog(@"average set normal color %f", average);
         }
     }
     
@@ -1617,6 +1601,8 @@ NSLayoutConstraint *peakConstraint;
     [self endBackgroundUpdateTask];
     
     _index++;
+    NSLog(@"recoflashcard : doAutoAdvance %ld",_index);
+
     BOOL onLast = _index == _jsonItems.count;
     if (onLast) {
         _index = 0;
@@ -1669,7 +1655,8 @@ NSLayoutConstraint *peakConstraint;
 
 // deals with missing audio...?
 - (void)playRefAudioIfAvailable {
-    NSLog(@"playRefAudioIfAvailable play ref if avail");
+   // NSLog(@"playRefAudioIfAvailable play ref if avail");
+    
     NSString *current = [self getCurrentExID];
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     if ([self hasRefAudio]) {
@@ -1874,7 +1861,7 @@ NSLayoutConstraint *peakConstraint;
 }
 
 - (void) playStopped {
-    NSLog(@"playStopped - ");
+ //   NSLog(@"playStopped - ");
 //    [self postEvent:[NSString stringWithFormat:@"EAFReco : playStopped exid %@",[self getCurrentExID]] widget:@"playStopped" type:@"Button"];
 
     [self removePlayingAudioHighlight];
@@ -2013,8 +2000,7 @@ NSLayoutConstraint *peakConstraint;
 }
 
 - (void)stopPlayingAudio {
-    NSLog(@" stopPlayingAudio ---- ");
-    
+    //NSLog(@" stopPlayingAudio ---- ");
     [self removePlayingAudioHighlight];
     [_myAudioPlayer stopAudio];
     [_altPlayer pause];
@@ -2094,9 +2080,10 @@ bool debugRecord = false;
 
 - (void)stopQuiz {
     [_quizTimer invalidate];
+    _quizTimer = NULL;
+
     _sessionTimeStamp = -1;
     NSLog(@"recordAudio set new session to %ld vs last %ld",_sessionTimeStamp, _lastSessionTimeStamp);
-    _quizTimer = NULL;
 }
 
 - (IBAction)recordAudio:(id)sender {
@@ -2155,16 +2142,17 @@ bool debugRecord = false;
         //   NSLog(@"Timer Called %d total %f  remain %f percent %f",_timeRemaining,fmin,fremain,fremain/fmin);
         
         if (_timeRemainingMillis > 10000) {
-            percent = ((float)((int)(percent*10)))/10.0;
+            percent = ((float)((int)(percent*20)))/20.0;
         }
         [_timerProgress setProgress:percent];
         
-        //        if (percent < 0.20) {
-        //            [_timerProgress setColor:[UIColor yellowColor]];
-        //        }
-        //        else if (percent < 0.10) {
-        //            [_timerProgress setColor:[UIColor redColor]];
-        //        }
+        if (percent < 0.10) {
+            [_timerProgress setTintColor:[UIColor redColor]];
+        }
+        else if (percent < 0.20) {
+            [_timerProgress setTintColor:[UIColor yellowColor]];
+        }
+        
         // TODO : consider coloring it
         //  prefix + min + @":" + (sec < 10 ? @"0" : @"") + sec;
         //            if (min == 0) {
@@ -2196,7 +2184,6 @@ bool debugRecord = false;
     if (!_isPostingAudio) {
         if (_timeRemainingMillis <= 0) {
             [self stopQuiz];
-            
             [self showQuizComplete];
         }
         
@@ -2557,7 +2544,6 @@ bool debugRecord = false;
         [_randSequence addObject:[NSNumber numberWithUnsignedLong:i]];
     }
     
-    //    unsigned int max = _jsonItems.count - 1;
     unsigned int max = (int)_jsonItems.count;
     unsigned int firstIndex;
     for (unsigned int ii = 0; ii < max; ++ii) {
@@ -2819,6 +2805,21 @@ bool debugRecord = false;
     [_correctFeedback setHidden:false];
 }
 
+- (void)doAfterScoreReceived:(BOOL)isFullMatch score:(NSNumber *)score {
+    if ([self isAQuiz] && score.floatValue*100 >= _minScoreToAdvance.floatValue && isFullMatch) {
+        BOOL onLast = _index+1 == _jsonItems.count;
+        //  NSLog(@"check got %lu vs total %lu",_index, (unsigned long)_jsonItems.count);
+        if (onLast) {
+            _index = 0;
+            _preventPlayAudio = TRUE;
+            [self showQuizComplete];
+        }
+        else {
+            _autoAdvanceTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(doAutoAdvance) userInfo:nil repeats:NO];
+        }
+    }
+}
+
 // TODO : consider how to do streaming audio
 - (void)connectionDidFinishLoading {
     _isPostingAudio=FALSE;
@@ -2911,18 +2912,7 @@ bool debugRecord = false;
     
     [self showScoreToUser:json previousScore:previousScore];
     
-    if ([self isAQuiz] && score.floatValue*100 >= _minScoreToAdvance.floatValue && isFullMatch) {
-        BOOL onLast = _index+1 == _jsonItems.count;
-        //  NSLog(@"check got %lu vs total %lu",_index, (unsigned long)_jsonItems.count);
-        if (onLast) {
-            _index = 0;
-            _preventPlayAudio = TRUE;
-            [self showQuizComplete];
-        }
-        else {
-            _autoAdvanceTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(doAutoAdvance) userInfo:nil repeats:NO];
-        }
-    }
+    [self doAfterScoreReceived:isFullMatch score:score];
 }
 
 - (void)sortWorstFirstStartOver {
@@ -2965,7 +2955,14 @@ bool debugRecord = false;
     for(id key in _exToScore) {
         total+= [[_exToScore objectForKey:key] floatValue];
     }
-    *overall = (100.0f*total)/(float)[_exToScore count];
+    
+    NSUInteger completedCount = [_exToScore count];
+    if (completedCount == 0) {
+        *overall = 0;
+    }
+    else {
+        *overall = (100.0f*total)/(float)completedCount;
+    }
     
     NSString *emoji1 =@"\U0001F601";   // grinning
     NSString *emoji2 =@"\U0001F600";   // smiling
@@ -2980,7 +2977,7 @@ bool debugRecord = false;
     NSArray *array = @[ @0.31f, @0.43f, @0.53f, @0.61f, @0.70f];
     NSArray *emoji = @[ emoji6, emoji5, emoji4, emoji3, emoji2, emoji1];
     
-    NSString *s = emoji1;
+    NSString *s = emoji5;  // default is confused
     
     for (int i = 0; i < [array count];i++) {
         NSNumber *num = [array objectAtIndex:i];

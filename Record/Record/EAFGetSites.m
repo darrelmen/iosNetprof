@@ -75,9 +75,9 @@ NSString* const expectedVersion = @"2.0.0";
     if (self) {
         // _nServer = @"http://127.0.0.1:8888/netprof/";
     //     _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
-        // _nServer = @"https://netprof.ll.mit.edu/netprof/";
         
         _nServer = @"https://netprof.ll.mit.edu/dialog/";
+//         _nServer = @"https://netprof.ll.mit.edu/netprof/";
     }
     
     return self;

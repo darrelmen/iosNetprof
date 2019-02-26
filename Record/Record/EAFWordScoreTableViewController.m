@@ -348,11 +348,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             correctView.image = nil;
             
             // NSLog(@"Score is %@",score);
-            BOOL isCorrect = [correct isEqualToString:@"Y"];
-            [correctView setDefaultIconIdentifier:isCorrect ? @"fa-check" : @"fa-times"];
-            
-            UIColor *scoreColor = [self getColor2:score.floatValue];
-            correctView.defaultView.backgroundColor = scoreColor;
+            [correctView setDefaultIconIdentifier: [correct isEqualToString:@"Y"] ? @"fa-check" : @"fa-times"];
+            correctView.defaultView.backgroundColor = [self getColor2:score.floatValue];
             
             [container addSubview:correctView];
         }
@@ -368,7 +365,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         [self colorEachWord:exid cell:cell exercise:fl scoreHistory:scoreHistory];
      //    cell.fl.font=[UIFont systemFontOfSize:12.0];
         cell.english.text = [_exToEnglish objectForKey:exid];
-        
       //  cell.english.font=[UIFont systemFontOfSize:12.0];
     }
     return cell;
