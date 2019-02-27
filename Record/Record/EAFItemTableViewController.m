@@ -619,9 +619,9 @@
 //
     if (_showSentences) {
         baseurl = [NSString stringWithFormat:@"%@&context=true", baseurl];
-        NSLog(@"showing sentences");
+    //    NSLog(@"showing sentences");
     }
-    else NSLog(@"not showing sentences");
+  //  else NSLog(@"not showing sentences");
     
     
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];

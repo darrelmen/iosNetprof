@@ -115,7 +115,7 @@
     NSString *trim = [refSentence stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     NSString *toFind = [self removePunct:trim];
     toFind = [toFind stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    NSLog(@"CONTEXT: %@", context);
+   // NSLog(@"CONTEXT: %@", context);
     //    NSLog(@"looking for '%@' in %@",toFind,context);
     NSRange range = [context rangeOfString:toFind];
     if (range.length > 0) {

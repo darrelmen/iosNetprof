@@ -87,6 +87,7 @@
 		B68A5C341979B3480036B90C /* mic-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C331979B3480036B90C /* mic-icon.png */; };
 		B68A5C361979B4590036B90C /* mic-4.svg in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C351979B4590036B90C /* mic-4.svg */; };
 		B68A5C381979B4AE0036B90C /* micBigger.png in Resources */ = {isa = PBXBuildFile; fileRef = B68A5C371979B4AE0036B90C /* micBigger.png */; };
+		B68FFB44222607570055A3A4 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B68FFB43222607570055A3A4 /* MessageUI.framework */; };
 		B695FDDE1A3A521B0064DC83 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B695FDDD1A3A521B0064DC83 /* Settings.bundle */; };
 		B695FDE01A3B697C0064DC83 /* volumeUp_26.png in Resources */ = {isa = PBXBuildFile; fileRef = B695FDDF1A3B697C0064DC83 /* volumeUp_26.png */; };
 		B695FDE21A433CA80064DC83 /* NewProF2_48x48.png in Resources */ = {isa = PBXBuildFile; fileRef = B695FDE11A433CA80064DC83 /* NewProF2_48x48.png */; };
@@ -278,6 +279,7 @@
 		B68A5C331979B3480036B90C /* mic-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mic-icon.png"; sourceTree = "<group>"; };
 		B68A5C351979B4590036B90C /* mic-4.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "mic-4.svg"; sourceTree = "<group>"; };
 		B68A5C371979B4AE0036B90C /* micBigger.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = micBigger.png; sourceTree = "<group>"; };
+		B68FFB43222607570055A3A4 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		B695FDDD1A3A521B0064DC83 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = Resources/Settings.bundle; sourceTree = "<group>"; };
 		B695FDDF1A3B697C0064DC83 /* volumeUp_26.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = volumeUp_26.png; sourceTree = "<group>"; };
 		B695FDE11A433CA80064DC83 /* NewProF2_48x48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NewProF2_48x48.png; sourceTree = "<group>"; };
@@ -361,6 +363,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B68FFB44222607570055A3A4 /* MessageUI.framework in Frameworks */,
 				B67E1BB6197EC25D00F42143 /* libz.dylib in Frameworks */,
 				B6252AA81A1C50FF0083AE7A /* CoreTelephony.framework in Frameworks */,
 				B6252AA61A1C50EA0083AE7A /* SystemConfiguration.framework in Frameworks */,
@@ -557,6 +560,7 @@
 		F6A5681C18ECA98A00B844C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B68FFB43222607570055A3A4 /* MessageUI.framework */,
 				B6252AA71A1C50FF0083AE7A /* CoreTelephony.framework */,
 				B6252AA51A1C50EA0083AE7A /* SystemConfiguration.framework */,
 				B67E1BB5197EC25D00F42143 /* libz.dylib */,

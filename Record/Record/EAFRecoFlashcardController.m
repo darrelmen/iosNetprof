@@ -1572,11 +1572,11 @@ NSLayoutConstraint *peakConstraint;
     }
     
     if (peak > -2) {
-        NSLog(@"average red %f", average);
+       // NSLog(@"average red %f", average);
         [_peak setBackgroundColor:[UIColor redColor]];
     }
     else if (peak > -6) {
-        NSLog(@"average yellow %f", average);
+      //  NSLog(@"average yellow %f", average);
         [_peak setBackgroundColor:[UIColor yellowColor]];
     }
     else {
@@ -3795,7 +3795,7 @@ bool debugRecord = false;
     }
     popupController.fref  = [[self getCurrentJson] objectForKey:@"ctfref"];
     popupController.playAudio = _isAudioOnSelected;
-    NSLog(@"ContextEnglish===== %@ ", popupController.fl);
+   // NSLog(@"ContextEnglish===== %@ ", popupController.fl);
     //    BOOL isIPhone;
     //  isIPhone = [self isiPhone];
     
