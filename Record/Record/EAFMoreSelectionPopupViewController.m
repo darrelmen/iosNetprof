@@ -40,10 +40,18 @@
     if (![self isiPad] && ![_language isEqualToString:@"English"]) {
         [_languageSelection setTitle:@"Eng" forSegmentAtIndex:0];
     }
- 
+    
     NSString *audioOn = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioOn"];
+    NSLog(@"configureWhatToShow audio on %@",audioOn);
     if (audioOn != nil) {
         _audioOnBtn.selected = [audioOn isEqualToString:@"Yes"] ? 1:0;
+        if (_audioOnBtn.selected) {
+            NSLog(@"configureWhatToShow audio on");
+        }
+        else {
+            NSLog(@"configureWhatToShow audio OFF");
+            
+        }
         _audioOnBtn.color = _audioOnBtn.selected ?[UIColor npAltPressButtonBGOn]:[UIColor whiteColor];
         _audioOnBtn.tintColor = _audioOnBtn.selected ?[UIColor npAltPressButtonBGOn]:[UIColor whiteColor];
         [_audioOnBtn setTitleColor:[UIColor npAltPressButtonFGOff] forState:UIControlStateNormal];

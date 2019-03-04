@@ -55,7 +55,7 @@
 
 - (IBAction)recordAudio:(id)sender;
 - (IBAction)playAudio:(id)sender;
-- (IBAction)stopAudio:(id)sender;
+- (IBAction)stopRecordingAudio:(id)sender;
 @property (strong, nonatomic) NSData *responseData;
 
 @property (strong, nonatomic) IBOutlet UILabel *foreignLang;

@@ -123,6 +123,7 @@
 @property long lastSessionTimeStamp;
 @property NSTimer *quizTimer;
 @property NSTimer *slowContentTimer;
+@property NSTimer *stopRecordingLaterTimer;
 @property (strong, nonatomic) NSData *responseListData;
 
 @property BOOL isPostingAudio;
@@ -183,12 +184,12 @@
     
     _sessionTimeStamp = -1;
     _lastSessionTimeStamp = -1;
-
+    
     NSURL *url = [NSURL URLWithString:baseurl];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
     [urlRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
-//    [urlRequest setTimeoutInterval:1];
+    //    [urlRequest setTimeoutInterval:1];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
@@ -198,27 +199,27 @@
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
-     //    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-     {
-         if (error != nil) {
-             NSLog(@"EAFRecoFlashcardController askServerForJsonForList Got error %@",error);
-             dispatch_async(dispatch_get_main_queue(), ^{
-                 [self connection:nil didFailWithError:error];
-             });
-             [self showConnectionError:error];
-             [_poster postError:urlRequest error:error];
-         }
-         else {
-             self->_responseListData = data;
-             NSLog(@"EAFRecoFlashcardController askServerForJsonForList Got data length %lu",(unsigned long)[data length]);
-             [self performSelectorOnMainThread:@selector(connectionDidFinishLoadingList:)
-                                    withObject:nil
-                                 waitUntilDone:YES];
-         }
-     }];
-
+                                          //    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+                                          {
+                                              if (error != nil) {
+                                                  NSLog(@"EAFRecoFlashcardController askServerForJsonForList Got error %@",error);
+                                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                                      [self connection:nil didFailWithError:error];
+                                                  });
+                                                  [self showConnectionError:error];
+                                                  [_poster postError:urlRequest error:error];
+                                              }
+                                              else {
+                                                  self->_responseListData = data;
+                                                  NSLog(@"EAFRecoFlashcardController askServerForJsonForList Got data length %lu",(unsigned long)[data length]);
+                                                  [self performSelectorOnMainThread:@selector(connectionDidFinishLoadingList:)
+                                                                         withObject:nil
+                                                                      waitUntilDone:YES];
+                                              }
+                                          }];
+    
     [downloadTask resume];
-
+    
     _loadingContentAlert = NULL;
     _slowContentTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(slowContentTimerFired) userInfo:nil repeats:NO];
 }
@@ -239,7 +240,7 @@
     // _requestPending = false;
     // [[self tableView] reloadData];
     
-  //  NSString *type = [NSString stringWithFormat:@"connection failure to %@", connection.currentRequest];
+    //  NSString *type = [NSString stringWithFormat:@"connection failure to %@", connection.currentRequest];
     [_poster postError:connection.currentRequest error:error];
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
@@ -280,7 +281,7 @@
         [self showError:msg];
         [self dismissLoadingContentAlert];
         [_poster postError:currentRequest error:error];
-
+        
         return false;
     }
     else {
@@ -321,15 +322,15 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    
     _sessionTimeStamp = -1;
     _lastSessionTimeStamp  = -1;
-
+    
     CGFloat borderWidth = 1.0f;
     
     _outline.frame = CGRectInset(_outline.frame, -borderWidth, -borderWidth);
     
-   // [UIColor colorWithRed:0 green:0 blue:0 alpha:0.25];
+    // [UIColor colorWithRed:0 green:0 blue:0 alpha:0.25];
     
     _outline.layer.borderColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.25].CGColor;//[UIColor grayColor].CGColor;
     _outline.layer.borderWidth = borderWidth;
@@ -452,7 +453,7 @@
     _scoreProgress.layer.cornerRadius = 3.f;
     _scoreProgress.layer.borderWidth = 1.0f;
     _scoreProgress.layer.borderColor = [UIColor grayColor].CGColor;
-  
+    
     [_correctFeedback setHidden:true];
     
     _scoreProgress.hidden = true;
@@ -474,7 +475,17 @@
     NSString *ct = [[self getCurrentJson] objectForKey:@"ct"];
     _contextButton.hidden = (ct == nil || ct.length == 0);
     
-    _isAudioOnSelected = YES;
+    
+    
+    NSString *audioOn = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioOn"];
+    NSLog(@"viewDidLoad audio on %@",audioOn);
+    if (audioOn != nil) {
+        _isAudioOnSelected = [audioOn isEqualToString:@"Yes"];
+    }
+    else {
+        _isAudioOnSelected = NO;
+    }
+    
     _myAudioPlayer.volume = _isAudioOnSelected ? 1: 0;
     
     _languageSegmentIndex = 2;  // initial value is show both - enum better?
@@ -483,9 +494,9 @@
     _selectionToolbar=[[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 10, 10)];
     
     _moreSelection = [[MoreSelection alloc]initWithLanguageIndex:_languageSegmentIndex withVoiceIndex:_voiceSegmentIndex];
-
+    
     [self setupToolBar];
-
+    
     if (_jsonItems != NULL) {
         [self respondToSwipe];
     }
@@ -500,7 +511,7 @@
                                   action:@selector(showScores:)];
     self.navigationItem.rightBarButtonItem = scoreShow;
     
-   
+    
     
     if (![self notAQuiz]) {
         self.navigationItem.rightBarButtonItem.enabled = false;
@@ -519,13 +530,13 @@
     if (_quizMinutes.intValue == 1) min = @"minute";
     NSString *postLength = [NSString stringWithFormat:@"You have %@ %@ to complete %@ items.\nScores above %@ advance automatically.\nIf you finish with time remaining, it's OK to go back.\nSwipe to skip an item or go back.",_quizMinutes,min,_numQuizItems,_minScoreToAdvance];
     
-//    NSString *rememberedFirst = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"firstName"];
-//    NSString *rememberedLast = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"lastName"];
+    //    NSString *rememberedFirst = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"firstName"];
+    //    NSString *rememberedLast = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"lastName"];
     NSString *rememberedUserID = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenUserID"];
-
-   // NSString *welcome = [NSString stringWithFormat:@"Welcome %@ %@",rememberedFirst,rememberedLast];
+    
+    // NSString *welcome = [NSString stringWithFormat:@"Welcome %@ %@",rememberedFirst,rememberedLast];
     NSString *welcome = [NSString stringWithFormat:@"Welcome %@!",rememberedUserID];
-   
+    
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:welcome
                                                                    message:postLength
                                                             preferredStyle:UIAlertControllerStyleAlert];
@@ -810,14 +821,14 @@
 }
 
 - (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
-//    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-//    NSString *id = [jsonObject objectForKey:@"id"];
-//
-//    // so netprof v2 has number ids - hard to know what type json is returning...
-//    if ([[jsonObject objectForKey:@"id"] isKindOfClass:[NSNumber class]]) {
-//        NSNumber *nid = [jsonObject objectForKey:@"id"];
-//        id = [NSString stringWithFormat:@"%@",nid];
-//    }
+    //    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
+    //    NSString *id = [jsonObject objectForKey:@"id"];
+    //
+    //    // so netprof v2 has number ids - hard to know what type json is returning...
+    //    if ([[jsonObject objectForKey:@"id"] isKindOfClass:[NSNumber class]]) {
+    //        NSNumber *nid = [jsonObject objectForKey:@"id"];
+    //        id = [NSString stringWithFormat:@"%@",nid];
+    //    }
     
     //    NSLog(@"postEvent id       %@", id);
     //    NSLog(@"postEvent widget   %@", widget);
@@ -834,7 +845,7 @@
 
 - (id) getProjectID {
     if (_projid == NULL) {
-    //    NSLog(@"getProjectID lang %@",_language);
+        //    NSLog(@"getProjectID lang %@",_language);
         return [_siteGetter.nameToProjectID objectForKey:_language];
     }
     else {
@@ -896,7 +907,7 @@
     }
     
     // Print out a description of the data sources for the built-in microphone
-  //  NSLog(@"There are %u data sources for port :\"%@\"", (unsigned)[builtInMicPort.dataSources count], builtInMicPort);
+    //  NSLog(@"There are %u data sources for port :\"%@\"", (unsigned)[builtInMicPort.dataSources count], builtInMicPort);
     // NSLog(@"Headset port :\"%@\"",  headsetMicPort);
     //  NSLog(@"Sources : %@", builtInMicPort.dataSources);
     
@@ -1046,7 +1057,7 @@
 
 // so if we swipe while the ref audio is playing, remove the observer that will tell us when it's complete
 - (void)respondToSwipe {
-   // NSLog(@"respondToSwipe - %ld",_index);
+    // NSLog(@"respondToSwipe - %ld",_index);
     
     long jsonItemCount = (long) _jsonItems.count;
     
@@ -1069,9 +1080,9 @@
     //   [self removePlayObserver];
     
     if ([self hasRefAudio]) {
-       NSLog(@"respondToSwipe stop audio - %ld",_index);
-      // [self postEvent:@"stop audio since has ref audio..." widget:@"respondToSwipe" type:@"Button"];
-       [_myAudioPlayer stopAudio];
+        NSLog(@"respondToSwipe stop audio - %ld",_index);
+        // [self postEvent:@"stop audio since has ref audio..." widget:@"respondToSwipe" type:@"Button"];
+        [_myAudioPlayer stopAudio];
     }
     
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
@@ -1093,7 +1104,7 @@
     
     [self setGenderSelector];
     
-
+    
     
     NSDictionary *jsonObject =[self getCurrentJson] ;
     
@@ -1270,8 +1281,8 @@
     }
     NSLog(@"respondToSwipe after refAudio %@ and %@",refAudio,_audioRefs);
     
-  //  [self postEvent:[NSString stringWithFormat:@"EAFReco : found refAudio %@ and %@",refAudio,_audioRefs] widget:@"respondToSwipe" type:@"Button"];
-
+    //  [self postEvent:[NSString stringWithFormat:@"EAFReco : found refAudio %@ and %@",refAudio,_audioRefs] widget:@"respondToSwipe" type:@"Button"];
+    
     NSString *flAtIndex = [jsonObject objectForKey:@"fl"];
     NSString *enAtIndex = [jsonObject objectForKey:@"en"];
     _tlAtIndex = [jsonObject objectForKey:@"tl"];
@@ -1336,11 +1347,11 @@
     
     BOOL showEnglish = _languageSegmentIndex == 0;
     
-   // [self postEvent:@"EAFReco : about to think about playing audio..." widget:@"respondToSwipe" type:@"Button"];
-
+    // [self postEvent:@"EAFReco : about to think about playing audio..." widget:@"respondToSwipe" type:@"Button"];
+    
     // complicated...
     if(_playAudio) {
-      //  [self postEvent:@"EAFReco : try to play ref audio b/c of quiz" widget:@"respondToSwipe" type:@"Button"];
+        //  [self postEvent:@"EAFReco : try to play ref audio b/c of quiz" widget:@"respondToSwipe" type:@"Button"];
         [self playRefAudioIfAvailable];
     }
     else if (_isAudioOnSelected && !_preventPlayAudio &&
@@ -1349,7 +1360,7 @@
         //         NSLog(@"respondToSwipe first");
         if (showEnglish) {
             //   NSLog(@"respondToSwipe first - %ld", (long)_whatToShow.selectedSegmentIndex);
-         //   [self postEvent:@"EAFReco : 1 try to speak english" widget:@"respondToSwipe" type:@"Button"];
+            //   [self postEvent:@"EAFReco : 1 try to speak english" widget:@"respondToSwipe" type:@"Button"];
             if (_autoPlayButton.selected) {
                 [self speakEnglish:false];
             }
@@ -1358,24 +1369,24 @@
             }
         }
         else {
-        //    [self postEvent:@"EAFReco : 1 try to play ref audio" widget:@"respondToSwipe" type:@"Button"];
-           [self playRefAudioIfAvailable];
+            //    [self postEvent:@"EAFReco : 1 try to play ref audio" widget:@"respondToSwipe" type:@"Button"];
+            [self playRefAudioIfAvailable];
         }
     }
     else {
         _preventPlayAudio = false;
         if (_autoPlayButton.selected) {
             if (showEnglish) {
-             //   [self postEvent:@"EAFReco : 2 try to speak english" widget:@"respondToSwipe" type:@"Button"];
+                //   [self postEvent:@"EAFReco : 2 try to speak english" widget:@"respondToSwipe" type:@"Button"];
                 [self speakEnglish:false];
             }
             else {
-              //  [self postEvent:@"EAFReco : 2 try to play ref audio" widget:@"respondToSwipe" type:@"Button"];
+                //  [self postEvent:@"EAFReco : 2 try to play ref audio" widget:@"respondToSwipe" type:@"Button"];
                 [self playRefAudioIfAvailable];
             }
         }
         else {
-            [self postEvent:@"EAFReco : not playing ref audio" widget:@"respondToSwipe" type:@"Button"];
+            //   [self postEvent:@"EAFReco : not playing ref audio" widget:@"respondToSwipe" type:@"Button"];
         }
     }
     
@@ -1384,8 +1395,8 @@
         [self showScoreToUser:prevScore previousScore:NULL];
     }
     
- //   [self postEvent:@"EAFReco : exit..." widget:@"respondToSwipe" type:@"Button"];
-
+    //   [self postEvent:@"EAFReco : exit..." widget:@"respondToSwipe" type:@"Button"];
+    
 }
 
 - (NSString*) deviceName {
@@ -1417,12 +1428,12 @@
     BOOL onLast = _index == _jsonItems.count;
     if (onLast) {
         _index = 0;
-       // NSLog(@"OK index is %ld",_index);
+        // NSLog(@"OK index is %ld",_index);
         // TODO : get the sorted list and resort the items in incorrect first order
     }
     
     if (onLast) {
-       // [self postEvent:@"on last so prevent play..." widget:@"swipeLeftDetected" type:@"UIView"];
+        // [self postEvent:@"on last so prevent play..." widget:@"swipeLeftDetected" type:@"UIView"];
         _preventPlayAudio = TRUE;
     }
     
@@ -1546,16 +1557,16 @@ NSLayoutConstraint *peakConstraint;
     float minDB = -50.0;
     
     if (peak < minDB) {
-       // NSLog(@"peak min capped from %f", peak);
+        // NSLog(@"peak min capped from %f", peak);
         peak = minDB;
     }
     
-//    if (average == -120) {
-//        [self setDisplayMessage:@"Please allow recording."];  // kinda wasteful....
-//    }
+    //    if (average == -120) {
+    //        [self setDisplayMessage:@"Please allow recording."];  // kinda wasteful....
+    //    }
     
     if (average < minDB) {
-       // NSLog(@"average min capped from %f", average);
+        // NSLog(@"average min capped from %f", average);
         average = minDB;
     }
     
@@ -1572,11 +1583,11 @@ NSLayoutConstraint *peakConstraint;
     }
     
     if (peak > -2) {
-       // NSLog(@"average red %f", average);
+        // NSLog(@"average red %f", average);
         [_peak setBackgroundColor:[UIColor redColor]];
     }
     else if (peak > -6) {
-      //  NSLog(@"average yellow %f", average);
+        //  NSLog(@"average yellow %f", average);
         [_peak setBackgroundColor:[UIColor yellowColor]];
     }
     else {
@@ -1602,7 +1613,7 @@ NSLayoutConstraint *peakConstraint;
     
     _index++;
     NSLog(@"recoflashcard : doAutoAdvance %ld",_index);
-
+    
     BOOL onLast = _index == _jsonItems.count;
     if (onLast) {
         _index = 0;
@@ -1655,12 +1666,12 @@ NSLayoutConstraint *peakConstraint;
 
 // deals with missing audio...?
 - (void)playRefAudioIfAvailable {
-   // NSLog(@"playRefAudioIfAvailable play ref if avail");
+    // NSLog(@"playRefAudioIfAvailable play ref if avail");
     
     NSString *current = [self getCurrentExID];
     [_synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     if ([self hasRefAudio]) {
-       // NSLog(@"\tplay ref if avail");
+        // NSLog(@"\tplay ref if avail");
         if ([self notAQuiz]) {
             //[self postEvent:[NSString stringWithFormat:@"EAFReco :  not a quiz - has ref audio for exid %@",current] widget:@"playRefAudioIfAvailable" type:@"Button"];
             
@@ -1668,8 +1679,8 @@ NSLayoutConstraint *peakConstraint;
         }
         else if (_playAudio) {
             NSLog(@"\t\tplay first ref if avail");
-          //  [self postEvent:[NSString stringWithFormat:@"EAFReco :  quiz just play first ref for exid %@",current] widget:@"playRefAudioIfAvailable" type:@"Button"];
-
+            //  [self postEvent:[NSString stringWithFormat:@"EAFReco :  quiz just play first ref for exid %@",current] widget:@"playRefAudioIfAvailable" type:@"Button"];
+            
             [_myAudioPlayer playFirstRefAudio];
         }
     }
@@ -1809,16 +1820,9 @@ NSLayoutConstraint *peakConstraint;
     }
 }
 
-
-
 - (void)audioOnSelection {
     [SSKeychain setPassword:(_isAudioOnSelected ? @"Yes":@"No")
                  forService:@"mitll.proFeedback.device" account:@"audioOn"];
-    /*
-     _audioOnButton.selected = !_audioOnButton.selected;
-     _audioOnButton.color = _audioOnButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
-     */
-    
     _myAudioPlayer.volume = _isAudioOnSelected ? 1: 0;
     
     if (_isAudioOnSelected) {
@@ -1855,15 +1859,15 @@ NSLayoutConstraint *peakConstraint;
 }
 
 - (void) playStarted {
-   // [self postEvent:[NSString stringWithFormat:@"EAFReco : playStarted exid %@",[self getCurrentExID]] widget:@"playStarted" type:@"Button"];
-
+    // [self postEvent:[NSString stringWithFormat:@"EAFReco : playStarted exid %@",[self getCurrentExID]] widget:@"playStarted" type:@"Button"];
+    
     [self highlightFLWhilePlaying];
 }
 
 - (void) playStopped {
- //   NSLog(@"playStopped - ");
-//    [self postEvent:[NSString stringWithFormat:@"EAFReco : playStopped exid %@",[self getCurrentExID]] widget:@"playStopped" type:@"Button"];
-
+    //   NSLog(@"playStopped - ");
+    //    [self postEvent:[NSString stringWithFormat:@"EAFReco : playStopped exid %@",[self getCurrentExID]] widget:@"playStopped" type:@"Button"];
+    
     [self removePlayingAudioHighlight];
 }
 
@@ -1886,7 +1890,7 @@ NSLayoutConstraint *peakConstraint;
         }
     }
     else {
-    //    [self postEvent:[NSString stringWithFormat:@"EAFReco : playGotToEnd exid %@",[self getCurrentExID]] widget:@"playGotToEnd" type:@"Button"];
+        //    [self postEvent:[NSString stringWithFormat:@"EAFReco : playGotToEnd exid %@",[self getCurrentExID]] widget:@"playGotToEnd" type:@"Button"];
         //  NSLog(@"playGotToEnd - no op");
     }
 }
@@ -1897,7 +1901,7 @@ NSLayoutConstraint *peakConstraint;
         if ([subview isKindOfClass:[UILabel class]]) {
             UILabel *asLabel = (UILabel *) subview;
             asLabel.textColor = color;
-          //  NSLog(@"initial hit %@ %@",asLabel,asLabel.text);
+            //  NSLog(@"initial hit %@ %@",asLabel,asLabel.text);
         }
         else {
             for (UIView *subview2 in [subview subviews]) {
@@ -1937,12 +1941,12 @@ NSLayoutConstraint *peakConstraint;
     }
     
     peakConstraint = [NSLayoutConstraint constraintWithItem:_peak
-                                                      attribute:NSLayoutAttributeBottom
-                                                      relatedBy:NSLayoutRelationEqual
-                                                         toItem:_metering
-                                                      attribute: NSLayoutAttributeBottom
-                                                     multiplier:1
-                                                       constant:-height];
+                                                  attribute:NSLayoutAttributeBottom
+                                                  relatedBy:NSLayoutRelationEqual
+                                                     toItem:_metering
+                                                  attribute: NSLayoutAttributeBottom
+                                                 multiplier:1
+                                                   constant:-height];
     
     [_recordButtonContainer addConstraint:peakConstraint];
 }
@@ -1956,23 +1960,27 @@ NSLayoutConstraint *peakConstraint;
         [self updatePeakConstraint:0];
         [_peak setHidden:TRUE];
     }
-   
+    
     if (debugRecord)  NSLog(@"audioRecorderDidFinishRecording time = %f",CFAbsoluteTimeGetCurrent());
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
-    CMTime time = asset.duration;
-    double durationInSeconds = CMTimeGetSeconds(time);
+    NSLog(@"audioRecorderDidFinishRecording - url %@", _audioRecorder.url);
+    
+    double durationInSeconds = CMTimeGetSeconds(asset.duration);
     
     NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs event       %f diff %f",durationInSeconds, (_now-_then2), (_now-_then2)-durationInSeconds );
     NSLog(@"audioRecorderDidFinishRecording : file duration was %f vs gesture end %f diff %f",durationInSeconds, (_gestureEnd-_then2), (_gestureEnd-_then2)-durationInSeconds );
     
-    if (durationInSeconds > 0.3) {
+    if (durationInSeconds > 20) {
+        [self setDisplayMessage:@"Recording too long."];
+    }
+    else if (durationInSeconds > 0.3) {
         [self postAudio];
     }
     else {
         [self setDisplayMessage:@"Recording too short."];
         if (_audioRecorder.recording)
         {
-            if (debugRecord)  NSLog(@"audioRecorderDidFinishRecording : audio recorder stop time = %f",CFAbsoluteTimeGetCurrent());
+            if (debugRecord || TRUE)  NSLog(@"audioRecorderDidFinishRecording : audio recorder stop time = %f",CFAbsoluteTimeGetCurrent());
             [_audioRecorder stop];
         }
     }
@@ -2081,7 +2089,7 @@ bool debugRecord = false;
 - (void)stopQuiz {
     [_quizTimer invalidate];
     _quizTimer = NULL;
-
+    
     _sessionTimeStamp = -1;
     NSLog(@"recordAudio set new session to %ld vs last %ld",_sessionTimeStamp, _lastSessionTimeStamp);
 }
@@ -2100,7 +2108,7 @@ bool debugRecord = false;
         _english.textColor = [UIColor npDarkBlue];
         _meteringTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(doMeteringUpdate) userInfo:nil repeats:YES];
         [_peak setHidden:FALSE];
-
+        
         for (UIView *v in [_scoreDisplayContainer subviews]) {
             [v removeFromSuperview];
         }
@@ -2116,8 +2124,8 @@ bool debugRecord = false;
                 NSLog(@"recordAudio -recording %f vs begin %f diff %f ",_then2,recordingBegins,(recordingBegins-_then2));
             }
             
-           if (_quizTimer == NULL && [self isAQuiz] && _sessionTimeStamp == -1) {  // start a new session if we don't have one...
-               [self startNewSession];
+            if (_quizTimer == NULL && [self isAQuiz] && _sessionTimeStamp == -1) {  // start a new session if we don't have one...
+                [self startNewSession];
             }
         }
         else {
@@ -2314,7 +2322,10 @@ bool debugRecord = false;
     
     if (_longPressGesture.state == UIGestureRecognizerStateBegan) {
         if (debugRecord)  NSLog(@"longPressAction got state begin");
+        
         _gestureStart = CFAbsoluteTimeGetCurrent();
+        
+        [self invalidateStopRecordingLater];
         
         _recordButtonContainer.backgroundColor =[UIColor npRecordBG];
         _recordButton.enabled = NO;
@@ -2344,8 +2355,12 @@ bool debugRecord = false;
             }
         }
         else {
+            //           [self stopRecordingAudio:nil];
             [self stopRecordingWithDelay:nil];
         }
+    }
+    else {
+        NSLog(@"longPressAction got other event %ld", (long)_longPressGesture.state);
     }
 }
 
@@ -2497,7 +2512,7 @@ bool debugRecord = false;
         {
             NSLog(@"Error: %@", [error localizedDescription]);
         } else {
-          //  NSLog(@"OK let's play the audio");
+            //  NSLog(@"OK let's play the audio");
             [_altPlayer play];
         }
         // [self postEvent:@"playUserAudio" widget:@"userScoreDisplay" type:@"UIView"];
@@ -2512,7 +2527,9 @@ bool debugRecord = false;
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
 }
 
-- (IBAction)stopAudio:(id)sender {
+- (IBAction)stopRecordingAudio:(id)sender {
+    _stopRecordingLaterTimer = NULL;
+    
     _now = CFAbsoluteTimeGetCurrent();
     if (debugRecord)  NSLog(@"stopAudio Event duration was %f",(_now-_then2));
     if (debugRecord)  NSLog(@"stopAudio now  time =        %f",_now);
@@ -2525,16 +2542,24 @@ bool debugRecord = false;
         [_audioRecorder stop];
         
     } else {
-        NSLog(@"stopAudio not recording");
+        NSLog(@"stopAudio not recording?");
     }
 }
 
+- (void)invalidateStopRecordingLater {
+    if (_stopRecordingLaterTimer != NULL && _stopRecordingLaterTimer.isValid) {
+        [_stopRecordingLaterTimer invalidate];
+    }
+}
+
+//
 - (IBAction)stopRecordingWithDelay:sender {
-    [NSTimer scheduledTimerWithTimeInterval:0.33
-                                     target:self
-                                   selector:@selector(stopAudio:)
-                                   userInfo:nil
-                                    repeats:NO];
+    [self invalidateStopRecordingLater];
+    _stopRecordingLaterTimer = [NSTimer scheduledTimerWithTimeInterval:0.20
+                                                                target:self
+                                                              selector:@selector(stopRecordingAudio:)
+                                                              userInfo:nil
+                                                               repeats:NO];
 }
 
 - (void)doShuffle {
@@ -2573,7 +2598,7 @@ bool debugRecord = false;
     
     NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
     
-  //  NSLog(@"postAudio data length %lu",(unsigned long)[postData length]);
+    //  NSLog(@"postAudio data length %lu",(unsigned long)[postData length]);
     
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
     
@@ -2582,8 +2607,18 @@ bool debugRecord = false;
     if ([host length] != 0) {
         baseurl = [NSString stringWithFormat:@"%@scoreServlet/%@", _url, host];
     }
-    NSLog(@"Reco : postAudio talking to %@ file length %@",baseurl, postLength);
     
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
+    NSLog(@"postAudio audioRecorderDidFinishRecording - url %@", _audioRecorder.url);
+    
+    double durationInSeconds = CMTimeGetSeconds(asset.duration);
+    
+    NSLog(@"Reco : postAudio talking to %@ file length %@ dur %f",baseurl, postLength, durationInSeconds);
+    
+    if (durationInSeconds > 30) {
+        NSLog(@"Reco : long dur : dur %f",  durationInSeconds);
+        
+    }
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
     [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
@@ -2630,7 +2665,7 @@ bool debugRecord = false;
     [urlRequest setHTTPBody:postData];
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-   // NSLog(@"posting to %@",_url);
+    // NSLog(@"posting to %@",_url);
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          dispatch_async(dispatch_get_main_queue(), ^{
@@ -2772,8 +2807,8 @@ bool debugRecord = false;
         }
     }
     _scoreProgress.hidden = false;
-//    [_scoreProgress setProgress:[overallScore floatValue]];
-//    [_scoreProgress setProgressTintColor:[self getColor2:[overallScore floatValue]]];
+    //    [_scoreProgress setProgress:[overallScore floatValue]];
+    //    [_scoreProgress setProgressTintColor:[self getColor2:[overallScore floatValue]]];
     
     if (previousScore != nil) {
         [_scoreProgress setProgress:[previousScore floatValue]];
@@ -2790,18 +2825,18 @@ bool debugRecord = false;
         NSString * emoji= [self getEmoji:&overall];
         [_correctFeedback setText:emoji];
         
-//        if ([emoji isEqualToString:@"\U00002639"]) {
-//            [_correctFeedback setBackgroundColor:[UIColor redColor]];
-//        }
-//        else {
-//            [_correctFeedback setBackgroundColor:[UIColor whiteColor]];
-//        }
+        //        if ([emoji isEqualToString:@"\U00002639"]) {
+        //            [_correctFeedback setBackgroundColor:[UIColor redColor]];
+        //        }
+        //        else {
+        //            [_correctFeedback setBackgroundColor:[UIColor whiteColor]];
+        //        }
     }
     else {
         [_correctFeedback setText:@"\U0000274C"];  // red x
-//        [_correctFeedback setBackgroundColor:[UIColor whiteColor]];
+        //        [_correctFeedback setBackgroundColor:[UIColor whiteColor]];
     }
-   
+    
     [_correctFeedback setHidden:false];
 }
 
@@ -2829,18 +2864,21 @@ bool debugRecord = false;
     CFAbsoluteTime millis = diff * 1000;
     int iMillis = (int) millis;
     
-    //NSLog(@"connectionDidFinishLoading - round trip time was %f %d ",diff, iMillis);
+    // NSLog(@"connectionDidFinishLoading - round trip time was %f %d ",diff, iMillis);
     
     if ([self isAQuiz]) {
         _timeRemainingMillis += iMillis;  // put the time back - don't count round trip wait against completion time...
     }
     
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
-    double durationInSeconds = CMTimeGetSeconds(asset.duration);
-    
-    [self postEvent:[NSString stringWithFormat:@"round trip was %.3f sec for file of dur %.3f sec",diff,durationInSeconds]
-             widget:[NSString stringWithFormat:@"rt %.3f",diff]
-               type:[NSString stringWithFormat:@"file %.3f",durationInSeconds] ];
+    {
+        AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
+        double durationInSeconds = CMTimeGetSeconds(asset.duration);
+        
+        
+        [self postEvent:[NSString stringWithFormat:@"round trip was %.3f sec for file of dur %.3f sec",diff,durationInSeconds]
+                 widget:[NSString stringWithFormat:@"rt %.3f",diff]
+                   type:[NSString stringWithFormat:@"file %.3f",durationInSeconds] ];
+    }
     
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
@@ -2848,8 +2886,8 @@ bool debugRecord = false;
                           options:NSJSONReadingMutableContainers
                           error:&error];
     
-//    NSString *string = [NSString stringWithUTF8String:[_responseData bytes]];
-//    NSLog(@"connectionDidFinishLoading data was \n%@",string);
+    //    NSString *string = [NSString stringWithUTF8String:[_responseData bytes]];
+    //    NSLog(@"connectionDidFinishLoading data was \n%@",string);
     
     if (error != nil) {
         NSLog(@"connectionDidFinishLoading - url %@ got error %@",NULL, error);
@@ -2881,9 +2919,9 @@ bool debugRecord = false;
         [self setDisplayMessage:@"Score low, try again."];
         return;
     }
-//    if (!isFullMatch) {
-//        NSLog(@"OK, audio is cut off.");
-//    }
+    //    if (!isFullMatch) {
+    //        NSLog(@"OK, audio is cut off.");
+    //    }
     
     NSNumber *previousScore;
     if (exid != nil) {
@@ -2971,8 +3009,8 @@ bool debugRecord = false;
     NSString *emoji5 =@"\U0001F615";   // confused
     NSString *emoji6 =@"\U00002639";   // frown
     
-  // private static final List<Float> koreanThresholds = new ArrayList<>(Arrays.asList(0.31F, 0.43F, 0.53F, 0.61F, 0.70F));
-  //    private static final List<Float> englishThresholds = new ArrayList<>(Arrays.asList(0.23F, 0.36F, 0.47F, 0.58F, NATIVE_HARD_CODE));  // technically last is 72
+    // private static final List<Float> koreanThresholds = new ArrayList<>(Arrays.asList(0.31F, 0.43F, 0.53F, 0.61F, 0.70F));
+    //    private static final List<Float> englishThresholds = new ArrayList<>(Arrays.asList(0.23F, 0.36F, 0.47F, 0.58F, NATIVE_HARD_CODE));  // technically last is 72
     
     NSArray *array = @[ @0.31f, @0.43f, @0.53f, @0.61f, @0.70f];
     NSArray *emoji = @[ emoji6, emoji5, emoji4, emoji3, emoji2, emoji1];
@@ -3006,8 +3044,8 @@ bool debugRecord = false;
     float overall;
     NSString *emoji= [self getEmoji:&overall];
     NSString *score = [NSString stringWithFormat:@"Score was a %@ (%d) for %lu items", emoji, (int)overall,done];
-
-//    NSString *score = [NSString stringWithFormat:@"Your score was a %d.",(int)overall];
+    
+    //    NSString *score = [NSString stringWithFormat:@"Your score was a %d.",(int)overall];
     
     if (done < _jsonItems.count) {
         score = [NSString stringWithFormat:@"%@\nYou completed %lu of %lu items.",score,done,(unsigned long)_jsonItems.count];
@@ -3144,7 +3182,7 @@ bool debugRecord = false;
     
     int pstart = 0;
     UIColor *gray = [UIColor grayColor];
-
+    
     for (NSDictionary *event in phoneAndScore) {
         NSString *phoneText = [event objectForKey:@"event"];
         if ([phoneText isEqualToString:@"sil"]) continue;
@@ -3318,12 +3356,12 @@ bool debugRecord = false;
     phoneLabel.font = phoneFont;
     phoneLabel.adjustsFontSizeToFitWidth=YES;
     phoneLabel.minimumScaleFactor=0.1;
-
+    
     phoneLabel.textAlignment = isRTL ? NSTextAlignmentRight : NSTextAlignmentLeft;
     phoneLabel.attributedText = coloredPhones;
     [phoneLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
     phoneLabel.adjustsFontForContentSizeCategory = YES;
-
+    
     return phoneLabel;
 }
 
@@ -3334,17 +3372,17 @@ bool debugRecord = false;
     float scale = slen/len;
     scale = fmin(1,scale);
     
-//    int largest  = [self isiPhone] ? 24 : 48;
-//    int smallest = [self isiPhone] ? 7  : 14;
+    //    int largest  = [self isiPhone] ? 24 : 48;
+    //    int smallest = [self isiPhone] ? 7  : 14;
     
     int largest  = [self isiPhone] ? 36 : 48;
     int smallest = [self isiPhone] ? 14 : 24;
     
     float newFont = smallest + floor((largest-smallest)*scale);
- //   float newFont = largest;//36;//smallest + floor((largest-smallest)*scale);
+    //   float newFont = largest;//36;//smallest + floor((largest-smallest)*scale);
     //NSLog(@"getWordFont len %lu font is %f",(unsigned long)len,newFont);
     
-
+    
     
     UIFont *wordFont = [UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue];
     return wordFont;
@@ -3368,10 +3406,10 @@ bool debugRecord = false;
     [_scoreDisplayContainer removeConstraints:_scoreDisplayContainer.constraints];
     _scoreDisplayContainer.translatesAutoresizingMaskIntoConstraints = NO;
     _scoreDisplayContainer.clipsToBounds = YES;
- //   _scoreDisplayContainer.backgroundColor = [UIColor yellowColor];
-
+    //   _scoreDisplayContainer.backgroundColor = [UIColor yellowColor];
+    
     UIView *leftView  = nil;
-   // UIView *prevView = nil;
+    // UIView *prevView = nil;
     
     BOOL isRTL = [_siteGetter.rtlLanguages containsObject:_language];
     if (isRTL) {
@@ -3385,10 +3423,10 @@ bool debugRecord = false;
     
     UIView *spacerLeft  = [[UIView alloc] init];
     UIView *spacerRight = [[UIView alloc] init];
- 
-//    spacerLeft.backgroundColor = [UIColor redColor];
-//    spacerRight.backgroundColor = [UIColor blueColor];
-
+    
+    //    spacerLeft.backgroundColor = [UIColor redColor];
+    //    spacerRight.backgroundColor = [UIColor blueColor];
+    
     spacerLeft.translatesAutoresizingMaskIntoConstraints = NO;
     spacerRight.translatesAutoresizingMaskIntoConstraints = NO;
     
@@ -3437,8 +3475,8 @@ bool debugRecord = false;
                                            multiplier:1.0
                                            constant:10.0]];
     
-   
-
+    
+    
     // right edge of right spacer
     [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
                                            constraintWithItem:spacerRight
@@ -3488,10 +3526,10 @@ bool debugRecord = false;
                                            multiplier:1.0
                                            constant:0.0]];
     
-//    NSLog(@"address of score display %p", _scoreDisplayContainer);
-//    NSLog(@"address of left spacer   %p", spacerLeft    );
-//    NSLog(@"address of right spacer   %p", spacerRight    );
-
+    //    NSLog(@"address of score display %p", _scoreDisplayContainer);
+    //    NSLog(@"address of left spacer   %p", spacerLeft    );
+    //    NSLog(@"address of right spacer   %p", spacerRight    );
+    
     _wordLabels  = [NSMutableArray new];
     _phoneLabels = [NSMutableArray new];
     _wordTranscript = wordAndScore;
@@ -3511,9 +3549,9 @@ bool debugRecord = false;
         
         NSNumber *wstart = [wordEvent objectForKey:@"start"];
         NSNumber *wend = [wordEvent objectForKey:@"end"];
-    
+        
         sofar = [sofar stringByAppendingString:word];
-
+        
         // NSLog(@"wordEvent for %@ len = %lu",sofar, (unsigned long)[sofar length]);
         
         BOOL startNewLine = false;//[sofar length] > max;
@@ -3533,9 +3571,9 @@ bool debugRecord = false;
         
         UIView *exampleView = [[UIView alloc] init];
         exampleView.translatesAutoresizingMaskIntoConstraints = NO;
-     //   exampleView.backgroundColor = [UIColor grayColor];
+        //   exampleView.backgroundColor = [UIColor grayColor];
         [_scoreDisplayContainer addSubview:exampleView];
-       
+        
         [self addSingleTap:exampleView];
         
         //         NSLog(@"word is %@",word);
@@ -3566,15 +3604,15 @@ bool debugRecord = false;
                                                    constant:0.0]];
             
             // bottom
-//            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-//                                                   constraintWithItem:exampleView
-//                                                   attribute:NSLayoutAttributeBottom
-//                                                   relatedBy:NSLayoutRelationEqual
-//                                                   toItem:lineStart
-//                                                   attribute:NSLayoutAttributeBottom
-//                                                   multiplier:1.0
-//                                                   constant:0.0]];
-//
+            //            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+            //                                                   constraintWithItem:exampleView
+            //                                                   attribute:NSLayoutAttributeBottom
+            //                                                   relatedBy:NSLayoutRelationEqual
+            //                                                   toItem:lineStart
+            //                                                   attribute:NSLayoutAttributeBottom
+            //                                                   multiplier:1.0
+            //                                                   constant:0.0]];
+            //
             // left - initial left view is the left spacer, but afterwards is the previous word view
             [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
                                                    constraintWithItem:exampleView
@@ -3618,7 +3656,7 @@ bool debugRecord = false;
                                                    constant:5.0]];
             
             NSLog(@"starting new line with %@",word);
-           
+            
             lineStart = exampleView;
             
         }
@@ -3654,7 +3692,7 @@ bool debugRecord = false;
                                                    constant:5.0]];
         }
         
-      //  prevView = exampleView;
+        //  prevView = exampleView;
         leftView = exampleView;
         
         UILabel *wordLabel = [self getWordLabel:word score:score wordFont:wordFont];
@@ -3666,16 +3704,16 @@ bool debugRecord = false;
         [self addWordLabelConstraints:exampleView wordLabel:wordLabel];
         
         NSString *phoneToShow = [self getPhonesWithinWord:wend wstart:wstart phoneAndScore:phoneAndScore];
-
-//        NSLog(@"phone to show %@",phoneToShow);
-
+        
+        //        NSLog(@"phone to show %@",phoneToShow);
+        
         NSMutableAttributedString *coloredPhones = [self getColoredPhones:phoneToShow wend:wend wstart:wstart phoneAndScore:phoneAndScore];
-
+        
         UILabel *phoneLabel = [self getPhoneLabel:isRTL coloredPhones:coloredPhones phoneFont:wordFont];
         [_phoneLabels addObject:phoneLabel];
-
+        
         [exampleView addSubview:phoneLabel];
-
+        
         // top of the phone label is the bottom of the word
         [exampleView addConstraint:[NSLayoutConstraint
                                     constraintWithItem:phoneLabel
@@ -3685,9 +3723,9 @@ bool debugRecord = false;
                                     attribute:NSLayoutAttributeBottom
                                     multiplier:1.0
                                     constant:+2.0]];
-
+        
         [self addPhoneLabelConstraints:exampleView phoneLabel:phoneLabel];
-
+        
     }
     
     // if the alignment fails completely it can sometimes return no words at all.
@@ -3795,7 +3833,7 @@ bool debugRecord = false;
     }
     popupController.fref  = [[self getCurrentJson] objectForKey:@"ctfref"];
     popupController.playAudio = _isAudioOnSelected;
-   // NSLog(@"ContextEnglish===== %@ ", popupController.fl);
+    // NSLog(@"ContextEnglish===== %@ ", popupController.fl);
     //    BOOL isIPhone;
     //  isIPhone = [self isiPhone];
     

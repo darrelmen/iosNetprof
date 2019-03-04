@@ -102,6 +102,7 @@
     if (rememberedLast != nil) {
         _lastName.text = rememberedLast;
     }
+    [SSKeychain setPassword:  @"Yes" forService:@"mitll.proFeedback.device" account:@"audioOn"];
     
     [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
     [_titleLabel setTextColor:[UIColor npDarkBlue]];
@@ -123,7 +124,7 @@
     }
     
     NSURL *url = [NSURL URLWithString:baseurl];
-
+    
     NSLog(@"addUser url      %@",url);
     NSLog(@"addUser username %@",username);
     NSLog(@"addUser email    %@",email);
@@ -146,7 +147,7 @@
     [urlRequest setValue:_lastName.text    forHTTPHeaderField:@"last"];
     [urlRequest setValue:_affiliation.selectedSegmentIndex == 0?@"DLIFLC":@"OTHER"    forHTTPHeaderField:@"affiliation"];
     [urlRequest setValue:_gender.selectedSegmentIndex == 0?@"male":@"female"    forHTTPHeaderField:@"gender"];
-
+    
     [[NSURLConnection connectionWithRequest:urlRequest delegate:self] start];
 }
 
@@ -263,7 +264,7 @@
     [_activityIndicator stopAnimating];
     
     _signUp.enabled = true;
-
+    
     if (error) {
         NSLog(@"EAFSignUpViewController.useJsonChapterData error %@",error.description);
         NSString *myString = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
@@ -304,7 +305,7 @@
     else {
         NSString *userIDExisting = [json objectForKey:@"userid"];
         NSString *resetPassKey   = [json objectForKey:@"resetPassKey"];
-
+        
         // OK store info and segue
         NSString *converted = [NSString stringWithFormat:@"%@",userIDExisting];  // huh? why is this necessary?
         [SSKeychain setPassword:converted      forService:@"mitll.proFeedback.device" account:@"userid"];
@@ -318,7 +319,7 @@
             NSLog(@"EAFSignUpViewController. got back %@", _resetPassKey);
             if ([_resetPassKey length] == 0) {
                 NSLog(@"EAFSignUpViewController. ERROR got back %@", _resetPassKey);
-
+                
             }
             [self performSegueWithIdentifier:@"goToSetPassword" sender:self];
         }
