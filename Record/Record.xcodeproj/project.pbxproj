@@ -364,13 +364,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				B68FFB44222607570055A3A4 /* MessageUI.framework in Frameworks */,
-				B67E1BB6197EC25D00F42143 /* libz.dylib in Frameworks */,
 				B6252AA81A1C50FF0083AE7A /* CoreTelephony.framework in Frameworks */,
 				B6252AA61A1C50EA0083AE7A /* SystemConfiguration.framework in Frameworks */,
 				B66461F2196F193900943BC2 /* AVFoundation.framework in Frameworks */,
 				F6A5682018ECA98A00B844C6 /* CoreGraphics.framework in Frameworks */,
 				F6A5682218ECA98A00B844C6 /* UIKit.framework in Frameworks */,
 				F6A5681E18ECA98A00B844C6 /* Foundation.framework in Frameworks */,
+				B67E1BB6197EC25D00F42143 /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -735,6 +735,7 @@
 					F6A5681918ECA98A00B844C6 = {
 						DevelopmentTeam = 2C83Y973FA;
 						LastSwiftMigration = 1010;
+						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.Keychain = {
 								enabled = 1;
@@ -995,7 +996,8 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: DEFENSE LANGUAGE INSTITUTE, FOREIGN LANGUAGE CENTER [Ent]";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1048,7 +1050,8 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: DEFENSE LANGUAGE INSTITUTE, FOREIGN LANGUAGE CENTER [Ent]";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1075,8 +1078,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Record/Record.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: DEFENSE LANGUAGE INSTITUTE, FOREIGN LANGUAGE CENTER [Ent]";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = YES;
 				DEVELOPMENT_TEAM = 2C83Y973FA;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1086,8 +1090,8 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
-				"INSTALL_OWNER[sdk=*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				"INSTALL_OWNER[sdk=*]" = "$(USER)";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -1096,6 +1100,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = edu.dliflc.Record;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = LL_NETPROF_PROFILE_2019_2;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Record/Record-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1112,8 +1117,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Record/Record.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: DEFENSE LANGUAGE INSTITUTE, FOREIGN LANGUAGE CENTER [Ent]";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = YES;
 				DEVELOPMENT_TEAM = 2C83Y973FA;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1123,8 +1129,8 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Record/Record-Prefix.pch";
 				INFOPLIST_FILE = "Record/Record-Info.plist";
-				"INSTALL_OWNER[sdk=*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				"INSTALL_OWNER[sdk=*]" = "$(USER)";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -1133,6 +1139,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = edu.dliflc.Record;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = LL_NETPROF_PROFILE_2019;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Record/Record-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
@@ -1198,7 +1205,7 @@
 				F6A5684B18ECA98B00B844C6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		F6A5684C18ECA98B00B844C6 /* Build configuration list for PBXNativeTarget "Record" */ = {
 			isa = XCConfigurationList;
@@ -1207,7 +1214,7 @@
 				F6A5684E18ECA98B00B844C6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		F6A5684F18ECA98B00B844C6 /* Build configuration list for PBXNativeTarget "RecordTests" */ = {
 			isa = XCConfigurationList;
@@ -1216,7 +1223,7 @@
 				F6A5685118ECA98B00B844C6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
