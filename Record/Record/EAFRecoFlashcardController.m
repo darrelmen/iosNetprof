@@ -207,7 +207,7 @@
                                                       [self connection:nil didFailWithError:error];
                                                   });
                                                   [self showConnectionError:error];
-                                                  [_poster postError:urlRequest error:error];
+                                                  [self->_poster postError:urlRequest error:error];
                                               }
                                               else {
                                                   self->_responseListData = data;
@@ -319,6 +319,69 @@
     }
 }
 
+- (void)createAudioRecorder {
+    NSArray *pathComponents = [NSArray arrayWithObjects:
+                               [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
+                               @"MyAudioMemo.wav",
+                               nil];
+    NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
+    NSError *error = nil;
+    
+    NSError *setOverrideError;
+    NSError *setCategoryError;
+    
+    // Setup audio session
+    AVAudioSession *session = [AVAudioSession sharedInstance];
+    [session setActive:true error:&error];
+    [session requestRecordPermission:^(BOOL granted) {
+        if (!granted) {
+            NSLog(@"createAudioRecorder record permission not granted...");
+            //            dispatch_async(dispatch_get_main_queue(), ^{
+            //                self->_recordButton.enabled = FALSE;
+            //            });
+        }
+    }];
+    if (error)
+    {
+        NSLog(@"error: %@", [error localizedDescription]);
+    }
+    
+    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:&setCategoryError];
+    
+    if(setCategoryError){
+        NSLog(@"%@", [setCategoryError description]);
+    }
+    
+    
+    // make sure volume is high on iPhones
+    
+    [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&setOverrideError];
+    
+    if(setOverrideError){
+        NSLog(@"%@", [setOverrideError description]);
+    }
+    
+    // Define the recorder setting
+    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
+    
+    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatLinearPCM] forKey:AVFormatIDKey];
+    [recordSetting setValue:[NSNumber numberWithFloat:16000.0] forKey:AVSampleRateKey];
+    [recordSetting setValue:[NSNumber numberWithInt: 1] forKey:AVNumberOfChannelsKey];
+    
+    // Initiate and prepare the recorder
+    _audioRecorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:&error];
+    
+    if (error)
+    {
+        NSLog(@"error creating recorder: %@", [error localizedDescription]);
+    }
+    else {
+        _audioRecorder.delegate = self;
+        _audioRecorder.meteringEnabled = YES;
+        [_audioRecorder prepareToRecord];
+    }
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -395,53 +458,10 @@
     _english.textColor = [UIColor npDarkBlue];
     
     // Set the audio file
-    NSArray *pathComponents = [NSArray arrayWithObjects:
-                               [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
-                               @"MyAudioMemo.wav",
-                               nil];
-    NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
-    NSError *error = nil;
-    
-    NSError *setOverrideError;
-    NSError *setCategoryError;
-    
-    // Setup audio session
-    AVAudioSession *session = [AVAudioSession sharedInstance];
-    
-    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:&setCategoryError];
-    
-    if(setCategoryError){
-        NSLog(@"%@", [setCategoryError description]);
-    }
+    [self createAudioRecorder];
     
     _longPressGesture.minimumPressDuration = 0.05;
     
-    // make sure volume is high on iPhones
-    
-    [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&setOverrideError];
-    
-    if(setOverrideError){
-        NSLog(@"%@", [setOverrideError description]);
-    }
-    
-    // Define the recorder setting
-    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
-    
-    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatLinearPCM] forKey:AVFormatIDKey];
-    [recordSetting setValue:[NSNumber numberWithFloat:16000.0] forKey:AVSampleRateKey];
-    [recordSetting setValue:[NSNumber numberWithInt: 1] forKey:AVNumberOfChannelsKey];
-    
-    // Initiate and prepare the recorder
-    _audioRecorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:&error];
-    
-    if (error)
-    {
-        NSLog(@"error: %@", [error localizedDescription]);
-    }
-    
-    _audioRecorder.delegate = self;
-    _audioRecorder.meteringEnabled = YES;
-    [_audioRecorder prepareToRecord];
     
     //  [self checkAvailableMics];
     [self configureTextFields];
@@ -684,7 +704,6 @@
     //  _interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
     
     if([self isiPhone]){
-        //    constData = 30;
         constData = self.view.bounds.size.height * 0.12;
     } else {
         // constData = self.view.bounds.size.height * 0.2;
@@ -2104,7 +2123,7 @@ bool debugRecord = false;
     
     if (!_audioRecorder.recording)
     {
-        if (debugRecord) NSLog(@"startRecordingFeedbackWithDelay time = %f",CFAbsoluteTimeGetCurrent());
+        if (debugRecord) NSLog(@"recordAudio time = %f",CFAbsoluteTimeGetCurrent());
         _english.textColor = [UIColor npDarkBlue];
         _meteringTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(doMeteringUpdate) userInfo:nil repeats:YES];
         [_peak setHidden:FALSE];
@@ -2115,6 +2134,15 @@ bool debugRecord = false;
         
         NSError *error = nil;
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryRecord error:&error];
+        
+        // try to avoid weird bug where the audio file would have lots of zeroes after it
+        if (_audioRecorder.deleteRecording) {
+            NSLog(@"deleted any old recording...");
+        }
+        else {
+            NSLog(@"huh? couldn't delete old recording...");
+        }
+        
         [_audioRecorder record];
         
         if (_audioRecorder.recording)
@@ -2359,9 +2387,9 @@ bool debugRecord = false;
             [self stopRecordingWithDelay:nil];
         }
     }
-    else {
-        NSLog(@"longPressAction got other event %ld", (long)_longPressGesture.state);
-    }
+    //    else {
+    //        NSLog(@"longPressAction got other event %ld", (long)_longPressGesture.state);
+    //    }
 }
 
 - (void)getAltPlayerFromPreviousAudio:(NSNumber *)exid{
@@ -2404,6 +2432,63 @@ bool debugRecord = false;
     return [[self getCurrentJson] objectForKey:@"id"];
 }
 
+- (void)doBouncingBallHighlight:(NSMutableDictionary *)prevWordAttr {
+    CMTime tm = CMTimeMakeWithSeconds(0.01, 100);
+    UIColor *hColor = [EAFRecoFlashcardController colorFromHexString:@"#007AFF"];
+    __weak typeof(self) weakSelf = self;
+    
+    [_altPlayer addPeriodicTimeObserverForInterval:tm queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
+        float now = CMTimeGetSeconds(time);
+        if (now == weakSelf.lastUpdate && now > 0) {
+            weakSelf.recordButton.enabled = YES;
+        }
+        else {
+            int i = 0;
+            for (NSDictionary *event in weakSelf.wordTranscript) {
+                NSString *word = [event objectForKey:@"event"];
+                if ([word isEqualToString:@"sil"] || [word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) continue;
+                NSNumber *wstart = [event objectForKey:@"start"];
+                NSNumber *wend   = [event objectForKey:@"end"];
+                // NSLog(@"w on %d of %d",i,weakSelf.wordLabels.count);
+                //   NSLog(@"p on %d of %d",i,weakSelf.phoneLabels.count);
+                
+                UILabel *label      = [weakSelf.wordLabels  objectAtIndex:i];
+                NSNumber *index = [NSNumber numberWithInt:i];
+                UILabel *phoneLabel = [weakSelf.phoneLabels objectAtIndex:i++];
+                
+                if (now >= [wstart floatValue] && now < [wend floatValue]) {
+                    //   NSLog(@"hilight text %@",label.text);
+                    NSMutableAttributedString *highlight = [[NSMutableAttributedString alloc] initWithString:label.text];
+                    
+                    NSRange range = NSMakeRange(0, [highlight length]);
+                    
+                    [highlight addAttribute:NSBackgroundColorAttributeName
+                                      value:hColor
+                                      range:range];
+                    
+                    label.attributedText = highlight;
+                    
+                    NSAttributedString *attr =
+                    [weakSelf markForegroundPhones:wend wstart:wstart phoneAndScore:weakSelf.phoneTranscript current:phoneLabel.attributedText now:now];
+                    
+                    phoneLabel.attributedText = attr;
+                }
+                else {
+                    //  NSLog(@"don't highlight %@",label.text);
+                    label.attributedText = [prevWordAttr objectForKey:index];
+                    
+                    NSMutableAttributedString *coloredPhones = [weakSelf getColoredPhones:phoneLabel.text wend:wend wstart:wstart phoneAndScore:weakSelf.phoneTranscript];
+                    phoneLabel.attributedText = coloredPhones;
+                    
+                    //      NSLog(@"event %@ at %f - %f not in %f",word,[wstart floatValue],[wend floatValue],now);
+                }
+            }
+        }
+        
+        weakSelf.lastUpdate = now;
+    }];
+}
+
 // called when touch on highlighted word
 - (IBAction)playAudio:(id)sender {
     if (!_audioRecorder.recording)
@@ -2414,7 +2499,7 @@ bool debugRecord = false;
         
         NSNumber *exid= [self getCurrentExID];
         
-        NSLog(@"playAudio playAudio %@ vs %@ audio url %@", exid, _lastRecordedAudioExID, _audioRecorder.url);
+        //        NSLog(@"playAudio playAudio %@ vs %@ audio url %@", exid, _lastRecordedAudioExID, _audioRecorder.url);
         [self stopPlayingAudio];
         
         NSError *error;
@@ -2424,7 +2509,6 @@ bool debugRecord = false;
         // what does this do?
         [session overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
         
-        // NSString *asString = [NSString stringWithFormat:@"%@",exid];
         if (_lastRecordedAudioExID == NULL || [exid isEqualToNumber:_lastRecordedAudioExID]) {
             _altPlayer = [[AVPlayer alloc] initWithURL:_audioRecorder.url];
         }
@@ -2433,7 +2517,6 @@ bool debugRecord = false;
             [self getAltPlayerFromPreviousAudio:exid];
         }
         
-        CMTime tm = CMTimeMakeWithSeconds(0.01, 100);
         _lastUpdate = 0.0;
         
         __weak typeof(self) weakSelf = self;
@@ -2455,58 +2538,7 @@ bool debugRecord = false;
             i++;
         }
         
-        UIColor *hColor = [EAFRecoFlashcardController colorFromHexString:@"#007AFF"];
-        
-        [_altPlayer addPeriodicTimeObserverForInterval:tm queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
-            float now = CMTimeGetSeconds(time);
-            if (now == weakSelf.lastUpdate && now > 0) {
-                weakSelf.recordButton.enabled = YES;
-            }
-            else {
-                int i = 0;
-                for (NSDictionary *event in weakSelf.wordTranscript) {
-                    NSString *word = [event objectForKey:@"event"];
-                    if ([word isEqualToString:@"sil"] || [word isEqualToString:@"<s>"] || [word isEqualToString:@"</s>"]) continue;
-                    NSNumber *wstart = [event objectForKey:@"start"];
-                    NSNumber *wend   = [event objectForKey:@"end"];
-                    // NSLog(@"w on %d of %d",i,weakSelf.wordLabels.count);
-                    //   NSLog(@"p on %d of %d",i,weakSelf.phoneLabels.count);
-                    
-                    UILabel *label      = [weakSelf.wordLabels  objectAtIndex:i];
-                    NSNumber *index = [NSNumber numberWithInt:i];
-                    UILabel *phoneLabel = [weakSelf.phoneLabels objectAtIndex:i++];
-                    
-                    if (now >= [wstart floatValue] && now < [wend floatValue]) {
-                        //   NSLog(@"hilight text %@",label.text);
-                        NSMutableAttributedString *highlight = [[NSMutableAttributedString alloc] initWithString:label.text];
-                        
-                        NSRange range = NSMakeRange(0, [highlight length]);
-                        
-                        [highlight addAttribute:NSBackgroundColorAttributeName
-                                          value:hColor
-                                          range:range];
-                        
-                        label.attributedText = highlight;
-                        
-                        NSAttributedString *attr =
-                        [weakSelf markForegroundPhones:wend wstart:wstart phoneAndScore:weakSelf.phoneTranscript current:phoneLabel.attributedText now:now];
-                        
-                        phoneLabel.attributedText = attr;
-                    }
-                    else {
-                        //  NSLog(@"don't highlight %@",label.text);
-                        label.attributedText = [prevWordAttr objectForKey:index];
-                        
-                        NSMutableAttributedString *coloredPhones = [weakSelf getColoredPhones:phoneLabel.text wend:wend wstart:wstart phoneAndScore:weakSelf.phoneTranscript];
-                        phoneLabel.attributedText = coloredPhones;
-                        
-                        //      NSLog(@"event %@ at %f - %f not in %f",word,[wstart floatValue],[wend floatValue],now);
-                    }
-                }
-            }
-            
-            weakSelf.lastUpdate = now;
-        }];
+        [self doBouncingBallHighlight:prevWordAttr];
         
         if (error)
         {
@@ -2594,7 +2626,7 @@ bool debugRecord = false;
 - (void)postAudio {
     [_recoFeedbackImage startAnimating];
     
-    _isPostingAudio=TRUE;
+    _isPostingAudio=TRUE;  // so if we have count down timer, what time to not include in total
     
     NSData *postData = [NSData dataWithContentsOfURL:_audioRecorder.url];
     
@@ -2609,16 +2641,36 @@ bool debugRecord = false;
     }
     
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
-    NSLog(@"postAudio audioRecorderDidFinishRecording - url %@", _audioRecorder.url);
+    //NSLog(@"postAudio audioRecorderDidFinishRecording - url %@", _audioRecorder.url);
     
     double durationInSeconds = CMTimeGetSeconds(asset.duration);
     
     NSLog(@"Reco : postAudio talking to %@ file length %@ dur %f",baseurl, postLength, durationInSeconds);
-    
-    if (durationInSeconds > 30) {
+    int maxTime = 30;
+    if (durationInSeconds > maxTime) {
         NSLog(@"Reco : long dur : dur %f",  durationInSeconds);
         
+        UIAlertController * alert = [UIAlertController
+                                     alertControllerWithTitle:@"Too long"
+                                     message:[NSString stringWithFormat:@"Audio recordings should be no more than %d seconds.",maxTime]
+                                     preferredStyle:UIAlertControllerStyleAlert];
+        
+        //Add Buttons
+        
+        UIAlertAction* yesButton = [UIAlertAction
+                                    actionWithTitle:@"OK"
+                                    style:UIAlertActionStyleDefault
+                                    handler:^(UIAlertAction * action) {
+                                        
+                                    }];
+        
+        [alert addAction:yesButton];
+        [self presentViewController:alert animated:YES completion:nil];
+        [self->_recoFeedbackImage stopAnimating];
+        
+        return;
     }
+    
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
     [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
@@ -2640,9 +2692,7 @@ bool debugRecord = false;
     
     NSNumber *exid= [self getCurrentExID];
     
-    //    NSData *audioData=[NSData dataWithData:postData];
-    //    NSLog(@"postAudio OK remember for %@ (%lu)",exid,(unsigned long)[audioData length]);
-    
+    // so we can play it later if we want
     [_exToRecordedAudio setObject:[NSData dataWithData:postData] forKey:exid];
     
     //    NSData *audioData2= [_exToRecordedAudio objectForKey:exid];
@@ -2655,44 +2705,43 @@ bool debugRecord = false;
     [urlRequest setValue:[NSString stringWithFormat:@"%@",exid]        forHTTPHeaderField:@"exercise"];
     [urlRequest setValue:@"decode" forHTTPHeaderField:@"request"];
     
-    NSString *projid = [NSString stringWithFormat:@"%@",[self getProjectID]];
-    [urlRequest setValue:projid forHTTPHeaderField:@"projid"];
+    [urlRequest setValue:[NSString stringWithFormat:@"%@",[self getProjectID]] forHTTPHeaderField:@"projid"];
     
     [urlRequest setValue:[NSString stringWithFormat:@"%d",_reqid] forHTTPHeaderField:@"reqid"];
     _reqid++;
     
     // post the audio
     [urlRequest setHTTPBody:postData];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-    
     // NSLog(@"posting to %@",_url);
-    [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-     {
-         dispatch_async(dispatch_get_main_queue(), ^{
-             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-             [self->_recoFeedbackImage stopAnimating];
-         });
-         
-         //    NSLog(@"resself->ponse to post of audio...");
-         if (error != nil) {
-             NSLog(@"postAudio : Got error %@",error);
-             dispatch_async(dispatch_get_main_queue(), ^{
-                 if (error.code == NSURLErrorNotConnectedToInternet) {
-                     [self setDisplayMessage:@"Make sure your wifi or cellular connection is on."];
-                 }
-                 else {
-                     [self->_poster postError:urlRequest error:error];
-                     [self showConnectionError:error];
-                 }
-             });
-         }
-         else {
-             self->_responseData = data;
-             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading)
-                                    withObject:nil
-                                 waitUntilDone:YES];
-         }
-     }];
+    
+    NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
+                                          {
+                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+                                                  [self->_recoFeedbackImage stopAnimating];
+                                              });
+                                              
+                                              //    NSLog(@"resself->ponse to post of audio...");
+                                              if (error != nil) {
+                                                  NSLog(@"postAudio : Got error %@",error);
+                                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                                      if (error.code == NSURLErrorNotConnectedToInternet) {
+                                                          [self setDisplayMessage:@"Make sure your wifi or cellular connection is on."];
+                                                      }
+                                                      else {
+                                                          [self->_poster postError:urlRequest error:error];
+                                                          [self showConnectionError:error];
+                                                      }
+                                                  });
+                                              }
+                                              else {
+                                                  self->_responseData = data;
+                                                  [self performSelectorOnMainThread:@selector(connectionDidFinishLoading)
+                                                                         withObject:nil
+                                                                      waitUntilDone:YES];
+                                              }
+                                          }];
+    [downloadTask resume];
     
     _startPost = CFAbsoluteTimeGetCurrent();
     
@@ -2864,7 +2913,6 @@ bool debugRecord = false;
     CFAbsoluteTime millis = diff * 1000;
     int iMillis = (int) millis;
     
-    // NSLog(@"connectionDidFinishLoading - round trip time was %f %d ",diff, iMillis);
     
     if ([self isAQuiz]) {
         _timeRemainingMillis += iMillis;  // put the time back - don't count round trip wait against completion time...
@@ -2874,6 +2922,7 @@ bool debugRecord = false;
         AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:_audioRecorder.url options:nil];
         double durationInSeconds = CMTimeGetSeconds(asset.duration);
         
+        NSLog(@"connectionDidFinishLoading - round trip time was %f %d dur %.3f sec ",diff, iMillis, durationInSeconds);
         
         [self postEvent:[NSString stringWithFormat:@"round trip was %.3f sec for file of dur %.3f sec",diff,durationInSeconds]
                  widget:[NSString stringWithFormat:@"rt %.3f",diff]
@@ -3381,8 +3430,6 @@ bool debugRecord = false;
     float newFont = smallest + floor((largest-smallest)*scale);
     //   float newFont = largest;//36;//smallest + floor((largest-smallest)*scale);
     //NSLog(@"getWordFont len %lu font is %f",(unsigned long)len,newFont);
-    
-    
     
     UIFont *wordFont = [UIFont systemFontOfSize:[NSNumber numberWithFloat:newFont].intValue];
     return wordFont;

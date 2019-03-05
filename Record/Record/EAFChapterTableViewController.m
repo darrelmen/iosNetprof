@@ -85,6 +85,7 @@
     
     _siteGetter = [EAFGetSites new];
     _siteGetter.delegate = self;
+    _url = [_siteGetter getServerURL];
     _poster = [[EAFEventPoster alloc] init];
     
     [self.navigationController.navigationBar setTitleTextAttributes:
@@ -102,7 +103,6 @@
     }
     
     _language = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
-    _poster = [[EAFEventPoster alloc] initWithURL:_url projid:[_siteGetter.nameToProjectID objectForKey:_language]];
     
     [_siteGetter getSites];
     
@@ -179,18 +179,17 @@
 }
 
 - (void) sitesReady {
+  //  NSLog(@"ChapterTableViewController - sites ready %@ %@",_url,_language);
+    _poster = [[EAFEventPoster alloc] initWithURL:_url projid:[_siteGetter.nameToProjectID objectForKey:_language]];
+
     if (_jsonContentArray == nil) {
         [self loadInitialData];
-    }
-    else {
-        
     }
 }
 
 
 - (void)loadInitialData {
-    NSLog(@"loadInitialData");
-    
+ //   NSLog(@"loadInitialData");
     NSData *cachedData = [self getCachedJson];
     if (cachedData != NULL && [cachedData length] > 100) {
         NSLog(@"loadInitialData : using cached json!");
@@ -407,7 +406,7 @@
             }
         }
 
-        NSLog(@"combined cache %lu",(unsigned long)combined.count);
+//        NSLog(@"combined cache %lu",(unsigned long)combined.count);
 
         [_audioCache cacheAudio:combined url:url];
     }
@@ -634,6 +633,9 @@
     //          _unitTitle,_unit);
     
     NSLog(@"Chapter table Got prepare -- %@ has model %@ url %@",itemController, _hasModel?@"YES":@"NO", _url);
+    
+    [self postEvent: [NSString stringWithFormat:@"chapter %@ %@",_chapterName,_currentChapter] widget:@"Choose unit/chapter" type:@"ChapterTableViewController"];
+
     [itemController setChapterToItems:_chapterInfo];
     [itemController setJsonItems:_currentItems];
     itemController.chapterTitle = _chapterName;
@@ -650,7 +652,7 @@
     itemController.url = _url;
     itemController.isRTL = _isRTL;
     itemController.showSentences=_showSentences;
-    if (_showSentences) NSLog(@"Chapter show sentences!");
+   // if (_showSentences) NSLog(@"Chapter show sentences!");
 }
 
 #pragma mark - Table view delegate

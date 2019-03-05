@@ -211,6 +211,7 @@
     if ( ( self = [super init] ) )
     {
         _operationQueue = [[NSOperationQueue alloc] init];
+        NSLog(@"EAFAudioCache qos %ld",_operationQueue.qualityOfService);
         _operationQueue.maxConcurrentOperationCount = 2;
     }
     return self;
