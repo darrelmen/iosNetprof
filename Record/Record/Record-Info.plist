@@ -25,7 +25,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>3.0.13</string>
+	<string>3.0.14</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.education</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -36,7 +36,7 @@
 		<true/>
 	</dict>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright &amp;copy; 2011-2016 Massachusetts Institute of Technology, Lincoln Laboratory</string>
+	<string>Copyright &amp;copy; 2011-2019 Massachusetts Institute of Technology, Lincoln Laboratory</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>NetProF needs to record you saying voacabulary to give you pronunciation feedback.</string>
 	<key>UIAppFonts</key>
