@@ -39,7 +39,6 @@
 
 #import "EAFSignUpViewController.h"
 #import "SSKeychain.h"
-//#import "EAFChapterTableViewController.h"
 #import "EAFSetPasswordViewController.h"
 #import "EAFEventPoster.h"
 #import "EAFGetSites.h"

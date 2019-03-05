@@ -110,6 +110,7 @@
 
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *recoFeedbackImage;
 @property (strong, nonatomic) IBOutlet UILabel *correctFeedback;
+@property (strong, nonatomic) IBOutlet UIImageView *answerAudioOn;
 @property (strong, nonatomic) IBOutlet UIView *metering;
 @property (strong, nonatomic) IBOutlet UIView *peak;
 @property (strong, nonatomic) IBOutlet UIView *outline;

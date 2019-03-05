@@ -83,7 +83,7 @@ const BOOL debug = FALSE;
     _myAudioPlayer.delegate = self;
     
     _siteGetter = [EAFGetSites new];
-    _siteGetter.delegate = self;
+    //_siteGetter.delegate = self;
     
     [self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.

@@ -475,6 +475,13 @@
     _scoreProgress.layer.borderColor = [UIColor grayColor].CGColor;
     
     [_correctFeedback setHidden:true];
+    [_answerAudioOn setHidden:true];
+    
+    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(playAudio:)];
+    singleTap.numberOfTapsRequired = 1;
+    _answerAudioOn.userInteractionEnabled = YES;
+    [_answerAudioOn addGestureRecognizer:singleTap];
+    
     
     _scoreProgress.hidden = true;
     _progressThroughItems.progressTintColor = [UIColor npLightYellow];
@@ -773,7 +780,6 @@
 - (void)stopAutoPlay {
     [self unselectAutoPlay];
     [self stopPlayingAudio];
-    //  [self whatToShowSelection:nil];
 }
 
 -(void) viewWillDisappear:(BOOL)animated {
@@ -840,15 +846,6 @@
 }
 
 - (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
-    //    NSDictionary *jsonObject =[_jsonItems objectAtIndex:[self getItemIndex]];
-    //    NSString *id = [jsonObject objectForKey:@"id"];
-    //
-    //    // so netprof v2 has number ids - hard to know what type json is returning...
-    //    if ([[jsonObject objectForKey:@"id"] isKindOfClass:[NSNumber class]]) {
-    //        NSNumber *nid = [jsonObject objectForKey:@"id"];
-    //        id = [NSString stringWithFormat:@"%@",nid];
-    //    }
-    
     //    NSLog(@"postEvent id       %@", id);
     //    NSLog(@"postEvent widget   %@", widget);
     //    NSLog(@"postEvent type     %@", type);
@@ -1108,6 +1105,7 @@
     [_recoFeedbackImage stopAnimating];
     
     [_correctFeedback setHidden:true];
+    _answerAudioOn.hidden=TRUE;
     [_scoreProgress     setProgress:0 ];
     
     // fade in the english!
@@ -1122,8 +1120,6 @@
     }];
     
     [self setGenderSelector];
-    
-    
     
     NSDictionary *jsonObject =[self getCurrentJson] ;
     
@@ -1323,7 +1319,7 @@
         }
     }
     
-    [_english setText:enAtIndex];
+    [_english setText:[self clean39:enAtIndex]];
     
     // so somehow we have to manually scale the font based on the length of the text, wish I could figure out how to not do this
     BOOL isIPhone = [self isiPhone];
@@ -1783,12 +1779,33 @@ NSLayoutConstraint *peakConstraint;
     }
 }
 
-- (void)setForeignLangWith:(NSString *)exercise {
-    // NSLog(@"setForeignLang before %@",exercise);
-    NSString *clean = [exercise stringByReplacingOccurrencesOfString:@"&#39;" withString:@"'"];
-    //  NSLog(@"setForeignLang after %@",clean);
+- (NSString *)clean39:(NSString *)exercise {
+    return [exercise stringByReplacingOccurrencesOfString:@"&#39;" withString:@"'"];
+}
+
+- (NSMutableAttributedString *)getTextWithAudioIcon:(NSString *)toShow {
+    NSTextAttachment *imageAttachment = [[NSTextAttachment alloc] init];
+    imageAttachment.image = [UIImage imageNamed:@"audioOn"];
     
-    [_foreignLang setText:[self trim:clean]];
+    CGFloat imageOffsetY = +10.0;
+    BOOL isRTL =  [_siteGetter.rtlLanguages containsObject:_language];
+    
+    CGFloat imageOffsetX = isRTL? -5.0 : +5.0;
+    CGFloat height = imageAttachment.image.size.height*0.8;
+    
+    // stringBoundingBox.height-height,
+    imageAttachment.bounds = CGRectMake(imageOffsetX, imageOffsetY, imageAttachment.image.size.width*0.8, height);
+    NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:imageAttachment];
+    NSMutableAttributedString *completeText= [[NSMutableAttributedString alloc] initWithString:@""];
+    NSMutableAttributedString *textAfterIcon= [[NSMutableAttributedString alloc] initWithString:toShow];
+    [completeText appendAttributedString:textAfterIcon];
+    [completeText appendAttributedString:attachmentString];
+    return completeText;
+}
+
+- (void)setForeignLangWith:(NSString *)exercise {
+    NSString *toShow = [self trim:[self clean39:exercise]];
+    _foreignLang.attributedText=[self getTextWithAudioIcon:toShow];
 }
 
 - (void)setForeignLang {
@@ -2359,6 +2376,7 @@ bool debugRecord = false;
         _recordButton.enabled = NO;
         
         [_correctFeedback setHidden:true];
+        _answerAudioOn.hidden = true;
         _scoreProgress.hidden = true;
         
         [self setDisplayMessage:@""];
@@ -2856,8 +2874,6 @@ bool debugRecord = false;
         }
     }
     _scoreProgress.hidden = false;
-    //    [_scoreProgress setProgress:[overallScore floatValue]];
-    //    [_scoreProgress setProgressTintColor:[self getColor2:[overallScore floatValue]]];
     
     if (previousScore != nil) {
         [_scoreProgress setProgress:[previousScore floatValue]];
@@ -2873,20 +2889,13 @@ bool debugRecord = false;
         float overall;
         NSString * emoji= [self getEmoji:&overall];
         [_correctFeedback setText:emoji];
-        
-        //        if ([emoji isEqualToString:@"\U00002639"]) {
-        //            [_correctFeedback setBackgroundColor:[UIColor redColor]];
-        //        }
-        //        else {
-        //            [_correctFeedback setBackgroundColor:[UIColor whiteColor]];
-        //        }
     }
     else {
         [_correctFeedback setText:@"\U0000274C"];  // red x
-        //        [_correctFeedback setBackgroundColor:[UIColor whiteColor]];
     }
     
     [_correctFeedback setHidden:false];
+    [_answerAudioOn setHidden:false];
 }
 
 - (void)doAfterScoreReceived:(BOOL)isFullMatch score:(NSNumber *)score {
@@ -2968,9 +2977,6 @@ bool debugRecord = false;
         [self setDisplayMessage:@"Score low, try again."];
         return;
     }
-    //    if (!isFullMatch) {
-    //        NSLog(@"OK, audio is cut off.");
-    //    }
     
     NSNumber *previousScore;
     if (exid != nil) {
@@ -3059,7 +3065,7 @@ bool debugRecord = false;
     NSString *emoji6 =@"\U00002639";   // frown
     
     // private static final List<Float> koreanThresholds = new ArrayList<>(Arrays.asList(0.31F, 0.43F, 0.53F, 0.61F, 0.70F));
-    //    private static final List<Float> englishThresholds = new ArrayList<>(Arrays.asList(0.23F, 0.36F, 0.47F, 0.58F, NATIVE_HARD_CODE));  // technically last is 72
+    // private static final List<Float> englishThresholds = new ArrayList<>(Arrays.asList(0.23F, 0.36F, 0.47F, 0.58F, NATIVE_HARD_CODE));  // technically last is 72
     
     NSArray *array = @[ @0.31f, @0.43f, @0.53f, @0.61f, @0.70f];
     NSArray *emoji = @[ emoji6, emoji5, emoji4, emoji3, emoji2, emoji1];
@@ -3201,17 +3207,6 @@ bool debugRecord = false;
     
     wordLabel.attributedText = coloredWord;
     wordLabel.font  = wordFont;
-    
-    //    if ([self isiPhone]// && [_foreignLang.text length] > 15
-    //        ) {
-    //        wordLabel.font  = wordFont;//[UIFont systemFontOfSize:24];
-    //      //  int v = [wordLabel contentCompressionResistancePriorityForAxis:UILayoutConstraintAxisHorizontal];
-    //     //   NSLog(@"got constraint %d",v);
-    ////        NSLog(@"got constraint %f",[wordLabel contentHuggingPriorityForAxis:UILayoutConstraintAxisHorizontal] );
-    //    }
-    //    else {
-    //
-    //    }
     
     [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
     wordLabel.adjustsFontForContentSizeCategory = YES;
@@ -3456,13 +3451,11 @@ bool debugRecord = false;
     //   _scoreDisplayContainer.backgroundColor = [UIColor yellowColor];
     
     UIView *leftView  = nil;
-    // UIView *prevView = nil;
     
     BOOL isRTL = [_siteGetter.rtlLanguages containsObject:_language];
     if (isRTL) {
         wordAndScore  = [self reversedArray:wordAndScore];
         //NSLog(@"now word  json %@",wordAndScore);
-        
         if (!_showPhonesLTRAlways) {
             phoneAndScore = [self reversedArray:phoneAndScore];
         }

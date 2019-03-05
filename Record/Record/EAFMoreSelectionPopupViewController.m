@@ -36,6 +36,9 @@
     else if ([_language isEqualToString:@"Pashto1"] || [_language isEqualToString:@"Pashto2"] || [_language isEqualToString:@"Pashto3"]) {
         [_languageSelection setTitle:@"Pashto" forSegmentAtIndex:1];
     }
+    else if ([_language isEqualToString:@"Msa"]) {
+        [_languageSelection setTitle:@"MSA" forSegmentAtIndex:1];
+    }
     
     if (![self isiPad] && ![_language isEqualToString:@"English"]) {
         [_languageSelection setTitle:@"Eng" forSegmentAtIndex:0];
@@ -64,7 +67,6 @@
 
 
 - (void)viewDidLoad {
-    
 //     [self.view setBackgroundColor:[UIColor lightGrayColor]];
   //  [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -108,9 +110,7 @@
     [_audioOnBtn setTitleColor:[UIColor npAltPressButtonFGOn] forState:UIControlStateSelected];
     _audioOnBtn.layer.borderColor = [UIColor npAltPressButtonBGOn].CGColor;
     _moreSelection.isAudioSelected = _audioOnBtn.selected;
-
 }
-
 
 - (void) viewWillDisappear:(BOOL) animated {
      [super viewWillDisappear:animated];
@@ -124,16 +124,13 @@
     {
         //send the delegate function with the country information
         [[self customDelegate] getSelection:_moreSelection];
-
     }
-    
 //    _audioOnBtn.selected = !_audioOnBtn.selected;
 //    _audioOnBtn.color = _audioOnBtn.selected ?[UIColor blueColor]:[UIColor whiteColor];
 }
 - (IBAction)closePopup:(id)sender {
     [self mz_dismissFormSheetControllerAnimated:YES completionHandler:^(MZFormSheetController *formSheetController) {
     }];
-
 }
 
 - (BOOL)isiPhone
@@ -146,7 +143,5 @@
 {
     return ![self isiPhone];
 }
-
-
 
 @end
