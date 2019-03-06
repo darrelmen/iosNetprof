@@ -125,7 +125,7 @@ const BOOL debug = FALSE;
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
  
-    //   baseurl = [NSString stringWithFormat:@"%@&projid=%@", baseurl, _projid];
+    baseurl = [NSString stringWithFormat:@"%@&projid=%@", baseurl, _projid];
 
     if (_listid != NULL) {
         baseurl = [NSString stringWithFormat:@"%@&listid=%@", baseurl, _listid];
@@ -154,11 +154,14 @@ const BOOL debug = FALSE;
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
-    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+    NSURLSessionDataTask *downloadTask =
+    [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest
+                                    completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
+     //   {
+     //  [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          if (error != nil) {
              NSLog(@"PhoneScoreTableViewController Got error %@",error);
-             
              dispatch_async(dispatch_get_main_queue(), ^{
                  [self connection:nil didFailWithError:error];
              });
@@ -170,6 +173,8 @@ const BOOL debug = FALSE;
                                  waitUntilDone:YES];
          }
      }];
+    
+    [downloadTask resume];
 }
 
 #pragma mark - Table view data source
@@ -295,12 +300,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 - (NSString *)getPhonesToShow:(NSDictionary *)lastPhone addSpaces:(BOOL)addSpaces phoneArray:(NSArray *)phoneArray
 {
     NSString *phoneToShow = @"";
+   // NSString *invisibleSeparator = @"\U0000200B";
     for (NSDictionary *phoneInfo in phoneArray) {
         NSString *phoneText =[phoneInfo objectForKey:@"p"];
         phoneToShow = [phoneToShow stringByAppendingString:phoneText];
         
         if (addSpaces) {
-            if (phoneInfo != lastPhone && ![_language isEqualToString:@"Korean"]) {
+            // && ![_language isEqualToString:@"Korean"]
+            if (phoneInfo != lastPhone ) {
                 phoneToShow = [phoneToShow stringByAppendingString:@" "];
             }
         }
@@ -429,20 +436,18 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     NSArray *words = [_phoneToWords objectForKey:phone];
    
-    
     // NSLog(@"tableView words for %@ = %@",phone, words);
     
     UIView *leftView = nil;
     
     UILabel *overallPhoneLabel = [self getOverallPhoneLabel:phone cell:cell];
     
-    
     float totalPhoneScore = 0.0f;
     float totalPhones = 0.0f;
     // int count = 0;
-    BOOL addSpaces = false;
-    BOOL debug=false;
-    BOOL debug2=false;
+    BOOL addSpaces = [_language isEqualToString:@"Korean"] ;
+    BOOL debug = false;
+    BOOL debug2 = false;
 
     // try to worry about the same word appearing multiple times...
     NSMutableSet *shownSoFar = [[NSMutableSet alloc] init];
@@ -537,14 +542,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                               toItem:leftView
                                               attribute:NSLayoutAttributeRight
                                               multiplier:1.0
-                                              constant:5.0];
+                                              constant:2.0];
             
             [cell.contentView addConstraint:constraint];
             //  NSLog(@"adding (to left view) constraint %@",constraint);
         }
         
         leftView = exampleView;
-        
+      //  UIFont *tiny=[UIFont fontWithName:@"Arial" size:2.0];
         for (NSDictionary *wordResult in resultWords) {
             if (debug)  NSLog(@"resultWords : wordEntry is %@",wordEntry);
             
@@ -567,17 +572,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             
             if (debug)  NSLog(@"resultWords : wordResult         is %@",wordResult);
             
-            float fscore = [[wordResult objectForKey:@"s"] floatValue];
-            
-            //            if ([[wordResult objectForKey:@"s"] isKindOfClass:[NSString class]]) {
-            //                NSString *scoreString  = [wordResult objectForKey:@"s"];
-            //            }
-            //            else {
-            //                NSNumber *scoreString  = [wordResult objectForKey:@"s"];
-            //                fscore = [scoreString floatValue];
-            //            }
-            
-            UILabel * wordLabel = [self getLabelForWord:fscore word:word];
+            UILabel * wordLabel = [self getLabelForWord:[[wordResult objectForKey:@"s"] floatValue] word:word];
             
             [exampleView addSubview:wordLabel];
             [self addWordLabelConstraints:exampleView wordLabel:wordLabel];
@@ -593,22 +588,40 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 
                 NSMutableAttributedString *coloredPhones = [[NSMutableAttributedString alloc] initWithString:phoneToShow];
                 
+                if (addSpaces) {
+                    [coloredPhones addAttribute:NSKernAttributeName
+                                          value:[NSNumber numberWithInt:0]
+                                          range:NSMakeRange(0, [phoneToShow length])];
+                }
+                
                 int start = 0;
                 for (NSDictionary *phoneInfo in phoneArray) {
-                    NSString *phoneText =[phoneInfo objectForKey:@"p"];
+                    NSString *phoneText = [phoneInfo objectForKey:@"p"];
+                    NSString *scoreString = [phoneInfo objectForKey:@"s"];
                     
+                    if (addSpaces && start>0) {
+//                        [coloredPhones addAttribute:NSFontAttributeName
+//                                              value:tiny
+//                                              range:NSMakeRange(start-1, 1)];
+                        
+//                        [coloredPhones addAttribute:NSBackgroundColorAttributeName
+//                                              value:[UIColor blueColor]
+//                                              range:NSMakeRange(start-1, 1)];
+                    }
+                    
+                
+
                     NSRange range = NSMakeRange(start, [phoneText length]);
                     
-                    if ([_language isEqualToString:@"Korean"] || !addSpaces)
+                    // [_language isEqualToString:@"Korean"] ||
+                    if (addSpaces)
                     {
-                        start += range.length;
-                    }
-                    else {
-                        
                         start += (phoneInfo != lastPhone) ? range.length+1 : range.length;
                     }
+                    else {
+                        start += range.length;
+                    }
                     
-                    NSString *scoreString = [phoneInfo objectForKey:@"s"];
                     float score = [scoreString floatValue];
                     
                     if (debug)   NSLog(@"score was %@ %f",scoreString,score);
@@ -620,13 +633,25 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                         totalPhoneScore += score;
                         totalPhones++;
                     }
-                    if (debug)   NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
+                    if (debug)  {
+                      NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
+                    }
+                    
+                    
                     [coloredPhones addAttribute:NSBackgroundColorAttributeName
                                           value:color
                                           range:range];
                 }
                 
-                
+//                if (addSpaces) {
+//                    [coloredPhones addAttribute:NSFontAttributeName
+//                                          value:tiny
+//                                          range:NSMakeRange(start, 1)];
+//                    [coloredPhones addAttribute:NSBackgroundColorAttributeName
+//                                          value:[UIColor blueColor]
+//                                          range:NSMakeRange(start, 1)];
+//                }
+            
                 UILabel *phoneLabel = [[UILabel alloc] init];
                 phoneLabel.attributedText = coloredPhones;
                 [exampleView addSubview:phoneLabel];
@@ -655,9 +680,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     //                                     multiplier:1.0
     //                                     constant:0.0]];
     
-    NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:overallPhoneLabel.text];
-    
-    NSRange range = NSMakeRange(0, [coloredWord length]);
+    NSMutableAttributedString *coloredOverall = [[NSMutableAttributedString alloc] initWithString:overallPhoneLabel.text];
     
     float overallAvg = totalPhoneScore/totalPhones;
     
@@ -668,12 +691,13 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     //   NSLog(@"%@ score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
     if (overallAvg > -0.1) {
         UIColor *color = [self getColor2:overallAvg];
-        [coloredWord addAttribute:NSBackgroundColorAttributeName
+        NSRange range = NSMakeRange(0, [coloredOverall length]);
+        [coloredOverall addAttribute:NSBackgroundColorAttributeName
                             value:color
                             range:range];
     }
     
-    overallPhoneLabel.attributedText = coloredWord;
+    overallPhoneLabel.attributedText = coloredOverall;
     return cell;
 }
 

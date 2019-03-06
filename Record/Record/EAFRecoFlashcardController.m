@@ -555,7 +555,9 @@
 - (void) showQuizIntro {
     NSString *min = @"minutes";
     if (_quizMinutes.intValue == 1) min = @"minute";
-    NSString *postLength = [NSString stringWithFormat:@"You have %@ %@ to complete %@ items.\nScores above %@ advance automatically.\nIf you finish with time remaining, it's OK to go back.\nSwipe to skip an item or go back.",_quizMinutes,min,_numQuizItems,_minScoreToAdvance];
+    NSString *advance = [NSString stringWithFormat:@"Scores above %@ advance automatically.\n", _minScoreToAdvance];
+    if (_minScoreToAdvance.intValue == 0) advance = @"";
+    NSString *postLength = [NSString stringWithFormat:@"You have %@ %@ to complete %@ items.\n%@If you finish with time remaining, it's OK to go back.\nSwipe to skip an item or go back.",_quizMinutes,min,_numQuizItems,advance];
     
     //    NSString *rememberedFirst = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"firstName"];
     //    NSString *rememberedLast = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"lastName"];
@@ -2732,33 +2734,35 @@ bool debugRecord = false;
     [urlRequest setHTTPBody:postData];
     // NSLog(@"posting to %@",_url);
     
-    NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
-                                          {
-                                              dispatch_async(dispatch_get_main_queue(), ^{
-                                                  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-                                                  [self->_recoFeedbackImage stopAnimating];
-                                              });
-                                              
-                                              //    NSLog(@"resself->ponse to post of audio...");
-                                              if (error != nil) {
-                                                  NSLog(@"postAudio : Got error %@",error);
-                                                  dispatch_async(dispatch_get_main_queue(), ^{
-                                                      if (error.code == NSURLErrorNotConnectedToInternet) {
-                                                          [self setDisplayMessage:@"Make sure your wifi or cellular connection is on."];
-                                                      }
-                                                      else {
-                                                          [self->_poster postError:urlRequest error:error];
-                                                          [self showConnectionError:error];
-                                                      }
-                                                  });
-                                              }
-                                              else {
-                                                  self->_responseData = data;
-                                                  [self performSelectorOnMainThread:@selector(connectionDidFinishLoading)
-                                                                         withObject:nil
-                                                                      waitUntilDone:YES];
-                                              }
-                                          }];
+    NSURLSessionDataTask *downloadTask =
+    [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest
+                                    completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
+     {
+         dispatch_async(dispatch_get_main_queue(), ^{
+             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
+             [self->_recoFeedbackImage stopAnimating];
+         });
+         
+         //    NSLog(@"resself->ponse to post of audio...");
+         if (error != nil) {
+             NSLog(@"postAudio : Got error %@",error);
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 if (error.code == NSURLErrorNotConnectedToInternet) {
+                     [self setDisplayMessage:@"Make sure your wifi or cellular connection is on."];
+                 }
+                 else {
+                     [self->_poster postError:urlRequest error:error];
+                     [self showConnectionError:error];
+                 }
+             });
+         }
+         else {
+             self->_responseData = data;
+             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading)
+                                    withObject:nil
+                                 waitUntilDone:YES];
+         }
+     }];
     [downloadTask resume];
     
     _startPost = CFAbsoluteTimeGetCurrent();
