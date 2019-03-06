@@ -1371,8 +1371,7 @@
         //  [self postEvent:@"EAFReco : try to play ref audio b/c of quiz" widget:@"respondToSwipe" type:@"Button"];
         [self playRefAudioIfAvailable];
     }
-    else if (_isAudioOnSelected && !_preventPlayAudio &&
-             showedIntro != nil) {
+    else if (_isAudioOnSelected && !_preventPlayAudio && showedIntro != nil) {
         
         //         NSLog(@"respondToSwipe first");
         if (showEnglish) {
@@ -1475,10 +1474,6 @@
     _autoPlayButton.color = _autoPlayButton.selected ?[UIColor npDarkBlue]:[UIColor npLightBlue];
     
     if (_autoPlayButton.selected) {
-        //        if(_shuffleButton.selected){
-        //            _shuffleButton.selected = false;
-        //            _shuffleButton.color = _shuffleButton.selected ?[UIColor blueColor]:[UIColor whiteColor];
-        //        }
         NSError *activationError = nil;
         BOOL success = [[AVAudioSession sharedInstance] setActive:YES error:&activationError];
         if (!success) { /* handle the error condition */ }
@@ -1807,7 +1802,12 @@ NSLayoutConstraint *peakConstraint;
 
 - (void)setForeignLangWith:(NSString *)exercise {
     NSString *toShow = [self trim:[self clean39:exercise]];
-    _foreignLang.attributedText=[self getTextWithAudioIcon:toShow];
+    if (_playAudio) {
+        _foreignLang.attributedText=[self getTextWithAudioIcon:toShow];
+    }
+    else {
+        _foreignLang.text=toShow;
+    }
 }
 
 - (void)setForeignLang {
@@ -3458,7 +3458,8 @@ bool debugRecord = false;
     
     BOOL isRTL = [_siteGetter.rtlLanguages containsObject:_language];
     if (isRTL) {
-        wordAndScore  = [self reversedArray:wordAndScore];
+      //  wordAndScore  = [self reversedArray:wordAndScore];
+     //   NSLog(@"\n\n\nisRTL !");
         //NSLog(@"now word  json %@",wordAndScore);
         if (!_showPhonesLTRAlways) {
             phoneAndScore = [self reversedArray:phoneAndScore];
@@ -3468,8 +3469,8 @@ bool debugRecord = false;
     UIView *spacerLeft  = [[UIView alloc] init];
     UIView *spacerRight = [[UIView alloc] init];
     
-    //    spacerLeft.backgroundColor = [UIColor redColor];
-    //    spacerRight.backgroundColor = [UIColor blueColor];
+//       spacerLeft.backgroundColor = [UIColor redColor];
+//        spacerRight.backgroundColor = [UIColor blueColor];
     
     spacerLeft.translatesAutoresizingMaskIntoConstraints = NO;
     spacerRight.translatesAutoresizingMaskIntoConstraints = NO;
@@ -3647,37 +3648,51 @@ bool debugRecord = false;
                                                    multiplier:1.0
                                                    constant:0.0]];
             
-            // bottom
-            //            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-            //                                                   constraintWithItem:exampleView
-            //                                                   attribute:NSLayoutAttributeBottom
-            //                                                   relatedBy:NSLayoutRelationEqual
-            //                                                   toItem:lineStart
-            //                                                   attribute:NSLayoutAttributeBottom
-            //                                                   multiplier:1.0
-            //                                                   constant:0.0]];
-            //
-            // left - initial left view is the left spacer, but afterwards is the previous word view
-            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                                   constraintWithItem:exampleView
-                                                   attribute:NSLayoutAttributeLeft
-                                                   relatedBy:NSLayoutRelationEqual
-                                                   toItem:spacerLeft
-                                                   attribute:NSLayoutAttributeRight
-                                                   multiplier:1.0
-                                                   constant:5.0]];
+            if (isRTL) {
+                // right - initial right view is the right spacer, but afterwards is the previous word view
+                [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                       constraintWithItem:exampleView
+                                                       attribute:NSLayoutAttributeRight
+                                                       relatedBy:NSLayoutRelationEqual
+                                                       toItem:spacerRight
+                                                       attribute:NSLayoutAttributeLeft
+                                                       multiplier:1.0
+                                                       constant:5.0]];
+            } else {
+                // left - initial left view is the left spacer, but afterwards is the previous word view
+                [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                       constraintWithItem:exampleView
+                                                       attribute:NSLayoutAttributeLeft
+                                                       relatedBy:NSLayoutRelationEqual
+                                                       toItem:spacerLeft
+                                                       attribute:NSLayoutAttributeRight
+                                                       multiplier:1.0
+                                                       constant:5.0]];
+            }
             lineStart = exampleView;
         }
         else if (startNewLine) {
-            // right of prev view = left of right spacer
-            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                                   constraintWithItem:leftView
-                                                   attribute:NSLayoutAttributeRight
-                                                   relatedBy:NSLayoutRelationEqual
-                                                   toItem:spacerRight
-                                                   attribute:NSLayoutAttributeLeft
-                                                   multiplier:1.0
-                                                   constant:5.0]];
+            if (isRTL) {
+                [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                       constraintWithItem:leftView
+                                                       attribute:NSLayoutAttributeLeft
+                                                       relatedBy:NSLayoutRelationEqual
+                                                       toItem:spacerLeft
+                                                       attribute:NSLayoutAttributeRight
+                                                       multiplier:1.0
+                                                       constant:5.0]];
+            }
+            else {
+                // right of prev view = left of right spacer
+                [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                       constraintWithItem:leftView
+                                                       attribute:NSLayoutAttributeRight
+                                                       relatedBy:NSLayoutRelationEqual
+                                                       toItem:spacerRight
+                                                       attribute:NSLayoutAttributeLeft
+                                                       multiplier:1.0
+                                                       constant:5.0]];
+            }
             
             // top of this view = bottom of prev view
             [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
@@ -3689,17 +3704,29 @@ bool debugRecord = false;
                                                    multiplier:1.0
                                                    constant:5.0]];
             
-            // left of this view is right of spacer
-            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                                   constraintWithItem:exampleView
-                                                   attribute:NSLayoutAttributeLeft
-                                                   relatedBy:NSLayoutRelationEqual
-                                                   toItem:spacerLeft
-                                                   attribute:NSLayoutAttributeRight
-                                                   multiplier:1.0
-                                                   constant:5.0]];
+            if (isRTL) {
+                [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                       constraintWithItem:exampleView
+                                                       attribute:NSLayoutAttributeRight
+                                                       relatedBy:NSLayoutRelationEqual
+                                                       toItem:spacerRight
+                                                       attribute:NSLayoutAttributeLeft
+                                                       multiplier:1.0
+                                                       constant:5.0]];
+            }
+            else {
+                // left of this view is right of spacer
+                [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                       constraintWithItem:exampleView
+                                                       attribute:NSLayoutAttributeLeft
+                                                       relatedBy:NSLayoutRelationEqual
+                                                       toItem:spacerLeft
+                                                       attribute:NSLayoutAttributeRight
+                                                       multiplier:1.0
+                                                       constant:5.0]];
+            }
             
-            NSLog(@"starting new line with %@",word);
+        //    NSLog(@"starting new line with %@",word);
             
             lineStart = exampleView;
             
@@ -3725,15 +3752,27 @@ bool debugRecord = false;
                                                    multiplier:1.0
                                                    constant:0.0]];
             
-            // left - initial left view is the left spacer, but afterwards is the previous word view
-            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                                   constraintWithItem:exampleView
-                                                   attribute:NSLayoutAttributeLeft
-                                                   relatedBy:NSLayoutRelationEqual
-                                                   toItem:leftView
-                                                   attribute:NSLayoutAttributeRight
-                                                   multiplier:1.0
-                                                   constant:5.0]];
+            if (isRTL) {
+                [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                       constraintWithItem:exampleView
+                                                       attribute:NSLayoutAttributeRight
+                                                       relatedBy:NSLayoutRelationEqual
+                                                       toItem:leftView
+                                                       attribute:NSLayoutAttributeLeft
+                                                       multiplier:1.0
+                                                       constant:-5.0]];
+            }
+            else {
+                // left - initial left view is the left spacer, but afterwards is the previous word view
+                [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                       constraintWithItem:exampleView
+                                                       attribute:NSLayoutAttributeLeft
+                                                       relatedBy:NSLayoutRelationEqual
+                                                       toItem:leftView
+                                                       attribute:NSLayoutAttributeRight
+                                                       multiplier:1.0
+                                                       constant:5.0]];
+            }
         }
         
         //  prevView = exampleView;
@@ -3776,24 +3815,48 @@ bool debugRecord = false;
     if (leftView != nil)  {
         // the right side of the last word is the same as the left side of the right side spacer
         if (numLines == 0) {
-            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                                   constraintWithItem:leftView
-                                                   attribute:NSLayoutAttributeRight
-                                                   relatedBy:NSLayoutRelationEqual
-                                                   toItem:spacerRight
-                                                   attribute:NSLayoutAttributeLeft
-                                                   multiplier:1.0
-                                                   constant:-5.0]];
+            if (isRTL) {
+                [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                       constraintWithItem:leftView
+                                                       attribute:NSLayoutAttributeLeft
+                                                       relatedBy:NSLayoutRelationEqual
+                                                       toItem:spacerLeft
+                                                       attribute:NSLayoutAttributeRight
+                                                       multiplier:1.0
+                                                       constant:-5.0]];
+            }
+            else {
+                [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                       constraintWithItem:leftView
+                                                       attribute:NSLayoutAttributeRight
+                                                       relatedBy:NSLayoutRelationEqual
+                                                       toItem:spacerRight
+                                                       attribute:NSLayoutAttributeLeft
+                                                       multiplier:1.0
+                                                       constant:-5.0]];
+            }
         }
         else {
-            [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
-                                                   constraintWithItem:leftView
-                                                   attribute:NSLayoutAttributeRight
-                                                   relatedBy:NSLayoutRelationLessThanOrEqual
-                                                   toItem:spacerRight
-                                                   attribute:NSLayoutAttributeLeft
-                                                   multiplier:1.0
-                                                   constant:5.0]];
+            if (isRTL) {
+                [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                       constraintWithItem:leftView
+                                                       attribute:NSLayoutAttributeLeft
+                                                       relatedBy:NSLayoutRelationLessThanOrEqual
+                                                       toItem:spacerLeft
+                                                       attribute:NSLayoutAttributeRight
+                                                       multiplier:1.0
+                                                       constant:5.0]];
+            }
+            else {
+                [_scoreDisplayContainer addConstraint:[NSLayoutConstraint
+                                                       constraintWithItem:leftView
+                                                       attribute:NSLayoutAttributeRight
+                                                       relatedBy:NSLayoutRelationLessThanOrEqual
+                                                       toItem:spacerRight
+                                                       attribute:NSLayoutAttributeLeft
+                                                       multiplier:1.0
+                                                       constant:5.0]];
+            }
         }
         
         [_scoreDisplayContainer addConstraint:[NSLayoutConstraint

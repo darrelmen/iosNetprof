@@ -526,7 +526,7 @@
     
     // put the UI back to initial state
     [_activityIndicator stopAnimating];
-    NSLog(@"useJsonChapterData : enable login button");
+ //   NSLog(@"useJsonChapterData : enable login button");
     _logIn.enabled = true;
     _languagePicker.userInteractionEnabled = true;
     
