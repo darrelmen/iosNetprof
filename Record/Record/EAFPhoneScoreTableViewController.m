@@ -123,8 +123,7 @@ const BOOL debug = FALSE;
 
 - (void)askServerForJson {
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
-    baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
- 
+    baseurl = [baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     baseurl = [NSString stringWithFormat:@"%@&projid=%@", baseurl, _projid];
 
     if (_listid != NULL) {
@@ -132,7 +131,8 @@ const BOOL debug = FALSE;
     }
     
     if (_sessionid != NULL) {
-        baseurl = [NSString stringWithFormat:@"%@&session=%@", baseurl, _sessionid];
+        long realID =  [_sessionid longValue];
+        baseurl = [NSString stringWithFormat:@"%@&session=%ld", baseurl, realID];
     }
     
     if (_sentencesOnly) {
@@ -141,14 +141,12 @@ const BOOL debug = FALSE;
 
     NSLog(@"EAFPhoneScoreTableViewController url %@ %@",baseurl,_projid);
     
-    NSURL *url = [NSURL URLWithString:baseurl];
-    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
-    
-    [urlRequest setValue:[NSString stringWithFormat:@"%@",_projid] forHTTPHeaderField:@"projid"];
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     
     [urlRequest setHTTPMethod: @"GET"];
-    [urlRequest setValue:@"application/x-www-form-urlencoded"
-      forHTTPHeaderField:@"Content-Type"];
+    
+    [urlRequest setValue:[NSString stringWithFormat:@"%@",_projid] forHTTPHeaderField:@"projid"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
   //  [urlRequest setTimeoutInterval:1];
     
@@ -479,7 +477,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             exampleView.refAudio = refAudioPath;
         }
         else {
-            NSLog(@"ref audio is nil");
+          //  NSLog(@"ref audio is nil");
             exampleView.refAudio = nil;
         }
         exampleView.answer   = [_resultToAnswer objectForKey:result];
@@ -862,7 +860,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 
 - (void)addToCacheRequest:(NSString *)answer paths:(NSMutableArray *)paths rawPaths:(NSMutableArray *)rawPaths {
     if (answer == NULL || [answer isKindOfClass:[NSNull class]]) {
-        NSLog(@"Huh? skipping null ");
+        NSLog(@"addToCacheRequest : skipping null path ");
     }
     else {
         NSString * refPath = [answer stringByReplacingOccurrencesOfString:@".wav"

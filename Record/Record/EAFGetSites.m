@@ -74,10 +74,10 @@ NSString* const expectedVersion = @"2.0.0";
     self = [super init];
     if (self) {
         // _nServer = @"http://127.0.0.1:8888/netprof/";
-       // _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
-//        _nServer = @"https://netprof1-dev/netprof/";
-  //     _nServer = @"https://netprof.ll.mit.edu/dialog/";
-         _nServer = @"https://netprof.ll.mit.edu/netprof/";
+ //       _nServer = @"https://netprof1-dev.llan.ll.mit.edu/netprof/";
+ //      _nServer = @"https://netprof1-dev/netprof/";
+ //      _nServer = @"https://netprof.ll.mit.edu/dialog/";
+        _nServer = @"https://netprof.ll.mit.edu/netprof/";
     }
     
     return self;
@@ -131,7 +131,7 @@ NSString* const expectedVersion = @"2.0.0";
     [NSMutableURLRequest setAllowsAnyHTTPSCertificate:YES forHost:[url host]];
     
     [urlRequest setHTTPMethod: @"GET"];
-   // [urlRequest setTimeoutInterval:PROJECTS_TIMEOUT];
+    [urlRequest setTimeoutInterval:10];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
     NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];

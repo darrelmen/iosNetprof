@@ -1802,7 +1802,7 @@ NSLayoutConstraint *peakConstraint;
 
 - (void)setForeignLangWith:(NSString *)exercise {
     NSString *toShow = [self trim:[self clean39:exercise]];
-    if (_playAudio) {
+    if (([self isAQuiz] && _playAudio) || ([self notAQuiz] && _isAudioOnSelected)) {
         _foreignLang.attributedText=[self getTextWithAudioIcon:toShow];
     }
     else {

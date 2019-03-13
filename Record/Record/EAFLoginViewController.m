@@ -314,7 +314,15 @@
     
     BOOL isLogin = ([[button restorationIdentifier] isEqualToString:@"logIn"]);
     
-    NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+    NSString *chosenLanguage = @"";
+    
+    if (_siteGetter.languages.count > 0){
+      chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+    }
+    else {
+        [_siteGetter getSites];
+        return;
+    }
     
     NSLog(@"LoginView : onClick chosenLanguage %@", chosenLanguage);
     
@@ -523,6 +531,11 @@
                           JSONObjectWithData:_responseData
                           options:NSJSONReadingAllowFragments
                           error:&error];
+    
+//    NSString *myString = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
+    
+//    NSLog(@"EAFLoginViewController.useJsonChapterData myString %@",myString);
+//    NSLog(@"EAFLoginViewController.useJsonChapterData json     %@",json);
     
     // put the UI back to initial state
     [_activityIndicator stopAnimating];
