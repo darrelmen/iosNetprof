@@ -51,10 +51,16 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setTitle:[NSString stringWithFormat:@"Forgot username for %@",_language]];
+   // [self setTitle:[NSString stringWithFormat:@"Forgot username for %@",_language]];
+    [self setTitle: @"Forgot username"];
     [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
     [_titleLabel setTextColor:[UIColor npDarkBlue]];
     [_sendEmail setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
+    
+    NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
+    if (rememberedEmail != nil) {
+        _email.text = rememberedEmail;
+    }
 }
 
 - (IBAction)gotClick:(id)sender {
@@ -191,7 +197,7 @@
 
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 
-    NSString *message = @"Couldn't connect to server.";
+    NSString *message = @"Couldn't connect to server (forgot username).";
     if (error.code == NSURLErrorNotConnectedToInternet) {
         message = @"NetProF needs a wifi or cellular internet connection.";
     }

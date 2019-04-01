@@ -84,7 +84,7 @@
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)0];
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet", _urlToUse];
     
-    NSLog(@"postEvent post context %@ to url %@ or %@",context,_urlToUse,baseurl);
+    //NSLog(@"postEvent post context %@ to url %@ or %@",context,_urlToUse,baseurl);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
@@ -96,42 +96,50 @@
     
     [urlRequest setValue:userid forHTTPHeaderField:@"user"];
     
-    if (_projid == NULL) NSLog(@"huh? projid is null");
+    if (_projid == NULL) NSLog(@"postEvent huh? projid is null");
     
-    NSLog(@"postEvent post %@ to %@ with project %@",context,_urlToUse,_projid);
+    NSLog(@"postEvent \npost %@ \bto %@ \bwith project %@",context,_urlToUse,_projid);
     
     [urlRequest setValue:[_projid stringValue] forHTTPHeaderField:@"projid"];
     
     [urlRequest setValue:retrieveuuid forHTTPHeaderField:@"device"];
     
-   // NSLog(@"postEvent device %@",retrieveuuid);
-    
+    // NSLog(@"postEvent device %@",retrieveuuid);
     [urlRequest setValue:context forHTTPHeaderField:@"context"];
-   // NSLog(@"postEvent context %@",context);
+    // NSLog(@"postEvent context %@",context);
     [urlRequest setValue:exid forHTTPHeaderField:@"exid"];
-  //  NSLog(@"postEvent exid %@",exid);
+    //  NSLog(@"postEvent exid %@",exid);
     [urlRequest setValue:widget forHTTPHeaderField:@"widget"];
-  //  NSLog(@"postEvent widget %@",widget);
+    //  NSLog(@"postEvent widget %@",widget);
     [urlRequest setValue:widgetType forHTTPHeaderField:@"widgetType"];
-  //  NSLog(@"postEvent widgetType %@",widgetType);
+    //  NSLog(@"postEvent widgetType %@",widgetType);
     [urlRequest setValue:@"event" forHTTPHeaderField:@"request"];
-  //  NSLog(@"postEvent event %@",@"event");
+    //  NSLog(@"postEvent event %@",@"event");
     
-  //  NSLog(@"postEvent req %@",urlRequest);
-    
-    // post the audio
-    
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-    
-    [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+    //  NSLog(@"postEvent req %@",urlRequest);
+    [urlRequest setHTTPBody:[context dataUsingEncoding:NSUTF8StringEncoding]];
+
+    // NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    NSURLSessionDataTask *downloadTask =
+    [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
+     //    [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          if (error != nil) {
-             NSLog(@"postEvent : Got error %@",error);
+             NSLog(@"\n\npostEvent : Got error %@",error);
          }
-         else {
-             //  NSLog(@"postEvent : reply %@",data);
-         }
+//         else {
+//             NSLog(@"postEvent : reply %@",data);
+//         }
      }];
+    [downloadTask resume];
+}
+
+- (void)postError:(NSURLRequest *)request error:(NSError *)error {
+   // [error.localizedDescription stringByReplacingOccurrencesOfString:@"'" withString:@"_"];
+    NSString* finish = [[error.localizedDescription componentsSeparatedByCharactersInSet:[[NSCharacterSet letterCharacterSet] invertedSet]] componentsJoinedByString:@"_"];
+
+    NSLog(@"postError url %@",finish );
+    [self postEvent:finish exid:@"N/A" widget:@"WARNING" widgetType:[NSString stringWithFormat:@"connection failure to %@", request]];
 }
 
 // Post round trip info so we can record how long it takes from recording audio to seeing a score
@@ -141,10 +149,7 @@
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
     [urlRequest setHTTPMethod: @"POST"];
     
-    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)0];
-    
-    [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
-    
+    [urlRequest setValue:@"0" forHTTPHeaderField:@"Content-Length"];
     [urlRequest setValue:@"application/x-www-form-urlencoded"
       forHTTPHeaderField:@"Content-Type"];
     
@@ -155,16 +160,21 @@
     [urlRequest setValue:rtDur forHTTPHeaderField:@"roundTrip"];
     // post the audio
     
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    // NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     
-    [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+    NSURLSessionDataTask *downloadTask =
+    [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
+     // [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          if (error != nil) {
              NSLog(@"postRT : Got error %@",error);
          }
          else {
+             NSLog(@"postRT : success for %@ = %@",resultID,rtDur);
          }
      }];
+    [downloadTask resume];
+    
 }
 
 #pragma mark NSURLConnection Delegate Methods

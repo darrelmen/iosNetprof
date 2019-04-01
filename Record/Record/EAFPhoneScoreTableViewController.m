@@ -63,11 +63,14 @@
 
 @implementation EAFPhoneScoreTableViewController
 
+const BOOL debug = FALSE;
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     _audioCache = [[EAFAudioCache alloc] init];
-    
+    _audioCache.language = _language;
+
     _showPhonesLTRAlways = true;
     
     _rowHeight = 66;
@@ -80,7 +83,7 @@
     _myAudioPlayer.delegate = self;
     
     _siteGetter = [EAFGetSites new];
-    _siteGetter.delegate = self;
+    //_siteGetter.delegate = self;
     
     [self askServerForJson];
     // Uncomment the following line to preserve selection between presentations.
@@ -101,7 +104,7 @@
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (_responseData == nil) { // if it failed before.
-        NSLog(@"PhoneScoreTableViewController.viewWillAppear - ask server for json");
+        // NSLog(@"PhoneScoreTableViewController.viewWillAppear - ask server for json");
         [self askServerForJson];
     }
 }
@@ -120,39 +123,56 @@
 
 - (void)askServerForJson {
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=phoneReport&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
-    baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    baseurl = [baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    baseurl = [NSString stringWithFormat:@"%@&projid=%@", baseurl, _projid];
+
+    if (_listid != NULL) {
+        baseurl = [NSString stringWithFormat:@"%@&listid=%@", baseurl, _listid];
+    }
     
+    if (_sessionid != NULL) {
+        long realID =  [_sessionid longValue];
+        baseurl = [NSString stringWithFormat:@"%@&session=%ld", baseurl, realID];
+    }
+    
+    if (_sentencesOnly) {
+        baseurl = [NSString stringWithFormat:@"%@&sentences=TRUE", baseurl];
+    }
+
     NSLog(@"EAFPhoneScoreTableViewController url %@ %@",baseurl,_projid);
     
-    NSURL *url = [NSURL URLWithString:baseurl];
-    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:baseurl]];
+    
+    [urlRequest setHTTPMethod: @"GET"];
     
     [urlRequest setValue:[NSString stringWithFormat:@"%@",_projid] forHTTPHeaderField:@"projid"];
-
-    [urlRequest setHTTPMethod: @"GET"];
-    [urlRequest setValue:@"application/x-www-form-urlencoded"
-      forHTTPHeaderField:@"Content-Type"];
-    [urlRequest setTimeoutInterval:10];
-
+    [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    
+  //  [urlRequest setTimeoutInterval:1];
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
-    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+    NSURLSessionDataTask *downloadTask =
+    [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest
+                                    completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
+     //   {
+     //  [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          if (error != nil) {
              NSLog(@"PhoneScoreTableViewController Got error %@",error);
-             
              dispatch_async(dispatch_get_main_queue(), ^{
                  [self connection:nil didFailWithError:error];
              });
          }
          else {
-             _responseData = data;
+             self->_responseData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:YES];
          }
      }];
+    
+    [downloadTask resume];
 }
 
 #pragma mark - Table view data source
@@ -278,12 +298,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 - (NSString *)getPhonesToShow:(NSDictionary *)lastPhone addSpaces:(BOOL)addSpaces phoneArray:(NSArray *)phoneArray
 {
     NSString *phoneToShow = @"";
+   // NSString *invisibleSeparator = @"\U0000200B";
     for (NSDictionary *phoneInfo in phoneArray) {
         NSString *phoneText =[phoneInfo objectForKey:@"p"];
         phoneToShow = [phoneToShow stringByAppendingString:phoneText];
         
         if (addSpaces) {
-            if (phoneInfo != lastPhone && ![_language isEqualToString:@"Korean"]) {
+            // && ![_language isEqualToString:@"Korean"]
+            if (phoneInfo != lastPhone ) {
                 phoneToShow = [phoneToShow stringByAppendingString:@" "];
             }
         }
@@ -335,6 +357,38 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                 constant:0.0]];
 }
 
+- (UILabel *)getLabelForWord:(float)score word:(NSString *)word {
+    //NSLog(@"resultWords : wordInResult is %@",wordInResult);
+    
+    UILabel *wordLabel = [[UILabel alloc] init];
+    
+    if ([_language isEqualToString:@"English"]) {
+        word = [word lowercaseString];
+    }
+    
+    if (debug) NSLog(@"resultWords : Word is %@",word);
+    
+    NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
+    
+    NSRange range = NSMakeRange(0, [coloredWord length]);
+    
+    
+    //    NSLog(@"score was %@ %f",scoreString,score);
+    if (score > 0) {
+        UIColor *color = [self getColor2:score];
+        [coloredWord addAttribute:NSBackgroundColorAttributeName
+                            value:color
+                            range:range];
+    }
+    
+    wordLabel.attributedText = coloredWord;
+   // NSLog(@"label word is %@",wordLabel.attributedText);
+    [wordLabel setFont:[UIFont systemFontOfSize:24]];
+    
+    [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    return wordLabel;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Configure the cell...
@@ -352,8 +406,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     [cell setSelectedBackgroundView:bgColorView];
     
     NSString *phone = [_phonesInOrder objectAtIndex:indexPath.row];
+    NSNumber *phoneScore = NULL;
+
+    if (_phonesInOrderScores != NULL) {
+      //  NSLog(@"Got phone score %@ %@",phone, [_phonesInOrderScores objectAtIndex:indexPath.row]);
+        phoneScore =  [_phonesInOrderScores objectAtIndex:indexPath.row];
+    }
     
-    //   NSLog(@"tableView phone is %@",phone);
+  //  NSLog(@"tableView phone is %@",phone);
     
     for (UIView *v in [cell.contentView subviews]) {
         [v removeFromSuperview];
@@ -373,78 +433,37 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     [cell.contentView.superview addConstraint:constraint];
     
     NSArray *words = [_phoneToWords objectForKey:phone];
+   
+    // NSLog(@"tableView words for %@ = %@",phone, words);
     
     UIView *leftView = nil;
     
     UILabel *overallPhoneLabel = [self getOverallPhoneLabel:phone cell:cell];
     
-    // UIScrollView *scrollView = [[UIScrollView alloc] init];
-    //    UIView *scrollView = [[UIView alloc] init];
-    //    scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-    //
-    //    scrollView.backgroundColor = [UIColor purpleColor];
-    //    [cell.contentView addSubview:scrollView];
-    //
-    //    // top
-    //    [cell.contentView addConstraint:[NSLayoutConstraint
-    //                                     constraintWithItem:scrollView
-    //                                     attribute:NSLayoutAttributeTop
-    //                                     relatedBy:NSLayoutRelationEqual
-    //                                     toItem:cell.contentView
-    //                                     attribute:NSLayoutAttributeTop
-    //                                     multiplier:1.0
-    //                                     constant:0.0]];
-    //    // bottom
-    //    [cell.contentView addConstraint:[NSLayoutConstraint
-    //                                     constraintWithItem:scrollView
-    //                                     attribute:NSLayoutAttributeBottom
-    //                                     relatedBy:NSLayoutRelationEqual
-    //                                     toItem:cell.contentView
-    //                                     attribute:NSLayoutAttributeBottom
-    //                                     multiplier:1.0
-    //                                     constant:0.0]];
-    //
-    //    [cell.contentView addConstraint:[NSLayoutConstraint
-    //                                     constraintWithItem:scrollView
-    //                                     attribute:NSLayoutAttributeLeft
-    //                                     relatedBy:NSLayoutRelationEqual
-    //                                     toItem:overallPhoneLabel
-    //                                     attribute:NSLayoutAttributeRight
-    //                                     multiplier:1.0
-    //                                     constant:3.0]];
-    //
-    //    [cell.contentView addConstraint:[NSLayoutConstraint
-    //                                     constraintWithItem:scrollView
-    //                                     attribute:NSLayoutAttributeRight
-    //                                     relatedBy:NSLayoutRelationEqual
-    //                                     toItem:cell.contentView
-    //                                     attribute:NSLayoutAttributeRight
-    //                                     multiplier:1.0
-    //                                     constant:0.0]];
-    //    [scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
-    
-    //    NSArray *rtl = [NSArray arrayWithObjects: @"Dari",
-    //                    @"Egyptian",
-    //                    @"Farsi",
-    //                    @"Levantine",
-    //                    @"MSA", @"Pashto1", @"Pashto2", @"Pashto3",  @"Sudanese",  @"Urdu",  nil];
-    
     float totalPhoneScore = 0.0f;
     float totalPhones = 0.0f;
     // int count = 0;
-    BOOL addSpaces = false;
-    
+    BOOL addSpaces = [_language isEqualToString:@"Korean"] ;
+    BOOL debug = false;
+    BOOL debug2 = false;
+
     // try to worry about the same word appearing multiple times...
     NSMutableSet *shownSoFar = [[NSMutableSet alloc] init];
     for (NSDictionary *wordEntry in words) {
         // TODO iterate over first N words in example words for phone
-        NSString *word = [wordEntry objectForKey:@"w"];
+        // NSLog(@"about to ask for word from %@",wordEntry);
         
+        NSString *word = [wordEntry objectForKey:@"w"];
+        if (debug2) NSLog(@"phone %@ word is %@",phone,word);
+
+        // TODO : fix this on the server!
+        // don't show more than one example of a word
         if ([shownSoFar containsObject:word]) continue;
         else [shownSoFar addObject:word];
         
         //    if (count++ > 5) break; // only first five?
         NSString *result = [wordEntry objectForKey:@"result"];
+        if (debug) NSLog(@"result is %@",result);
         NSArray *resultWords = [_resultToWords objectForKey:result];
         
         EAFAudioView *exampleView = [[EAFAudioView alloc] init];
@@ -453,11 +472,18 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         [cell.contentView addSubview:exampleView];
         //    [scrollView addSubview:exampleView];
         
-        exampleView.refAudio = [_resultToRef    objectForKey:result];
+        NSString *refAudioPath = [_resultToRef    objectForKey:result];
+        if (refAudioPath && [refAudioPath isKindOfClass:[NSString class]]) {
+            exampleView.refAudio = refAudioPath;
+        }
+        else {
+          //  NSLog(@"ref audio is nil");
+            exampleView.refAudio = nil;
+        }
         exampleView.answer   = [_resultToAnswer objectForKey:result];
         
         //NSLog(@"ref %@ %@",exampleView.refAudio, exampleView.answer);
-        // NSLog(@"word is %@",wordEntry);
+        //   NSLog(@"word is %@",wordEntry);
         // first example view constraints left side to left side of container
         // all - top to top of container
         // bottom to bottom of container
@@ -514,52 +540,43 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                                               toItem:leftView
                                               attribute:NSLayoutAttributeRight
                                               multiplier:1.0
-                                              constant:5.0];
+                                              constant:2.0];
             
             [cell.contentView addConstraint:constraint];
             //  NSLog(@"adding (to left view) constraint %@",constraint);
         }
         
         leftView = exampleView;
-        
-        
+      //  UIFont *tiny=[UIFont fontWithName:@"Arial" size:2.0];
         for (NSDictionary *wordResult in resultWords) {
-            NSString *wordPhoneAppearsIn = [wordEntry objectForKey:@"wid"];
-            NSString *wordInResult = [wordResult objectForKey:@"id"];
-            UILabel *wordLabel = [[UILabel alloc] init];
+            if (debug)  NSLog(@"resultWords : wordEntry is %@",wordEntry);
             
-            if ([_language isEqualToString:@"English"]) {
-                word = [word lowercaseString];
+            BOOL isMatch;
+            if ([[wordEntry objectForKey:@"wid"] isKindOfClass:[NSNumber class]]) {
+                NSNumber *wordPhoneAppearsInID = [wordEntry objectForKey:@"wid"];
+                NSNumber *idOfWordInResult = [wordResult objectForKey:@"id"];
+                
+                isMatch = [wordPhoneAppearsInID isEqualToNumber:idOfWordInResult];
             }
-            //       NSLog(@"Word is %@",word);
-            NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:word];
-            
-            NSRange range = NSMakeRange(0, [coloredWord length]);
-            NSString *scoreString = [wordResult objectForKey:@"s"];
-            float score = [scoreString floatValue];
-            
-            // NSLog(@"score was %@ %f",scoreString,score);
-            if (score > 0) {
-                UIColor *color = [self getColor2:score];
-                [coloredWord addAttribute:NSBackgroundColorAttributeName
-                                    value:color
-                                    range:range];
+            else {
+                NSString *wordPhoneAppearsIn = [wordEntry objectForKey:@"wid"];
+                if (debug)  NSLog(@"resultWords : wordPhoneAppearsIn is %@",wordPhoneAppearsIn);
+                int iwid= [wordPhoneAppearsIn intValue];
+                
+                int idOfWordInResult = [[wordResult objectForKey:@"id"] intValue];
+                
+                isMatch = iwid == idOfWordInResult;
             }
             
-            wordLabel.attributedText = coloredWord;
-            //NSLog(@"label word is %@",wordLabel.attributedText);
-            [wordLabel setFont:[UIFont systemFontOfSize:24]];
+            if (debug)  NSLog(@"resultWords : wordResult         is %@",wordResult);
             
-            [wordLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+            UILabel * wordLabel = [self getLabelForWord:[[wordResult objectForKey:@"s"] floatValue] word:word];
             
             [exampleView addSubview:wordLabel];
-            
             [self addWordLabelConstraints:exampleView wordLabel:wordLabel];
-            
-            if ([wordInResult isEqualToString:wordPhoneAppearsIn]) {
+           
+            if (isMatch) {  // match!
                 NSArray *phoneArray = [wordResult objectForKey:@"phones"];
-                
-                //BOOL isRTL = [rtl containsObject:_language];
                 
                 if (_isRTL && !_showPhonesLTRAlways) {
                     phoneArray = [self reversedArray:phoneArray];
@@ -569,23 +586,44 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                 
                 NSMutableAttributedString *coloredPhones = [[NSMutableAttributedString alloc] initWithString:phoneToShow];
                 
+                if (addSpaces) {
+                    [coloredPhones addAttribute:NSKernAttributeName
+                                          value:[NSNumber numberWithInt:0]
+                                          range:NSMakeRange(0, [phoneToShow length])];
+                }
+                
                 int start = 0;
                 for (NSDictionary *phoneInfo in phoneArray) {
-                    NSString *phoneText =[phoneInfo objectForKey:@"p"];
-                    NSRange range = NSMakeRange(start, [phoneText length]);
-                    if ([_language isEqualToString:@"Korean"] || !addSpaces)
-                    {
-                        start += range.length;
-                    }
-                    else {
+                    NSString *phoneText = [phoneInfo objectForKey:@"p"];
+                    NSString *scoreString = [phoneInfo objectForKey:@"s"];
+                    
+                    if (addSpaces && start>0) {
+//                        [coloredPhones addAttribute:NSFontAttributeName
+//                                              value:tiny
+//                                              range:NSMakeRange(start-1, 1)];
                         
+//                        [coloredPhones addAttribute:NSBackgroundColorAttributeName
+//                                              value:[UIColor blueColor]
+//                                              range:NSMakeRange(start-1, 1)];
+                    }
+                    
+                
+
+                    NSRange range = NSMakeRange(start, [phoneText length]);
+                    
+                    // [_language isEqualToString:@"Korean"] ||
+                    if (addSpaces)
+                    {
                         start += (phoneInfo != lastPhone) ? range.length+1 : range.length;
                     }
-                    NSString *scoreString = [phoneInfo objectForKey:@"s"];
+                    else {
+                        start += range.length;
+                    }
+                    
                     float score = [scoreString floatValue];
                     
-                    // NSLog(@"score was %@ %f",scoreString,score);
-                    // NSLog(@"%@ vs %@ ",phoneText,phone);
+                    if (debug)   NSLog(@"score was %@ %f",scoreString,score);
+                    if (debug)   NSLog(@"%@ vs %@ ",phoneText,phone);
                     BOOL match = [phoneText isEqualToString:phone];
                     
                     UIColor *color = match? [self getColor2:score] : [UIColor whiteColor];
@@ -593,13 +631,25 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
                         totalPhoneScore += score;
                         totalPhones++;
                     }
-                    //   NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
+                    if (debug)  {
+                      NSLog(@"%@ %f %@ range at %lu length %lu", phoneText, score,color,(unsigned long)range.location,(unsigned long)range.length);
+                    }
+                    
+                    
                     [coloredPhones addAttribute:NSBackgroundColorAttributeName
                                           value:color
                                           range:range];
                 }
                 
-                
+//                if (addSpaces) {
+//                    [coloredPhones addAttribute:NSFontAttributeName
+//                                          value:tiny
+//                                          range:NSMakeRange(start, 1)];
+//                    [coloredPhones addAttribute:NSBackgroundColorAttributeName
+//                                          value:[UIColor blueColor]
+//                                          range:NSMakeRange(start, 1)];
+//                }
+            
                 UILabel *phoneLabel = [[UILabel alloc] init];
                 phoneLabel.attributedText = coloredPhones;
                 [exampleView addSubview:phoneLabel];
@@ -628,20 +678,24 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     //                                     multiplier:1.0
     //                                     constant:0.0]];
     
-    NSMutableAttributedString *coloredWord = [[NSMutableAttributedString alloc] initWithString:overallPhoneLabel.text];
-    
-    NSRange range = NSMakeRange(0, [coloredWord length]);
+    NSMutableAttributedString *coloredOverall = [[NSMutableAttributedString alloc] initWithString:overallPhoneLabel.text];
     
     float overallAvg = totalPhoneScore/totalPhones;
+    
+    if (phoneScore != NULL) {
+        overallAvg = [phoneScore floatValue];
+        //NSLog(@"%@ overallAvg score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
+    }
     //   NSLog(@"%@ score was %f = %f/%f",phone,overallAvg,totalPhoneScore,totalPhones);
     if (overallAvg > -0.1) {
         UIColor *color = [self getColor2:overallAvg];
-        [coloredWord addAttribute:NSBackgroundColorAttributeName
+        NSRange range = NSMakeRange(0, [coloredOverall length]);
+        [coloredOverall addAttribute:NSBackgroundColorAttributeName
                             value:color
                             range:range];
     }
     
-    overallPhoneLabel.attributedText = coloredWord;
+    overallPhoneLabel.attributedText = coloredOverall;
     return cell;
 }
 
@@ -660,7 +714,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:p];
     //  NSLog(@"Got path %@",indexPath);
-    
     
     if (indexPath == nil) {
         NSLog(@"press on table view but not on a row");
@@ -704,8 +757,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 
 // look for local file with mp3 and use it if it's there.
 - (IBAction)playRefAudio:(EAFAudioView *)sender {
-    //NSString *refPath = _playingRef ? sender.refAudio : sender.answer;
-    //NSLog(@"ref path %@ playing ref %@",refPath, (_playingRef ? @"YES":@"NO"));
+//    NSLog(@"playRefAudio playing audio...");
+    
     NSMutableArray *audioRefs = [[NSMutableArray alloc] init];
     
     if (sender.refAudio == nil) {
@@ -713,13 +766,13 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     }
     else {
         [audioRefs addObject:sender.refAudio];
-        EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url projid:[_siteGetter.nameToProjectID objectForKey:_language]];
-
+        EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url projid:_projid];
+  //      NSLog(@"playRefAudio post - projid %@ lang %@",_projid,_language);
+        
         [poster postEvent:sender.refAudio exid:@"n/a" widget:@"refAudio" widgetType:@"PhoneScoreTableCell"];
     }
     if (sender.answer == nil) {
         NSLog(@"ERROR - answer audio is null on %@",sender);
-        
     }
     else {
         [audioRefs addObject:sender.answer];
@@ -738,7 +791,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 }
 
 - (void) playGotToEnd {
-    NSLog(@" playGotToEnd");
+   // NSLog(@" playGotToEnd");
     [self setTextColor:[UIColor blackColor]];
 }
 
@@ -805,6 +858,23 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
  }
  */
 
+- (void)addToCacheRequest:(NSString *)answer paths:(NSMutableArray *)paths rawPaths:(NSMutableArray *)rawPaths {
+    if (answer == NULL || [answer isKindOfClass:[NSNull class]]) {
+        NSLog(@"addToCacheRequest : skipping null path ");
+    }
+    else {
+        NSString * refPath = [answer stringByReplacingOccurrencesOfString:@".wav"
+                                                               withString:@".mp3"];
+        
+       // NSLog(@"Phonescore.useJsonChapterData will get audio %lu : %@",(unsigned long)paths.count, refPath);
+        
+        NSMutableString *mu = [NSMutableString stringWithString:refPath];
+        [mu insertString:_url atIndex:0];
+        [paths addObject:mu];
+        [rawPaths addObject:refPath];
+    }
+}
+
 /*
  // Override to support conditional rearranging of the table view.
  - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
@@ -826,11 +896,15 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         NSLog(@"useJsonChapterData error %@",error.description);
         return false;
     }
-    //NSLog(@"PhoneScore: useJsonChapter data json\n%@",json);
+  //  NSLog(@"PhoneScore: useJsonChapter data json\n%@",json);
     
     NSDictionary *phoneDict = [json objectForKey:@"phones"];
     NSDictionary *resultsDict = [json objectForKey:@"results"];
     _phonesInOrder = [[NSArray alloc] initWithArray:[json objectForKey:@"order"]];
+    
+    if ([json objectForKey:@"orderScores"] != NULL) {
+        _phonesInOrderScores = [[NSArray alloc] initWithArray:[json objectForKey:@"orderScores"]];
+    }
     
     _phoneToWords   = [[NSMutableDictionary alloc] init];
     _resultToRef   = [[NSMutableDictionary alloc] init];
@@ -846,38 +920,64 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
     
     for (NSString *resultID in resultsDict) {
-     //   NSLog(@"PhoneScore: resultID %@",resultID);
+        if (debug) NSLog(@"PhoneScore: resultID %@",resultID);
         NSDictionary *fields = [resultsDict objectForKey:resultID];
         NSString *ref = [fields objectForKey:@"ref"];
         
-       // NSLog(@"PhoneScore: ref %@",ref);
+        [self addToCacheRequest:ref paths:paths rawPaths:rawPaths];
 
+        if (debug) NSLog(@"PhoneScore: ref %@",ref);
+        
         [_resultToRef setValue:ref forKey:resultID];
         NSString *answer = [fields objectForKey:@"answer"];
-     //   NSLog(@"PhoneScore: answer %@",answer);
-
+       if (debug)  NSLog(@"PhoneScore: answer %@",answer);
+        
         [_resultToAnswer setValue:answer forKey:resultID];
         
         NSDictionary *resultDict = [fields objectForKey:@"result"];
-      //  NSLog(@"PhoneScore: resultDict %@",resultDict);
-      
-        NSString *theWords = [resultDict objectForKey:@"words"];
+       // NSLog(@"PhoneScore: resultDict %@",resultDict);
         
-        if (theWords != nil) {
-            [_resultToWords setValue:theWords forKey:resultID];
+        if ([[resultDict objectForKey:@"words"] isKindOfClass:[NSString class]]) {
+            if (debug) NSLog(@"PhoneScore: is a string %@",[resultDict objectForKey:@"words"]);
+            
+            NSString *theWords = [resultDict objectForKey:@"words"];
+            
+            if (debug) NSLog(@"PhoneScore: theWords %@",theWords);
+            
+            if (theWords != nil) {
+                [_resultToWords setValue:theWords forKey:resultID];
+            }
+            else {
+                NSLog(@"PhoneScore: no words for %@",answer);
+            }
+        }
+        else if ([[resultDict objectForKey:@"words"] isKindOfClass:[NSArray class]]) {
+           // NSLog(@"PhoneScore: is an array %@",[resultDict objectForKey:@"words"]);
+            NSArray *theWords = [resultDict objectForKey:@"words"];
+           // NSLog(@"PhoneScore: dict theWords %@",theWords);
+            
+            if (theWords != nil) {
+                //                NSMutableArray *newArray = [NSMutableArray new];
+                //                for (NSDictionary *word in theWords) {
+                //                    NSLog(@"PhoneScore: word %@",[word objectForKey:@"w"]);
+                //                    [newArray addObject:[word objectForKey:@"w"]];
+                //                }
+                //                NSLog(@"PhoneScore: read all words %@",newArray);
+                //
+                //                [_resultToWords setValue:newArray forKey:resultID];
+                
+                [_resultToWords setValue:theWords forKey:resultID];
+            }
+            else {
+                NSLog(@"PhoneScore: no words for %@",answer);
+            }
         }
         else {
-            NSLog(@"PhoneScore: no words for %@",answer);
+            NSLog(@"Phonescore can't tell class for words");
         }
         
         if (answer && answer.length > 2) { //i.e. not NO
-            NSString * refPath = [answer stringByReplacingOccurrencesOfString:@".wav"
-                                                                   withString:@".mp3"];
-            
-            NSMutableString *mu = [NSMutableString stringWithString:refPath];
-            [mu insertString:_url atIndex:0];
-            [paths addObject:mu];
-            [rawPaths addObject:refPath];
+            [self addToCacheRequest:answer paths:paths rawPaths:rawPaths];
         }
     }
     

@@ -38,6 +38,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
+#import "EAFEventPoster.h"
 
 @protocol AudioPlayerNotification <NSObject>
 
@@ -58,9 +59,11 @@
 
 @property NSString *url;
 @property NSArray *audioPaths;
+@property EAFEventPoster *poster;
 @property unsigned long currentIndex;
 
 - (IBAction)playRefAudio;
+- (IBAction)playFirstRefAudio;
 - (IBAction)stopAudio;
 @property float volume;
 

@@ -56,11 +56,16 @@
 @property NSDictionary *resultToAnswer;
 @property NSDictionary *resultToWords;
 @property NSArray *phonesInOrder;
+@property NSArray *phonesInOrderScores;
 @property AVPlayer *player;
 @property NSString *url;
 @property BOOL isRTL;
 
 @property long user;
+@property NSNumber *listid;
+@property NSNumber *sessionid;
+@property BOOL sentencesOnly;
+
 -(void)setCurrentTitle;
 
 @end

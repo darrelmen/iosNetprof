@@ -50,6 +50,15 @@
 @property NSNumber *projid;
 @property NSString *unitTitle;
 @property NSString *unit;
+
+@property NSNumber *listid;
+@property NSString *listTitle;
+
+// quiz slots
+@property NSNumber *quizMinutes;
+@property NSNumber *minScoreToAdvance;
+@property BOOL playAudio;
+
 @property long user;
 
 @property (strong, nonatomic) NSDictionary *chapterToItems;
@@ -59,5 +68,6 @@
 - (void)askServerForJson;
 @property NSString *url;
 @property BOOL isRTL;
+@property BOOL showSentences;
 
 @end

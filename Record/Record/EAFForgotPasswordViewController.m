@@ -37,7 +37,6 @@
 //
 
 #import "EAFForgotPasswordViewController.h"
-#import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "UIColor_netprofColors.h"
 
@@ -50,7 +49,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setTitle:[NSString stringWithFormat:@"Forgot password for %@",_language]];
+    [self setTitle:@"Reset Password"];
     _username.text = _userFromLogin;
     
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -67,6 +66,11 @@
     [_sendEmail setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
     [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
     [_titleLabel setTextColor:[UIColor npDarkBlue]];
+    
+    NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
+    if (rememberedEmail != nil) {
+        _email.text = rememberedEmail;
+    }
 }
 
 - (void) emailChanged:(id)notification {
@@ -99,9 +103,7 @@
     }
 }
 
-
 - (IBAction)gotSingleTap:(id)sender {
-    NSLog(@"dismiss keyboard! %@",_currentResponder);
     [_currentResponder resignFirstResponder];
 }
 
@@ -111,7 +113,7 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    NSLog(@"Got return!");
+//    NSLog(@"Got return!");
     // done button was pressed - dismiss keyboard
     [textField resignFirstResponder];
     
@@ -121,7 +123,6 @@
     if (_email.text.length > 0) {
         _emailFeedback.text = @"";
     }
-    
     if ([self validateEmail:_email.text]) {
         _emailFeedback.text = @"";
     }
@@ -215,7 +216,7 @@
 
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
-    NSString *message = @"Couldn't connect to server.";
+    NSString *message = @"Couldn't connect to server (forgot password).";
     if (error.code == NSURLErrorNotConnectedToInternet) {
         message = @"NetProF needs a wifi or cellular internet connection.";
     }

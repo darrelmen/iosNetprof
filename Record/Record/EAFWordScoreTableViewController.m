@@ -68,21 +68,23 @@
     NSMutableArray *paths = [[NSMutableArray alloc] init];
     NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
     
-    NSArray *fields = [NSArray arrayWithObjects:@"ref",nil];
+    NSArray *fields = [NSArray arrayWithObjects:@"ref",@"ctmref",@"ctfref", nil];
     
     for (NSDictionary *object in items) {
         for (NSString *id in fields) {
-            NSString *refPath = [object objectForKey:id];
-            
-            if (refPath && refPath.length > 2) { //i.e. not NO
-                //NSLog(@"adding %@ %@",id,refPath);
-                refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
-                                                             withString:@".mp3"];
+            if ([[object objectForKey:id] isKindOfClass:[NSString class]]) {
+                NSString *refPath = [object objectForKey:id];
                 
-                NSMutableString *mu = [NSMutableString stringWithString:refPath];
-                [mu insertString:_url atIndex:0];
-                [paths addObject:mu];
-                [rawPaths addObject:refPath];
+                if (refPath && refPath.length > 2) { //i.e. not NO
+                    //NSLog(@"adding %@ %@",id,refPath);
+                    refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+                                                                 withString:@".mp3"];
+                    
+                    NSMutableString *mu = [NSMutableString stringWithString:refPath];
+                    [mu insertString:_url atIndex:0];
+                    [paths addObject:mu];
+                    [rawPaths addObject:refPath];
+                }
             }
         }
     }
@@ -98,7 +100,8 @@
 {
     [super viewDidLoad];
     _audioCache = [EAFAudioCache new];
-    
+    _audioCache.language = _language;
+
     [self performSelectorInBackground:@selector(cacheAudio:) withObject:_jsonItems];
     _rowHeight = 60;
     
@@ -131,7 +134,24 @@
 
 - (void)askServerForJson {
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?request=chapterHistory&user=%ld&%@=%@&%@=%@", _url, _user, _unitName, _unitSelection, _chapterName, _chapterSelection];
+  
     baseurl =[baseurl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    if (_listid != NULL) {
+        baseurl = [NSString stringWithFormat:@"%@&listid=%@", baseurl, _listid];
+    }
+    
+    if (_projid != NULL) {
+        baseurl = [NSString stringWithFormat:@"%@&projid=%@", baseurl, _projid];
+    }
+    
+    if (_showSentences) {
+        baseurl = [NSString stringWithFormat:@"%@&context=true", baseurl];
+    }
+    
+    if(_isQuiz) {
+        baseurl = [NSString stringWithFormat:@"%@&sortByLatestScore=true", baseurl];
+    }
     
     NSLog(@"wordScoreTable: askServerForJson url %@ %@",baseurl, _projid);
     
@@ -139,12 +159,11 @@
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
     [urlRequest setHTTPMethod: @"GET"];
-    [urlRequest setValue:@"application/x-www-form-urlencoded"
-      forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
     [urlRequest setValue:[NSString stringWithFormat:@"%@",_projid] forHTTPHeaderField:@"projid"];
     
-    [urlRequest setTimeoutInterval:10];
+    //[urlRequest setTimeoutInterval:10];
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     
@@ -163,7 +182,7 @@
                                  waitUntilDone:NO];
          }
          else {
-             _responseData = data;
+             self->_responseData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:NO];
@@ -329,11 +348,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
             correctView.image = nil;
             
             // NSLog(@"Score is %@",score);
-            BOOL isCorrect = [correct isEqualToString:@"Y"];
-            [correctView setDefaultIconIdentifier:isCorrect ? @"fa-check" : @"fa-times"];
-            
-            UIColor *scoreColor = [self getColor2:score.floatValue];
-            correctView.defaultView.backgroundColor = scoreColor;
+            [correctView setDefaultIconIdentifier: [correct isEqualToString:@"Y"] ? @"fa-check" : @"fa-times"];
+            correctView.defaultView.backgroundColor = [self getColor2:score.floatValue];
             
             [container addSubview:correctView];
         }
@@ -349,7 +365,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
         [self colorEachWord:exid cell:cell exercise:fl scoreHistory:scoreHistory];
      //    cell.fl.font=[UIFont systemFontOfSize:12.0];
         cell.english.text = [_exToEnglish objectForKey:exid];
-        
       //  cell.english.font=[UIFont systemFontOfSize:12.0];
     }
     return cell;
@@ -513,17 +528,13 @@ NSString *myCurrentTitle;
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    // The request is complete and data has been received
-    
     //[loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
     [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
 }
 
 - (void)reportError:(NSError *)error {
-    //  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-    
-    NSString *message = @"Couldn't connect to server.";
+    NSString *message = @"Couldn't connect to server (getting score history).";
     if (error.code == NSURLErrorNotConnectedToInternet) {
         message = @"NetProF needs a wifi or cellular internet connection.";
     }
@@ -551,7 +562,7 @@ NSString *myCurrentTitle;
     if ([exid isKindOfClass:[NSNumber class]]) {
         NSNumber *nid = [_exList objectAtIndex:row];
         exid = [NSString stringWithFormat:@"%@",nid];
-        NSLog(@"gotTapGesture got at row %ld, object id %@ = %@", (long)row, nid, exid);
+     //   NSLog(@"gotTapGesture got at row %ld, object id %@ = %@", (long)row, nid, exid);
     }
     
     //    EAFEventPoster *poster = [[EAFEventPoster alloc] initWithURL:_url];
@@ -571,16 +582,36 @@ NSString *myCurrentTitle;
         }
         
         if ([id isEqualToString:exid]) {
-            NSLog(@"gotTapGesture got match %@ = %@",id,exid);
+          //  NSLog(@"gotTapGesture got match %@ = %@",id,exid);
            // NSLog(@"gotTapGesture got it %@",jsonObject);
             // NSString *refAudio = [jsonObject objectForKey:@"ref"];
             NSMutableArray *toPlay = [[NSMutableArray alloc] init];
-            NSString *refAudioPath = [jsonObject objectForKey:@"ref"];
+          
+            NSString *refAudioPath;
+            if ([[jsonObject objectForKey:@"ref"] isKindOfClass:[NSString class]]) {
+                refAudioPath = [jsonObject objectForKey:@"ref"];
+            }
+            else {
+                refAudioPath = [jsonObject objectForKey:@"ctmref"];
+                if ([refAudioPath isEqualToString:@"NO"]) {
+                    refAudioPath = [jsonObject objectForKey:@"ctfref"];
+                }
+            }
+            
             if (refAudioPath == nil) {
                 NSLog(@"gotTapGesture ERROR : no ref audio in %@",jsonObject);
             }
             else {
                 [toPlay addObject:refAudioPath];
+                
+                // need json to return audio refs... ideally...
+//                if (sender.answer == nil) {
+//                    NSLog(@"ERROR - answer audio is null on %@",sender);
+//                }
+//                else {
+//                    [audioRefs addObject:sender.answer];
+//                }
+                
                 NSString *fl = [_exToFL objectForKey:exid];
                 
                 UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];

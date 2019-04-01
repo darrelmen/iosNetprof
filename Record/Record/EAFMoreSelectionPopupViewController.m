@@ -25,7 +25,7 @@
     [_voiceSelection setSelectedSegmentIndex:_moreSelection.voiceIndex];
     [_languageSelection setSelectedSegmentIndex:_moreSelection.languageIndex];
     
-    [_languageSelection setTitle:_language forSegmentAtIndex:1];
+    [_languageSelection setTitle:[_language capitalizedString] forSegmentAtIndex:1];
     
     if ([_language isEqualToString:@"English"]) {
         [_languageSelection setTitle:@"Def." forSegmentAtIndex:0];
@@ -36,17 +36,25 @@
     else if ([_language isEqualToString:@"Pashto1"] || [_language isEqualToString:@"Pashto2"] || [_language isEqualToString:@"Pashto3"]) {
         [_languageSelection setTitle:@"Pashto" forSegmentAtIndex:1];
     }
+    else if ([_language isEqualToString:@"Msa"]) {
+        [_languageSelection setTitle:@"MSA" forSegmentAtIndex:1];
+    }
     
     if (![self isiPad] && ![_language isEqualToString:@"English"]) {
         [_languageSelection setTitle:@"Eng" forSegmentAtIndex:0];
     }
-/*
-    _audioOnBtn.selected = !_audioOnBtn.selected;
-    _audioOnBtn.color = _audioOnBtn.selected ?[UIColor blueColor]:[UIColor whiteColor];
-*/
+    
     NSString *audioOn = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"audioOn"];
+    NSLog(@"configureWhatToShow audio on %@",audioOn);
     if (audioOn != nil) {
         _audioOnBtn.selected = [audioOn isEqualToString:@"Yes"] ? 1:0;
+        if (_audioOnBtn.selected) {
+            NSLog(@"configureWhatToShow audio on");
+        }
+        else {
+            NSLog(@"configureWhatToShow audio OFF");
+            
+        }
         _audioOnBtn.color = _audioOnBtn.selected ?[UIColor npAltPressButtonBGOn]:[UIColor whiteColor];
         _audioOnBtn.tintColor = _audioOnBtn.selected ?[UIColor npAltPressButtonBGOn]:[UIColor whiteColor];
         [_audioOnBtn setTitleColor:[UIColor npAltPressButtonFGOff] forState:UIControlStateNormal];
@@ -59,7 +67,6 @@
 
 
 - (void)viewDidLoad {
-    
 //     [self.view setBackgroundColor:[UIColor lightGrayColor]];
   //  [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -103,9 +110,7 @@
     [_audioOnBtn setTitleColor:[UIColor npAltPressButtonFGOn] forState:UIControlStateSelected];
     _audioOnBtn.layer.borderColor = [UIColor npAltPressButtonBGOn].CGColor;
     _moreSelection.isAudioSelected = _audioOnBtn.selected;
-
 }
-
 
 - (void) viewWillDisappear:(BOOL) animated {
      [super viewWillDisappear:animated];
@@ -119,16 +124,13 @@
     {
         //send the delegate function with the country information
         [[self customDelegate] getSelection:_moreSelection];
-
     }
-    
 //    _audioOnBtn.selected = !_audioOnBtn.selected;
 //    _audioOnBtn.color = _audioOnBtn.selected ?[UIColor blueColor]:[UIColor whiteColor];
 }
 - (IBAction)closePopup:(id)sender {
     [self mz_dismissFormSheetControllerAnimated:YES completionHandler:^(MZFormSheetController *formSheetController) {
     }];
-
 }
 
 - (BOOL)isiPhone
@@ -141,7 +143,5 @@
 {
     return ![self isiPhone];
 }
-
-
 
 @end

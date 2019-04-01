@@ -29,7 +29,7 @@
  */
 
 //
-//  EAFLoginViewController.h
+//  EAFForgotPasswordViewController
 //  Record
 //
 //  Created by Vidaver, Gordon - 0552 - MITLL on 11/14/14.

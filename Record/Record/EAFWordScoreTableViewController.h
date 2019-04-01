@@ -56,8 +56,11 @@
 @property NSArray *jsonItems;
 
 @property long user;
+@property NSNumber *listid;
 
 -(void)setCurrentTitle;
 @property NSString *url;
+@property BOOL showSentences;
+@property BOOL isQuiz;
 
 @end

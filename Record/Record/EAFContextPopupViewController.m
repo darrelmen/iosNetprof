@@ -29,7 +29,7 @@
  */
 
 //
-//  EAFLoginViewController.m
+//  EAFContextPopupViewController
 //  Shows a context sentence and its translation.
 //  Plays male or female audio for the sentence.
 //  Highlights the item term in the context sentence.
@@ -42,6 +42,9 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "MZFormSheetController.h"
+
+//#import "MZFormSheetController/MZFormSheetController.h"
+//#import <MZFormSheetController/MZFormSheetController.h>
 #import "UIColor_netprofColors.h"
 
 @interface EAFContextPopupViewController ()
@@ -112,7 +115,7 @@
     NSString *trim = [refSentence stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     NSString *toFind = [self removePunct:trim];
     toFind = [toFind stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    NSLog(@"CONTEXT: %@", context);
+   // NSLog(@"CONTEXT: %@", context);
     //    NSLog(@"looking for '%@' in %@",toFind,context);
     NSRange range = [context rangeOfString:toFind];
     if (range.length > 0) {
@@ -201,6 +204,12 @@
 - (IBAction)gotOK:(id)sender {
     [self mz_dismissFormSheetControllerAnimated:YES completionHandler:^(MZFormSheetController *formSheetController) {
     }];
+  //  NSLog(@"OK dismiss me!");
+    
+//    [self dismissViewControllerAnimated:YES completion:^{
+//        NSLog(@"OK done!");
+//
+//    }];
 }
 
 - (IBAction)gotTouchInside:(id)sender {

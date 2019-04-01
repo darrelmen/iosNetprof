@@ -21,11 +21,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.1</string>
+	<string>1.2</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>2.0.1</string>
+	<string>3.0.17</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.education</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -36,7 +36,7 @@
 		<true/>
 	</dict>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright &amp;copy; 2011-2016 Massachusetts Institute of Technology, Lincoln Laboratory</string>
+	<string>Copyright &amp;copy; 2011-2019 Massachusetts Institute of Technology, Lincoln Laboratory</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>NetProF needs to record you saying voacabulary to give you pronunciation feedback.</string>
 	<key>UIAppFonts</key>
@@ -57,6 +57,8 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

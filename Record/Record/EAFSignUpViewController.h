@@ -41,8 +41,15 @@
 
 @interface EAFSignUpViewController : UIViewController<NSURLConnectionDelegate,UITextFieldDelegate,UIGestureRecognizerDelegate>
 @property (strong, nonatomic) IBOutlet UITextField *username;
-@property (strong, nonatomic) IBOutlet UITextField *password;
+@property (strong, nonatomic) IBOutlet UITextField *firstName;
+@property (strong, nonatomic) IBOutlet UITextField *lastName;
 @property (strong, nonatomic) IBOutlet UITextField *email;
+
+@property (strong, nonatomic) IBOutlet UISegmentedControl *affiliation;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *gender;
+
+
+
 @property (strong, nonatomic) IBOutlet UIButton *signUp;
 @property (strong, nonatomic) IBOutlet UILabel *usernameFeedback;
 @property (strong, nonatomic) IBOutlet UILabel *passwordFeedback;
@@ -51,8 +58,6 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomOffsetConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *maxLangPickerHeightConstraint;
 
-@property (strong, nonatomic) IBOutlet UIPickerView *languagePicker;
-//@property (strong, nonatomic) NSArray *languages;
 @property (strong, nonatomic) NSMutableData *responseData;
 @property (strong, nonatomic) NSString *userFromLogin;
 @property (strong, nonatomic) NSString *passFromLogin;

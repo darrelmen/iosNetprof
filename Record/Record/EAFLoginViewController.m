@@ -40,13 +40,19 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "SSKeychain.h"
 #import "EAFChapterTableViewController.h"
+
+#import <Record-Swift.h>
+
 #import "EAFSignUpViewController.h"
-#import "EAFForgotUserNameViewController.h"
+#import "EAFForgotUsernameViewController.h"
 #import "EAFForgotPasswordViewController.h"
 #import "EAFSetPasswordViewController.h"
 #import "EAFEventPoster.h"
 #import "EAFGetSites.h"
 #import "UIColor_netprofColors.h"
+
+
+#import "Record-Bridging-Header.h"
 
 @interface EAFLoginViewController ()
 
@@ -92,7 +98,15 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [_logIn setEnabled:FALSE];
+    [_signUp setEnabled:FALSE];
+    
+    if (![MFMailComposeViewController canSendMail]) {
+        [_contact setEnabled:FALSE];
+    }
     [_logIn setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
+    
     [_signUp setTitleColor:[UIColor npDarkBlue] forState:UIControlStateNormal];
     [_titleLabel setBackgroundColor:[UIColor npLightBlue]];
     [_titleLabel setTextColor:[UIColor npDarkBlue]];
@@ -102,9 +116,9 @@
     _siteGetter = [EAFGetSites new];
     _siteGetter.delegate = self;
     [_siteGetter getSites];
-    _poster = [[EAFEventPoster alloc] init];
     
-    // NSLog(@"viewDidLoad : languages now %@",_siteGetter.languages);
+    _poster = [[EAFEventPoster alloc] initWithURL:[[EAFGetSites new] getServerURL] projid:[NSNumber numberWithInt:-1]];
+    
     
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
     
@@ -140,39 +154,50 @@
     gestureRecognizer.cancelsTouchesInView = NO;
     gestureRecognizer.delegate = self;
     [_languagePicker addGestureRecognizer:gestureRecognizer];
+    _languagePicker.delegate=self;
+    
+    NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
+    
+    if (userid != nil) {
+        NSLog(@"viewDidLoad userid %@, user name field '%@'", userid,_username.text);
+    }
 }
-
 
 - (void) sitesReady {
     dispatch_async(dispatch_get_main_queue(), ^{
         // add UI related changes here
-        [_languagePicker reloadAllComponents ];
+        [self->_languagePicker reloadAllComponents ];
+        
+        NSLog(@"sitesReady!");
+        self->_logIn.enabled=TRUE;
+        self->_signUp.enabled=TRUE;
         [self setLanguagePicker];
     });
+    NSLog(@"sitesReady : languages now %@",_siteGetter.languages);
     
     // must come after language picker
     NSString *userid = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"userid"];
     if (userid != nil) {
-        //  [self performSegueWithIdentifier:@"goToChapter" sender:self];
         NSString *languageRemembered = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
         if (languageRemembered != nil) {
-            
             dispatch_async(dispatch_get_main_queue(), ^{
-                // add UI related changes here
                 [self tryToLogIn:languageRemembered];
-
             });
-            
         }
     }
 }
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    
+//    [_logIn setEnabled:FALSE];
+//    [_signUp setEnabled:FALSE];
+    
     [self.navigationController setNavigationBarHidden:YES];   //it hides
     
     NSString *rememberedUserID = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenUserID"];
     if (rememberedUserID != nil) {
+        NSLog(@"viewWillAppear rememberedUserID %@",rememberedUserID);
         _username.text = rememberedUserID;
     }
     NSString *rememberedPass = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenPassword"];
@@ -206,6 +231,82 @@
     [self gotSingleTap:nil];
 }
 
+- (void)maybeReportCrash {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    // NSLog(@"got doc dir %@",documentsDirectory);
+    //    NSString *audioDir = [NSString stringWithFormat:@"%@_crash",lang];
+    NSString *filePath = [documentsDirectory stringByAppendingPathComponent:@"crash.log"];
+    NSLog(@"viewDidLoad got filePath %@",filePath);
+    
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
+    if (fileExists) {
+        NSLog(@"viewDidLoad EXISTS filePath %@",filePath);
+        NSError *error;
+        NSString *content = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
+        NSLog(@"viewDidLoad content %@ error %@",content, error);
+        [_poster postEvent:content exid:@"crash" widget:@"crash"  widgetType:@"crash"];
+        
+        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+        if (success) {
+            
+        }
+        else
+        {
+            NSLog(@"Could not delete file -:%@ ",[error localizedDescription]);
+        }
+        
+    }
+}
+
+-(IBAction)onContact:(id)sender {
+    // Email Subject
+    NSString *emailTitle = @"Question about netprof";
+    // Email Content
+    NSString *messageBody = @"";
+    // To address
+    NSArray *toRecipents = [NSArray arrayWithObject:@"netprof-help@dliflc.edu"];
+    
+    if ([MFMailComposeViewController canSendMail]) {
+        
+        MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
+        mc.mailComposeDelegate = self;
+        [mc setSubject:emailTitle];
+        [mc setMessageBody:messageBody isHTML:NO];
+        [mc setToRecipients:toRecipents];
+        
+        // Present mail view controller on screen
+        [self presentViewController:mc animated:YES completion:NULL];
+    }
+    else {
+        NSLog(@"huh? can't send");
+    }
+}
+
+- (void) mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    switch (result)
+    {
+        case MFMailComposeResultCancelled:
+            NSLog(@"Mail cancelled");
+            break;
+        case MFMailComposeResultSaved:
+            NSLog(@"Mail saved");
+            break;
+        case MFMailComposeResultSent:
+            NSLog(@"Mail sent");
+            break;
+        case MFMailComposeResultFailed:
+            NSLog(@"Mail sent failure: %@", [error localizedDescription]);
+            break;
+        default:
+            break;
+    }
+    
+    // Close the Mail Interface
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
 // both login and sign up button clicks come here
 - (IBAction)onClick:(id)sender {
     //NSLog(@"LoginView : onClick Got click from %@", sender);
@@ -213,11 +314,19 @@
     
     BOOL isLogin = ([[button restorationIdentifier] isEqualToString:@"logIn"]);
     
-    NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+    NSString *chosenLanguage = @"";
+    
+    if (_siteGetter.languages.count > 0){
+      chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
+    }
+    else {
+        [_siteGetter getSites];
+        return;
+    }
     
     NSLog(@"LoginView : onClick chosenLanguage %@", chosenLanguage);
     
-    [self checkUpToDate];
+    //  [self checkUpToDate];
     
     if (!isLogin) {
         NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
@@ -225,9 +334,9 @@
         if (projid.intValue == -1) {
             [self performSegueWithIdentifier:@"goToSignUp" sender:self];
         }
-//        else {
-//            [self performSegueWithIdentifier:@"goToNewSignUp" sender:self];
-//        }
+        //        else {
+        //            [self performSegueWithIdentifier:@"goToNewSignUp" sender:self];
+        //        }
         //return;
     }
     
@@ -251,8 +360,8 @@
         [self tryToLogIn:chosenLanguage];
         
         //NSLog(@"got project id %@",[_siteGetter.nameToProjectID objectForKey:chosenLanguage]);
-        NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
-        [_poster setURL:urlForLanguage projid:[_siteGetter.nameToProjectID objectForKey:chosenLanguage]];
+        // NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
+        
         
         [_poster postEvent:@"login" exid:@"N/A" widget:@"LogIn" widgetType:@"Button"];
     }
@@ -263,6 +372,9 @@
 
 -(void)tryToLogIn:(NSString*) chosenLanguage
 {
+    [_poster setURL: [_siteGetter.nameToURL objectForKey:chosenLanguage] projid:[_siteGetter.nameToProjectID objectForKey:chosenLanguage]];
+    [self maybeReportCrash];
+    
     _passwordFeedback.text = @"";
     
     // make sure multiple events don't occur
@@ -270,8 +382,9 @@
     NSString *username =_username.text;
     NSString *password =_password.text;
     
-    //NSLog(@"LoginView onClick password '%@'",_password.text);
-    //NSLog(@"onClick md5 password %@",[self MD5:_password.text]);
+    //  NSLog(@"LoginView onClick password '%@'",_password.text);
+    
+    [self checkUpToDate];
     
     NSString *urlForLanguage = [_siteGetter.nameToURL objectForKey:chosenLanguage];
     
@@ -284,43 +397,55 @@
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
     NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
-    if (projid.intValue > -1) {
-        [urlRequest setValue:@"hasUser" forHTTPHeaderField:@"request"];
-        if ([username length] < 5) {
-            username = [username stringByAppendingString:@"_"];
-            NSLog(@"tryToLogIn user %@ project %@ md5 password %@", username, projid, [self MD5:_password.text]);
-        }
-        [urlRequest setValue:username forHTTPHeaderField:@"userid"];
-        [urlRequest setValue:password forHTTPHeaderField:@"pass"];
-        [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
+    
+    NSLog(@"LoginView tryToLogIn projid  '%@' url %@",projid,url);
+    
+    [urlRequest setValue:@"hasUser" forHTTPHeaderField:@"request"];
+    if ([username length] < 5) {
+        username = [username stringByAppendingString:@"_"];
+        NSLog(@"tryToLogIn user %@ project %@ md5 password %@", username, projid, [self MD5:_password.text]);
     }
-    else {
-    }
+    [urlRequest setValue:username forHTTPHeaderField:@"userid"];
+    [urlRequest setValue:password forHTTPHeaderField:@"pass"];
+    [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    [urlRequest setTimeoutInterval:15];
+    //  [urlRequest setTimeoutInterval:1];
     
     dispatch_async(dispatch_get_main_queue(), ^{
         // add UI related changes here
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
     });
     
-    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-     {
-         if (error != nil) {
-             NSLog(@"\n\n\n\t1 Got error %@",error);
-             dispatch_async(dispatch_get_main_queue(), ^{
-                 [self connection:nil didFailWithError:error];
-             });
-         }
-         else {
-             _responseData = data;
-             [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
-                                    withObject:nil
-                                 waitUntilDone:YES];
-         }
-     }];
+    NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession] dataTaskWithRequest:urlRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
+                                          
+                                          //    [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+                                          {
+                                              if (error != nil) {
+                                                  NSLog(@"\n\n\n\t1 Got error %@",error);
+                                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                                      [self connection:nil didFailWithError:error];
+                                                      [self->_poster postError:urlRequest error:error];
+                                                  });
+                                              }
+                                              else {
+                                                  
+                                                  //             for (NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies])
+                                                  //             {
+                                                  //                 NSLog(@"name   : '%@'\n",   [cookie name]);
+                                                  //                 NSLog(@"value  : '%@'\n",  [cookie value]);
+                                                  //                 NSLog(@"domain : '%@'\n", [cookie domain]);
+                                                  //                 NSLog(@"path   : '%@'\n",   [cookie path]);
+                                                  //             }
+                                                  //
+                                                  self->_responseData = data;
+                                                  [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
+                                                                         withObject:nil
+                                                                      waitUntilDone:YES];
+                                              }
+                                          }];
+    [downloadTask resume];
 }
 
 -(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
@@ -341,6 +466,8 @@
 //    return [_siteGetter.languages objectAtIndex:row];
 //}
 
+// scale name to fit - Tamas request 8/9/2018
+// https://gh.ll.mit.edu/DLI-LTEA/Development/issues/1049
 -(UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(nullable UIView *)view{
     UILabel *pView = (UILabel *)view;
     if(!pView){
@@ -352,6 +479,9 @@
         //        [pView setTextColor:[UIColor greenColor]];
         [pView setTextColor:[UIColor colorWithRed:3/255.0 green:99/255.0 blue:148/255.0 alpha:1.0]];
         [pView setTextAlignment: NSTextAlignmentCenter];
+        
+        pView.minimumScaleFactor = 0.2;
+        pView.adjustsFontSizeToFitWidth = YES;
     }
     [pView setText:[_siteGetter.languages objectAtIndex: row]];
     return pView;
@@ -396,21 +526,34 @@
 // if the user exists and the password is correct, segue to the chapter scene
 - (BOOL)useJsonChapterData {
     NSError * error;
+    
     NSDictionary* json = [NSJSONSerialization
                           JSONObjectWithData:_responseData
                           options:NSJSONReadingAllowFragments
                           error:&error];
     
+//    NSString *myString = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
+    
+//    NSLog(@"EAFLoginViewController.useJsonChapterData myString %@",myString);
+//    NSLog(@"EAFLoginViewController.useJsonChapterData json     %@",json);
+    
     // put the UI back to initial state
     [_activityIndicator stopAnimating];
+ //   NSLog(@"useJsonChapterData : enable login button");
     _logIn.enabled = true;
     _languagePicker.userInteractionEnabled = true;
-    
-    
     
     if (error) {
         NSLog(@"got error %@",error);
         NSLog(@"useJsonChapterData error %@",error.description);
+        
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle: @"Connection problem"
+                                                        message: error.description
+                                                       delegate: nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+        [alert show];
+        
         return false;
     }
     
@@ -421,16 +564,17 @@
     
     NSString *existing = [json objectForKey:@"ExistingUserName"];
     
-    NSLog(@"useJsonChapterData existing         %@",existing);
-    NSLog(@"useJsonChapterData resetToken       %@",resetToken);
+    //NSLog(@"useJsonChapterData existing         %@",existing);
+    //NSLog(@"useJsonChapterData resetToken       %@",resetToken);
     NSLog(@"useJsonChapterData userIDExisting   %@",userIDExisting);
     NSLog(@"useJsonChapterData passCorrectValue %@",passCorrectValue);
     
     if ([userIDExisting integerValue] == -1) {
+        NSLog(@"useJsonChapterData userIDExisting %@",userIDExisting);
         NSString *rememberedEmail = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"chosenEmail"];
         
         NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
-
+        
         NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
         int projIDInt = [projid intValue];
         
@@ -448,6 +592,7 @@
         }
     }
     else if (resetToken.length > 0) {
+        NSLog(@"useJsonChapterData resetToken %@",resetToken);
         _token = resetToken;
         [self performSegueWithIdentifier:@"goToSetPassword" sender:self];
     } else if (passCorrect) {
@@ -457,11 +602,16 @@
         [SSKeychain setPassword:converted      forService:@"mitll.proFeedback.device" account:@"userid"];
         [SSKeychain setPassword:_username.text forService:@"mitll.proFeedback.device" account:@"chosenUserID"];
         [SSKeychain setPassword:_password.text forService:@"mitll.proFeedback.device" account:@"chosenPassword"];
+        
+        // NSLog(@"useJsonChapterData set current user id to %@",_username.text);
+        
         NSString *chosenLanguage = [_siteGetter.languages objectAtIndex:[_languagePicker selectedRowInComponent:0]];
         [SSKeychain setPassword:chosenLanguage forService:@"mitll.proFeedback.device" account:@"language"];
         
-        [self performSegueWithIdentifier:@"goToChapter" sender:self];
+        //  [self performSegueWithIdentifier:@"goToChapter" sender:self];
+        [self performSegueWithIdentifier:@"goToChoice" sender:self];
     } else {
+        NSLog(@"useJsonChapterData password bad");
         // password is bad
         _passwordFeedback.text = @"Username or password incorrect";
     }
@@ -473,7 +623,7 @@
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet",[_siteGetter.nameToURL objectForKey:chosenLanguage]];
     
     NSURL *url = [NSURL URLWithString:baseurl];
-    NSLog(@"url %@",url);
+    NSLog(@"addUser url %@",url);
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
@@ -490,20 +640,20 @@
     
     [urlRequest setValue:@"addUser"    forHTTPHeaderField:@"request"];
     
-    [urlRequest setTimeoutInterval:10];
+    // [urlRequest setTimeoutInterval:10];
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
-         NSLog(@"\n\n\nGot response %@",error);
+         NSLog(@"addUser : Got response %@",error);
          
          if (error != nil) {
-             NSLog(@"\n\n\n\tGot error %@",error);
+             NSLog(@"addUser : Got error %@",error);
              dispatch_async(dispatch_get_main_queue(), ^{
                  [self connection:nil didFailWithError:error];
              });
          }
          else {
-             _responseData = data;
+             self->_responseData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:YES];
@@ -522,13 +672,13 @@
     // The request has failed for some reason!
     // Check the error var
     _languagePicker.userInteractionEnabled = true;
-    NSLog(@"login call to server failed with %@",error);
+    NSLog(@"didFailWithError login call to server failed with %@",error);
     [_activityIndicator stopAnimating];
     _logIn.enabled = true;
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
-    NSString *message = @"Couldn't connect to server.";
+    NSString *message = [NSString stringWithFormat:@"Couldn't connect to server (login) (code = %ld).",(long)error.code];
     if (error.code == NSURLErrorNotConnectedToInternet) {
         message = @"NetProF needs a wifi or cellular internet connection.";
     }
@@ -565,10 +715,25 @@
     return YES;
 }
 
+// don't pester them if it's out of date - only one warning per hour...
+// this will stop working
 - (void)checkUpToDate {
-    if (!_siteGetter.isCurrent) {
-        UIAlertView *_alert = [[UIAlertView alloc] initWithTitle:@"App is out of date"
-                                                         message:@"Please download from the appstore or netprof.ll.mit.edu"
+    NSString *lastUpdate = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"lastUpdateMessage"];
+    double CurrentTime = [[NSDate date] timeIntervalSince1970];
+    // NSLog(@"checkUpToDate CurrentTime  %f", CurrentTime);
+    double diff = 0;
+    
+    if (lastUpdate != NULL) {
+        double lastShownTime = [lastUpdate doubleValue];
+        diff = CurrentTime - lastShownTime;
+        //        NSLog(@"checkUpToDate last diff %f", diff);
+    }
+    
+    if (!_siteGetter.isCurrent && diff > 3600) {
+        [SSKeychain setPassword:[NSString stringWithFormat:@"%f",CurrentTime]      forService:@"mitll.proFeedback.device" account:@"lastUpdateMessage"];
+        
+        UIAlertView *_alert = [[UIAlertView alloc] initWithTitle:@"Update available"
+                                                         message:@"Please download from your local appstore or \nhttps://netprof.ll.mit.edu/ios"
                                                         delegate:nil
                                                cancelButtonTitle:@"OK"
                                                otherButtonTitles:nil];
@@ -598,7 +763,7 @@
         EAFForgotPasswordViewController *forgotUserName = [segue destinationViewController];
         [forgotUserName setLanguage:chosenLanguage];
         // NSLog(@"username %@",_username.text);
-        forgotUserName.url =url;
+        forgotUserName.url = url;
         forgotUserName.userFromLogin = _username.text;
     }
     else if ([segue.identifier isEqualToString:@"goToSetPassword"]) {
@@ -608,6 +773,16 @@
         forgotUserName.url =url;
         [forgotUserName setLanguage:chosenLanguage];
         forgotUserName.token  = _token;
+    }
+    else if ([segue.identifier isEqualToString:@"goToChoice"]) {
+        ModeChoiceController *choiceController = [segue destinationViewController];
+        
+        choiceController.language=chosenLanguage;
+        choiceController.isRTL = isRTL;
+        NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
+        choiceController.projid = projid.intValue;
+        
+        [self textFieldText:nil];
     }
     else if ([segue.identifier isEqualToString:@"goToChapter"]) {
         EAFChapterTableViewController *chapterController = [segue destinationViewController];
@@ -623,10 +798,10 @@
         NSLog(@"LoginViewController : old identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
         
         EAFSignUpViewController *signUp = [segue destinationViewController];
-       
+        
         NSNumber *projid = [_siteGetter.nameToProjectID objectForKey:chosenLanguage];
         NSLog(@"LoginView : segue to sign up projid %@", projid);
-       
+        
         signUp.userFromLogin = _username.text;
         //  signUp.passFromLogin = _password.text;
         signUp.languageIndex = selection;
@@ -637,19 +812,19 @@
     }
     else {
         NSLog(@"LoginViewController : WARN - strange segue new identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
-//        long selection = [_languagePicker selectedRowInComponent:0];
-//        //NSString *chosenLanguage = [_languages objectAtIndex:selection];
-//        NSLog(@"LoginViewController : new identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
-//        
-//        EAFSignUpViewController *signUp = [segue destinationViewController];
-//        signUp.userFromLogin = _username.text;
-//        //signUp.passFromLogin = _password.text;
-//        signUp.languageIndex = selection;
-//        signUp.siteGetter = _siteGetter;
-//        
-//       // signUp.chosenLanguage = chosenLanguage;
-//        
-//        [self textFieldText:nil];
+        //        long selection = [_languagePicker selectedRowInComponent:0];
+        //        //NSString *chosenLanguage = [_languages objectAtIndex:selection];
+        //        NSLog(@"LoginViewController : new identifier %@ %@ %@",segue.identifier,_username.text,_password.text);
+        //
+        //        EAFSignUpViewController *signUp = [segue destinationViewController];
+        //        signUp.userFromLogin = _username.text;
+        //        //signUp.passFromLogin = _password.text;
+        //        signUp.languageIndex = selection;
+        //        signUp.siteGetter = _siteGetter;
+        //
+        //       // signUp.chosenLanguage = chosenLanguage;
+        //
+        //        [self textFieldText:nil];
     }
 }
 

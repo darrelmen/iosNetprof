@@ -61,6 +61,7 @@
 - (void) getSites;
 - (NSNumber *) getProject:(NSString*) language;
 - (NSString *) getProjectLanguage:(NSString*) projectName;
+- (NSString *) getServerURL;
 
 @property(assign) id<SitesNotification> delegate;
 

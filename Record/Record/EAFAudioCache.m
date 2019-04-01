@@ -38,6 +38,8 @@
 
 #import "EAFAudioCache.h"
 #import "Reachability.h"
+#import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 
 @interface AudioCacheOperation : NSOperation
 
@@ -46,6 +48,7 @@
 @property NSString *rawPath;
 @property NSString *path;
 @property NSString *filePath;
+@property int completed;
 
 @end
 
@@ -64,23 +67,70 @@
 }
 
 - (void)writeMP3DataToCacheAt:(NSString *)destFileName mp3AudioData:(NSData *)mp3AudioData {
-   // NSLog(@"AudioCache : writeMP3DataToCacheAt : writing to      %@",destFileName);
+    //NSLog(@"AudioCache : writeMP3DataToCacheAt : writing to      %@",destFileName);
     NSString *parent = [destFileName stringByDeletingLastPathComponent];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:parent]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:parent withIntermediateDirectories:YES attributes:nil error:nil];
     }
     
+    
     [mp3AudioData writeToFile:destFileName atomically:YES];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:destFileName]) {
         NSLog(@"writeMP3DataToCacheAt huh? can't find     %@",destFileName);
+    }
+    
+    if (![self isValidMP3File:destFileName]) {
+        NSLog(@"writeMP3DataToCacheAt mp3 data for %@ had length %lul and was invalid.",destFileName,(unsigned long)[mp3AudioData length]);
     }
 }
 
 - (NSString *)getFileInCache:(NSString *)rawRefAudioPath filePath:(NSString *)filePath
 {
     return [filePath stringByAppendingPathComponent:rawRefAudioPath];
+}
+
+// The purpose here is defensive - if the mp3 is truncated, you can't read the header, so you can't get the tags dictionary
+// if you can get the dictionary, the mp3 file is valid and can be played.
+
+- (NSDictionary *)id3TagsForURL:(NSURL *)resourceUrl
+{
+    AudioFileID fileID;
+    
+    //   NSLog(@"id3TagsForURL get tags for '%@'", resourceUrl);
+    //   CFURLRef test = (__bridge CFURLRef)resourceUrl;
+    // NSLog(@"id3TagsForURL get tags for test '%@'", test);
+    
+    OSStatus result = AudioFileOpenURL((__bridge CFURLRef)resourceUrl, kAudioFileReadPermission, 0, &fileID);
+    
+    if (result != noErr) {
+        NSLog(@"id3TagsForURL Error reading tags for %@: %i", resourceUrl, (int)result);
+        return nil;
+    }
+    
+    CFDictionaryRef piDict = nil;
+    UInt32 piDataSize = sizeof(piDict);
+    
+    result = AudioFileGetProperty(fileID, kAudioFilePropertyInfoDictionary, &piDataSize, &piDict);
+    if (result != noErr)
+        NSLog(@"Error reading tags. AudioFileGetProperty failed");
+    
+    AudioFileClose(fileID);
+    
+    NSDictionary *tagsDictionary = [NSDictionary dictionaryWithDictionary:(__bridge NSDictionary*)piDict];
+    CFRelease(piDict);
+    
+    return tagsDictionary;
+}
+
+- (BOOL)isValidMP3File:(NSString *) destFileName {
+    NSURL *testURL = [[NSURL alloc] initFileURLWithPath: destFileName];
+    //  NSLog(@"playRefAudioInternal testURL - %@",testURL);
+    //  if (_debug) [self postEvent:[NSString stringWithFormat:@"playRefAudioInternal found local url %@",testURL] widget:@"playRefAudioInternal" type:@"Button"];
+    
+    NSDictionary * dict = [self id3TagsForURL:testURL];
+    return dict != nil;
 }
 
 -(void) main {
@@ -92,7 +142,10 @@
         NSString *destFileName = [self getFileInCache:_rawPath filePath:_filePath];
         //NSLog(@"%@ started to check %@.",self,destFileName);
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:destFileName] || [destFileName hasSuffix:@"NO"]) {
+        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:destFileName] || [destFileName hasSuffix:@"NO"];
+
+        BOOL isValid = exists && [self isValidMP3File:destFileName];
+        if (isValid) {
             //            _completed++;
             //            if (total == _completed) {
             //                NSLog(@"\t goGetAudio turning off network indicator");
@@ -101,8 +154,8 @@
             //                    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:FALSE];
             //                });
             //            }
-            //  NSLog(@"%@ checked file %@.",self,destFileName);
-            
+       //     NSLog(@"%@ checked valid file %@.",self,destFileName);
+        
         }
         else {
             NSURLResponse * response = nil;
@@ -118,9 +171,11 @@
                 });
             }
             else {
-              //  NSLog(@"%@ completed %@",self,destFileName);
-                //                _completed++;
-                //                if (_completed % 10 == 0) NSLog(@"%@ completed %d",self,_completed);
+               // NSLog(@"%@ completed %@",self,destFileName);
+                
+                _completed++;
+                if (_completed % 10 == 0) NSLog(@"%@ completed %d",self,_completed);
+                
                 //
                 //                if (_rawPaths.count == _completed) {
                 //                    NSLog(@"\t goGetAudio turning off network indicator 2");
@@ -156,9 +211,48 @@
     if ( ( self = [super init] ) )
     {
         _operationQueue = [[NSOperationQueue alloc] init];
+     //   NSLog(@"EAFAudioCache qos %ld",_operationQueue.qualityOfService);
         _operationQueue.maxConcurrentOperationCount = 2;
     }
     return self;
+}
+
+- (void)cacheAudio:(NSArray *)items url:(NSString *) url
+{
+    NSString *msg=[NSString stringWithFormat:@" cacheAudio getting audio for %lu",(unsigned long)items.count];
+    NSLog(@"%@", msg);
+    
+    NSMutableArray *paths = [[NSMutableArray alloc] init];
+    NSMutableArray *rawPaths = [[NSMutableArray alloc] init];
+    
+    NSArray *fields = [NSArray arrayWithObjects:@"ref",@"mrr",@"msr",@"frr",@"fsr",@"ctmref",@"ctfref",@"ctref",nil];
+    
+ //   NSString *url =[self getServerURL];
+    
+    for (NSDictionary *object in items) {
+        for (NSString *id in fields) {
+            if ([[object objectForKey:id] isKindOfClass:[NSString class]]) {
+                NSString *refPath = [object objectForKey:id];
+                
+                if (refPath != NULL && refPath.length > 2) { //i.e. not NO
+                    //NSLog(@"adding %@ %@",id,refPath);
+                    refPath = [refPath stringByReplacingOccurrencesOfString:@".wav"
+                                                                 withString:@".mp3"];
+                    
+                    NSMutableString *mu = [NSMutableString stringWithString:refPath];
+                    [mu insertString:url atIndex:0];
+                    [paths addObject:mu];
+                    [rawPaths addObject:refPath];
+                }
+            }
+            //            else {
+            //                NSLog(@"skip %@",id);
+            //            }
+        }
+    }
+    
+    //   NSLog(@"ItemTableViewController.cacheAudio Got get audio -- %@ ",_audioCache);
+    [self goGetAudio:rawPaths paths:paths language:_language];
 }
 
 - (void) cancelAllOperations {
@@ -177,18 +271,19 @@
     _rawPaths = [rawPaths2 copy];
     _paths = [ppaths2 copy];
     
-  //  NSLog(@"EAFAudioCache - go get audio for %lu",(unsigned long)_rawPaths.count);
+    NSLog(@"EAFAudioCache - go get audio for %lu",(unsigned long)_rawPaths.count);
     @try {
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
         NSString *documentsDirectory = [paths objectAtIndex:0];
-       // NSLog(@"got doc dir %@",documentsDirectory);
+        // NSLog(@"got doc dir %@",documentsDirectory);
         NSString *audioDir = [NSString stringWithFormat:@"%@_audio",lang];
         NSString *filePath = [documentsDirectory stringByAppendingPathComponent:audioDir];
-        Reachability* reach = [Reachability reachabilityForInternetConnection];
-        if ([reach isReachable]) {
+        NSLog(@"goGetAudio got filePath %@",filePath);
+       // Reachability* reach = [Reachability reachabilityForInternetConnection];
+        if ([[Reachability reachabilityForInternetConnection] isReachable]) {
             //NSLog(@"_rawPaths count %d",_rawPaths.count);
             //NSLog(@"_paths count %d",_paths .count);
-
+            
             for (int index = 0; index < _rawPaths.count; index++) {
                 NSString *rawPath = [_rawPaths objectAtIndex:index];
                 NSString *path = [_paths objectAtIndex:index];
@@ -196,7 +291,7 @@
                 [_operationQueue addOperation:operation];
             }
         }
-    //    NSLog(@"EAFAudioCache - initial queue posting finished for %@ and %lu items, queue has %lu",self,(unsigned long)_rawPaths.count,(unsigned long)_operationQueue.operationCount);
+        NSLog(@"EAFAudioCache - initial queue posting finished for %@ and %lu items, queue has %lu",self,(unsigned long)_rawPaths.count,(unsigned long)_operationQueue.operationCount);
     }
     @catch (NSException *exception)
     {

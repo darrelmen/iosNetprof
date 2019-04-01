@@ -58,9 +58,8 @@
 @property NSArray *currentItems;
 @property EAFGetSites *siteGetter;
 @property EAFEventPoster *poster;
-
-@property unsigned long totalItemsPerLanguage;
-@property unsigned long totalItemsPerLesson;
+@property EAFAudioCache *audioCache;
+@property UIAlertView *loadingContentAlert;
 
 @end
 
@@ -80,10 +79,13 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-     _totalItemsPerLanguage = 0;
-     _totalItemsPerLesson = 0;
+    
+    _audioCache = [EAFAudioCache new];
+    _audioCache.language = _language;
+    
     _siteGetter = [EAFGetSites new];
     _siteGetter.delegate = self;
+    _url = [_siteGetter getServerURL];
     _poster = [[EAFEventPoster alloc] init];
     
     [self.navigationController.navigationBar setTitleTextAttributes:
@@ -101,15 +103,7 @@
     }
     
     _language = [SSKeychain passwordForService:@"mitll.proFeedback.device" account:@"language"];
-    _poster = [[EAFEventPoster alloc] initWithURL:_url projid:[_siteGetter.nameToProjectID objectForKey:_language]];
-  
-//   [self setTitle:_language];
-//    [self setTitle: [NSString stringWithFormat:@"%@       %@", _language, @"TEST"]];
- 
     
-//    if (_jsonContentArray == nil) {
-//        [self loadInitialData];
-//    }
     [_siteGetter getSites];
     
     // Uncomment the following line to preserve selection between presentations.
@@ -131,6 +125,9 @@
     if (found) {
         self.navigationController.viewControllers = navigationArray;
     }
+    
+    [self cacheAllItems];
+
 }
 
 - (void)askServerForJson:(BOOL) isRefresh {
@@ -139,23 +136,26 @@
     _reqCount++;
     NSString *baseurl = [NSString stringWithFormat:@"%@scoreServlet?nestedChapters", [_siteGetter.nameToURL objectForKey:_language]];
     
+    if (_showSentences) {
+        baseurl = [NSString stringWithFormat:@"%@&context=true", baseurl];
+    }
     
     NSURL *url = [NSURL URLWithString:baseurl];
     
     NSLog(@"ChapterTableViewController - askServerForJson %@",url);
-
+    
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
     
     [urlRequest setHTTPMethod: @"GET"];
     [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    NSNumber *projid = [_siteGetter getProject:_language];
     
+    NSNumber *projid = [_siteGetter getProject:_language];
     NSLog(@"ChapterTableViewController - askServerForJson projid %@",projid);
-
+    
     [urlRequest setValue:[projid stringValue] forHTTPHeaderField:@"projid"];
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:true];
-
+    
     _startPost = CFAbsoluteTimeGetCurrent();
     
     [NSURLConnection sendAsynchronousRequest:urlRequest queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
@@ -169,8 +169,8 @@
          }
          else {
              NSLog(@"ChapterTableViewController Got data %lu",(unsigned long)data.length);
-
-             _responseData = data;
+             
+             self->_responseData = data;
              [self performSelectorOnMainThread:@selector(connectionDidFinishLoading:)
                                     withObject:nil
                                  waitUntilDone:YES];
@@ -179,23 +179,24 @@
 }
 
 - (void) sitesReady {
+  //  NSLog(@"ChapterTableViewController - sites ready %@ %@",_url,_language);
+    _poster = [[EAFEventPoster alloc] initWithURL:_url projid:[_siteGetter.nameToProjectID objectForKey:_language]];
+
     if (_jsonContentArray == nil) {
         [self loadInitialData];
     }
 }
 
-UIAlertView *loadingContentAlert;
 
 - (void)loadInitialData {
-    NSLog(@"loadInitialData");
-
+ //   NSLog(@"loadInitialData");
     NSData *cachedData = [self getCachedJson];
-    if (cachedData && [cachedData length] > 100) {
+    if (cachedData != NULL && [cachedData length] > 100) {
         NSLog(@"loadInitialData : using cached json!");
         _responseData = [NSMutableData dataWithData:cachedData];
         BOOL dataIsValid = [self useJsonChapterData];
         if (!dataIsValid) {
-            NSLog(@"loadInitialData : asking server for json!");
+            NSLog(@"loadInitialData : NOT VALID : asking server for json!");
             [self askServerForJson:false];
         }
         else {
@@ -204,8 +205,23 @@ UIAlertView *loadingContentAlert;
     }
     else {
         // show please wait dialog
-        loadingContentAlert = [[UIAlertView alloc] initWithTitle:@"Fetching course word list\nPlease Wait..." message:nil delegate:self cancelButtonTitle:nil otherButtonTitles: nil];
-        [loadingContentAlert show];
+        _loadingContentAlert = [[UIAlertView alloc] initWithTitle:@"Fetching course content\nPlease Wait..." message:nil delegate:self cancelButtonTitle:nil otherButtonTitles: nil];
+       
+        
+//        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Fetching course content"
+//                                                                       message:@"Please Wait..."
+//                                                                preferredStyle:UIAlertControllerStyleAlert];
+//
+//        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+//                                                              handler:^(UIAlertAction * action) {
+//                                                                  [self.navigationController popToRootViewControllerAnimated:YES];
+//                                                              }];
+//
+//        [alert addAction:defaultAction];
+        
+     //   [self presentViewController:alert animated:YES completion:nil];
+        
+        [_loadingContentAlert show];
         
         [self askServerForJson:false];
     }
@@ -214,7 +230,7 @@ UIAlertView *loadingContentAlert;
 // refresh cache checks how old the cached file is
 - (void)writeToCache:(NSData *) toWrite {
     NSString *appFile = [self getCachedJsonFile];
-    NSLog(@"Writing json data to file %@ %lu bytes",appFile,(unsigned long)toWrite.length);
+    NSLog(@"writeToCache : Writing json data to file %@ %lu bytes",appFile,(unsigned long)toWrite.length);
     [toWrite writeToFile:appFile atomically:YES];
 }
 
@@ -222,30 +238,25 @@ UIAlertView *loadingContentAlert;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *fileName = [NSString stringWithFormat:@"%@_chapters.json",_language];
+    if (_showSentences) {
+        fileName = [NSString stringWithFormat:@"sentences_%@",fileName];
+    }
     NSString *appFile = [documentsDirectory stringByAppendingPathComponent:fileName];
     return appFile;
 }
 
 -(void)forceRefreshCache {
-    
-    
     NSString *appFile = [self getCachedJsonFile];
-
-    
     
     NSError *error;
     BOOL success = [[NSFileManager defaultManager]  removeItemAtPath:appFile error:&error];
     if (success) {
-        NSLog(@"Good - deleted file");
-
+        NSLog(@"forceRefreshCache Good - deleted file");
     }
     else
     {
-        NSLog(@"Could not delete file -:%@ ",[error localizedDescription]);
+        NSLog(@"forceRefreshCache Could not delete file -:%@ ",[error localizedDescription]);
     }
-    
-    
-    
 }
 
 // every 24 hours check with the server for updates
@@ -283,10 +294,16 @@ UIAlertView *loadingContentAlert;
 //
 - (NSData *) getCachedJson {
     NSString *appFile = [self getCachedJsonFile];
-   
+    
     if ([[NSFileManager defaultManager] fileExistsAtPath:appFile]) {
-        NSLog(@"getCachedJson : found the cached json at %@",appFile);
         NSData *data = [[NSFileManager defaultManager] contentsAtPath:appFile];
+        NSLog(@"getCachedJson : found the cached json at %@",appFile);
+        if (data == NULL) {
+            NSLog(@"huh? can't get data from %@",appFile);
+        }
+        else {
+            NSLog(@"getCachedJson : found the cached json at %@ length %lu",appFile,(unsigned long)[data length]);
+        }
         return data;
     }
     else {
@@ -295,6 +312,7 @@ UIAlertView *loadingContentAlert;
     }
 }
 
+// only return false if for some reason can't parse the data - maybe it was corrupted somehow???
 - (BOOL)useJsonChapterData {
     NSError * error;
     NSDictionary* json = [NSJSONSerialization
@@ -312,13 +330,13 @@ UIAlertView *loadingContentAlert;
     if (jsonArray != nil) {
         _jsonContentArray = jsonArray;
         _hasModel = [[json objectForKey:@"hasModel"] boolValue];
-    //    NSLog(@"Chapter - Got model %@",_hasModel ?@"YES":@"NO");
+        //    NSLog(@"Chapter - Got model %@",_hasModel ?@"YES":@"NO");
         NSMutableArray *myArray = [[NSMutableArray alloc] init];
         
         for (NSDictionary *entry in jsonArray) {
             if (_unitTitle == nil) {
                 _unitTitle = [entry objectForKey:@"type"];
-                            }
+            }
             else {
                 _chapterName = [entry objectForKey:@"type"]; // a little redundant here.
                 
@@ -346,9 +364,64 @@ UIAlertView *loadingContentAlert;
         _chapters = myArray;
         _chapterInfo = json; // this is the full json dictionary (???)
     }
+    
+    [self getTotalItems];
+
     [[self tableView] reloadData];
     
     return true;
+}
+
+- (void) getTotalItems {
+    unsigned long totalItemsPerLanguage  = 0;
+    
+    for (NSDictionary *entry in _jsonContentArray) {
+        //  NSString *name =[entry objectForKey:@"name"];
+        //  NSLog(@"%@ %@",[entry objectForKey:@"type"],name);
+        NSArray *theChildren = [entry objectForKey:@"children"];
+        for (NSDictionary *child in theChildren) {
+            NSArray * items = [child objectForKey:@"items"];
+            //    NSLog(@"%@ %@ = %lu",[entry objectForKey:@"type"],name,(unsigned long)items.count);
+            totalItemsPerLanguage += items.count;
+        }
+    }
+    
+    //    NSLog(@"%@ %@ %@ %@ _totalItemsPerLanguage = %lu",_chapterName,_chapters,_unitTitle,_unit,
+    //          _totalItemsPerLanguage);
+    [self setTitle: [NSString stringWithFormat:@"%@ (%@ items)", _language, [NSString stringWithFormat:@"%lu",totalItemsPerLanguage]]];
+}
+
+- (void) cacheAllItems {
+    if (_doCache) {
+        NSLog(@"OK do cache size = %lu",(unsigned long)_jsonContentArray.count);
+        NSString *url =[_siteGetter getServerURL];
+        NSArray *combined=[NSArray new];
+
+        for (NSDictionary *entry in _jsonContentArray) {            
+            NSArray * items = [entry objectForKey:@"items"];
+
+            if (items != NULL) {
+            //    NSLog(@"cache %lu",(unsigned long)items.count);
+                combined=[combined arrayByAddingObjectsFromArray:items];
+            }
+        }
+
+//        NSLog(@"combined cache %lu",(unsigned long)combined.count);
+
+        [_audioCache cacheAudio:combined url:url];
+    }
+    else  {
+        NSLog(@"NO cache!");
+    }
+
+}
+
+-(void) viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+    NSLog(@"ChapterTableView - viewDidDisappear - cancelling audio cache queue operations.");
+    
+    [_audioCache cancelAllOperations];
 }
 
 - (void)postEvent:(NSString *) message widget:(NSString *) widget type:(NSString *) type {
@@ -363,11 +436,11 @@ UIAlertView *loadingContentAlert;
     NSLog(@"connectionDidFinishLoading course content round trip time was %f",diff);
     [self postEvent:[NSString stringWithFormat:@"Roundtrip to download content for %.2f",diff] widget:@"download content" type:[NSString stringWithFormat:@"%.2f",diff]];
     
-    [loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
+    [_loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
     
     BOOL dataIsValid = [self useJsonChapterData];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
-
+    
     _receivedCount++;
     if (_receivedCount != _reqCount) {
         NSLog(@"ignoring out of order requests %d vs %d",_reqCount,_receivedCount);
@@ -381,22 +454,22 @@ UIAlertView *loadingContentAlert;
     // The request has failed for some reason!
     // Check the error var
     NSLog(@"ChapterTable Download content failed with %@",error);
-    [loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
+    [_loadingContentAlert dismissWithClickedButtonIndex:0 animated:true];
     
     _receivedCount++;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:false];
     
     if (!_isRefresh) {
-        NSString *message = @"Couldn't connect to server.";
+        NSString *message = @"Couldn't connect to server (getting chapter history).";
         if (error.code == NSURLErrorNotConnectedToInternet) {
             message = @"NetProF needs a wifi or cellular internet connection.";
         }
-       
+        
         [[[UIAlertView alloc] initWithTitle: @"Connection problem"
-                                                        message: message
-                                                       delegate: nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil] show];
+                                    message: message
+                                   delegate: nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
     }
 }
 
@@ -419,9 +492,9 @@ UIAlertView *loadingContentAlert;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ListPrototypeCell" forIndexPath:indexPath];
-   
+    
     NSString *chapter = [_chapters objectAtIndex:indexPath.row];
-
+    
     NSString *prefix = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
     
     NSMutableString  *titleForUnit = [[NSMutableString alloc] init];
@@ -431,9 +504,6 @@ UIAlertView *loadingContentAlert;
     [titleForUnit appendString:prefix];
     [titleForLesson appendString:prefix];
     
-//    [title appendString:@" : "];
-//
-//    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
     if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
     {
         cell.textLabel.font = [UIFont systemFontOfSize:28]; //Change this value to adjust size
@@ -445,157 +515,63 @@ UIAlertView *loadingContentAlert;
     
     // mark chapters with empty content
     for (NSDictionary *entry in _jsonContentArray) {
-        
         NSString *name =[entry objectForKey:@"name"];
-       
+        
         theChapter = entry;
         if ([name isEqualToString:chapter]) {
             NSArray *items = [entry objectForKey:@"items"];
 
-      //        NSLog(@"items+++++++++++ %lu",_totalItemsPerLesson);
-              NSArray *theChildren = [entry objectForKey:@"children"];
-        //    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
-
-            for (NSDictionary *child in theChildren) {
-                childType = [child objectForKey:@"type"];
-                childType = [childType lowercaseString];
-                //break;
-                 items = [child objectForKey:@"items"];
-                _totalItemsPerLanguage += items.count;
-            }
-       
-            cell.textLabel.attributedText = [self addStrToCellLabel: theChildren withTitle: titleForUnit withType: childType];
-            
-            if (items == nil) { // no items - not a leaf
-                break;
-            }
-            else {
-                if (items.count == 0) {
-                    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@ (No Audio Available)",_chapterName, chapter];
+            NSArray *theChildren = [entry objectForKey:@"children"];
+            if ([theChildren count] > 0)  {
+                for (NSDictionary *child in theChildren) {
+                    childType = [child objectForKey:@"type"];
+                    childType = [childType lowercaseString];
+                    items = [child objectForKey:@"items"];
                 }
-//                NSLog(@"items %lu",(unsigned long)items.count);
-
-                break;
+                cell.textLabel.text = [self addStrToCellLabel: theChildren withTitle: titleForUnit withType: childType];
             }
+            
+            if (items != nil && items.count == 0) {
+                cell.textLabel.text = [NSString stringWithFormat:@"%@ %@ (No Audio Available)",_chapterName, chapter];
+            }
+            
+            break;
         }
-       
     }
     
     NSArray *items2 = [theChapter objectForKey:@"items"];
-     _totalItemsPerLanguage += items2.count;
-    
-   
-//    NSLog(@"GGGGGGLLLL_________ %lu", items2.count);
     if (items2 != nil) {
-        cell.textLabel.attributedText = [self addStrToCellLabel: items2 withTitle: titleForLesson withType: childType];
-       
-//        unsigned long max = items2.count;
-//        if (max > 5) max = 5;
-//        int count = 0;
-//        NSArray *smallArray = [items2 subarrayWithRange:NSMakeRange(0, max)];
-//        NSMutableArray *starts = [NSMutableArray new];
-//        NSMutableArray *ends   = [NSMutableArray new];
-//        
-//        for (NSDictionary *item in smallArray) {
-//            NSString *fl =[item objectForKey:@"fl"];
-//            NSString *en =[item objectForKey:@"en"];
-//            //NSLog(@"fl %@",[self trim:fl]);
-//            [starts addObject:[NSNumber numberWithUnsignedInteger:title.length]];
-//            NSString *trimFL =[self trim:fl];
-//            [ends addObject:[NSNumber numberWithUnsignedInteger:trimFL.length]];
-//            
-//            [title appendString:trimFL];
-//            [title appendString:@" "];
-//            [title appendString:[self trim:en]];
-//            if (++count < smallArray.count) {
-//                [title appendString:@", "];
-//            }
-//        }
-//        NSMutableAttributedString *title2 = [[NSMutableAttributedString alloc] initWithString:title];
-//        
-//        for (int i = 0; i < starts.count; i++) {
-//            NSNumber *start = [starts objectAtIndex:i];
-//            NSNumber *len =   [ends objectAtIndex:i];
-//            NSUInteger len2 = [len unsignedIntegerValue];
-//            
-//            NSRange range = NSMakeRange([start unsignedIntegerValue], len2);
-//            
-//            [title2 addAttribute:NSForegroundColorAttributeName
-//                           value:[UIColor blueColor]
-//                           range:range];
-//        }
-//        cell.textLabel.attributedText = title2;
+        cell.textLabel.text = [self addStrToCellLabel: items2 withTitle: titleForLesson withType: childType];
     }
-//    if(items == nil && items2 != nil){
-//        NSString *countTotalItems = [NSString stringWithFormat:@"%ld", _totalItemsPerLanguage];
-//        [self setTitle: [NSString stringWithFormat:@"%@ (%@ items)", _language, countTotalItems]];
-//    }
-   //   NSLog(@"GGGGGGLLLL_________ %lu", _totalItemsPerLanguage);
+
     return cell;
 }
 
-- (NSMutableAttributedString *) addStrToCellLabel: (NSArray *)chaptersOrLessons withTitle: (NSMutableString *)title withType: (NSString *)type {
+- (NSString *) addStrToCellLabel: (NSArray *)chaptersOrLessons withTitle: (NSMutableString *)title withType: (NSString *)type {
     unsigned long count = chaptersOrLessons.count;
     
     NSString *countStr = [NSString stringWithFormat:@"%ld", count];
-       // NSLog(@"TTTTTTTT %@", title);
+ //   NSLog(@"addStrToCellLabel %@ = %@", title,countStr);
     
-    unsigned long n1 = title.length;
     NSMutableArray *starts = [NSMutableArray new];
     [starts addObject:[NSNumber numberWithUnsignedInteger:title.length]];
     [title appendString:@" : "];
     [title appendString:countStr];
     [title appendString:@" "];
     
-    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-    [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
-    NSString *formattedTotalItems = [formatter stringFromNumber:[NSNumber numberWithInteger:_totalItemsPerLanguage]];
-   // [formatter release];
-    
-   
-    
-    if([_language isEqualToString:@"Pashto1"] || [_language isEqualToString:@"Tagalog"]){
-//        NSString *countTotalItems = [NSString stringWithFormat:@"%@", formattedTotalItems];
-       
-        [self setTitle: [NSString stringWithFormat:@"%@ (%@ items)", _language, formattedTotalItems]];
-        
-    }
-
-  
     if(type != nil){
-        
- //       NSString *countTotalItems = [NSString stringWithFormat:@"%@", formattedTotalItems];
-        [self setTitle: [NSString stringWithFormat:@"%@ (%@ items)", _language, formattedTotalItems]];
-        
+     //   NSLog(@"addStrToCellLabel 1 setTitle %@ = %@", _language,formattedTotalItems);
         [title appendString: type];
         if(count > 1){
-           [title appendString: @"s"];
+            [title appendString: @"s"];
         }
-
+        
     } else {
+       // NSLog(@"addStrToCellLabel 2 setTitle %@ = %@", _language,formattedTotalItems);
         [title appendString:@"items"];
     }
     
-    
-    NSMutableAttributedString *title3 = [[NSMutableAttributedString alloc] initWithString:title];
-    
-    NSRange range = NSMakeRange(n1 + 2, countStr.length+1);
-    if([title containsString:@"items"]){
-        [title3 addAttribute:NSForegroundColorAttributeName
-                       value:[UIColor blackColor]
-                       range:range];
-
-    } else {
- 
-        [title3 addAttribute:NSForegroundColorAttributeName
-                       value:[UIColor blackColor]
-                       range:range];
-        
-    }
-    
-    
-    return title3;
-
+    return title;
 }
 
 - (NSString *)trim:(NSString *)untrimedToken {
@@ -603,42 +579,42 @@ UIAlertView *loadingContentAlert;
 }
 
 /*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
+ // Override to support conditional editing of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ // Return NO if you do not want the specified item to be editable.
+ return YES;
+ }
+ */
 
 /*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
+ // Override to support editing the table view.
+ - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ if (editingStyle == UITableViewCellEditingStyleDelete) {
+ // Delete the row from the data source
+ [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+ } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+ // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+ }
+ }
+ */
 
 /*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
+ // Override to support rearranging the table view.
+ - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+ {
+ }
+ */
 
 /*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
+ // Override to support conditional rearranging of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ // Return NO if you do not want the item to be re-orderable.
+ return YES;
+ }
+ */
 
 
 #pragma mark - Navigation
@@ -650,13 +626,16 @@ UIAlertView *loadingContentAlert;
     // Pass the selected object to the new view controller.
     
     EAFItemTableViewController *itemController = [segue destinationViewController];
- 
-//    NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
- //   NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
-//    NSLog(@"Chapter table view controller prepareForSegue identifier %@ %@ %@ %@ %@",segue.identifier,_chapterName,tappedItem,
-//          _unitTitle,_unit);
+    
+    //    NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+    //   NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
+    //    NSLog(@"Chapter table view controller prepareForSegue identifier %@ %@ %@ %@ %@",segue.identifier,_chapterName,tappedItem,
+    //          _unitTitle,_unit);
     
     NSLog(@"Chapter table Got prepare -- %@ has model %@ url %@",itemController, _hasModel?@"YES":@"NO", _url);
+    
+    [self postEvent: [NSString stringWithFormat:@"chapter %@ %@",_chapterName,_currentChapter] widget:@"Choose unit/chapter" type:@"ChapterTableViewController"];
+
     [itemController setChapterToItems:_chapterInfo];
     [itemController setJsonItems:_currentItems];
     itemController.chapterTitle = _chapterName;
@@ -672,6 +651,8 @@ UIAlertView *loadingContentAlert;
     itemController.unit = _unit;
     itemController.url = _url;
     itemController.isRTL = _isRTL;
+    itemController.showSentences=_showSentences;
+   // if (_showSentences) NSLog(@"Chapter show sentences!");
 }
 
 #pragma mark - Table view delegate
@@ -681,33 +662,33 @@ UIAlertView *loadingContentAlert;
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
     NSArray *children;
-    _totalItemsPerLesson = 0;
+   // _totalItemsPerLesson = 0;
     for (NSDictionary *entry in _jsonContentArray) {
         NSString *name =[entry objectForKey:@"name"];
         //NSLog(@"looking for '%@' '%@'",name, tappedItem);
-
+        
         if ([name isEqualToString:tappedItem]) {
-           // NSLog(@"=---- > got match '%@' '%@'",name, tappedItem);
-
+            // NSLog(@"=---- > got match '%@' '%@'",name, tappedItem);
+            
             NSArray *items = [entry objectForKey:@"items"];
-          
+            
             if (items == nil) { // no items - not a leaf
                 children = [entry objectForKey:@"children"];
-                //NSLog(@"children are %@",children);
+                NSLog(@"didSelectRowAtIndexPath # children  %lu",(unsigned long)children.count );
                 EAFChapterTableViewController *myController = [self.storyboard instantiateViewControllerWithIdentifier:@"ChapterViewController"];
                 [myController setJsonContentArray:children];
                 
                 NSMutableArray *myArray = [[NSMutableArray alloc] init];
-        
+                
                 NSString *childType = nil;
                 for (NSDictionary *child in children) {
                     childType = [child objectForKey:@"type"];
-                    NSLog(@"UUUUUUUU------- %@", childType);
+                   // NSLog(@"UUUUUUUU------- %@", childType);
                     [myArray addObject:[child objectForKey:@"name"]];
                     items = [child objectForKey:@"items"];
                     
-                    _totalItemsPerLesson += items.count;
-                 //   NSLog(@"items+++++++++++ %lu",_totalItemsPerLesson);
+                  //  _totalItemsPerLesson += items.count;
+                    //   NSLog(@"items+++++++++++ %lu",_totalItemsPerLesson);
                 }
                 //sorting
                 [myArray sortUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
@@ -725,12 +706,14 @@ UIAlertView *loadingContentAlert;
                 myController.hasModel = _hasModel;
                 myController.url = _url;
                 myController.isRTL = _isRTL;
-                
+                myController.showSentences = _showSentences;
+                myController.doCache = TRUE;
+
                 [self.navigationController pushViewController: myController animated:YES];
                 break;
             }
             else {
-         //       NSLog(@"Got click to segue to items is %lu",(unsigned long)items.count);
+                //       NSLog(@"Got click to segue to items is %lu",(unsigned long)items.count);
                 // TODO : ask for history here?
                 // when returns, go ahead and do segue
                 

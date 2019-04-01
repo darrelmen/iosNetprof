@@ -37,12 +37,13 @@
 //
 
 #import <UIKit/UIKit.h>
-//#import <SplunkMint-iOS/SplunkMint-iOS.h>
+#import <MessageUI/MessageUI.h>
+
 #import "BButton.h"
 #import "EAFGetSites.h"
 
 
-@interface EAFLoginViewController : UIViewController<UITextFieldDelegate,UIGestureRecognizerDelegate,SitesNotification>
+@interface EAFLoginViewController : UIViewController<UITextFieldDelegate,UIGestureRecognizerDelegate,UIPickerViewDelegate,SitesNotification,MFMailComposeViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *usernameFeedback;
 @property (weak, nonatomic) IBOutlet UILabel *passwordFeedback;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -56,6 +57,7 @@
 @property (nonatomic, assign) id currentResponder;
 @property (strong, nonatomic) IBOutlet BButton *forgotUsername;
 @property (strong, nonatomic) IBOutlet BButton *forgotPassword;
+@property (weak, nonatomic) IBOutlet UIButton *contact;
 
 
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
