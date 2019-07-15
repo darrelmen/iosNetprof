@@ -127,7 +127,7 @@
     }
     
     [self cacheAllItems];
-
+    
 }
 
 - (void)askServerForJson:(BOOL) isRefresh {
@@ -179,9 +179,9 @@
 }
 
 - (void) sitesReady {
-  //  NSLog(@"ChapterTableViewController - sites ready %@ %@",_url,_language);
+    //  NSLog(@"ChapterTableViewController - sites ready %@ %@",_url,_language);
     _poster = [[EAFEventPoster alloc] initWithURL:_url projid:[_siteGetter.nameToProjectID objectForKey:_language]];
-
+    
     if (_jsonContentArray == nil) {
         [self loadInitialData];
     }
@@ -189,7 +189,7 @@
 
 
 - (void)loadInitialData {
- //   NSLog(@"loadInitialData");
+    //   NSLog(@"loadInitialData");
     NSData *cachedData = [self getCachedJson];
     if (cachedData != NULL && [cachedData length] > 100) {
         NSLog(@"loadInitialData : using cached json!");
@@ -206,21 +206,6 @@
     else {
         // show please wait dialog
         _loadingContentAlert = [[UIAlertView alloc] initWithTitle:@"Fetching course content\nPlease Wait..." message:nil delegate:self cancelButtonTitle:nil otherButtonTitles: nil];
-       
-        
-//        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Fetching course content"
-//                                                                       message:@"Please Wait..."
-//                                                                preferredStyle:UIAlertControllerStyleAlert];
-//
-//        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-//                                                              handler:^(UIAlertAction * action) {
-//                                                                  [self.navigationController popToRootViewControllerAnimated:YES];
-//                                                              }];
-//
-//        [alert addAction:defaultAction];
-        
-     //   [self presentViewController:alert animated:YES completion:nil];
-        
         [_loadingContentAlert show];
         
         [self askServerForJson:false];
@@ -334,15 +319,12 @@
         NSMutableArray *myArray = [[NSMutableArray alloc] init];
         
         for (NSDictionary *entry in jsonArray) {
-            if (_unitTitle == nil) {
-                _unitTitle = [entry objectForKey:@"type"];
-            }
-            else {
-                _chapterName = [entry objectForKey:@"type"]; // a little redundant here.
-                
+            if (_chapterName == nil) {
+                _chapterName = [entry objectForKey:@"type"];
             }
             [myArray addObject:[entry objectForKey:@"name"]];
         }
+        
         //sorting
         [myArray sortUsingComparator:^NSComparisonResult(NSString *str1, NSString *str2) {
             return [str1 compare:str2 options:(NSNumericSearch)];
@@ -366,7 +348,7 @@
     }
     
     [self getTotalItems];
-
+    
     [[self tableView] reloadData];
     
     return true;
@@ -396,24 +378,24 @@
         NSLog(@"OK do cache size = %lu",(unsigned long)_jsonContentArray.count);
         NSString *url =[_siteGetter getServerURL];
         NSArray *combined=[NSArray new];
-
-        for (NSDictionary *entry in _jsonContentArray) {            
+        
+        for (NSDictionary *entry in _jsonContentArray) {
             NSArray * items = [entry objectForKey:@"items"];
-
+            
             if (items != NULL) {
-            //    NSLog(@"cache %lu",(unsigned long)items.count);
+                //    NSLog(@"cache %lu",(unsigned long)items.count);
                 combined=[combined arrayByAddingObjectsFromArray:items];
             }
         }
-
-//        NSLog(@"combined cache %lu",(unsigned long)combined.count);
-
+        
+        //        NSLog(@"combined cache %lu",(unsigned long)combined.count);
+        
         [_audioCache cacheAudio:combined url:url];
     }
     else  {
         NSLog(@"NO cache!");
     }
-
+    
 }
 
 -(void) viewDidDisappear:(BOOL)animated {
@@ -487,6 +469,8 @@
 }
 
 /*
+ * TODO : Wacky having both titleForUnit and titleForLesson be the same!
+ *
  * Marks chapters that have their content pruned out b/c of missing audio.
  */
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -498,7 +482,6 @@
     NSString *prefix = [NSString stringWithFormat:@"%@ %@",_chapterName, chapter];
     
     NSMutableString  *titleForUnit = [[NSMutableString alloc] init];
-    
     NSMutableString  *titleForLesson = [[NSMutableString alloc] init];
     
     [titleForUnit appendString:prefix];
@@ -520,7 +503,7 @@
         theChapter = entry;
         if ([name isEqualToString:chapter]) {
             NSArray *items = [entry objectForKey:@"items"];
-
+            
             NSArray *theChildren = [entry objectForKey:@"children"];
             if ([theChildren count] > 0)  {
                 for (NSDictionary *child in theChildren) {
@@ -543,7 +526,7 @@
     if (items2 != nil) {
         cell.textLabel.text = [self addStrToCellLabel: items2 withTitle: titleForLesson withType: childType];
     }
-
+    
     return cell;
 }
 
@@ -551,7 +534,7 @@
     unsigned long count = chaptersOrLessons.count;
     
     NSString *countStr = [NSString stringWithFormat:@"%ld", count];
- //   NSLog(@"addStrToCellLabel %@ = %@", title,countStr);
+    //   NSLog(@"addStrToCellLabel %@ = %@", title,countStr);
     
     NSMutableArray *starts = [NSMutableArray new];
     [starts addObject:[NSNumber numberWithUnsignedInteger:title.length]];
@@ -560,14 +543,14 @@
     [title appendString:@" "];
     
     if(type != nil){
-     //   NSLog(@"addStrToCellLabel 1 setTitle %@ = %@", _language,formattedTotalItems);
+        //   NSLog(@"addStrToCellLabel 1 setTitle %@ = %@", _language,formattedTotalItems);
         [title appendString: type];
         if(count > 1){
             [title appendString: @"s"];
         }
         
     } else {
-       // NSLog(@"addStrToCellLabel 2 setTitle %@ = %@", _language,formattedTotalItems);
+        // NSLog(@"addStrToCellLabel 2 setTitle %@ = %@", _language,formattedTotalItems);
         [title appendString:@"items"];
     }
     
@@ -635,7 +618,7 @@
     NSLog(@"Chapter table Got prepare -- %@ has model %@ url %@",itemController, _hasModel?@"YES":@"NO", _url);
     
     [self postEvent: [NSString stringWithFormat:@"chapter %@ %@",_chapterName,_currentChapter] widget:@"Choose unit/chapter" type:@"ChapterTableViewController"];
-
+    
     [itemController setChapterToItems:_chapterInfo];
     [itemController setJsonItems:_currentItems];
     itemController.chapterTitle = _chapterName;
@@ -647,12 +630,12 @@
     itemController.projid = projid;
     
     itemController.hasModel=_hasModel;
-    itemController.unitTitle = _unitTitle;
+    // itemController.unitTitle = _unitTitle;
     itemController.unit = _unit;
     itemController.url = _url;
     itemController.isRTL = _isRTL;
     itemController.showSentences=_showSentences;
-   // if (_showSentences) NSLog(@"Chapter show sentences!");
+    // if (_showSentences) NSLog(@"Chapter show sentences!");
 }
 
 #pragma mark - Table view delegate
@@ -662,7 +645,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     NSString *tappedItem = [self.chapters objectAtIndex:indexPath.row];
     NSArray *children;
-   // _totalItemsPerLesson = 0;
+    // _totalItemsPerLesson = 0;
     for (NSDictionary *entry in _jsonContentArray) {
         NSString *name =[entry objectForKey:@"name"];
         //NSLog(@"looking for '%@' '%@'",name, tappedItem);
@@ -683,11 +666,11 @@
                 NSString *childType = nil;
                 for (NSDictionary *child in children) {
                     childType = [child objectForKey:@"type"];
-                   // NSLog(@"UUUUUUUU------- %@", childType);
+                    // NSLog(@"UUUUUUUU------- %@", childType);
                     [myArray addObject:[child objectForKey:@"name"]];
                     items = [child objectForKey:@"items"];
                     
-                  //  _totalItemsPerLesson += items.count;
+                    //  _totalItemsPerLesson += items.count;
                     //   NSLog(@"items+++++++++++ %lu",_totalItemsPerLesson);
                 }
                 //sorting
@@ -700,15 +683,18 @@
                 [myController setChapters:myArray];
                 [myController setTitle:title];
                 [myController setLanguage:_language];
+                
+                //    NSLog(@"didSelectRowAtIndexPath unit %@ childType %@", _unitTitle, childType);
+                
                 [myController setChapterName:childType];
-                myController.unitTitle = _unitTitle;
+                //  myController.unitTitle = _unitTitle;
                 myController.unit = name;
                 myController.hasModel = _hasModel;
                 myController.url = _url;
                 myController.isRTL = _isRTL;
                 myController.showSentences = _showSentences;
                 myController.doCache = TRUE;
-
+                
                 [self.navigationController pushViewController: myController animated:YES];
                 break;
             }

@@ -44,7 +44,7 @@
 @property NSString *chapterName;
 @property NSString *currentChapter;
 
-@property NSString *unitTitle;
+//@property NSString *unitTitle;
 @property NSString *unit;
 
 @property NSArray *chapters;

@@ -2156,7 +2156,7 @@ bool debugRecord = false;
         
         // try to avoid weird bug where the audio file would have lots of zeroes after it
         if (_audioRecorder.deleteRecording) {
-            NSLog(@"deleted any old recording...");
+          //  NSLog(@"recordAudio deleted any old recording...");
         }
         else {
             NSLog(@"huh? couldn't delete old recording...");
@@ -2890,8 +2890,9 @@ bool debugRecord = false;
     }
     
     if (correct) {
-        float overall;
-        NSString * emoji= [self getEmoji:&overall];
+        float theScore = [overallScore floatValue];
+        NSString *emoji = [self getEmojiForScore:theScore*100];
+      //  NSLog(@"theScore was %@ = %@",overallScore,emoji);
         [_correctFeedback setText:emoji];
     }
     else {
@@ -2990,7 +2991,7 @@ bool debugRecord = false;
             [_exToScore setObject:score forKey:exid];
             [_exToScoreJson setObject:json forKey:exid];
             [self setTitleWithScore];
-            NSLog(@"_exToScore %@ %@ now %lu",exid,score,(unsigned long)[_exToScore count]);
+           // NSLog(@"_exToScore %@ %@ now %lu",exid,score,(unsigned long)[_exToScore count]);
         }
     }
     
@@ -3047,6 +3048,36 @@ bool debugRecord = false;
     [self respondToSwipe];
 }
 
+- (NSString *)getEmojiForScore:(float)theScore {
+    NSString *emoji1 =@"\U0001F601";   // grinning
+    NSString *emoji2 =@"\U0001F600";   // smiling
+    NSString *emoji3 =@"\U0001F610";   // neutral
+    NSString *emoji4 =@"\U0001F914";   // thinking
+    NSString *emoji5 =@"\U0001F615";   // confused
+    NSString *emoji6 =@"\U00002639";   // frown
+    
+    // private static final List<Float> koreanThresholds = new ArrayList<>(Arrays.asList(0.31F, 0.43F, 0.53F, 0.61F, 0.70F));
+    // private static final List<Float> englishThresholds = new ArrayList<>(Arrays.asList(0.23F, 0.36F, 0.47F, 0.58F, NATIVE_HARD_CODE));  // technically last is 72
+    
+    NSArray *array = @[ @0.31f, @0.43f, @0.53f, @0.61f, @0.70f];
+    NSArray *emoji = @[ emoji6, emoji5, emoji4, emoji3, emoji2, emoji1];
+    
+    NSString *s = emoji1;  // default is grinning
+    
+    for (int i = 0; i < [array count];i++) {
+        NSNumber *num = [array objectAtIndex:i];
+        if (theScore < [num floatValue]*100) {
+         //   NSLog(@"1 - getEmojiForScore : (%f) %d = %@",theScore, i,num);
+            s=[emoji objectAtIndex:i];
+            break;
+        }
+    }
+    
+ //   NSLog(@"getEmojiForScore : (%f) = %@",theScore, s);
+
+    return s;
+}
+
 - (NSString *)getEmoji:(float *)overall {
     float total=0.0;
     for(id key in _exToScore) {
@@ -3061,30 +3092,7 @@ bool debugRecord = false;
         *overall = (100.0f*total)/(float)completedCount;
     }
     
-    NSString *emoji1 =@"\U0001F601";   // grinning
-    NSString *emoji2 =@"\U0001F600";   // smiling
-    NSString *emoji3 =@"\U0001F610";   // neutral
-    NSString *emoji4 =@"\U0001F914";   // thinking
-    NSString *emoji5 =@"\U0001F615";   // confused
-    NSString *emoji6 =@"\U00002639";   // frown
-    
-    // private static final List<Float> koreanThresholds = new ArrayList<>(Arrays.asList(0.31F, 0.43F, 0.53F, 0.61F, 0.70F));
-    // private static final List<Float> englishThresholds = new ArrayList<>(Arrays.asList(0.23F, 0.36F, 0.47F, 0.58F, NATIVE_HARD_CODE));  // technically last is 72
-    
-    NSArray *array = @[ @0.31f, @0.43f, @0.53f, @0.61f, @0.70f];
-    NSArray *emoji = @[ emoji6, emoji5, emoji4, emoji3, emoji2, emoji1];
-    
-    NSString *s = emoji5;  // default is confused
-    
-    for (int i = 0; i < [array count];i++) {
-        NSNumber *num = [array objectAtIndex:i];
-        //  NSLog(@"%d = %@",i,num);
-        if (*overall < [num floatValue]*100) {
-            s=[emoji objectAtIndex:i];
-            break;
-        }
-    }
-    return s;
+    return [self getEmojiForScore:*overall];
 }
 
 - (void) setTitleWithScore {
@@ -3458,8 +3466,8 @@ bool debugRecord = false;
     
     BOOL isRTL = [_siteGetter.rtlLanguages containsObject:_language];
     if (isRTL) {
-      //  wordAndScore  = [self reversedArray:wordAndScore];
-     //   NSLog(@"\n\n\nisRTL !");
+        //  wordAndScore  = [self reversedArray:wordAndScore];
+        //   NSLog(@"\n\n\nisRTL !");
         //NSLog(@"now word  json %@",wordAndScore);
         if (!_showPhonesLTRAlways) {
             phoneAndScore = [self reversedArray:phoneAndScore];
@@ -3469,8 +3477,8 @@ bool debugRecord = false;
     UIView *spacerLeft  = [[UIView alloc] init];
     UIView *spacerRight = [[UIView alloc] init];
     
-//       spacerLeft.backgroundColor = [UIColor redColor];
-//        spacerRight.backgroundColor = [UIColor blueColor];
+    //       spacerLeft.backgroundColor = [UIColor redColor];
+    //        spacerRight.backgroundColor = [UIColor blueColor];
     
     spacerLeft.translatesAutoresizingMaskIntoConstraints = NO;
     spacerRight.translatesAutoresizingMaskIntoConstraints = NO;
@@ -3726,7 +3734,7 @@ bool debugRecord = false;
                                                        constant:5.0]];
             }
             
-        //    NSLog(@"starting new line with %@",word);
+            //    NSLog(@"starting new line with %@",word);
             
             lineStart = exampleView;
             
